@@ -25,10 +25,10 @@ include ../../src/shared/_dependencies.dep
 include ../../src/shared/makefile.objs
 include ../../src/shared/makefile.lines
 !else
-include ../../colorer/src/shared/makefile.zlib
-include ../../colorer/src/shared/_dependencies.dep
-include ../../colorer/src/shared/makefile.objs
-include ../../colorer/src/shared/makefile.lines
+include ../libs/colorer/src/shared/makefile.zlib
+include ../libs/colorer/src/shared/_dependencies.dep
+include ../libs/colorer/src/shared/makefile.objs
+include ../libs/colorer/src/shared/makefile.lines
 !endif
 
 .cpp.obj:
