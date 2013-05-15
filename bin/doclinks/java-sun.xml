@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//Cail Lomecb//DTD Colorer DOCLINKS take5//EN"
+  "http://colorer.sf.net/2003/doclinks.dtd">
+
+<doclinks xmlns="http://colorer.sf.net/2003/doclinks"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://colorer.sf.net/2003/doclinks
+                              http://colorer.sf.net/2003/doclinks.xsd">
+
+  <links url='http://java.sun.com/j2se/1.3/docs/api/' scheme="java:TypeDeclaration">
+    <link token="Enumeration" url="java/lang/Enumeration.html"/>
+    <link token="String" url="java/lang/String.html"/>
+    <link token="StringBuffer" url="java/lang/StringBuffer.html"/>
+    <link token="System" url="java/lang/System.html"/>
+  </links>
+
+  <links url='http://www.java.sun.com/j2se/1.3/docs/tooldocs/windows/javadoc.html' scheme="java:DocumentationComment">
+    <link token="@author" url="#@author" />
+    <link token="@param" url="#@param"/>
+    <link token="@version" url="#@version" scheme="java:DocumentationComment"/>
+    <link token="@date" url="#@date"/>
+  </links>
+
+</doclinks>

@@ -1,0 +1,49 @@
+
+coreobjects = $(unzipobjects) \
+              $(obj_output_slash)Logging.$(obj)   \
+              $(obj_output_slash)xmldom.$(obj)    \
+              $(obj_output_slash)cregexp.$(obj)   \
+              \
+              $(obj_output_slash)BitArray.$(obj)      \
+              $(obj_output_slash)Character.$(obj)     \
+              $(obj_output_slash)CharacterClass.$(obj)\
+              $(obj_output_slash)String.$(obj)        \
+              $(obj_output_slash)DString.$(obj)       \
+              $(obj_output_slash)SString.$(obj)       \
+              $(obj_output_slash)StringBuffer.$(obj)  \
+              $(obj_output_slash)UnicodeTools.$(obj)  \
+              $(obj_output_slash)Encodings.$(obj)     \
+              \
+              $(obj_output_slash)Exception.$(obj)     \
+              $(obj_output_slash)MemoryChunks.$(obj)  \
+              \
+              $(obj_output_slash)InputSource.$(obj)      \
+              $(obj_output_slash)FileInputSource.$(obj)  \
+              $(obj_output_slash)HTTPInputSource.$(obj)  \
+              $(obj_output_slash)JARInputSource.$(obj)   \
+              $(obj_output_slash)SharedInputSource.$(obj)\
+              $(obj_output_slash)Writer.$(obj)           \
+              $(obj_output_slash)StreamWriter.$(obj)     \
+              $(obj_output_slash)FileWriter.$(obj)       \
+              \
+              $(obj_output_slash)ParserFactory.$(obj)    \
+              \
+              $(obj_output_slash)ErrorHandlerWriter.$(obj)       \
+              $(obj_output_slash)FileErrorHandler.$(obj)         \
+              $(obj_output_slash)LineRegionsCompactSupport.$(obj)\
+              $(obj_output_slash)LineRegionsSupport.$(obj)       \
+              $(obj_output_slash)RegionMapperImpl.$(obj)         \
+              $(obj_output_slash)StyledHRDMapper.$(obj)          \
+              $(obj_output_slash)TextHRDMapper.$(obj)            \
+              \
+              $(obj_output_slash)BaseEditor.$(obj)    \
+              $(obj_output_slash)Outliner.$(obj)      \
+              $(obj_output_slash)HRCParserImpl.$(obj) \
+              $(obj_output_slash)HRCParserHelpers.$(obj)  \
+              $(obj_output_slash)TextParserImpl.$(obj)    \
+              $(obj_output_slash)TextParserHelpers.$(obj) \
+              $(obj_output_slash)ConsoleTools.$(obj)      \
+              $(obj_output_slash)TextConsoleViewer.$(obj) \
+              $(obj_output_slash)TextLinesStore.$(obj)    \
+              \
+              $(obj_output_slash)malloc.$(obj)

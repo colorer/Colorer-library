@@ -1,0 +1,37 @@
+#
+# Machine-specific build settings for Colorer library.
+# 
+# Edit this file to override global properties from
+# 'build.properties'. Use ${project-root} to specify paths
+# relative to the root of the project.
+
+#
+# Platform for native C++ compiler available on your machine
+#
+# vc,bcc,cygwin - win32
+# gcc           - *nix
+# macos         - MacOSX
+# solarisgcc    - Solaris (GCC)
+#
+#platform=vc
+
+
+#
+# Path to Eclipse IDE dir.
+# Used to compile EclipseColorer plugin
+#
+#eclipse.dir=d:/programs/devel/eclipse
+#this.eclipse.dir=d:/programs/devel/eclipseplugins/eclipse
+
+#
+# FAR Manager directory for debug build purposes
+#
+#this.far-dir=c:/far/plugins/colorer
+
+#
+# Paths for documentation build:
+# Doxygen and DOT paths for API reference
+doxygen=d:/programs/devel/doxygen/bin/doxygen.exe
+dot-path=d:/programs/devel/graphviz/Graphviz/bin/
+# YES or NO
+use-dot=NO

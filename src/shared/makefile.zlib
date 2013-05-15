@@ -1,0 +1,13 @@
+
+## this is separate zlib project object files
+unzipdir = $(shared_path)../zlib/
+
+unzipobjects = $(obj_output_slash)adler32.$(obj)  \
+               $(obj_output_slash)crc32.$(obj)    \
+               $(obj_output_slash)inffast.$(obj)  \
+               $(obj_output_slash)inflate.$(obj)  \
+               $(obj_output_slash)inftrees.$(obj) \
+               $(obj_output_slash)uncompr.$(obj)  \
+               $(obj_output_slash)zutil.$(obj)    \
+               $(obj_output_slash)unzip.$(obj)    \
+               $(obj_output_slash)ioapi.$(obj)

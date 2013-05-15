@@ -1,0 +1,35 @@
+##################
+# vc core defines
+
+CPP  = @cl
+LINK = @link
+RM   = @del
+obj  = obj
+MKDIR= mkdir
+
+obj_output_slash = $(obj_output)\\
+
+!ifndef DEBUG
+CPPFLAGS =/O2 /Oi /Ot /Oy- /GL /GF /EHsc /MT /GS- /Gy /GR-
+!else
+CPPFLAGS =/Od /Gm /EHsc /RTC1 /MTd /ZI
+!endif  
+
+CPPFLAGS = $(CPPFLAGS) /I $(shared_path) /I $(unzipdir) /D "USE_DL_PREFIX"  /wd4996 /W3 /nologo /c $(CPPFLAGS_CUSTOM)
+
+# ms nmake faults to substitute $(shared_path) here :(
+
+!ifdef INC_DEPTH_LOCAL
+include ../../src/shared/makefile.zlib
+include ../../src/shared/_dependencies.dep
+include ../../src/shared/makefile.objs
+include ../../src/shared/makefile.lines
+!else
+include ../../colorer/src/shared/makefile.zlib
+include ../../colorer/src/shared/_dependencies.dep
+include ../../colorer/src/shared/makefile.objs
+include ../../colorer/src/shared/makefile.lines
+!endif
+
+.cpp.obj:
+	$(CPP) $<

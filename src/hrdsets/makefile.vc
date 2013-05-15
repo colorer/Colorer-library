@@ -1,0 +1,33 @@
+##########################################################################
+# vc makefile
+
+CPP  = @cl
+LINK = @link
+RM   = @del
+OBJ  = obj
+
+all: hrdsets.exe install.exe
+CPPFLAGS = -I../shared /nologo /O2 /Ogtiyb2 /c /W3
+
+!INCLUDE ../shared/makefile.colorer
+
+OBJS = hrdsets.$(OBJ) $(COREOBJS)
+LIBFLAGS = $(OBJS) /out:hrdsets.exe kernel32.lib user32.lib comdlg32.lib advapi32.lib gdi32.lib /nologo /subsystem:windows
+
+
+
+hrdsets.exe: $(OBJS) hrdsets.res
+	$(LINK) hrdsets.res $(LIBFLAGS)
+
+hrdsets.res: hrdsets.rc
+	rc.exe hrdsets.rc
+
+hrdsets.$(OBJ): hrdsets.cpp $(CORECODE)
+	$(CPP) $(CPPFLAGS) hrdsets.cpp
+
+install.exe:
+	$(CPP) $(CPPFLAGS) install.cpp
+	$(LINK) install.$(OBJ) advapi32.lib
+
+clear:
+	$(RM) $(OBJS) hrdsets.res

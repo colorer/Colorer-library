@@ -1,0 +1,33 @@
+##########################################################################
+# borland bcc32 5.01 makefile
+
+CPP  = @bcc32
+LINK = @tlink32
+RM   = @del
+OBJ  = obj
+
+all: hrdsets.exe
+CPPFLAGS = -I../shared/ -c -O2 -RT- -x- -N- -w-rvl -w-pia -w-par -w-aus
+
+!INCLUDE ../shared/makefile.colorer
+
+OBJS = hrdsets.$(OBJ) $(COREOBJS)
+LIBFLAGS = /Tpe -m c0w32.$(OBJ) $(OBJS), hrdsets.exe , , import32.lib cw32.lib,,hrdsets.res
+
+
+
+hrdsets.exe: $(OBJS) hrdsets.res
+	$(LINK) $(LIBFLAGS)
+
+hrdsets.res: hrdsets.rc
+	brc32.exe -r hrdsets.rc
+
+hrdsets.$(OBJ): hrdsets.cpp $(CORECODE)
+	$(CPP) $(CPPFLAGS) hrdsets.cpp
+
+install.exe:
+	$(CPP) install.cpp
+
+
+clear:
+	$(RM) $(OBJS) hrdsets.res hrdsets.map hrdsets.il? hrdsets.tds

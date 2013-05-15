@@ -1,0 +1,16 @@
+
+TARGET=colorer
+all: $(TARGET)
+
+shared_path=../shared/
+obj_output=objs
+
+include ../shared/makefile.colorer.gcc
+
+LIBINC = -lc -lm -lstdc++
+LIBFLAGS = $(objs) $(FLAGS) -o $(TARGET) $(LIBINC)
+
+include makefile.core
+
+clean:
+	$(RM) $(objs)

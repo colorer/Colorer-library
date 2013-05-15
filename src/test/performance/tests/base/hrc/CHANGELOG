@@ -1,0 +1,219 @@
+2011-06-30 r1724 (FarColorer 1.0.3.3)
+  Fixed:
+    - Pascal - write characters with codes 0-31 in the format ^@, ^A, ^B (Igor Yudincev)
+    - file type detection
+
+2011-06-29 r1721 (FarColorer 1.0.3.2)
+  Fixed:
+    - add missing words for c, cpp, jscript, qmake, sql, vbscript, email (from HaRT) 
+    - add  C function outlining for C# (from Vladimir Panteleev)
+    - major improvements to D syntax file (from Vladimir Panteleev)
+    - minor fix proto.hrc (from Vladimir Panteleev)
+    - Pascal - write characters with codes 0-31 in the format ^@, ^A, ^B (Igor Yudincev)
+    - far.hrc - add support verbatim string; new functions
+    - c.hrc - shows #include and #define in the outline list is closed by key
+    - csharp.hrc - add support verbatim string; 
+
+2011-03-18 r1688 (FarColorer 1.0.3.1)
+  New:
+    - Python scheme completely rewritten (anatoly techtonik)
+    - add support Expect
+  Fixed:
+    - remove .cgi from Perl extensions, use first line for detection
+    - fix firstline of Python prototype to allow spaces in shebang
+    - fix comments in Tcl ( Nikita Retunsky)
+    - c# add #region/#endregion , get, set, yield
+
+2010-10-25 r1593 (FarColorer 1.0.2.14)
+  Fixed:
+    - batch : label and a comment (::) can not start from the beginning of the line;
+      escape symbol ^;
+    - esc : add param "overload"
+
+2010-10-20 r1585 (FarColorer 1.0.2.13)
+  New:
+    - Cue sheet
+  Fixed:
+    - batch : label begins with a digit; compound command echo
+    - lua : removed from the outline cycles
+    - cpp : removed from the outline function calls
+
+2010-09-21 r1550 (FarColorer 1.0.2.9)
+  Fixed:
+    - Ruby : ruby string fixes
+    - pl/sql : backslash escapes param for pl/sql
+
+2010-07-15 r1530 (FarColorer 1.0.2.7)
+  New:
+    - Mako templates (Mikael Lepisto)
+    - Scala
+    - Acapella
+  Fixed:
+    - SASS keywords and improvements
+    - Ruby : ruby custom RE syntax; ruby 1.9 style symbols
+    - Haml
+    - JCL : add support comments
+    - Far macro
+    - Reg empty hex value
+
+2010-03-06 r1435 (FarColorer 1.0.2.5)
+  New:
+    - AirPlay SDK
+    - SASS support and sass in haml support
+    - JCL - Job Control Language
+  Fixed:
+    - Ruby minor updates
+    - Diff : add new options for support git diff (Yuri Khan)
+    - Text : add support pseudo-graphic
+    - Reg minor updates
+    - Makefile.hrc support nmake
+    - Awk : scripts, +regexp
+    - Far.hrc : +XML, +callplugin, +\ or \\ in registry, new macro functions and constants
+    - C : Formatting lines and links to system variables in them, paired quotes for strings
+    - HTML : add HTML5 tags 
+
+2010-02-04 r1299
+(trunk changes merged into dev branch for FarColorer 1.0.2.4)
+  Fixes:
+    - HAML
+    - Ruby
+    - ERB
+    - SubStation Alpha (assa)
+    - makefile
+
+2010-01-13 r1242
+(trunk changes merged into dev branch for FarColorer 1.0.2.2)
+  Fixes:
+    - HAML
+    - Ruby
+    - C++ environment-variable fix
+  New:
+    - ASN.1/ECN notations
+    - ERB - Rails HTML syntax
+    - Lua
+    - SCons scripts support (anatoly techtonik)
+
+2009-12-23 r1178
+(trunk changes merged into dev branch for FarColorer 1.0.2.1)
+  Reorg:
+    - Python, Ruby, Tcl/Tk are not "rare" anymore
+  Fixes:
+    - Ruby improvements
+    - SH script highlighter is detected by shebang line
+    - NSIS syntax updated to v2.39 (anatoly techtonik)
+    - XQuery func param list
+    - JavaDoc coloring error
+    - Cobol enhancements (Pavel Pleva)
+    - VBasic fixes for paired constructs
+    - Updated OpenGL keywords (Mike Gorchak)
+    - VB script highlighting
+    - REG autodetection fix
+    - Windows batch highlight errors
+    - Forth fixes
+    - Perl improvements
+    - C/CPP i128 support, GNU Asm fixes
+    - TeX verbatim mode improvements, etc
+    - Foxpro (Vadim Zaharenko)
+    - awk fixes
+    - reg fixes
+    - js
+    - perl
+    - xpath
+    - far macros
+    - config.hrc
+  New:
+    - HAML
+    - CUP (Ostrovskiy Alex)
+    - Stata (John Aponte)
+    - Graphviz
+    - nesC (Rasmus Ulslev Pedersen)
+    - PL1 (Pavel Pleva)
+    - D (Vladimir Panteleev)
+    - git status, git diff
+    - Qt C++, Qt make
+    - j2ee
+    - Web-app
+    - Erlang
+
+2006-11-27 r843 (FarColorer take5.be5)
+  Reorg:
+    - RTF syntax migrated from rare.scripts to scripts
+  Fixes:
+    - picasm improvements
+    - Ruby fixes
+    - lower ANT detection precendence
+  New:
+    - GNU Make Files Syntax (Eugene Efremov)
+    - ANSI C standard library keywords (Eugene Efremov)
+    - recognize Ruby Rakefiles
+    - recognize CakePHP template
+
+
+2006-06-20 r772
+  Fixes:
+    - Perl improvements
+    - FAR packages fixes
+  New:
+    - No dependencies on php binaries when building HRC base
+    - java policy simple syntax
+    - 4mirror: xsieve, wsdl
+    - AHDL syntax
+    - Pnuts syntax (by Nate)
+
+
+2005-04-06
+  New:
+    - HRC regexp fixes
+    - External xml entities now has a .xml extension.
+    - PHP/JSP/ASP inlining fixes.
+    - Perl minor fixes.
+    - AVR and 8051 Assemblers (by Igor Yudincev).
+
+
+2004-09-27
+
+  New:
+    - SVG 1.0, PostScript, htc, parser, rdf, rss, xbl (Eugene Efremov)
+    - JavaCC (Giulio Piancastelli)
+    - Common packages regrouping
+    - Basic ColdFusion support
+
+  Fixes:
+    - Lisp fixes, outline (Mykolas Juraitis)
+    - FAR manager and Common RE schemes (Eugene Efremov)
+    - Sh, def, PHP, C, Perl fixes (Eugene Efremov)
+    - PHP functions regrouping (Alexey Kupershtokh)
+    - xhtml improvements (Eugene Efremov)
+
+
+2003-09-12
+
+  New:
+    - JSP TagLib, OCaml, Sicstus Prolog
+    - ESC.xml (Eugene Efremov)
+  Fixes:
+    - SML, ada, modula2
+    - Perl/HRC RE, php, html, css (Eugene Efremov)
+    - Tex
+
+
+2003-06-02
+
+  Reorg:
+    - Rare scripts were moved into the 'auto' directory
+
+  New:
+    - ActionScript by Ralf Bokelberg
+    - Quorum Atlantis by Vladimir Fonarev
+    - MathML2.0 from draft xsd
+    - CSS2 support
+    - ANT 1.51 build.xml
+    - Ruby syntax
+
+  Fixes:
+    - VBasic/VBScript outlining by LeO Welsch
+    - HTML, PHP outline
+    - sqlj, IDL, CPP, diff
+    - VMS is renamed into DCL
+    - C/C++, css, php (Eugene Efremov)
+    - z80asm/asm80 fix

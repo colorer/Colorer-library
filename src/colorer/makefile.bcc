@@ -1,0 +1,15 @@
+
+TARGET = colorer.exe
+all: $(TARGET)
+
+shared_path=../shared/
+obj_output=objs
+
+!include $(shared_path)makefile.colorer.bcc
+
+LIBFLAGS = c0x32.obj $(objs), $(TARGET) , , import32.lib cw32.lib wininet.lib
+
+!include makefile.core
+
+clean:
+	$(RM) $(objs) colorer.map colorer.il? colorer.tds

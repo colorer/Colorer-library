@@ -1,0 +1,714 @@
+$(obj_output_slash)BaseEditor.$(obj): $(shared_path)/./colorer/editor/BaseEditor.cpp \
+  $(shared_path)common/Logging.h   \
+  $(shared_path)common/Features.h  \
+  $(shared_path)colorer/editor/BaseEditor.h $(shared_path)colorer/ParserFactory.h \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/TextParser.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/LineSource.h $(shared_path)colorer/RegionHandler.h \
+  $(shared_path)colorer/Region.h $(shared_path)colorer/HRCParser.h \
+  $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h \
+  $(shared_path)colorer/handlers/FileErrorHandler.h  \
+  $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/LineRegionsCompactSupport.h \
+  $(shared_path)colorer/editor/EditorListener.h \
+  $(shared_path)colorer/editor/PairMatch.h
+
+
+$(obj_output_slash)BitArray.$(obj): $(shared_path)/./unicode/BitArray.cpp  \
+   $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)unicode/String.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)common/MemoryOperator.h
+
+
+$(obj_output_slash)Character.$(obj): $(shared_path)/./unicode/Character.cpp \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/x_tables.h $(shared_path)unicode/x_defines.h \
+  $(shared_path)unicode/x_charcategory_names.h
+
+
+$(obj_output_slash)CharacterClass.$(obj): $(shared_path)/./unicode/CharacterClass.cpp \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)unicode/BitArray.h $(shared_path)common/MemoryOperator.h \
+  $(shared_path)unicode/UnicodeTools.h \
+  $(shared_path)unicode/x_charcategory_names.h \
+  $(shared_path)unicode/x_charcategory2.h
+
+
+$(obj_output_slash)ConsoleTools.$(obj): $(shared_path)/./colorer/viewer/ConsoleTools.cpp \
+  $(shared_path)colorer/ParserFactory.h $(shared_path)xml/xmldom.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/String.h  \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/TextParser.h $(shared_path)colorer/FileType.h \
+  $(shared_path)colorer/Scheme.h $(shared_path)colorer/LineSource.h \
+  $(shared_path)colorer/RegionHandler.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/HRCParser.h $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h \
+  $(shared_path)colorer/editor/BaseEditor.h \
+  $(shared_path)colorer/handlers/FileErrorHandler.h  \
+  $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/LineRegionsCompactSupport.h \
+  $(shared_path)colorer/editor/EditorListener.h \
+  $(shared_path)colorer/editor/PairMatch.h \
+  $(shared_path)colorer/viewer/TextLinesStore.h \
+  $(shared_path)colorer/viewer/ParsedLineWriter.h \
+  $(shared_path)colorer/viewer/TextConsoleViewer.h \
+  $(shared_path)colorer/viewer/ConsoleTools.h $(shared_path)cregexp/cregexp.h \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/MemoryOperator.h $(shared_path)common/io/FileWriter.h
+
+
+$(obj_output_slash)ConsoleToolsRunner.$(obj): $(shared_path)../colorer/ConsoleToolsRunner.cpp \
+   $(shared_path)colorer/viewer/ConsoleTools.h \
+  $(shared_path)cregexp/cregexp.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/MemoryOperator.h $(shared_path)common/io/FileWriter.h \
+  $(shared_path)common/io/StreamWriter.h $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/ParserFactory.h $(shared_path)xml/xmldom.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/TextParser.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/LineSource.h $(shared_path)colorer/RegionHandler.h \
+  $(shared_path)colorer/Region.h $(shared_path)colorer/HRCParser.h \
+  $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h
+
+
+$(obj_output_slash)DString.$(obj): $(shared_path)/./unicode/DString.cpp $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)Encodings.$(obj): $(shared_path)/./unicode/Encodings.cpp \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)unicode/x_encodings.h
+
+
+$(obj_output_slash)ErrorHandlerWriter.$(obj):  \
+ $(shared_path)/./colorer/handlers/ErrorHandlerWriter.cpp  \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/ErrorHandler.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)common/io/Writer.h
+
+
+$(obj_output_slash)Exception.$(obj): $(shared_path)/./common/Exception.cpp \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h
+
+$(obj_output_slash)FileErrorHandler.$(obj): $(shared_path)/./colorer/handlers/FileErrorHandler.cpp \
+  $(shared_path)colorer/handlers/FileErrorHandler.h  \
+  $(shared_path)common/io/StreamWriter.h $(shared_path)common/io/Writer.h \
+  $(shared_path)unicode/String.h  \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/ErrorHandler.h
+
+
+$(obj_output_slash)FileInputSource.$(obj): $(shared_path)/./common/io/FileInputSource.cpp \
+  $(shared_path)common/io/FileInputSource.h $(shared_path)common/io/InputSource.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)unicode/String.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h
+
+
+$(obj_output_slash)FileWriter.$(obj): $(shared_path)/./common/io/FileWriter.cpp  \
+  $(shared_path)common/io/FileWriter.h $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)common/io/Writer.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)HRCParserHelpers.$(obj):  \
+ $(shared_path)/./colorer/parsers/helpers/HRCParserHelpers.cpp \
+  $(shared_path)colorer/parsers/helpers/HRCParserHelpers.h \
+  $(shared_path)cregexp/cregexp.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)unicode/CharacterClass.h \
+  $(shared_path)unicode/BitArray.h $(shared_path)common/MemoryOperator.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/Scheme.h $(shared_path)colorer/FileType.h \
+   
+
+$(obj_output_slash)HRCParserImpl.$(obj): $(shared_path)/./colorer/parsers/HRCParserImpl.cpp \
+  $(shared_path)colorer/parsers/helpers/HRCParserHelpers.h \
+  $(shared_path)cregexp/cregexp.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/MemoryOperator.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/Region.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/parsers/HRCParserImpl.h \
+  $(shared_path)xml/xmldom.h $(shared_path)colorer/HRCParser.h \
+  $(shared_path)colorer/ErrorHandler.h $(shared_path)unicode/UnicodeTools.h \
+  $(shared_path)colorer/parsers/helpers/FileTypeImpl.h
+
+
+$(obj_output_slash)HTTPInputSource.$(obj): $(shared_path)/./common/io/HTTPInputSource.cpp \
+  $(shared_path)common/io/HTTPInputSource.h $(shared_path)common/io/InputSource.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)common/Vector.h
+
+
+$(obj_output_slash)InputSource.$(obj): $(shared_path)/./common/io/InputSource.cpp \
+  $(shared_path)common/io/InputSource.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)common/io/FileInputSource.h \
+  $(shared_path)common/io/JARInputSource.h \
+  $(shared_path)common/io/SharedInputSource.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/Logging.h  \
+    
+
+$(obj_output_slash)JARInputSource.$(obj): $(shared_path)/./common/io/JARInputSource.cpp \
+  $(shared_path)common/io/JARInputSource.h $(shared_path)common/io/InputSource.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)common/io/SharedInputSource.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/Logging.h  \
+  $(shared_path)common/io/MemoryFile.h \
+  $(unzipdir)contrib/minizip/unzip.h $(unzipdir)zlib.h \
+  $(unzipdir)zconf.h $(unzipdir)contrib/minizip/ioapi.h
+
+
+$(obj_output_slash)LineRegionsCompactSupport.$(obj):  \
+ $(shared_path)/./colorer/handlers/LineRegionsCompactSupport.cpp \
+  $(shared_path)colorer/handlers/LineRegionsCompactSupport.h \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)colorer/RegionHandler.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/Scheme.h $(shared_path)colorer/FileType.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextRegion.h
+
+
+$(obj_output_slash)LineRegionsSupport.$(obj):  \
+ $(shared_path)/./colorer/handlers/LineRegionsSupport.cpp \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)colorer/RegionHandler.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/Scheme.h $(shared_path)colorer/FileType.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextRegion.h $(shared_path)common/Logging.h \
+    
+
+$(obj_output_slash)Logging.$(obj): $(shared_path)/./common/Logging.cpp  \
+   $(shared_path)common/Logging.h \
+   $(shared_path)common/Features.h \
+   $(shared_path)unicode/String.h  \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)MemoryChunks.$(obj): $(shared_path)/./common/MemoryChunks.cpp \
+  $(shared_path)common/Vector.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+   
+
+$(obj_output_slash)Outliner.$(obj): $(shared_path)/./colorer/editor/Outliner.cpp \
+  $(shared_path)colorer/editor/Outliner.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)colorer/LineSource.h $(shared_path)colorer/RegionHandler.h \
+  $(shared_path)colorer/Region.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/editor/OutlineItem.h \
+  $(shared_path)colorer/editor/BaseEditor.h $(shared_path)colorer/ParserFactory.h \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/TextParser.h \
+  $(shared_path)colorer/HRCParser.h $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h \
+  $(shared_path)colorer/handlers/FileErrorHandler.h  \
+   $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/LineRegionsCompactSupport.h \
+  $(shared_path)colorer/editor/EditorListener.h \
+  $(shared_path)colorer/editor/PairMatch.h
+
+
+$(obj_output_slash)ParserFactory.$(obj): $(shared_path)/./colorer/ParserFactory.cpp \
+  $(shared_path)common/Logging.h $(shared_path)common/Features.h \
+   $(shared_path)colorer/ParserFactory.h \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/TextParser.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/LineSource.h $(shared_path)colorer/RegionHandler.h \
+  $(shared_path)colorer/Region.h $(shared_path)colorer/HRCParser.h \
+  $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h \
+  $(shared_path)colorer/viewer/TextLinesStore.h \
+  $(shared_path)colorer/handlers/FileErrorHandler.h \
+  $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/parsers/HRCParserImpl.h $(shared_path)cregexp/cregexp.h \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/MemoryOperator.h $(shared_path)unicode/UnicodeTools.h \
+  $(shared_path)colorer/parsers/helpers/HRCParserHelpers.h \
+  $(shared_path)colorer/parsers/helpers/FileTypeImpl.h \
+  $(shared_path)colorer/parsers/TextParserImpl.h \
+  $(shared_path)colorer/parsers/helpers/TextParserHelpers.h
+
+
+$(obj_output_slash)RegionMapperImpl.$(obj): $(shared_path)/./colorer/handlers/RegionMapperImpl.cpp \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/io/Writer.h \
+  $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/handlers/RegionMapper.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/handlers/RegionDefine.h
+
+
+$(obj_output_slash)SString.$(obj): $(shared_path)/./unicode/SString.cpp  \
+  $(shared_path)unicode/String.h  \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)SharedInputSource.$(obj): $(shared_path)/./common/io/SharedInputSource.cpp \
+  $(shared_path)common/io/SharedInputSource.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/Logging.h  \
+  $(shared_path)common/io/InputSource.h
+
+
+$(obj_output_slash)StreamWriter.$(obj): $(shared_path)/./common/io/StreamWriter.cpp \
+  $(shared_path)common/io/StreamWriter.h $(shared_path)common/io/Writer.h \
+  $(shared_path)unicode/String.h  \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)String.$(obj): $(shared_path)/./unicode/String.cpp  \
+   $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)StringBuffer.$(obj): $(shared_path)/./unicode/StringBuffer.cpp \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)unicode/String.h \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h
+
+
+$(obj_output_slash)StyledHRDMapper.$(obj): $(shared_path)/./colorer/handlers/StyledHRDMapper.cpp \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/Writer.h $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)unicode/UnicodeTools.h $(shared_path)xml/xmldom.h
+
+
+$(obj_output_slash)TextConsoleViewer.$(obj): $(shared_path)/./colorer/viewer/TextConsoleViewer.cpp \
+  $(shared_path)colorer/viewer/TextConsoleViewer.h \
+  $(shared_path)colorer/editor/BaseEditor.h $(shared_path)colorer/ParserFactory.h \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/TextParser.h $(shared_path)colorer/FileType.h \
+  $(shared_path)colorer/Scheme.h $(shared_path)colorer/LineSource.h \
+  $(shared_path)colorer/RegionHandler.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/HRCParser.h $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/handlers/DefaultErrorHandler.h \
+  $(shared_path)colorer/handlers/StyledHRDMapper.h \
+  $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/StyledRegion.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h \
+  $(shared_path)colorer/handlers/TextRegion.h \
+  $(shared_path)colorer/ParserFactoryException.h \
+  $(shared_path)colorer/handlers/FileErrorHandler.h  \
+   $(shared_path)common/io/StreamWriter.h \
+  $(shared_path)colorer/handlers/ErrorHandlerWriter.h \
+  $(shared_path)colorer/handlers/LineRegionsSupport.h \
+  $(shared_path)colorer/handlers/LineRegion.h \
+  $(shared_path)colorer/handlers/LineRegionsCompactSupport.h \
+  $(shared_path)colorer/editor/EditorListener.h \
+  $(shared_path)colorer/editor/PairMatch.h \
+  $(shared_path)colorer/viewer/TextLinesStore.h
+
+
+$(obj_output_slash)TextHRDMapper.$(obj): $(shared_path)/./colorer/handlers/TextHRDMapper.cpp \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h \
+  $(shared_path)colorer/handlers/TextHRDMapper.h $(shared_path)common/io/Writer.h \
+  $(shared_path)colorer/handlers/RegionMapperImpl.h \
+  $(shared_path)colorer/handlers/RegionMapper.h $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/handlers/RegionDefine.h \
+  $(shared_path)colorer/handlers/TextRegion.h
+
+
+$(obj_output_slash)TextLinesStore.$(obj): $(shared_path)/./colorer/viewer/TextLinesStore.cpp \
+  $(shared_path)colorer/viewer/TextLinesStore.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/io/InputSource.h $(shared_path)colorer/LineSource.h \
+   
+
+$(obj_output_slash)TextParserHelpers.$(obj):  \
+ $(shared_path)/./colorer/parsers/helpers/TextParserHelpers.cpp \
+  $(shared_path)colorer/parsers/helpers/TextParserHelpers.h \
+  $(shared_path)colorer/parsers/HRCParserImpl.h $(shared_path)xml/xmldom.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Exception.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/Hashtable.h $(shared_path)common/HashtableCore.h \
+   $(shared_path)common/io/InputSource.h \
+  $(shared_path)cregexp/cregexp.h $(shared_path)unicode/CharacterClass.h \
+  $(shared_path)unicode/BitArray.h $(shared_path)common/MemoryOperator.h \
+  $(shared_path)colorer/HRCParser.h $(shared_path)colorer/ErrorHandler.h \
+  $(shared_path)colorer/FileType.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/Region.h $(shared_path)unicode/UnicodeTools.h \
+  $(shared_path)colorer/parsers/helpers/HRCParserHelpers.h \
+  $(shared_path)colorer/parsers/helpers/FileTypeImpl.h \
+  $(shared_path)common/Logging.h  \
+    
+
+$(obj_output_slash)TextParserImpl.$(obj): $(shared_path)/./colorer/parsers/TextParserImpl.cpp \
+  $(shared_path)colorer/parsers/TextParserImpl.h \
+  $(shared_path)colorer/TextParser.h $(shared_path)colorer/FileType.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)colorer/Scheme.h \
+  $(shared_path)colorer/LineSource.h $(shared_path)colorer/RegionHandler.h \
+  $(shared_path)colorer/Region.h \
+  $(shared_path)colorer/parsers/helpers/TextParserHelpers.h \
+  $(shared_path)colorer/parsers/HRCParserImpl.h $(shared_path)xml/xmldom.h \
+  $(shared_path)common/Vector.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)cregexp/cregexp.h \
+  $(shared_path)unicode/CharacterClass.h $(shared_path)unicode/BitArray.h \
+  $(shared_path)common/MemoryOperator.h $(shared_path)colorer/HRCParser.h \
+  $(shared_path)colorer/ErrorHandler.h $(shared_path)unicode/UnicodeTools.h \
+  $(shared_path)colorer/parsers/helpers/HRCParserHelpers.h \
+  $(shared_path)colorer/parsers/helpers/FileTypeImpl.h \
+  $(shared_path)common/Logging.h  \
+    
+
+$(obj_output_slash)UnicodeTools.$(obj): $(shared_path)/./unicode/UnicodeTools.cpp  \
+  $(shared_path)unicode/UnicodeTools.h $(shared_path)unicode/String.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/Character.h \
+  $(shared_path)common/Common.h $(shared_path)common/Features.h \
+  $(shared_path)common/MemoryChunks.h $(shared_path)unicode/Encodings.h \
+  $(shared_path)unicode/x_charcategory.h $(shared_path)unicode/DString.h \
+  $(shared_path)unicode/SString.h $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)Writer.$(obj): $(shared_path)/./common/io/Writer.cpp $(shared_path)common/io/Writer.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h
+
+
+$(obj_output_slash)adler32.$(obj): $(shared_path)/../zlib/adler32.c $(shared_path)/../zlib/zlib.h \
+  $(shared_path)/../zlib/zconf.h
+
+
+$(obj_output_slash)crc32.$(obj): $(shared_path)/../zlib/crc32.c $(shared_path)/../zlib/zlib.h \
+  $(shared_path)/../zlib/zconf.h
+
+
+$(obj_output_slash)cregexp.$(obj): $(shared_path)/./cregexp/cregexp.cpp $(shared_path)cregexp/cregexp.h \
+  $(shared_path)unicode/String.h   \
+   $(shared_path)common/Exception.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)unicode/CharacterClass.h \
+  $(shared_path)unicode/BitArray.h $(shared_path)common/MemoryOperator.h \
+  $(shared_path)unicode/UnicodeTools.h
+
+
+$(obj_output_slash)inffast.$(obj): $(shared_path)/../zlib/inffast.c $(shared_path)/../zlib/zutil.h \
+  $(shared_path)/../zlib/zlib.h $(shared_path)/../zlib/zconf.h \
+  $(shared_path)/../zlib/inftrees.h \
+  $(shared_path)/../zlib/inffast.h
+
+
+$(obj_output_slash)inflate.$(obj): $(shared_path)/../zlib/inflate.c $(shared_path)/../zlib/zutil.h \
+  $(shared_path)/../zlib/zlib.h $(shared_path)/../zlib/zconf.h
+
+
+$(obj_output_slash)inftrees.$(obj): $(shared_path)/../zlib/inftrees.c $(shared_path)/../zlib/zutil.h \
+  $(shared_path)/../zlib/zlib.h $(shared_path)/../zlib/zconf.h \
+  $(shared_path)/../zlib/inftrees.h $(shared_path)/../zlib/inffixed.h
+
+
+$(obj_output_slash)ioapi.$(obj): $(shared_path)/../zlib/contrib/minizip/ioapi.c  \
+   $(unzipdir)zlib.h \
+  $(unzipdir)zconf.h $(shared_path)/../zlib/contrib/minizip/ioapi.h
+
+
+$(obj_output_slash)malloc.$(obj): $(shared_path)/./misc/malloc.c \
+    
+
+$(obj_output_slash)uncompr.$(obj): $(shared_path)/../zlib/uncompr.c $(shared_path)/../zlib/zlib.h \
+  $(shared_path)/../zlib/zconf.h
+
+
+$(obj_output_slash)unzip.$(obj): $(shared_path)/../zlib/contrib/minizip/unzip.c  \
+   $(unzipdir)zlib.h \
+  $(unzipdir)zconf.h $(shared_path)/../zlib/contrib/minizip/unzip.h \
+  $(shared_path)/../zlib/contrib/minizip/ioapi.h  \
+   
+
+$(obj_output_slash)xmldom.$(obj): $(shared_path)/./xml/xmldom.cpp  \
+  $(shared_path)xml/xmldom.h $(shared_path)common/Vector.h \
+  $(shared_path)common/Exception.h $(shared_path)unicode/String.h \
+  $(shared_path)unicode/Character.h $(shared_path)common/Common.h \
+  $(shared_path)common/Features.h $(shared_path)common/MemoryChunks.h \
+  $(shared_path)unicode/Encodings.h $(shared_path)unicode/x_charcategory.h \
+  $(shared_path)unicode/DString.h $(shared_path)unicode/SString.h \
+  $(shared_path)unicode/StringBuffer.h $(shared_path)common/Hashtable.h \
+  $(shared_path)common/HashtableCore.h  \
+  $(shared_path)common/io/InputSource.h $(shared_path)unicode/UnicodeTools.h
+
+
+$(obj_output_slash)zutil.$(obj): $(shared_path)/../zlib/zutil.c $(shared_path)/../zlib/zutil.h \
+  $(shared_path)/../zlib/zlib.h $(shared_path)/../zlib/zconf.h \
+    
+

@@ -1,0 +1,30 @@
+dnl Process this file with autoconf to produce a configure script.
+dnl
+dnl Freddy's configure.in
+dnl Author: Ferenc Moricz, Nicolas Huet
+
+AC_INIT(src/shared)
+
+dnl Checks for programs.
+AC_PROG_CPP
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -ldl:
+AC_CHECK_LIB(dl, main)
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, main)
+dnl Replace `main' with a function in -lc:
+AC_CHECK_LIB(c, main)
+
+dnl Checks for header files.
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+
+dnl Checks for library functions.
+
+AC_OUTPUT( Makefile )                                                                                                 
+

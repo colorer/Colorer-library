@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1D34D8DB-0A9A-46B8-83BD-07D38B989EF2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../shared;../zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;COLORER_FEATURE_USE_DL_MALLOC=FALSE;COLORER_FEATURE_USE_CHUNK_ALLOC=FALSE;USE_DL_PREFIX;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)colorer.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)colorer.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>../shared;../zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)colorer.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\shared\unicode\BitArray.cpp" />
+    <ClCompile Include="..\shared\unicode\Character.cpp" />
+    <ClCompile Include="..\shared\unicode\CharacterClass.cpp" />
+    <ClCompile Include="..\shared\unicode\DString.cpp" />
+    <ClCompile Include="..\shared\unicode\Encodings.cpp" />
+    <ClCompile Include="..\shared\unicode\SString.cpp" />
+    <ClCompile Include="..\shared\unicode\String.cpp" />
+    <ClCompile Include="..\shared\unicode\StringBuffer.cpp" />
+    <ClCompile Include="..\shared\unicode\UnicodeTools.cpp" />
+    <ClCompile Include="..\shared\xml\xmldom.cpp" />
+    <ClCompile Include="..\shared\cregexp\cregexp.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\ErrorHandlerWriter.cpp" />
+    <ClCompile Include="..\shared\common\Exception.cpp" />
+    <ClCompile Include="..\shared\common\io\FileInputSource.cpp" />
+    <ClCompile Include="..\shared\common\io\FileWriter.cpp" />
+    <ClCompile Include="..\shared\common\io\HTTPInputSource.cpp" />
+    <ClCompile Include="..\shared\common\io\InputSource.cpp" />
+    <ClCompile Include="..\shared\common\io\JARInputSource.cpp" />
+    <ClCompile Include="..\shared\common\Logging.cpp" />
+    <ClCompile Include="..\shared\misc\malloc.c" />
+    <ClCompile Include="..\shared\common\MemoryChunks.cpp" />
+    <ClCompile Include="..\shared\common\io\SharedInputSource.cpp" />
+    <ClCompile Include="..\shared\common\io\StreamWriter.cpp" />
+    <ClCompile Include="..\shared\common\io\Writer.cpp" />
+    <ClCompile Include="..\zlib\adler32.c" />
+    <ClCompile Include="..\zlib\crc32.c" />
+    <ClCompile Include="..\zlib\inffast.c" />
+    <ClCompile Include="..\zlib\inflate.c" />
+    <ClCompile Include="..\zlib\inftrees.c" />
+    <ClCompile Include="..\zlib\contrib\minizip\ioapi.c" />
+    <ClCompile Include="..\zlib\uncompr.c" />
+    <ClCompile Include="..\zlib\contrib\minizip\unzip.c" />
+    <ClCompile Include="..\zlib\zutil.c" />
+    <ClCompile Include="..\shared\colorer\ParserFactory.cpp" />
+    <ClCompile Include="..\shared\colorer\viewer\ConsoleTools.cpp" />
+    <ClCompile Include="ConsoleToolsRunner.cpp" />
+    <ClCompile Include="..\shared\colorer\viewer\TextConsoleViewer.cpp" />
+    <ClCompile Include="..\shared\colorer\viewer\TextLinesStore.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\FileErrorHandler.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\LineRegionsCompactSupport.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\LineRegionsSupport.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\RegionMapperImpl.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\StyledHRDMapper.cpp" />
+    <ClCompile Include="..\shared\colorer\handlers\TextHRDMapper.cpp" />
+    <ClCompile Include="..\shared\colorer\editor\BaseEditor.cpp" />
+    <ClCompile Include="..\shared\colorer\editor\Outliner.cpp" />
+    <ClCompile Include="..\shared\colorer\parsers\helpers\HRCParserHelpers.cpp" />
+    <ClCompile Include="..\shared\colorer\parsers\HRCParserImpl.cpp" />
+    <ClCompile Include="..\shared\colorer\parsers\helpers\TextParserHelpers.cpp" />
+    <ClCompile Include="..\shared\colorer\parsers\TextParserImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\shared\colorer\_template.h" />
+    <ClInclude Include="..\shared\colorer\editor\BaseEditor.h" />
+    <ClInclude Include="..\shared\unicode\BitArray.h" />
+    <ClInclude Include="..\shared\unicode\Character.h" />
+    <ClInclude Include="..\shared\unicode\CharacterClass.h" />
+    <ClInclude Include="..\shared\common\Common.h" />
+    <ClInclude Include="..\shared\colorer\viewer\ConsoleTools.h" />
+    <ClInclude Include="..\shared\cregexp\cregexp.h" />
+    <ClInclude Include="..\shared\colorer\handlers\DefaultErrorHandler.h" />
+    <ClInclude Include="..\shared\unicode\DString.h" />
+    <ClInclude Include="..\shared\unicode\Encodings.h" />
+    <ClInclude Include="..\shared\colorer\ErrorHandler.h" />
+    <ClInclude Include="..\shared\colorer\handlers\ErrorHandlerWriter.h" />
+    <ClInclude Include="..\shared\common\Exception.h" />
+    <ClInclude Include="..\shared\farplugin\farcolor.hpp" />
+    <ClInclude Include="..\shared\farplugin\farkeys.hpp" />
+    <ClInclude Include="..\shared\common\Features.h" />
+    <ClInclude Include="..\shared\colorer\handlers\FileErrorHandler.h" />
+    <ClInclude Include="..\shared\common\io\FileInputSource.h" />
+    <ClInclude Include="..\shared\colorer\FileType.h" />
+    <ClInclude Include="..\shared\colorer\parsers\helpers\FileTypeImpl.h" />
+    <ClInclude Include="..\shared\common\io\FileWriter.h" />
+    <ClInclude Include="..\shared\farplugin\fmt.hpp" />
+    <ClInclude Include="..\shared\common\Hashtable.h" />
+    <ClInclude Include="..\shared\common\HashtableCore.h" />
+    <ClInclude Include="..\shared\colorer\HRCParser.h" />
+    <ClInclude Include="..\shared\colorer\parsers\helpers\HRCParserHelpers.h" />
+    <ClInclude Include="..\shared\colorer\parsers\HRCParserImpl.h" />
+    <ClInclude Include="..\shared\common\io\HTTPInputSource.h" />
+    <ClInclude Include="..\zlib\infblock.h" />
+    <ClInclude Include="..\zlib\infcodes.h" />
+    <ClInclude Include="..\zlib\inffast.h" />
+    <ClInclude Include="..\zlib\inffixed.h" />
+    <ClInclude Include="..\zlib\inftrees.h" />
+    <ClInclude Include="..\zlib\infutil.h" />
+    <ClInclude Include="..\shared\common\io\InputSource.h" />
+    <ClInclude Include="..\zlib\contrib\minizip\ioapi.h" />
+    <ClInclude Include="..\shared\common\io\JARInputSource.h" />
+    <ClInclude Include="..\shared\colorer\handlers\LineRegion.h" />
+    <ClInclude Include="..\shared\colorer\handlers\LineRegionsCompactSupport.h" />
+    <ClInclude Include="..\shared\colorer\handlers\LineRegionsSupport.h" />
+    <ClInclude Include="..\shared\colorer\LineSource.h" />
+    <ClInclude Include="..\shared\common\Logging.h" />
+    <ClInclude Include="..\shared\common\MemoryChunks.h" />
+    <ClInclude Include="..\shared\common\io\MemoryFile.h" />
+    <ClInclude Include="..\shared\common\MemoryOperator.h" />
+    <ClInclude Include="..\shared\colorer\editor\OutlineItem.h" />
+    <ClInclude Include="..\shared\colorer\editor\Outliner.h" />
+    <ClInclude Include="..\shared\colorer\editor\PairMatch.h" />
+    <ClInclude Include="..\shared\colorer\viewer\ParsedLineWriter.h" />
+    <ClInclude Include="..\shared\colorer\ParserFactory.h" />
+    <ClInclude Include="..\shared\colorer\ParserFactoryException.h" />
+    <ClInclude Include="..\shared\farplugin\plugin.hpp" />
+    <ClInclude Include="..\shared\colorer\Region.h" />
+    <ClInclude Include="..\shared\colorer\handlers\RegionDefine.h" />
+    <ClInclude Include="..\shared\colorer\RegionHandler.h" />
+    <ClInclude Include="..\shared\colorer\handlers\RegionMapper.h" />
+    <ClInclude Include="..\shared\colorer\handlers\RegionMapperImpl.h" />
+    <ClInclude Include="..\shared\colorer\Scheme.h" />
+    <ClInclude Include="..\shared\common\io\SharedInputSource.h" />
+    <ClInclude Include="..\shared\unicode\SString.h" />
+    <ClInclude Include="..\shared\common\io\StreamWriter.h" />
+    <ClInclude Include="..\shared\unicode\String.h" />
+    <ClInclude Include="..\shared\unicode\StringBuffer.h" />
+    <ClInclude Include="..\shared\colorer\handlers\StyledHRDMapper.h" />
+    <ClInclude Include="..\shared\colorer\handlers\StyledRegion.h" />
+    <ClInclude Include="..\shared\colorer\viewer\TextConsoleViewer.h" />
+    <ClInclude Include="..\shared\colorer\handlers\TextHRDMapper.h" />
+    <ClInclude Include="..\shared\colorer\viewer\TextLinesStore.h" />
+    <ClInclude Include="..\shared\colorer\TextParser.h" />
+    <ClInclude Include="..\shared\colorer\parsers\helpers\TextParserHelpers.h" />
+    <ClInclude Include="..\shared\colorer\parsers\TextParserImpl.h" />
+    <ClInclude Include="..\shared\colorer\handlers\TextRegion.h" />
+    <ClInclude Include="..\shared\unicode\UnicodeTools.h" />
+    <ClInclude Include="..\zlib\contrib\minizip\unzip.h" />
+    <ClInclude Include="..\shared\common\Vector.h" />
+    <ClInclude Include="..\shared\common\io\Writer.h" />
+    <ClInclude Include="..\shared\unicode\x_charcategory.h" />
+    <ClInclude Include="..\shared\unicode\x_charcategory2.h" />
+    <ClInclude Include="..\shared\unicode\x_charcategory_names.h" />
+    <ClInclude Include="..\shared\unicode\x_defines.h" />
+    <ClInclude Include="..\shared\unicode\x_encodings.h" />
+    <ClInclude Include="..\shared\unicode\x_tables.h" />
+    <ClInclude Include="..\shared\xml\xmldom.h" />
+    <ClInclude Include="..\zlib\zconf.h" />
+    <ClInclude Include="..\zlib\contrib\minizip\zconf.h" />
+    <ClInclude Include="..\zlib\zlib.h" />
+    <ClInclude Include="..\zlib\zutil.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

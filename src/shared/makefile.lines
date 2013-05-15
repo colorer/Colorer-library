@@ -1,0 +1,187 @@
+$(obj_output_slash)ParserFactory.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/ParserFactory.cpp
+
+$(obj_output_slash)BaseEditor.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/editor/BaseEditor.cpp
+
+$(obj_output_slash)Outliner.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/editor/Outliner.cpp
+
+$(obj_output_slash)ErrorHandlerWriter.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/ErrorHandlerWriter.cpp
+
+$(obj_output_slash)FileErrorHandler.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/FileErrorHandler.cpp
+
+$(obj_output_slash)LineRegionsCompactSupport.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/LineRegionsCompactSupport.cpp
+
+$(obj_output_slash)LineRegionsSupport.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/LineRegionsSupport.cpp
+
+$(obj_output_slash)RegionMapperImpl.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/RegionMapperImpl.cpp
+
+$(obj_output_slash)StyledHRDMapper.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/StyledHRDMapper.cpp
+
+$(obj_output_slash)TextHRDMapper.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/handlers/TextHRDMapper.cpp
+
+$(obj_output_slash)HRCParserImpl.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/parsers/HRCParserImpl.cpp
+
+$(obj_output_slash)TextParserImpl.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/parsers/TextParserImpl.cpp
+
+$(obj_output_slash)HRCParserHelpers.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/parsers/helpers/HRCParserHelpers.cpp
+
+$(obj_output_slash)TextParserHelpers.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/parsers/helpers/TextParserHelpers.cpp
+
+$(obj_output_slash)ConsoleTools.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/viewer/ConsoleTools.cpp
+
+$(obj_output_slash)TextConsoleViewer.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/viewer/TextConsoleViewer.cpp
+
+$(obj_output_slash)TextLinesStore.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer/viewer/TextLinesStore.cpp
+
+$(obj_output_slash)colorer-doc.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./colorer-doc.cpp
+
+$(obj_output_slash)Exception.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/Exception.cpp
+
+$(obj_output_slash)Logging.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/Logging.cpp
+
+$(obj_output_slash)MemoryChunks.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/MemoryChunks.cpp
+
+$(obj_output_slash)FileInputSource.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/FileInputSource.cpp
+
+$(obj_output_slash)FileWriter.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/FileWriter.cpp
+
+$(obj_output_slash)HTTPInputSource.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/HTTPInputSource.cpp
+
+$(obj_output_slash)InputSource.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/InputSource.cpp
+
+$(obj_output_slash)JARInputSource.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/JARInputSource.cpp
+
+$(obj_output_slash)SharedInputSource.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/SharedInputSource.cpp
+
+$(obj_output_slash)StreamWriter.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/StreamWriter.cpp
+
+$(obj_output_slash)Writer.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./common/io/Writer.cpp
+
+$(obj_output_slash)cregexp.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./cregexp/cregexp.cpp
+
+$(obj_output_slash)malloc.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./misc/malloc.c
+
+$(obj_output_slash)BitArray.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/BitArray.cpp
+
+$(obj_output_slash)Character.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/Character.cpp
+
+$(obj_output_slash)CharacterClass.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/CharacterClass.cpp
+
+$(obj_output_slash)DString.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/DString.cpp
+
+$(obj_output_slash)Encodings.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/Encodings.cpp
+
+$(obj_output_slash)SString.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/SString.cpp
+
+$(obj_output_slash)String.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/String.cpp
+
+$(obj_output_slash)StringBuffer.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/StringBuffer.cpp
+
+$(obj_output_slash)UnicodeTools.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./unicode/UnicodeTools.cpp
+
+$(obj_output_slash)xmldom.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/./xml/xmldom.cpp
+
+
+
+
+
+$(obj_output_slash)adler32.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/adler32.c
+
+$(obj_output_slash)compress.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/compress.c
+
+$(obj_output_slash)ioapi.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/ioapi.c
+
+$(obj_output_slash)iowin32.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/iowin32.c
+
+$(obj_output_slash)miniunz.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/miniunz.c
+
+$(obj_output_slash)minizip.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/minizip.c
+
+$(obj_output_slash)unzip.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/unzip.c
+
+$(obj_output_slash)zip.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/contrib/minizip/zip.c
+
+$(obj_output_slash)crc32.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/crc32.c
+
+$(obj_output_slash)deflate.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/deflate.c
+
+$(obj_output_slash)example.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/example.c
+
+$(obj_output_slash)gzio.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/gzio.c
+
+$(obj_output_slash)inffast.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/inffast.c
+
+$(obj_output_slash)inflate.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/inflate.c
+
+$(obj_output_slash)inftrees.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/inftrees.c
+
+$(obj_output_slash)maketree.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/maketree.c
+
+$(obj_output_slash)minigzip.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/minigzip.c
+
+$(obj_output_slash)trees.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/trees.c
+
+$(obj_output_slash)uncompr.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/uncompr.c
+
+$(obj_output_slash)zutil.$(obj):
+	$(CPP) $(CPPFLAGS) $(shared_path)/../zlib/zutil.c
+

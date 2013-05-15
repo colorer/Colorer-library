@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding='Windows-1251'?>
+<!DOCTYPE hrc PUBLIC "-//Cail Lomecb//DTD Colorer HRC take5//EN"
+  "http://colorer.sf.net/2003/hrc.dtd">
+<hrc version="take5" xmlns="http://colorer.sf.net/2003/hrc"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<annotation><documentation>
+	scheme 'makekill:death' destroy colorer
+</documentation></annotation>
+
+<prototype name="makekill" group="test">
+	<filename>/makekill\.test$/i</filename>
+</prototype>
+
+<type name="makekill">
+<region name='keyword' parent='def:Keyword'/>
+
+<!--
+<scheme name='death'>
+	<block scheme='def:empty'> 
+		<start match='/~(IF\w*)\b/i' region0='keyword' region1='def:PairStart'/>
+		<end match='/$/'/>
+	</block>
+	<regexp match='/!ELSE\b(\s*IF)?!/i' region0='keyword'/>
+</scheme>
+-->
+
+<scheme name='live'>
+	<block scheme='death'>
+		<start match='/\MIF\w*\b/i'/>
+		<end match='/(!ENDIF)\b|(!ELSE)\M\s*IF\w*\b/i' region0='keyword' region1='def:PairEnd' region2='def:PairEnd'/>
+	</block>
+</scheme>
+
+<scheme name='makekill'>
+	<block scheme='live'>
+		<start match='/!\MIF\w*\b/i' region0='keyword'/>
+		<end match='/!ENDIF\m/i'/>
+	</block>
+</scheme>
+
+</type>
+</hrc>

@@ -1,0 +1,20 @@
+#
+# MacOS Darwin
+#
+
+
+TARGET=colorer
+all: $(TARGET)
+
+shared_path=../shared/
+obj_output=objs
+
+include ../shared/makefile.colorer.gcc
+
+LIBINC = -lstdc++
+LIBFLAGS = $(objs) $(FLAGS) -o $(TARGET) $(LIBINC)
+
+include makefile.core
+
+clean:
+	$(RM) $(objs)

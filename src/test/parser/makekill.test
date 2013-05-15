@@ -1,0 +1,9 @@
+
+!ifdef Batch
+	foo
+!elseif NO_Batch
+	bar
+!else
+	baz
+!endif
+

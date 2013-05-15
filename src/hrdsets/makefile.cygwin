@@ -1,0 +1,32 @@
+##########################################################################
+# cygwin gcc makefile
+
+CPP  = gcc
+LINK = @gcc
+RM   = @rm -f
+OBJ  = o
+
+all: hrdsets.exe
+FLAGS = -s -O3 -march=i586 -mpentium -fno-rtti -fno-exceptions -mno-cygwin
+CPPFLAGS = -Wp,-I../shared/,-w -c $(FLAGS)
+!include ../shared/makefile.colorer
+
+OBJS = hrdsets.$(OBJ) hrdsets_res.$(OBJ) $(COREOBJS)
+LIBINC = -lkernel32 -lgdi32 -lcomdlg32 -luser32 -lstdc++
+LIBFLAGS = $(OBJS) $(FLAGS) -o hrdsets.exe -Wl,--subsystem,windows $(LIBINC)
+
+hrdsets.exe: $(OBJS)
+	$(LINK) $(LIBFLAGS)
+
+hrdsets_res.o: hrdsets.rc
+	windres hrdsets.rc hrdsets_res.o
+
+hrdsets.$(OBJ): hrdsets.cpp $(CORECODE)
+	$(CPP) $(CPPFLAGS) hrdsets.cpp
+
+install.exe:
+	$(CPP) $(CPPFLAGS) install.cpp
+	$(LINK) $(FLAGS) -o install.exe install.$(OBJ) -ladvapi32
+
+clear:
+	$(RM) $(OBJS)

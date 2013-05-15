@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//Cail Lomecb//DTD Colorer DOCLINKS take5//EN"
+  "http://colorer.sf.net/2003/doclinks.dtd">
+
+<doclinks xmlns="http://colorer.sf.net/2003/doclinks"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://colorer.sf.net/2003/doclinks
+                              http://colorer.sf.net/2003/doclinks.xsd">
+
+  <links url='http://www.w3.org/TR/xmlschema-1'>
+    <link token="element" url="#element-element"/>
+    <link token="complexType" url="#element-complexType"/>
+    <link token="simpleType" url="#element-simpleType"/>
+    <link token="schema" url="#element-schema"/>
+    <link token="group" url="#element-group"/>
+    <link token="attribute" url="#element-attribute"/>
+    <link token="attributeGroup" url="#element-attributeGroup"/>
+  </links>
+
+</doclinks>

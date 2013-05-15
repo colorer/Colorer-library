@@ -1,0 +1,9 @@
+
+  AddType text/x-lang .cpp .c .h .hpp .pas .asm .java .pl .pm .cgi
+  AddIconByType (CODE,/icons/c.gif) text/x-lang
+  Action text/x-lang /cgi-bin/colorer_cgi.bat
+#  Action text/x-lang /cgi-bin/colorer_cgi.pl
+#  Action text/x-lang /cgi-bin/colorer_cgi.sh
+
+# need .bat as cgi handler! check it!
+  AddHandler cgi-script .cgi .bat

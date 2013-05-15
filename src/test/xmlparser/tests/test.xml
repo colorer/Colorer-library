@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="hrc.xsl"?>
+<!-- asdf -->
+
+<!DOCTYPE colorer PUBLIC "-//Cail Lomecb//DTD Colorer CATALOG take5//EN"
+  "http://colorer.sf.net/2003/catalog.dtd"
+[
+<!-- asdf -->
+<!ENTITY etest PUBLIC "-//Cail Lomecb//DTD Colorer CATALOG take5//EN"
+  'testinc.xml'>
+<!-- asdf -->
+<!ENTITY test "content!content">
+<!-- asdf -->
+]
+>
+
+<aa a="b&amp;-&lt;-&gt;---&#x30;--&test;-"  >
+
+<xx>           <yy>
+
+        </yy>
+</xx>
+
+<!--test1-->
+&amp;&lt;&gt;&lt;
+&quot;&apos;&apos;
+
+<bcd>
+<?xxxxx type="text/xsl" href="hrc.xsl"?>
+a<![CDATA[<xxxxx>]]>a
+</bcd>
+
+<!--test2-->
+-&etest;-
+
+&test;&test;
+
+&#49;&test;&#50;&#51;
+&#x30;&#x31;&#x32;
+
+</aa>

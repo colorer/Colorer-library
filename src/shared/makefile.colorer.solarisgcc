@@ -1,0 +1,19 @@
+######################
+# solaris gcc makefile
+
+CPP     = gcc
+LINK    = g++
+RM      = @rm -f
+obj     = o
+DLLTOOL = @dlltool
+MKDIR   = mkdir
+
+obj_output_slash = $(obj_output)/
+
+FLAGS = -s $(CYGWIN) -DUSE_DL_PREFIX
+CPPFLAGS = -O3 -fPIC -Wp,-I$(shared_path),-I$(unzipdir),-w -o $*.$(obj)  -c $(FLAGS) $(CPPFLAGS_CUSTOM) -D__unix__ -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE
+
+include $(shared_path)makefile.zlib
+include $(shared_path)_dependencies.dep
+include $(shared_path)makefile.objs
+include $(shared_path)makefile.lines

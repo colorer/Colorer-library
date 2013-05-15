@@ -1,0 +1,17 @@
+##################################
+# borland bcc32 5.5 makefile
+
+CPP  = @bcc32
+LINK = @ilink32
+RM   = @del
+obj  = obj
+
+obj_output_slash = $(obj_output)\\
+
+CPPFLAGS = -I$(shared_path) -I$(unzipdir) -n$(obj_output) -c -O2 -N- -RT- -w-rvl -w-pia -w-par -w-aus -w-inl -w-hid $(CPPFLAGS_CUSTOM)
+
+
+!include $(shared_path)makefile.zlib
+!include $(shared_path)_dependencies.dep
+!include $(shared_path)makefile.objs
+!include $(shared_path)makefile.lines

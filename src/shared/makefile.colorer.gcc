@@ -1,0 +1,21 @@
+######################
+# gcc makefile
+
+CPP     = gcc
+LINK    = g++
+RM      = @rm -f
+obj     = o
+DLLTOOL = @dlltool
+MKDIR   = mkdir
+
+obj_output_slash = $(obj_output)/
+
+FLAGS = $(CYGWIN) -DUSE_DL_PREFIX -fPIC
+FLAGS += -s
+#FLAGS += -ggdb
+CPPFLAGS = -O3 -Wp,-I$(shared_path),-I$(unzipdir),-w -o $*.$(obj) $(ARCHFLAGS) -c $(FLAGS) $(CPPFLAGS_CUSTOM) -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE $(OPTS)
+
+include $(shared_path)makefile.zlib
+include $(shared_path)_dependencies.dep
+include $(shared_path)makefile.objs
+include $(shared_path)makefile.lines
