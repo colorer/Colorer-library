@@ -502,10 +502,10 @@ void HRCParserImpl::addSchemeNodes(SchemeImpl *scheme, Node *elem)
       next->lowPriority = DString("low").equals(((Element*)tmpel)->getAttribute(DString("priority")));
       next->type = SNT_RE;
       next->start = new CRegExp(entMatchParam);
-      next->start->setPositionMoves(false);
       if (!next->start || !next->start->isOk())
         if (errorHandler != null) errorHandler->error(StringBuffer("fault compiling regexp '")+entMatchParam+"' in scheme '"+scheme->schemeName+"'");
       delete entMatchParam;
+      next->start->setPositionMoves(false);
       next->end = 0;
       
       loadRegions(next, (Element*)tmpel, true);
