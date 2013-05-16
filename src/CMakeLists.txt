@@ -124,12 +124,15 @@ include_directories (../libs/dlmalloc)
 add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX)
 
 #====================================================
-# build
+# common flags
 #====================================================
-
 if(PLATFORM STREQUAL "x64")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
 endif()
+
+set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
+
+set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -160,6 +163,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_RELEASE "${FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
+
+#====================================================
+# build
+#====================================================
 
 set(SRC_FILES ${SRC_COLORER} ${SRC_ZLIB} ${SRC_MALLOC})
 add_library(colorer_lib STATIC ${SRC_FILES})
