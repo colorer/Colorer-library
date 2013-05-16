@@ -777,6 +777,9 @@ struct mallinfo {
   inlining are defined as macros, so these aren't used for them.
 */
 
+#if defined WIN32 &&  __GNUC__
+  #undef FORCEINLINE
+#endif
 #ifndef FORCEINLINE
   #if defined(__GNUC__)
 #define FORCEINLINE __inline __attribute__ ((always_inline))
