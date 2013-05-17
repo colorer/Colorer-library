@@ -9,6 +9,11 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 #====================================================
 # init variables
 #====================================================
+
+IF(NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE Release)
+ENDIF()
+
 if(NOT DEFINED CONF)
   set(CONF "x86")
 endif()
@@ -35,19 +40,20 @@ if (COLORER_FEATURE_HTTPINPUTSOURCE AND WIN32)
   set(WININETLIB wininet)
 endif()
 
-if(PLATFORM STREQUAL "x64")
+if(PLATFORM STREQUAL "Win32")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32")
+else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
 endif()
 
-set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
 
-set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
+set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -D_UNICODE -DUNICODE")
+
+set(FLAGS_DEBUG "-D_DEBUG -DDEBUG -D_UNICODE -DUNICODE")
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
-  add_definitions(-D_UNICODE)
-  add_definitions(-DUNICODE)
 
   set(COLORER_WARNING_FLAGS "")
   set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc ")
