@@ -66,7 +66,7 @@ const String *FileInputSource::getLocation() const{
 const byte *FileInputSource::openStream()
 {
   if (stream != null) throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
-#ifdef _UNICODE
+#if defined _UNICODE && _WIN32
   int source = _wopen(baseLocation->getWChars(), O_BINARY);
 #else
   int source = open(baseLocation->getChars(), O_BINARY);

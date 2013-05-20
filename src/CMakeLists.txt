@@ -9,17 +9,6 @@ IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
-if(NOT DEFINED CONF)
-  set(CONF "x86")
-endif()
-        
-if(CONF STREQUAL "x86")
-  set(PLATFORM "Win32")
-else()
-  set(PLATFORM "x64")
-endif()
-
-
 #====================================================
 # colorer
 #====================================================
@@ -135,15 +124,7 @@ add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX)
 # common flags
 #====================================================
 
-if(PLATFORM STREQUAL "Win32")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32")
-else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
-endif()
-
-
 set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -D_UNICODE -DUNICODE")
-
 set(FLAGS_DEBUG "-D_DEBUG -DDEBUG -D_UNICODE -DUNICODE")
 
 if(MSVC)
