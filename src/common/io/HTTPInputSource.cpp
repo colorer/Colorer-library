@@ -24,7 +24,7 @@ HTTPInputSource::~HTTPInputSource(){
   delete baseLocation;
   delete[] stream;
 };
-InputSource *HTTPInputSource::createRelative(const String *relPath){
+colorer::InputSource *HTTPInputSource::createRelative(const String *relPath){
   return new HTTPInputSource(relPath, this);
 };
 

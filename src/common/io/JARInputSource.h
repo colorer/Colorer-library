@@ -7,7 +7,7 @@
 /** Reads data from JAR(ZIP) archive.
     @ingroup common_io
 */
-class JARInputSource : public InputSource
+class JARInputSource : public colorer::InputSource
 {
 public:
   /** Creates input source from JAR (ZIP) archive.
@@ -16,7 +16,7 @@ public:
              @c anyURI can be any valid URI, relative or absolute.
       @param base source, used to resolving relative URIs
   */
-  JARInputSource(const String *basePath, InputSource *base);
+  JARInputSource(const String *basePath, colorer::InputSource *base);
   ~JARInputSource();
 
   const String *getLocation() const;
@@ -27,7 +27,7 @@ public:
 protected:
   SharedInputSource *getShared() const { return sharedIS; };
   const String *getInJarLocation() const { return inJarLocation; };
-  InputSource *createRelative(const String *relPath);
+  colorer::InputSource *createRelative(const String *relPath);
   JARInputSource(const String *basePath, JARInputSource *base, bool faked);
 private:
   String *baseLocation;

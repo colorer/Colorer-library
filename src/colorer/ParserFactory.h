@@ -123,7 +123,7 @@ private:
   String *searchPath();
 
   String *catalogPath;
-  InputSource *catalogFIS;
+  colorer::InputSource *catalogFIS;
   colorer::ErrorHandler *fileErrorHandler;
   Vector<const String*> hrcLocations;
   Hashtable<Hashtable<Vector<const String*>*>*> hrdLocations;

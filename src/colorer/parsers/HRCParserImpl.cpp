@@ -34,8 +34,8 @@ void HRCParserImpl::setErrorHandler(colorer::ErrorHandler *eh){
   errorHandler = eh;
 }
 
-void HRCParserImpl::loadSource(InputSource *is){
-  InputSource *istemp = curInputSource;
+void HRCParserImpl::loadSource(colorer::InputSource *is){
+  colorer::InputSource *istemp = curInputSource;
   curInputSource = is;
   if (is == null){
     if (errorHandler != null){
@@ -169,7 +169,7 @@ const String *HRCParserImpl::getVersion() {
 // protected methods
 
 
-void HRCParserImpl::parseHRC(InputSource *is)
+void HRCParserImpl::parseHRC(colorer::InputSource *is)
 {
   Document *xmlDocument = docbuilder.parse(is);
   Element *types = xmlDocument->getDocumentElement();
@@ -248,7 +248,7 @@ void HRCParserImpl::addPrototype(Element *elem)
         }
         continue;
       };
-      type->inputSource = InputSource::newInstance(locationLink, curInputSource);
+      type->inputSource = colorer::InputSource::newInstance(locationLink, curInputSource);
     };
     if (*content->getNodeName() == "filename" || *content->getNodeName() == "firstline"){
       if (content->getFirstChild() == null || content->getFirstChild()->getNodeType() != Node::TEXT_NODE){

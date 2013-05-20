@@ -11,12 +11,12 @@
  * allows to manage class instances counter.
  * @ingroup common_io
  */
-class SharedInputSource : InputSource
+class SharedInputSource : colorer::InputSource
 {
 
 public:
 
-  static SharedInputSource *getInputSource(const String *path, InputSource *base);
+  static SharedInputSource *getInputSource(const String *path, colorer::InputSource *base);
 
   /** Increments reference counter */
   int addref(){
@@ -61,12 +61,12 @@ public:
 
 private:
 
-  SharedInputSource(InputSource *source);
+  SharedInputSource(colorer::InputSource *source);
   ~SharedInputSource();
 
   static Hashtable<SharedInputSource*> *isHash;
 
-  InputSource *is;
+  colorer::InputSource *is;
   const byte *stream;
   int ref_count;
 };

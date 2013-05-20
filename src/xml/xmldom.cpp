@@ -18,7 +18,7 @@ String *replaceEntity(const String *st)
   return nst1;
 }
 
-Document *DocumentBuilder::parse(InputSource *is, const char *codepage)
+Document *DocumentBuilder::parse(colorer::InputSource *is, const char *codepage)
 {
   const byte *bytes = is->openStream();
   int length = is->length();
@@ -390,7 +390,7 @@ String *DocumentBuilder::consumeEntityRef(bool useExtEnt){
   }
   if (extEnt != null){
     if (er == null) return null;
-    InputSource *is = er->resolveEntity(null, extEnt);
+    colorer::InputSource *is = er->resolveEntity(null, extEnt);
     const byte *bytes = is->openStream();
     int length = is->length();
     src_overflow = new SString(DString(bytes, length));

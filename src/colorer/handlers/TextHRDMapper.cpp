@@ -16,7 +16,7 @@ TextHRDMapper::~TextHRDMapper(){
 /** Loads region definitions from HRD file.
     Multiple files could be loaded.
 */
-void TextHRDMapper::loadRegionMappings(InputSource *is)
+void TextHRDMapper::loadRegionMappings(colorer::InputSource *is)
 {
   DocumentBuilder docbuilder;
 

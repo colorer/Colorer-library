@@ -15,7 +15,7 @@ StyledHRDMapper::~StyledHRDMapper(){
     delete rd;
 };
 
-void StyledHRDMapper::loadRegionMappings(InputSource *is)
+void StyledHRDMapper::loadRegionMappings(colorer::InputSource *is)
 {
   DocumentBuilder docbuilder;
 

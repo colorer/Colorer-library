@@ -9,7 +9,7 @@
     @todo UNIX version...
     @ingroup common_io
 */
-class HTTPInputSource : public InputSource
+class HTTPInputSource : public colorer::InputSource
 {
 public:
   /** Creates stream from http protocol url.
@@ -25,7 +25,7 @@ public:
   void closeStream();
   int length() const;
 protected:
-  InputSource *createRelative(const String *relPath);
+  colorer::InputSource *createRelative(const String *relPath);
 private:
   String *baseLocation;
   byte *stream;

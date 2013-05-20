@@ -101,11 +101,11 @@ void ConsoleTools::setHRDName(const String &str) {
   hrdName = new SString(str);
 }
 void ConsoleTools::setLinkSource(const String &str){
-  InputSource *linkSource = null;
+  colorer::InputSource *linkSource = null;
   DocumentBuilder docbuilder;
   Document *linkSourceTree = null;
   try{
-    linkSource = InputSource::newInstance(&str);
+    linkSource = colorer::InputSource::newInstance(&str);
     linkSourceTree = docbuilder.parse(linkSource);
   }catch(Exception &e){
     docbuilder.free(linkSourceTree);
@@ -294,7 +294,7 @@ void ConsoleTools::viewFile(){
 }
 
 void ConsoleTools::forward(){
-  InputSource *fis = InputSource::newInstance(inputFileName);
+  colorer::InputSource *fis = colorer::InputSource::newInstance(inputFileName);
   const byte *stream = fis->openStream();
   DString eStream(stream, fis->length(), inputEncodingIndex);
 

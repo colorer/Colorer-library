@@ -25,7 +25,7 @@ public:
   /**
    * Loads region defines from @c is InputSource
    */
-  void  loadRegionMappings(InputSource *is);
+  void  loadRegionMappings(colorer::InputSource *is);
 
   /**
    * Saves all loaded region defines into @c writer.

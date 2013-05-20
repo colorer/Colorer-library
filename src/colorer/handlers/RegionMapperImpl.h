@@ -20,7 +20,7 @@ public:
 
   /** Loads region defines from @c is InputSource
   */
-  virtual void  loadRegionMappings(InputSource *is) = 0;
+  virtual void  loadRegionMappings(colorer::InputSource *is) = 0;
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input

@@ -36,7 +36,7 @@ void TextLinesStore::loadFile(const String *fileName, const String *inputEncodin
     }
   }else{
     this->fileName = new SString(fileName);
-    InputSource *is = InputSource::newInstance(fileName);
+    colorer::InputSource *is = colorer::InputSource::newInstance(fileName);
 
     const byte *data = null;
     try{

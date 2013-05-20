@@ -25,7 +25,7 @@ public:
 
   void setErrorHandler(colorer::ErrorHandler *eh);
 
-  void loadSource(InputSource *is);
+  void loadSource(colorer::InputSource *is);
   FileType *getFileType(const String *name);
   FileType *enumerateFileTypes(int index);
   FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0);
@@ -57,7 +57,7 @@ friend class FileTypeImpl;
   String *versionName;
 
   FileTypeImpl *parseType;
-  InputSource *curInputSource;
+  colorer::InputSource *curInputSource;
   bool structureChanged;
   bool updateStarted;
 
@@ -67,7 +67,7 @@ friend class FileTypeImpl;
   void loadFileType(FileType *filetype);
   void unloadFileType(FileTypeImpl *filetype);
 
-  void parseHRC(InputSource *is);
+  void parseHRC(colorer::InputSource *is);
   void addPrototype(Element *elem);
   void addType(Element *elem);
 

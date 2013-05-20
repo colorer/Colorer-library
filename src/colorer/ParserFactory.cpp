@@ -31,7 +31,7 @@ void ParserFactory::init()
   hrcParser = null;
   fileErrorHandler = null;
   try{
-    catalogFIS = InputSource::newInstance(catalogPath);
+    catalogFIS = colorer::InputSource::newInstance(catalogPath);
     catalog = docbuilder.parse(catalogFIS);
   }catch(Exception &e){
     throw ParserFactoryException(*e.getMessage());
@@ -52,7 +52,7 @@ void ParserFactory::init()
       const String *logLocation = ((Element*)elem)->getAttribute(DString("log-location"));
 
       if ((logLocation != null) && (logLocation->length()!=0)){
-        InputSource *dfis = InputSource::newInstance(logLocation, catalogFIS);
+        colorer::InputSource *dfis = colorer::InputSource::newInstance(logLocation, catalogFIS);
         try{
           fileErrorHandler = new FileErrorHandler(dfis->getLocation(), Encodings::ENC_UTF8, false);
           colorer_logger_set_target(dfis->getLocation()->getChars());
@@ -215,9 +215,9 @@ String *ParserFactory::searchPath()
   for(int i = 0; i < paths.size(); i++){
     String *path = paths.elementAt(i);
     if (right_path == null){
-      InputSource *is = null;
+      colorer::InputSource *is = null;
       try{
-        is = InputSource::newInstance(path);
+        is = colorer::InputSource::newInstance(path);
         is->openStream();
         right_path = new SString(path);
         delete is;
@@ -311,8 +311,8 @@ HRCParser* ParserFactory::getHRCParser(){
     if (hrcLocations.elementAt(idx) != null){
       const String *relPath = hrcLocations.elementAt(idx);
       const String * path = null;
-      if (InputSource::isRelative(relPath)){
-        path = InputSource::getAbsolutePath(catalogPath, relPath);
+      if (colorer::InputSource::isRelative(relPath)){
+        path = colorer::InputSource::getAbsolutePath(catalogPath, relPath);
         const String *path2del = path;
         if (path->startsWith(DString("file://"))) path = new SString(path, 7, -1);
         if (path->startsWith(DString("file:/"))) path = new SString(path, 6, -1);
@@ -331,7 +331,7 @@ HRCParser* ParserFactory::getHRCParser(){
         if (dir != INVALID_HANDLE_VALUE){
           while(true){
             if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-              InputSource *dfis = InputSource::newInstance(&(StringBuffer(relPath)+"\\"+SString(ffd.cFileName)), catalogFIS);
+              colorer::InputSource *dfis = colorer::InputSource::newInstance(&(StringBuffer(relPath)+"\\"+SString(ffd.cFileName)), catalogFIS);
               try{
                 hrcParser->loadSource(dfis);
                 delete dfis;
@@ -371,9 +371,9 @@ HRCParser* ParserFactory::getHRCParser(){
         }
 #endif
       }else{
-        InputSource *dfis;
+        colorer::InputSource *dfis;
         try{
-          dfis = InputSource::newInstance(hrcLocations.elementAt(idx), catalogFIS);
+          dfis = colorer::InputSource::newInstance(hrcLocations.elementAt(idx), catalogFIS);
           hrcParser->loadSource(dfis);
           delete dfis;
         }catch(Exception &e){
@@ -423,9 +423,9 @@ StyledHRDMapper *ParserFactory::createStyledMapper(const String *classID, const 
   StyledHRDMapper *mapper = new StyledHRDMapper();
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
-      InputSource *dfis;
+      colorer::InputSource *dfis;
       try{
-        dfis = InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
+        dfis = colorer::InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
         mapper->loadRegionMappings(dfis);
         delete dfis;
       }catch(Exception &e){
@@ -457,7 +457,7 @@ TextHRDMapper *ParserFactory::createTextMapper(const String *nameID){
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
       try{
-        InputSource *dfis = InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
+        colorer::InputSource *dfis = colorer::InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
         mapper->loadRegionMappings(dfis);
         delete dfis;
       }catch(Exception &e){

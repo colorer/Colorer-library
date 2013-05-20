@@ -11,6 +11,8 @@
 #include<common/io/HTTPInputSource.h>
 #endif
 
+using namespace colorer;
+
 String *InputSource::getAbsolutePath(const String*basePath, const String*relPath){
   int root_pos = basePath->lastIndexOf('/');
   int root_pos2 = basePath->lastIndexOf('\\');

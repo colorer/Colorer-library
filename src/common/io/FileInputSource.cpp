@@ -55,7 +55,7 @@ FileInputSource::~FileInputSource(){
   delete baseLocation;
   delete[] stream;
 };
-InputSource *FileInputSource::createRelative(const String *relPath){
+colorer::InputSource *FileInputSource::createRelative(const String *relPath){
   return new FileInputSource(relPath, this);
 };
 

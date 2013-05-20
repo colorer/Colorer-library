@@ -64,7 +64,7 @@ protected:
 class EntityResolver
 {
 public:
-  virtual InputSource *resolveEntity(const String *publicId, const String *systemId) = 0;
+  virtual colorer::InputSource *resolveEntity(const String *publicId, const String *systemId) = 0;
 };
 
 /**
@@ -75,12 +75,12 @@ public:
 class DefaultEntityResolver : public EntityResolver
 {
 public:
-  DefaultEntityResolver(InputSource *_is) : is(_is){};
-  InputSource *resolveEntity(const String *publicId, const String *systemId){
+  DefaultEntityResolver(colorer::InputSource *_is) : is(_is){};
+  colorer::InputSource *resolveEntity(const String *publicId, const String *systemId){
     return is->createRelative(systemId);
   }
 private:
-  InputSource *is;
+  colorer::InputSource *is;
 };
 
 /**
@@ -139,7 +139,7 @@ public:
   /**
    * Parses input stream and creates DOM tree.
    */
-  Document *parse(InputSource *is, const char *codepage = 0);
+  Document *parse(colorer::InputSource *is, const char *codepage = 0);
 
   /**
    * Parses input bytes in specified encoding and creates DOM tree.
@@ -163,7 +163,7 @@ private:
   String *src_overflow;
   Document *doc;
   EntityResolver *er;
-  InputSource *inputSource;
+  colorer::InputSource *inputSource;
 
   static bool getXMLNumber(const String &str, int *res);
 

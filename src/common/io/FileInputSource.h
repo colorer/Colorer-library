@@ -6,7 +6,7 @@
 /** Reads data from file with OS services.
     @ingroup common_io
 */
-class FileInputSource : public InputSource
+class FileInputSource : public colorer::InputSource
 {
 public:
   FileInputSource(const String *basePath, FileInputSource *base);
@@ -18,7 +18,7 @@ public:
   void closeStream();
   int length() const;
 protected:
-  InputSource *createRelative(const String *relPath);
+  colorer::InputSource *createRelative(const String *relPath);
 
   String *baseLocation;
   byte *stream;

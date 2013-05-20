@@ -49,7 +49,7 @@ JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, boo
   len = 0;
 }
 
-InputSource *JARInputSource::createRelative(const String *relPath){
+colorer::InputSource *JARInputSource::createRelative(const String *relPath){
   return new JARInputSource(relPath, this, true);
 }
 
