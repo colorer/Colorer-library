@@ -8,6 +8,7 @@ HRCParserImpl::HRCParserImpl()
  regionNamesVector(1000, 200), regionNamesHash(1000)
 {
   parseType = null;
+  parseProtoType = null;
   versionName = null;
   errorHandler = null;
   curInputSource = null;
@@ -186,20 +187,7 @@ void HRCParserImpl::parseHRC(colorer::InputSource *is)
     globalUpdateStarted = true;
     updateStarted = true;
   };
-  for (Node *elem = types->getFirstChild(); elem; elem = elem->getNextSibling()){
-    if (*elem->getNodeName() == "prototype"){
-      addPrototype((Element*)elem);
-      continue;
-    };
-    if (*elem->getNodeName() == "package"){
-      addPrototype((Element*)elem);
-      continue;
-    };
-    if (*elem->getNodeName() == "type"){
-      addType((Element*)elem);
-      continue;
-    };
-  };
+  parseHrcBlock(types);
   docbuilder.free(xmlDocument);
   structureChanged = true;
   if (globalUpdateStarted){
@@ -208,6 +196,24 @@ void HRCParserImpl::parseHRC(colorer::InputSource *is)
   };
 }
 
+void HRCParserImpl::parseHrcBlock(Element *elem)
+{
+  for (Node *node = elem->getFirstChild(); node; node = node->getNextSibling()){
+    if (*node->getNodeName() == "prototype"){
+      addPrototype((Element*)node);
+      continue;
+    };
+    if (*node->getNodeName() == "package"){
+      addPrototype((Element*)node);
+      continue;
+    };
+    if (*node->getNodeName() == "type"){
+      addType((Element*)node);
+      continue;
+    };
+  };
+
+}
 
 void HRCParserImpl::addPrototype(Element *elem)
 {
@@ -239,65 +245,88 @@ void HRCParserImpl::addPrototype(Element *elem)
     type->isPackage = true;
   }
 
-  for(Node *content = elem->getFirstChild(); content != null; content = content->getNextSibling()){
-    if (*content->getNodeName() == "location"){
-      const String *locationLink = ((Element*)content)->getAttribute(DString("link"));
-      if (locationLink == null){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("Bad 'location' link attribute in prototype '")+typeName+"'");
-        }
-        continue;
-      };
-      type->inputSource = colorer::InputSource::newInstance(locationLink, curInputSource);
-    };
-    if (*content->getNodeName() == "filename" || *content->getNodeName() == "firstline"){
-      if (content->getFirstChild() == null || content->getFirstChild()->getNodeType() != Node::TEXT_NODE){
-        if (errorHandler != null) errorHandler->warning(StringBuffer("Bad '")+content->getNodeName()+"' element in prototype '"+typeName+"'");
-        continue;
-      };
-      const String *match = ((Text*)content->getFirstChild())->getData();
-      CRegExp *matchRE = new CRegExp(match);
-      matchRE->setPositionMoves(true);
-      if (!matchRE->isOk()){
-        if (errorHandler != null){
-          errorHandler->warning(StringBuffer("Fault compiling chooser RE '")+match+"' in prototype '"+typeName+"'");
-        }
-        delete matchRE;
-        continue;
-      };
-      int ctype = *content->getNodeName() == "filename" ? 0 : 1;
-      //double prior = *content->getNodeName() == "filename" ? 2 : 1;
-      double prior = ctype ? 1 : 2;
-      UnicodeTools::getNumber(((Element*)content)->getAttribute(DString("weight")), &prior);
-      FileTypeChooser *ftc = new FileTypeChooser(ctype, prior, matchRE);
-      type->chooserVector.addElement(ftc);
-    };
-    if (*content->getNodeName() == "parameters"){
-      for(Node *param = content->getFirstChild(); param != null; param = param->getNextSibling()){
-        if (*param->getNodeName() == "param"){
-          const String *name = ((Element*)param)->getAttribute(DString("name"));
-          const String *value = ((Element*)param)->getAttribute(DString("value"));
-          const String *descr = ((Element*)param)->getAttribute(DString("description"));
-          if (name == null || value == null){
-            if (errorHandler != null){
-              errorHandler->warning(StringBuffer("Bad parameter in prototype '")+typeName+"'");
-            }
-            continue;
-          };
-          type->paramVector.addElement(new SString(name));
-          if (descr != null){
-            type->paramDescriptionHash.put(name, new SString(descr));
-          }
-          type->paramDefaultHash.put(name, new SString(value));
-        };
-      };
-    };
-  };
+  parseProtoType = type;
+  parsePrototypeBlock(elem);
 
   type->protoLoaded = true;
   fileTypeHash.put(typeName, type);
   if (!type->isPackage){
     fileTypeVector.addElement(type);
+  };
+}
+
+void HRCParserImpl::parsePrototypeBlock(Element *elem)
+{
+  for(Node *content = elem->getFirstChild(); content != null; content = content->getNextSibling()){
+    if (*content->getNodeName() == "location"){
+      addPrototypeLocation((Element*)content);
+      continue;
+    };
+    if (*content->getNodeName() == "filename" || *content->getNodeName() == "firstline"){
+      addPrototypeDetectParam((Element*)content);
+      continue;    
+    };
+    if (*content->getNodeName() == "parameters"){
+      addPrototypeParameters((Element*)content);
+      continue;
+    };
+  };
+}
+
+void HRCParserImpl::addPrototypeLocation(Element *elem)
+{
+  const String *locationLink = ((Element*)elem)->getAttribute(DString("link"));
+  if (locationLink == null){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("Bad 'location' link attribute in prototype '")+parseProtoType->name+"'");
+      return;
+    }
+  };
+  parseProtoType->inputSource = colorer::InputSource::newInstance(locationLink, curInputSource);
+}
+
+void HRCParserImpl::addPrototypeDetectParam(Element *elem)
+{
+  if (elem->getFirstChild() == null || elem->getFirstChild()->getNodeType() != Node::TEXT_NODE){
+    if (errorHandler != null) errorHandler->warning(StringBuffer("Bad '")+elem->getNodeName()+"' element in prototype '"+parseProtoType->name+"'");
+    return;
+  };
+  const String *match = ((Text*)elem->getFirstChild())->getData();
+  CRegExp *matchRE = new CRegExp(match);
+  matchRE->setPositionMoves(true);
+  if (!matchRE->isOk()){
+    if (errorHandler != null){
+      errorHandler->warning(StringBuffer("Fault compiling chooser RE '")+match+"' in prototype '"+parseProtoType->name+"'");
+    }
+    delete matchRE;
+    return;
+  };
+  int ctype = *elem->getNodeName() == "filename" ? 0 : 1;
+  double prior = ctype ? 1 : 2;
+  UnicodeTools::getNumber(((Element*)elem)->getAttribute(DString("weight")), &prior);
+  FileTypeChooser *ftc = new FileTypeChooser(ctype, prior, matchRE);
+  parseProtoType->chooserVector.addElement(ftc);
+}
+
+void HRCParserImpl::addPrototypeParameters(Element *elem)
+{
+  for(Node *param = elem->getFirstChild(); param != null; param = param->getNextSibling()){
+    if (*param->getNodeName() == "param"){
+      const String *name = ((Element*)param)->getAttribute(DString("name"));
+      const String *value = ((Element*)param)->getAttribute(DString("value"));
+      const String *descr = ((Element*)param)->getAttribute(DString("description"));
+      if (name == null || value == null){
+        if (errorHandler != null){
+          errorHandler->warning(StringBuffer("Bad parameter in prototype '")+parseProtoType->name+"'");
+        }
+        continue;
+      };
+      parseProtoType->paramVector.addElement(new SString(name));
+      if (descr != null){
+        parseProtoType->paramDescriptionHash.put(name, new SString(descr));
+      }
+      parseProtoType->paramDefaultHash.put(name, new SString(value));
+    };
   };
 }
 
@@ -328,65 +357,8 @@ void HRCParserImpl::addType(Element *elem)
   FileTypeImpl *o_parseType = parseType;
   parseType = type;
 
-  for(Node *xmlpar = elem->getFirstChild(); xmlpar; xmlpar = xmlpar->getNextSibling()){
-    if (*xmlpar->getNodeName() == "region"){
-      const String *regionName = ((Element*)xmlpar)->getAttribute(DString("name"));
-      const String *regionParent = ((Element*)xmlpar)->getAttribute(DString("parent"));
-      const String *regionDescr = ((Element*)xmlpar)->getAttribute(DString("description"));
-      if (regionName == null){
-        if (errorHandler != null) errorHandler->error(DString("No 'name' attribute in <region> element"));
-        continue;
-      };
-      String *qname1 = qualifyOwnName(regionName);
-      if (qname1 == null) continue;
-      String *qname2 = qualifyForeignName(regionParent, QNT_DEFINE, true);
-      if (regionNamesHash.get(qname1) != null){
-        if (errorHandler != null){
-          errorHandler->warning(StringBuffer("Duplicate region '") + qname1 + "' definition in type '"+parseType->getName()+"'");
-        }
-        delete qname1;
-        delete qname2;
-        continue;
-      };
+  parseTypeBlock(elem);
 
-      const Region *region = new Region(qname1, regionDescr, getRegion(qname2), regionNamesVector.size());
-      regionNamesVector.addElement(region);
-      regionNamesHash.put(qname1, region);
-
-      delete qname1;
-      delete qname2;
-    };
-    if (*xmlpar->getNodeName() == "entity"){
-      const String *entityName  = ((Element*)xmlpar)->getAttribute(DString("name"));
-      const String *entityValue = ((Element*)xmlpar)->getAttribute(DString("value"));
-      if (entityName == null || entityValue == null){
-        if (errorHandler != null){
-          errorHandler->error(DString("Bad entity attributes"));
-        }
-        continue;
-      };
-      String *qname1 = qualifyOwnName(entityName);
-      String *qname2 = useEntities(entityValue);
-      if (qname1 != null && qname2 != null){
-        schemeEntitiesHash.put(qname1, qname2);
-        delete qname1;
-      };
-    };
-    if (*xmlpar->getNodeName() == "import"){
-      const String *typeParam = ((Element*)xmlpar)->getAttribute(DString("type"));
-      if (typeParam == null || fileTypeHash.get(typeParam) == null){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("Import with bad '")+typeParam+"' attribute in type '"+typeName+"'");
-        }
-        continue;
-      };
-      type->importVector.addElement(new SString(typeParam));
-    };
-    if (*xmlpar->getNodeName() == "scheme"){
-      addScheme((Element*)xmlpar);
-      continue;
-    };
-  };
   String *baseSchemeName = qualifyOwnName(type->name);
   if (baseSchemeName != null){
     type->baseScheme = schemeHash.get(baseSchemeName);
@@ -399,6 +371,86 @@ void HRCParserImpl::addType(Element *elem)
   }
   type->loadDone = true;
   parseType = o_parseType;
+}
+
+void HRCParserImpl::parseTypeBlock(Element *elem)
+{
+  for(Node *xmlpar = elem->getFirstChild(); xmlpar; xmlpar = xmlpar->getNextSibling()){
+    if (*xmlpar->getNodeName() == "region"){
+      addTypeRegion((Element*)xmlpar);
+      continue;
+    };
+    if (*xmlpar->getNodeName() == "entity"){
+      addTypeEntity((Element*)xmlpar);
+      continue;
+    };
+    if (*xmlpar->getNodeName() == "import"){
+      addTypeImport((Element*)xmlpar);
+      continue;
+    };
+    if (*xmlpar->getNodeName() == "scheme"){
+      addScheme((Element*)xmlpar);
+    };
+  };
+}
+
+void HRCParserImpl::addTypeRegion(Element *elem)
+{
+  const String *regionName = ((Element*)elem)->getAttribute(DString("name"));
+  const String *regionParent = ((Element*)elem)->getAttribute(DString("parent"));
+  const String *regionDescr = ((Element*)elem)->getAttribute(DString("description"));
+  if (regionName == null){
+    if (errorHandler != null) errorHandler->error(DString("No 'name' attribute in <region> element"));
+    return;
+  };
+  String *qname1 = qualifyOwnName(regionName);
+  if (qname1 == null) return;
+  String *qname2 = qualifyForeignName(regionParent, QNT_DEFINE, true);
+  if (regionNamesHash.get(qname1) != null){
+    if (errorHandler != null){
+      errorHandler->warning(StringBuffer("Duplicate region '") + qname1 + "' definition in type '"+parseType->getName()+"'");
+    }
+    delete qname1;
+    delete qname2;
+    return;
+  };
+
+  const Region *region = new Region(qname1, regionDescr, getRegion(qname2), regionNamesVector.size());
+  regionNamesVector.addElement(region);
+  regionNamesHash.put(qname1, region);
+
+  delete qname1;
+  delete qname2;
+}
+
+void HRCParserImpl::addTypeEntity(Element *elem)
+{
+  const String *entityName  = ((Element*)elem)->getAttribute(DString("name"));
+  const String *entityValue = ((Element*)elem)->getAttribute(DString("value"));
+  if (entityName == null || entityValue == null){
+    if (errorHandler != null){
+      errorHandler->error(DString("Bad entity attributes"));
+    }
+    return;
+  };
+  String *qname1 = qualifyOwnName(entityName);
+  String *qname2 = useEntities(entityValue);
+  if (qname1 != null && qname2 != null){
+    schemeEntitiesHash.put(qname1, qname2);
+    delete qname1;
+  };
+}
+
+void HRCParserImpl::addTypeImport(Element *elem)
+{
+  const String *typeParam = ((Element*)elem)->getAttribute(DString("type"));
+  if (typeParam == null || fileTypeHash.get(typeParam) == null){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("Import with bad '")+typeParam+"' attribute in type '"+parseType->name+"'");
+    }
+    return;
+  };
+  parseType->importVector.addElement(new SString(typeParam));
 }
 
 void HRCParserImpl::addScheme(Element *elem)
@@ -435,287 +487,282 @@ void HRCParserImpl::addScheme(Element *elem)
 
 void HRCParserImpl::addSchemeNodes(SchemeImpl *scheme, Node *elem)
 {
-  SchemeNode *next = null;
   for(Node *tmpel = elem; tmpel; tmpel = tmpel->getNextSibling()){
     if (!tmpel->getNodeName()) continue;
 
-    if (next == null){
-      next = new SchemeNode();
-    }
-
     if (*tmpel->getNodeName() == "inherit"){
-      const String *nqSchemeName = ((Element*)tmpel)->getAttribute(DString("scheme"));
-      if (nqSchemeName == null || nqSchemeName->length() == 0){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("empty scheme name in inheritance operator in scheme '")+scheme->schemeName+"'");
-        }
-        continue;
-      };
-      next->type = SNT_INHERIT;
-      next->schemeName = new SString(nqSchemeName);
-      String *schemeName = qualifyForeignName(nqSchemeName, QNT_SCHEME, false);
-      if (schemeName == null){
-//        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with '"+scheme->schemeName+"'");
-//        delete next;
-//        continue;
-      }else
-        next->scheme = schemeHash.get(schemeName);
-      if (schemeName != null){
-        delete next->schemeName;
-        next->schemeName = schemeName;
-      };
-
-      if (tmpel->getFirstChild() != null){
-        for(Node *vel = tmpel->getFirstChild(); vel; vel = vel->getNextSibling()){
-          if (*vel->getNodeName() != "virtual"){
-            continue;
-          }
-          const String *schemeName = ((Element*)vel)->getAttribute(DString("scheme"));
-          const String *substName = ((Element*)vel)->getAttribute(DString("subst-scheme"));
-          if (schemeName == null || substName == null){
-            if (errorHandler != null){
-              errorHandler->error(StringBuffer("bad virtualize attributes in scheme '")+scheme->schemeName+"'");
-            }
-            continue;
-          };
-          next->virtualEntryVector.addElement(new VirtualEntry(schemeName, substName));
-        };
-      };
-      scheme->nodes.addElement(next);
-      next = null;
+      addSchemeInherit(scheme,tmpel);
       continue;
     };
 
     if (*tmpel->getNodeName() == "regexp"){
-      const String *matchParam = ((Element*)tmpel)->getAttribute(DString("match"));
-      if (matchParam == null && tmpel->getFirstChild() && tmpel->getFirstChild()->getNodeType() == Node::TEXT_NODE){
-        matchParam = ((Text*)tmpel->getFirstChild())->getData();
-      }
-      if (matchParam == null){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("no 'match' in regexp in scheme ")+scheme->schemeName);
-        }
-        delete next;
-        continue;
-      };
-      String *entMatchParam = useEntities(matchParam);
-      next->lowPriority = DString("low").equals(((Element*)tmpel)->getAttribute(DString("priority")));
-      next->type = SNT_RE;
-      next->start = new CRegExp(entMatchParam);
-      if (!next->start || !next->start->isOk())
-        if (errorHandler != null) errorHandler->error(StringBuffer("fault compiling regexp '")+entMatchParam+"' in scheme '"+scheme->schemeName+"'");
-      delete entMatchParam;
-      next->start->setPositionMoves(false);
-      next->end = 0;
-      
-      loadRegions(next, (Element*)tmpel, true);
-      if(next->region){
-        next->regions[0] = next->region;
-      }
-
-      scheme->nodes.addElement(next);
-      next = null;
+      addSchemeRegexp(scheme,tmpel);
       continue;
     }
-
-    
     if (*tmpel->getNodeName() == "block"){
-    
-      const String *sParam = ((Element*)tmpel)->getAttribute(DString("start"));
-      const String *eParam = ((Element*)tmpel)->getAttribute(DString("end"));
-      
-      Element *eStart = NULL, *eEnd = NULL;
-          
-      for(Node *blkn = tmpel->getFirstChild(); blkn && !(eParam && sParam); blkn = blkn->getNextSibling())
-      {
-      	Element *blkel;
-      	if(blkn->getNodeType() == Node::ELEMENT_NODE) blkel = (Element*)blkn;
-      	else continue;
-      	
-      	const String *p = (blkel->getFirstChild() && blkel->getFirstChild()->getNodeType() == Node::TEXT_NODE)
-      	                ? ((Text*)blkel->getFirstChild())->getData()
-      	                : blkel->getAttribute(DString("match"));
-      	
-      	if(*blkel->getNodeName() == "start") 
-      	{
-      		sParam = p;
-      		eStart = blkel;
-      	}
-      	if(*blkel->getNodeName() == "end")   
-      	{
-      		eParam = p;
-      		eEnd = blkel;
-      	}
-      }
-
-      String *startParam;
-      String *endParam;
-      if (!(startParam = useEntities(sParam))){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("'start' block attribute not found in scheme '")+scheme->schemeName+"'");
-        }
-        delete startParam;
-        delete next;
-        continue;
-      }
-      if (!(endParam = useEntities(eParam))){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("'end' block attribute not found in scheme '")+scheme->schemeName+"'");
-        }
-        delete startParam;
-        delete endParam;
-        delete next;
-        continue;
-      }
-      const String *schemeName = ((Element*)tmpel)->getAttribute(DString("scheme"));
-      if (schemeName == null || schemeName->length() == 0){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("block with bad scheme attribute in scheme '")+scheme->getName()+"'");
-        }
-        delete startParam;
-        delete endParam;
-        continue;
-      }
-      next->schemeName = new SString(schemeName);
-      next->lowPriority = DString("low").equals(((Element*)tmpel)->getAttribute(DString("priority")));
-      next->lowContentPriority = DString("low").equals(((Element*)tmpel)->getAttribute(DString("content-priority")));
-      next->innerRegion = DString("yes").equals(((Element*)tmpel)->getAttribute(DString("inner-region")));
-      next->type = SNT_SCHEME;
-      next->start = new CRegExp(startParam);
-      next->start->setPositionMoves(false);
-      if (!next->start->isOk()){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("fault compiling regexp '")+startParam+"' in scheme '"+scheme->schemeName+"'");
-        }
-      }
-      next->end = new CRegExp();
-      next->end->setPositionMoves(true);
-      next->end->setBackRE(next->start);
-      next->end->setRE(endParam);
-      if (!next->end->isOk()){
-        if (errorHandler != null){
-          errorHandler->error(StringBuffer("fault compiling regexp '")+endParam+"' in scheme '"+scheme->schemeName+"'");
-        }
-      }
-      delete startParam;
-      delete endParam;
-
-      // !! EE
-      loadBlockRegions(next, (Element*)tmpel);
-      loadRegions(next, eStart, true);
-      loadRegions(next, eEnd, false);
-      scheme->nodes.addElement(next);
-      next = null;
+      addSchemeBlock(scheme,tmpel);
       continue;
     }
-
     if (*tmpel->getNodeName() == "keywords"){
-      bool isCase = !DString("yes").equals(((Element*)tmpel)->getAttribute(DString("ignorecase")));
-      next->lowPriority = !DString("normal").equals(((Element*)tmpel)->getAttribute(DString("priority")));
-      const Region *brgn = getNCRegion((Element*)tmpel, DString("region"));
-      if (brgn == null){
-        continue;
-      }
-      const String *worddiv = ((Element*)tmpel)->getAttribute(DString("worddiv"));
-
-      next->worddiv = null;
-      if (worddiv){
-        String *entWordDiv = useEntities(worddiv);
-        next->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, null);
-        if(next->worddiv == null){
-          if (errorHandler != null) errorHandler->warning(StringBuffer("fault compiling worddiv regexp '")+entWordDiv+"' in scheme '"+scheme->schemeName+"'");
-        }
-        delete entWordDiv;
-      };
-
-      next->kwList = new KeywordList;
-      for(Node *keywrd_count = tmpel->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()){
-        if (*keywrd_count->getNodeName() == "word" ||
-            *keywrd_count->getNodeName() == "symb")
-        {
-          next->kwList->num++;
-        }
-      }
-
-      next->kwList->kwList = new KeywordInfo[next->kwList->num];
-      memset(next->kwList->kwList ,0,sizeof(KeywordInfo)*next->kwList->num);
-      next->kwList->num = 0;
-      KeywordInfo *pIDs = next->kwList->kwList;
-      next->kwList->matchCase = isCase;
-      next->kwList->kwList = pIDs;
-      next->type = SNT_KEYWORDS;
-
-      for(Node *keywrd = tmpel->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()){
-        int type = 0;
-        if (*keywrd->getNodeName() == "word") type = 1;
-        if (*keywrd->getNodeName() == "symb") type = 2;
-        if (!type){
-          continue;
-        }
-        const String *param;
-        if (!(param = ((Element*)keywrd)->getAttribute(DString("name"))) || !param->length()){
-          continue;
-        }
-
-        const Region *rgn = brgn;
-        if (((Element*)keywrd)->getAttribute(DString("region")))
-          rgn = getNCRegion((Element*)keywrd, DString("region"));
-
-        int pos = next->kwList->num;
-        pIDs[pos].keyword = new SString(param);
-        pIDs[pos].region = rgn;
-        pIDs[pos].isSymbol = (type == 2);
-        pIDs[pos].ssShorter = -1;
-        next->kwList->firstChar->addChar((*param)[0]);
-        if (!isCase){
-          next->kwList->firstChar->addChar(Character::toLowerCase((*param)[0]));
-          next->kwList->firstChar->addChar(Character::toUpperCase((*param)[0]));
-          next->kwList->firstChar->addChar(Character::toTitleCase((*param)[0]));
-        };
-        next->kwList->num++;
-        if (next->kwList->minKeywordLength > pIDs[pos].keyword->length())
-          next->kwList->minKeywordLength = pIDs[pos].keyword->length();
-      };
-      next->kwList->sortList();
-      next->kwList->substrIndex();
-      scheme->nodes.addElement(next);
-      next = null;
-      continue;
+      addSchemeKeywords(scheme,tmpel);
     };
   };
-  // drop last unused node
-  if (next != null) delete next;
 };
+
+void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, Node *elem) 
+{
+  const String *nqSchemeName = ((Element*) elem)->getAttribute(DString("scheme"));
+  if (nqSchemeName == null || nqSchemeName->length() == 0) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("empty scheme name in inheritance operator in scheme '") + scheme->schemeName + "'");
+    }
+    return;
+  };
+  SchemeNode *next = new SchemeNode();
+  next->type = SNT_INHERIT;
+  next->schemeName = new SString(nqSchemeName);
+  String *schemeName = qualifyForeignName(nqSchemeName, QNT_SCHEME, false);
+  if (schemeName == null) {
+    //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with '"+scheme->schemeName+"'");
+    //        delete next;
+    //        continue;
+  } else
+    next->scheme = schemeHash.get(schemeName);
+  if (schemeName != null) {
+    delete next->schemeName;
+    next->schemeName = schemeName;
+  };
+  if (elem->getFirstChild() != null) {
+    for (Node *vel = elem->getFirstChild(); vel; vel = vel->getNextSibling()) {
+      if (*vel->getNodeName() != "virtual") {
+        continue;
+      }
+      const String *schemeName = ((Element*) vel)->getAttribute(DString("scheme"));
+      const String *substName = ((Element*) vel)->getAttribute(DString("subst-scheme"));
+      if (schemeName == null || substName == null) {
+        if (errorHandler != null) {
+          errorHandler->error(StringBuffer("bad virtualize attributes in scheme '") + scheme->schemeName + "'");
+        }
+        continue;
+      };
+      next->virtualEntryVector.addElement(new VirtualEntry(schemeName, substName));
+    };
+  };
+  scheme->nodes.addElement(next);
+}
+
+void HRCParserImpl::addSchemeRegexp(SchemeImpl *scheme, Node *elem) 
+{
+  const String *matchParam = ((Element*) elem)->getAttribute(DString("match"));
+  if (matchParam == null && elem->getFirstChild() && elem->getFirstChild()->getNodeType() == Node::TEXT_NODE) {
+    matchParam = ((Text*) elem->getFirstChild())->getData();
+  }
+  if (matchParam == null) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("no 'match' in regexp in scheme ") + scheme->schemeName);
+    }
+    return;
+  };
+  String *entMatchParam = useEntities(matchParam);
+  SchemeNode *next = new SchemeNode();
+  next->lowPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("priority")));
+  next->type = SNT_RE;
+  next->start = new CRegExp(entMatchParam);
+  next->start->setPositionMoves(false);
+  if (!next->start || !next->start->isOk())
+    if (errorHandler != null) errorHandler->error(StringBuffer("fault compiling regexp '") + entMatchParam + "' in scheme '" + scheme->schemeName + "'");
+  delete entMatchParam;
+  next->end = 0;
+
+  loadRegions(next, (Element*) elem, true);
+  if (next->region) {
+    next->regions[0] = next->region;
+  }
+
+  scheme->nodes.addElement(next);
+}
+
+void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, Node *elem)
+{
+  const String *sParam = ((Element*) elem)->getAttribute(DString("start"));
+  const String *eParam = ((Element*) elem)->getAttribute(DString("end"));
+  Element *eStart = NULL, *eEnd = NULL;
+
+  for (Node *blkn = elem->getFirstChild(); blkn && !(eParam && sParam); blkn = blkn->getNextSibling()) {
+    Element *blkel;
+    if (blkn->getNodeType() == Node::ELEMENT_NODE) blkel = (Element*) blkn;
+    else continue;
+
+    const String *p = (blkel->getFirstChild() && blkel->getFirstChild()->getNodeType() == Node::TEXT_NODE)
+            ? ((Text*) blkel->getFirstChild())->getData()
+            : blkel->getAttribute(DString("match"));
+
+    if (*blkel->getNodeName() == "start") {
+      sParam = p;
+      eStart = blkel;
+    }
+    if (*blkel->getNodeName() == "end") {
+      eParam = p;
+      eEnd = blkel;
+    }
+  }
+
+  String *startParam;
+  String *endParam;
+  if (!(startParam = useEntities(sParam))) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("'start' block attribute not found in scheme '") + scheme->schemeName + "'");
+    }
+    delete startParam;
+    return;
+  }
+  if (!(endParam = useEntities(eParam))) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("'end' block attribute not found in scheme '") + scheme->schemeName + "'");
+    }
+    delete startParam;
+    delete endParam;
+    return;
+  }
+  const String *schemeName = ((Element*) elem)->getAttribute(DString("scheme"));
+  if (schemeName == null || schemeName->length() == 0) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("block with bad scheme attribute in scheme '") + scheme->getName() + "'");
+    }
+    delete startParam;
+    delete endParam;
+    return;
+  }
+  SchemeNode *next = new SchemeNode();
+  next->schemeName = new SString(schemeName);
+  next->lowPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("priority")));
+  next->lowContentPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("content-priority")));
+  next->innerRegion = DString("yes").equals(((Element*) elem)->getAttribute(DString("inner-region")));
+  next->type = SNT_SCHEME;
+  next->start = new CRegExp(startParam);
+  next->start->setPositionMoves(false);
+  if (!next->start->isOk()) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("fault compiling regexp '") + startParam + "' in scheme '" + scheme->schemeName + "'");
+    }
+  }
+  next->end = new CRegExp();
+  next->end->setPositionMoves(true);
+  next->end->setBackRE(next->start);
+  next->end->setRE(endParam);
+  if (!next->end->isOk()) {
+    if (errorHandler != null) {
+      errorHandler->error(StringBuffer("fault compiling regexp '") + endParam + "' in scheme '" + scheme->schemeName + "'");
+    }
+  }
+  delete startParam;
+  delete endParam;
+
+  // !! EE
+  loadBlockRegions(next, (Element*) elem);
+  loadRegions(next, eStart, true);
+  loadRegions(next, eEnd, false);
+  scheme->nodes.addElement(next);
+
+}
+
+void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, Node *elem) 
+{
+  SchemeNode *next = new SchemeNode();
+  bool isCase = !DString("yes").equals(((Element*) elem)->getAttribute(DString("ignorecase")));
+  next->lowPriority = !DString("normal").equals(((Element*) elem)->getAttribute(DString("priority")));
+  const Region *brgn = getNCRegion((Element*) elem, DString("region"));
+  if (brgn == null) {
+    return;
+  }
+  const String *worddiv = ((Element*) elem)->getAttribute(DString("worddiv"));
+
+  next->worddiv = null;
+  if (worddiv) {
+    String *entWordDiv = useEntities(worddiv);
+    next->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, null);
+    if (next->worddiv == null) {
+      if (errorHandler != null) errorHandler->warning(StringBuffer("fault compiling worddiv regexp '") + entWordDiv + "' in scheme '" + scheme->schemeName + "'");
+    }
+    delete entWordDiv;
+  };
+
+  next->kwList = new KeywordList;
+  for (Node *keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()) {
+    if (*keywrd_count->getNodeName() == "word" ||
+            *keywrd_count->getNodeName() == "symb") {
+      next->kwList->num++;
+    }
+  }
+
+  next->kwList->kwList = new KeywordInfo[next->kwList->num];
+  memset(next->kwList->kwList, 0, sizeof (KeywordInfo) * next->kwList->num);
+  next->kwList->num = 0;
+  KeywordInfo *pIDs = next->kwList->kwList;
+  next->kwList->matchCase = isCase;
+  next->kwList->kwList = pIDs;
+  next->type = SNT_KEYWORDS;
+
+  for (Node *keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
+    int type = 0;
+    if (*keywrd->getNodeName() == "word") type = 1;
+    if (*keywrd->getNodeName() == "symb") type = 2;
+    if (!type) {
+      continue;
+    }
+    const String *param;
+    if (!(param = ((Element*) keywrd)->getAttribute(DString("name"))) || !param->length()) {
+      continue;
+    }
+
+    const Region *rgn = brgn;
+    if (((Element*) keywrd)->getAttribute(DString("region")))
+      rgn = getNCRegion((Element*) keywrd, DString("region"));
+
+    int pos = next->kwList->num;
+    pIDs[pos].keyword = new SString(param);
+    pIDs[pos].region = rgn;
+    pIDs[pos].isSymbol = (type == 2);
+    pIDs[pos].ssShorter = -1;
+    next->kwList->firstChar->addChar((*param)[0]);
+    if (!isCase) {
+      next->kwList->firstChar->addChar(Character::toLowerCase((*param)[0]));
+      next->kwList->firstChar->addChar(Character::toUpperCase((*param)[0]));
+      next->kwList->firstChar->addChar(Character::toTitleCase((*param)[0]));
+    };
+    next->kwList->num++;
+    if (next->kwList->minKeywordLength > pIDs[pos].keyword->length())
+      next->kwList->minKeywordLength = pIDs[pos].keyword->length();
+  };
+  next->kwList->sortList();
+  next->kwList->substrIndex();
+  scheme->nodes.addElement(next);
+}
 
 
 void HRCParserImpl::loadRegions(SchemeNode *node, Element *el, bool st)
 {
-	static char rg_tmpl[8] = "region\0";
-	
-	if(el)
-	{
-        if (node->region == null){
-          node->region = getNCRegion(el, DString("region"));
-        }
+  static char rg_tmpl[8] = "region\0";
+  if (el) {
+    if (node->region == null) {
+      node->region = getNCRegion(el, DString("region"));
+    }
 
-		for(int i = 0; i < REGIONS_NUM; i++)
-		{
-			rg_tmpl[6] = (i < 0xA ? i : i+7+32) + '0';
-			
-			if(st){
-			  node->regions[i] = getNCRegion(el, DString(rg_tmpl));
-			}
-			else{
-			  node->regione[i] = getNCRegion(el, DString(rg_tmpl));
-		    }
-		}
-	}
-	
-	for (int i = 0; i < NAMED_REGIONS_NUM; i++)
-	{
-		if(st) node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
-		else   node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
-	}
+    for (int i = 0; i < REGIONS_NUM; i++) {
+      rg_tmpl[6] = (i < 0xA ? i : i + 7 + 32) + '0';
+
+      if (st) {
+        node->regions[i] = getNCRegion(el, DString(rg_tmpl));
+      } else {
+        node->regione[i] = getNCRegion(el, DString(rg_tmpl));
+      }
+    }
+  }
+
+  for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
+    if (st) node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
+    else node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
+  }
 }
 
 

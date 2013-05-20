@@ -56,6 +56,7 @@ friend class FileTypeImpl;
 
   String *versionName;
 
+  FileTypeImpl *parseProtoType;
   FileTypeImpl *parseType;
   colorer::InputSource *curInputSource;
   bool structureChanged;
@@ -68,11 +69,24 @@ friend class FileTypeImpl;
   void unloadFileType(FileTypeImpl *filetype);
 
   void parseHRC(colorer::InputSource *is);
-  void addPrototype(Element *elem);
-  void addType(Element *elem);
+  void parseHrcBlock(Element *elem);                     
+  void addPrototype(Element *elem);                      
+  void parsePrototypeBlock(Element *elem);               
+  void addPrototypeLocation(Element *elem);              
+  void addPrototypeDetectParam(Element *elem);           
+  void addPrototypeParameters(Element *elem);            
+  void addType(Element *elem);                           
+  void parseTypeBlock(Element *elem);                    
+  void addTypeRegion(Element *elem);                     
+  void addTypeEntity(Element *elem);                     
+  void addTypeImport(Element *elem);                     
 
-  void addScheme(Element *elem);
-  void addSchemeNodes(SchemeImpl *scheme, Node *elem);
+  void addScheme(Element *elem);                         
+  void addSchemeNodes(SchemeImpl *scheme, Node *elem);   
+  void addSchemeInherit(SchemeImpl *scheme, Node *elem); 
+  void addSchemeRegexp(SchemeImpl *scheme, Node *elem);  
+  void addSchemeBlock(SchemeImpl *scheme, Node *elem);   
+  void addSchemeKeywords(SchemeImpl *scheme, Node *elem);
   
   void loadBlockRegions(SchemeNode *node, Element *el);
   void loadRegions(SchemeNode *node, Element *el, bool st);
