@@ -94,7 +94,8 @@ set(SRC_COLORER
    ${UNICODE}/x_charcategory_names.h ${UNICODE}/x_tables.h
 )
 
-include_directories (./)
+# add ${XML} to fix build on farmanager server
+include_directories (./ ${XML})
 
 #====================================================
 # zlib
@@ -109,7 +110,8 @@ set(SRC_ZLIB
     ${MINIZIP}/ioapi.h ${MINIZIP}/ioapi.c ${MINIZIP}/minizip.c ${MINIZIP}/unzip.c ${MINIZIP}/unzip.h
 )
 
-include_directories (../libs/zlib/)
+# add ${MINIZIP} to fix build on farmanager server
+include_directories (../libs/zlib/ ${MINIZIP})
 
 #====================================================
 # dlmalloc
