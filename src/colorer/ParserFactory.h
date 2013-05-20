@@ -110,7 +110,7 @@ public:
    * Returns currently used global error handler.
    * If no error handler were installed, returns null.
    */
-  ErrorHandler *getErrorHandler(){
+  colorer::ErrorHandler *getErrorHandler(){
     return fileErrorHandler;
   };
   /**
@@ -124,7 +124,7 @@ private:
 
   String *catalogPath;
   InputSource *catalogFIS;
-  ErrorHandler *fileErrorHandler;
+  colorer::ErrorHandler *fileErrorHandler;
   Vector<const String*> hrcLocations;
   Hashtable<Hashtable<Vector<const String*>*>*> hrdLocations;
   Hashtable<const String *>hrdDescriptions;

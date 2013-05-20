@@ -30,7 +30,7 @@ HRCParserImpl::~HRCParserImpl()
   delete versionName;
 }
 
-void HRCParserImpl::setErrorHandler(ErrorHandler *eh){
+void HRCParserImpl::setErrorHandler(colorer::ErrorHandler *eh){
   errorHandler = eh;
 }
 

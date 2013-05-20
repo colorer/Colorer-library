@@ -7,7 +7,7 @@
 const int CHOOSE_STR = 4;
 const int CHOOSE_LEN = 200 * CHOOSE_STR;
 
-ErrorHandler *eh;
+colorer::ErrorHandler *eh;
 
 BaseEditor::BaseEditor(ParserFactory *parserFactory, LineSource *lineSource)
 {

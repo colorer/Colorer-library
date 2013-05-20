@@ -10,7 +10,7 @@
     description and start/end time of logging.
     @ingroup colorer_handlers
 */
-class FileErrorHandler : public ErrorHandler
+class FileErrorHandler : public colorer::ErrorHandler
 {
 public:
   /** Creates FileErrorHandler instance.

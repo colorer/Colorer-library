@@ -9,7 +9,7 @@
  *
  * @ingroup colorer_handlers
  */
-class DefaultErrorHandler: public ErrorHandler
+class DefaultErrorHandler: public colorer::ErrorHandler
 {
 public:
   DefaultErrorHandler(){};

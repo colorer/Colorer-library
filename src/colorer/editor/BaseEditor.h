@@ -282,7 +282,7 @@ private:
    */
   PairMatch *getPairMatch(int lineNo, int pos);
 protected:
-  ErrorHandler *feh;
+  colorer::ErrorHandler *feh;
 };
 
 #endif

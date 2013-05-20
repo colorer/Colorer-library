@@ -23,7 +23,7 @@ public:
   HRCParserImpl();
   ~HRCParserImpl();
 
-  void setErrorHandler(ErrorHandler *eh);
+  void setErrorHandler(colorer::ErrorHandler *eh);
 
   void loadSource(InputSource *is);
   FileType *getFileType(const String *name);
@@ -62,7 +62,7 @@ friend class FileTypeImpl;
   bool updateStarted;
 
   DocumentBuilder docbuilder;
-  ErrorHandler *errorHandler;
+  colorer::ErrorHandler *errorHandler;
 
   void loadFileType(FileType *filetype);
   void unloadFileType(FileTypeImpl *filetype);

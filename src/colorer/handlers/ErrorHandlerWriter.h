@@ -9,7 +9,7 @@
     Error description includes start/end time of logging and error message.
     @ingroup colorer_handlers
 */
-class ErrorHandlerWriter : public ErrorHandler
+class ErrorHandlerWriter : public colorer::ErrorHandler
 {
 public:
   /** Creates ErrorHandler instance.

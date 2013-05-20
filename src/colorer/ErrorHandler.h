@@ -3,38 +3,39 @@
 
 #include<common/Common.h>
 
-/**
- * Informs application about different
- * Parsing problems and warning.
- * @ingroup colorer
- */
-class ErrorHandler
-{
-public:
+namespace colorer {
   /**
-   * Nonfatal parse error.
-   * Called when target class finds some non-fatal error.
-   * @param msg Error message
-   */
-  virtual void error(const String &msg) = 0;
-  /**
-   * Fatal parse error.
-   * Called when target class finds fatal error, which could
-   * significantly change or break expected behaviour.
-   * @param msg Error message
-   */
-  virtual void fatalError(const String &msg) = 0;
-  /**
-   * Simple warnings/info messages.
-   * Called when target class want to inform application
-   * about some warnings or informational messages.
-   * @param msg Warning message
-   */
-  virtual void warning(const String &msg) = 0;
+  * Informs application about different
+  * Parsing problems and warning.
+  * @ingroup colorer
+  */
+  class ErrorHandler
+  {
+  public:
+    /**
+    * Nonfatal parse error.
+    * Called when target class finds some non-fatal error.
+    * @param msg Error message
+    */
+    virtual void error(const String &msg) = 0;
+    /**
+    * Fatal parse error.
+    * Called when target class finds fatal error, which could
+    * significantly change or break expected behaviour.
+    * @param msg Error message
+    */
+    virtual void fatalError(const String &msg) = 0;
+    /**
+    * Simple warnings/info messages.
+    * Called when target class want to inform application
+    * about some warnings or informational messages.
+    * @param msg Warning message
+    */
+    virtual void warning(const String &msg) = 0;
 
-  virtual ~ErrorHandler(){};
-};
-
+    virtual ~ErrorHandler(){};
+  };
+}
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
