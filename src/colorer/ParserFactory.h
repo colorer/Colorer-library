@@ -120,7 +120,13 @@ public:
   int countHRD(const String &classID);
 private:
   void init();
+  void parseCatalogBlock(Element *elem);
+  void parseHrcSetsBlock(Element *elem);
+  void addHrcSetsLocation(Element *elem);
+  void parseHrdSetsBlock(Element *elem);
   String *searchPath();
+  void searchPathWindows(Vector<String*> *paths);
+  void searchPathLinux(Vector<String*> *paths);
 
   String *catalogPath;
   colorer::InputSource *catalogFIS;
