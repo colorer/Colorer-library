@@ -76,7 +76,7 @@ set(SRC_COLORER
    ${COMMON}/io/SharedInputSource.h ${COMMON}/io/SharedInputSource.cpp
    ${COMMON}/io/Writer.cpp ${COMMON}/io/Writer.h
    ${COMMON}/io/HTTPInputSource.cpp ${COMMON}/io/HTTPInputSource.h
-   ${COMMON}/io/MemoryFile.h 
+   ${COMMON}/io/MemoryFile.h ${COMMON}/io/MemoryFile.cpp 
    ${COMMON}/io/StreamWriter.cpp ${COMMON}/io/StreamWriter.h
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
    ${XML}/xmldom.cpp ${XML}/xmldom.h
