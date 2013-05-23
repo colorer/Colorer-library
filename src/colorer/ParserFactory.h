@@ -48,13 +48,6 @@ public:
    */
   ParserFactory();
 
-  /**
-   * ParserFactory Constructor with explicit catalog path.
-   * @param catalogPath Path to catalog.xml file. If null,
-   *        standard search method is used.
-   * @throw ParserFactoryException If can't load specified catalog.
-   */
-  ParserFactory(const String *catalogPath);
   virtual ~ParserFactory();
 
   static const char *getVersion();
@@ -118,8 +111,14 @@ public:
    */
   void parseHRDSetsChild(Node *hrd);
   int countHRD(const String &classID);
+
+  /**
+  * @param catalogPath Path to catalog.xml file. If null,
+  *        standard search method is used.
+  * @throw ParserFactoryException If can't load specified catalog.
+  */
+  void loadCatalog(const String *catalogPath);
 private:
-  void init();
   void parseCatalogBlock(Element *elem);
   void parseHrcSetsBlock(Element *elem);
   void addHrcSetsLocation(Element *elem);

@@ -176,7 +176,8 @@ void ConsoleTools::listTypes(bool load, bool useNames){
   Writer *writer = null;
   try{
     writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
-    ParserFactory pf(catalogPath);
+    ParserFactory pf;
+    pf.loadCatalog(catalogPath);
     HRCParser *hrcParser = pf.getHRCParser();
     fprintf(stderr, "\nloading file types...\n");
     for(int idx = 0;; idx++){
@@ -240,7 +241,8 @@ void ConsoleTools::profile(int loopCount){
   clock_t msecs;
 
   // parsers factory
-  ParserFactory pf(catalogPath);
+  ParserFactory pf;
+  pf.loadCatalog(catalogPath);
   // Source file text lines store.
   TextLinesStore textLinesStore;
   textLinesStore.loadFile(inputFileName, inputEncoding, true);
@@ -269,7 +271,8 @@ void ConsoleTools::viewFile(){
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
     // parsers factory
-    ParserFactory pf(catalogPath);
+    ParserFactory pf;
+    pf.loadCatalog(catalogPath);
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
@@ -320,7 +323,8 @@ void ConsoleTools::genOutput(bool useTokens){
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
     // parsers factory
-    ParserFactory pf(catalogPath);
+    ParserFactory pf;
+    pf.loadCatalog(catalogPath);
     // HRC loading
     HRCParser *hrcParser = pf.getHRCParser();
     // HRD RegionMapper creation

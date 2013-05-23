@@ -22,14 +22,17 @@
 #define __TIMESTAMP__ "28 May 2006"
 #endif
 
-
-void ParserFactory::init()
+void ParserFactory::loadCatalog(const String *catalogPath)
 {
+  if (catalogPath == null){
+    this->catalogPath = searchPath();
+  }else{
+    this->catalogPath = new SString(catalogPath);
+  }
+
   DocumentBuilder docbuilder;
   Document *catalog;
 
-  hrcParser = null;
-  fileErrorHandler = null;
   try{
     catalogFIS = colorer::InputSource::newInstance(catalogPath);
     catalog = docbuilder.parse(catalogFIS);
@@ -269,20 +272,8 @@ ParserFactory::ParserFactory(){
   RegExpStack = NULL;
   RegExpStack_Size = 0;
   fileErrorHandler = null;
-  catalogPath = searchPath();
-  init();
-};
-
-ParserFactory::ParserFactory(const String *catalogPath){
-  RegExpStack = NULL;
-  RegExpStack_Size = 0;
-  fileErrorHandler = null;
-  if (catalogPath == null){
-    this->catalogPath = searchPath();
-  }else{
-    this->catalogPath = new SString(catalogPath);
-  }
-  init();
+  hrcParser = null;
+  catalogPath = null;
 };
 
 ParserFactory::~ParserFactory(){
