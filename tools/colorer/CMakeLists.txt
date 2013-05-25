@@ -56,7 +56,7 @@ if(MSVC)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
   set(COLORER_WARNING_FLAGS "")
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc ")
+  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /Zi")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1")
