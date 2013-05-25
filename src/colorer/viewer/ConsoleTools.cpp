@@ -62,6 +62,7 @@ colorer::ErrorHandler *ConsoleTools::createErrorHandler() {
     }catch(Exception &){
       resultHandler = null;
     }
+    delete dfis;
   }
   if (!resultHandler) {
     resultHandler = new DefaultErrorHandler();
