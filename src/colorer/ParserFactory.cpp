@@ -68,22 +68,19 @@ void ParserFactory::parseCatalogBlock(Element *elem_)
 
 void ParserFactory::parseHrcSetsBlock(Element *elem)
 {
-  const String *logLocation = ((Element*)elem)->getAttribute(DString("log-location"));
+  if (COLORER_FEATURE_LOGLEVEL > COLORER_FEATURE_LOGLEVEL_QUIET){
+    //TODO: change debug loging
+    const String *logLocation = ((Element*)elem)->getAttribute(DString("log-location"));
 
-  if ((logLocation != null) && (logLocation->length()!=0)){
-    colorer::InputSource *dfis = colorer::InputSource::newInstance(logLocation, catalogFIS);
-    try{
-      fileErrorHandler = new FileErrorHandler(dfis->getLocation(), Encodings::ENC_UTF8, false);
-      colorer_logger_set_target(dfis->getLocation()->getChars());
-    }catch(Exception &){
-      fileErrorHandler = null;
+    if ((logLocation != null) && (logLocation->length()!=0)){
+      colorer::InputSource *dfis = colorer::InputSource::newInstance(logLocation, catalogFIS);
+      try{
+        colorer_logger_set_target(dfis->getLocation()->getChars());
+      }catch(Exception &){
+      };
+      delete dfis;
     };
-    delete dfis;
-  };
-
-  if (fileErrorHandler == null){
-    fileErrorHandler = new DefaultErrorHandler();
-  };
+  }
 
   addHrcSetsLocation(elem);
 }
@@ -125,9 +122,7 @@ void ParserFactory::parseHRDSetsChild(Node *hrd)
     hrdLocations.put(hrd_class, hrdClass);
   };
   if (hrdClass->get(hrd_name) != null){
-    if (fileErrorHandler != null){
-      fileErrorHandler->error(StringBuffer("Duplicate hrd class '")+hrd_name+"'");
-    }
+    errorHandler->error(StringBuffer("Duplicate hrd class '")+hrd_name+"'");
     return;
   };
   hrdClass->put(hrd_name, new Vector<const String*>);
@@ -180,8 +175,7 @@ String *ParserFactory::searchPath()
     delete path;
   };
   if (right_path == null){
-    if (fileErrorHandler != null)
-      fileErrorHandler->fatalError(DString("Can't find suitable catalog.xml file. Check your program settings."));
+    errorHandler->fatalError(DString("Can't find suitable catalog.xml file. Check your program settings."));
     throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
   };
   return right_path;
@@ -268,10 +262,16 @@ void ParserFactory::searchPathLinux(Vector<String*> *paths)
   paths->addElement(new SString("/usr/local/share/colorer/catalog.xml"));
 }
 
-ParserFactory::ParserFactory(){
+ParserFactory::ParserFactory(colorer::ErrorHandler *_errorHandler){
   RegExpStack = NULL;
   RegExpStack_Size = 0;
-  fileErrorHandler = null;
+  if (_errorHandler) {
+    errorHandler = _errorHandler;
+    ownErrorHandler = false;
+  }else{
+    errorHandler = new DefaultErrorHandler();
+    ownErrorHandler = true;
+  }
   hrcParser = null;
   catalogPath = null;
 };
@@ -297,7 +297,7 @@ ParserFactory::~ParserFactory(){
   delete hrcParser;
   delete catalogPath;
   delete catalogFIS;
-  delete fileErrorHandler;
+  if (ownErrorHandler) delete errorHandler;
   delete[] RegExpStack;
 };
 
@@ -327,7 +327,7 @@ const String* ParserFactory::getHRDescription(const String &classID, const Strin
 HRCParser* ParserFactory::getHRCParser(){
   if (hrcParser != null) return hrcParser;
   hrcParser = new HRCParserImpl();
-  hrcParser->setErrorHandler(fileErrorHandler);
+  hrcParser->setErrorHandler(errorHandler);
   for(int idx = 0; idx < hrcLocations.size(); idx++){
     if (hrcLocations.elementAt(idx) != null){
       const String *relPath = hrcLocations.elementAt(idx);
@@ -357,10 +357,8 @@ HRCParser* ParserFactory::getHRCParser(){
                 hrcParser->loadSource(dfis);
                 delete dfis;
               }catch(Exception &e){
-                if (fileErrorHandler != null){
-                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + dfis->getLocation());
-                  fileErrorHandler->fatalError(*e.getMessage());
-                };
+                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + dfis->getLocation());
+                errorHandler->fatalError(*e.getMessage());
                 delete dfis;
               };
             };
@@ -398,10 +396,8 @@ HRCParser* ParserFactory::getHRCParser(){
           hrcParser->loadSource(dfis);
           delete dfis;
         }catch(Exception &e){
-          if (fileErrorHandler != null){
-            fileErrorHandler->fatalError(DString("Can't load hrc: "));
-            fileErrorHandler->fatalError(*e.getMessage());
-          };
+          errorHandler->fatalError(DString("Can't load hrc: "));
+          errorHandler->fatalError(*e.getMessage());
           delete dfis;
         };
       };
@@ -450,12 +446,10 @@ StyledHRDMapper *ParserFactory::createStyledMapper(const String *classID, const 
         mapper->loadRegionMappings(dfis);
         delete dfis;
       }catch(Exception &e){
-        if (fileErrorHandler != null){
-          fileErrorHandler->error(DString("Can't load hrd: "));
-          fileErrorHandler->error(*e.getMessage());
-          delete dfis;
-          throw ParserFactoryException(DString("Error load hrd"));
-        };
+        errorHandler->error(DString("Can't load hrd: "));
+        errorHandler->error(*e.getMessage());
+        delete dfis;
+        throw ParserFactoryException(DString("Error load hrd"));
       };
     };
   return mapper;
@@ -482,10 +476,8 @@ TextHRDMapper *ParserFactory::createTextMapper(const String *nameID){
         mapper->loadRegionMappings(dfis);
         delete dfis;
       }catch(Exception &e){
-        if (fileErrorHandler != null){
-          fileErrorHandler->error(DString("Can't load hrd: "));
-          fileErrorHandler->error(*e.getMessage());
-        };
+        errorHandler->error(DString("Can't load hrd: "));
+        errorHandler->error(*e.getMessage());
       };
     };
   return mapper;

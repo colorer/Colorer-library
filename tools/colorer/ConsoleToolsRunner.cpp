@@ -105,6 +105,15 @@ void init(ConsoleTools &ct, int argc, char*argv[]){
       }
       continue;
     }
+    if (argv[i][1] == 'e' && argv[i][2] == 'h' && (i+1 < argc || argv[i][3])){
+      if (argv[i][3]){
+        ct.setLogFileName(DString(argv[i]+3));
+      }else{
+        ct.setLogFileName(DString(argv[i+1]));
+        i++;
+      }
+      continue;
+    }
     if (argv[i][1]) fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i]+1);
   }
 
@@ -142,6 +151,7 @@ void printError(){
        "  -dc        Disable information header in generator's output\n"
        "  -ds        Disable HTML symbol substitutions in generator's output\n"
        "  -dh        Disable HTML header and footer output\n"
+       "  -eh<name>  Use file <name> as log file\n"
   );
 };
 

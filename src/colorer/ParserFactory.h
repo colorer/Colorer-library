@@ -46,7 +46,7 @@ public:
    * Searches for catalog.xml in the set of predefined locations
    * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
-  ParserFactory();
+  ParserFactory(colorer::ErrorHandler *errorHandler);
 
   virtual ~ParserFactory();
 
@@ -104,7 +104,7 @@ public:
    * If no error handler were installed, returns null.
    */
   colorer::ErrorHandler *getErrorHandler(){
-    return fileErrorHandler;
+    return errorHandler;
   };
   /**
    * load one hrd node from hrd-sets
@@ -129,7 +129,8 @@ private:
 
   String *catalogPath;
   colorer::InputSource *catalogFIS;
-  colorer::ErrorHandler *fileErrorHandler;
+  colorer::ErrorHandler *errorHandler;
+  bool ownErrorHandler;
   Vector<const String*> hrcLocations;
   Hashtable<Hashtable<Vector<const String*>*>*> hrdLocations;
   Hashtable<const String *>hrdDescriptions;

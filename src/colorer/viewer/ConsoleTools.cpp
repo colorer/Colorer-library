@@ -23,6 +23,7 @@ ConsoleTools::ConsoleTools(){
   inputEncodingIndex = outputEncodingIndex = -1;
   catalogPath = null;
   hrdName = null;
+  logFileName = null;
 
   docLinkHash = new Hashtable<String*>;
 }
@@ -34,6 +35,7 @@ ConsoleTools::~ConsoleTools(){
   delete outputEncoding;
   delete outputFileName;
   delete inputFileName;
+  delete logFileName;
 
   for(String*st = docLinkHash->enumerate(); st; st = docLinkHash->next())
     delete st;
@@ -51,6 +53,21 @@ void ConsoleTools::setHtmlWrapping(bool use) { htmlWrapping = use; }
 
 void ConsoleTools::addLineNumbers(bool add){ lineNumbers = add; }
 
+colorer::ErrorHandler *ConsoleTools::createErrorHandler() {
+  colorer::ErrorHandler *resultHandler = null;
+  if (logFileName && logFileName->length()!=0) {
+    colorer::InputSource *dfis = colorer::InputSource::newInstance(logFileName);
+    try{
+      resultHandler = new FileErrorHandler(dfis->getLocation(), Encodings::ENC_UTF8, false);
+    }catch(Exception &){
+      resultHandler = null;
+    }
+  }
+  if (!resultHandler) {
+    resultHandler = new DefaultErrorHandler();
+  }
+  return resultHandler;
+}
 
 void ConsoleTools::setTypeDescription(const String &str) {
   delete typeDescription;
@@ -65,6 +82,11 @@ void ConsoleTools::setInputFileName(const String &str) {
 void ConsoleTools::setOutputFileName(const String &str) {
   delete outputFileName;
   outputFileName = new SString(str);
+}
+
+void ConsoleTools::setLogFileName(const String &str) {
+  delete logFileName;
+  logFileName = new SString(str);
 }
 
 void ConsoleTools::setInputEncoding(const String &str) {
@@ -174,9 +196,11 @@ void ConsoleTools::RETest(){
 
 void ConsoleTools::listTypes(bool load, bool useNames){
   Writer *writer = null;
+  colorer::ErrorHandler *err = null;
   try{
     writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
-    ParserFactory pf;
+    err = createErrorHandler();
+    ParserFactory pf(err);
     pf.loadCatalog(catalogPath);
     HRCParser *hrcParser = pf.getHRCParser();
     fprintf(stderr, "\nloading file types...\n");
@@ -200,6 +224,7 @@ void ConsoleTools::listTypes(bool load, bool useNames){
     delete writer;
     fprintf(stderr, "%s\n", e.getMessage()->getChars());
   }
+  delete err;
 }
 
 FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource){
@@ -239,9 +264,10 @@ FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource)
 
 void ConsoleTools::profile(int loopCount){
   clock_t msecs;
+  colorer::ErrorHandler *err = createErrorHandler();
 
   // parsers factory
-  ParserFactory pf;
+  ParserFactory pf(err);
   pf.loadCatalog(catalogPath);
   // Source file text lines store.
   TextLinesStore textLinesStore;
@@ -263,15 +289,18 @@ void ConsoleTools::profile(int loopCount){
   msecs = clock() - msecs;
 
   printf("%ld\n", (msecs*1000)/CLOCKS_PER_SEC );
+  delete err;
 }
 
 void ConsoleTools::viewFile(){
+  colorer::ErrorHandler *err = null;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
+    err = createErrorHandler();
     // parsers factory
-    ParserFactory pf;
+    ParserFactory pf(err);
     pf.loadCatalog(catalogPath);
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
@@ -294,6 +323,7 @@ void ConsoleTools::viewFile(){
   }catch(...){
     fprintf(stderr, "unknown exception ...\n");
   }
+  delete err;
 }
 
 void ConsoleTools::forward(){
@@ -318,12 +348,14 @@ void ConsoleTools::forward(){
 }
 
 void ConsoleTools::genOutput(bool useTokens){
+  colorer::ErrorHandler *err = null;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
+    err = createErrorHandler();
     // parsers factory
-    ParserFactory pf;
+    ParserFactory pf(err);
     pf.loadCatalog(catalogPath);
     // HRC loading
     HRCParser *hrcParser = pf.getHRCParser();
@@ -362,6 +394,7 @@ void ConsoleTools::genOutput(bool useTokens){
     }catch(Exception &e){
       fprintf(stderr, "can't open file '%s' for writing:\n", outputFileName->getChars());
       fprintf(stderr, e.getMessage()->getChars());
+      delete err;
       return;
     }
 
@@ -425,6 +458,7 @@ void ConsoleTools::genOutput(bool useTokens){
   }catch(...){
     fprintf(stderr, "unknown exception ...\n");
   }
+  delete err;
 }
 
 void ConsoleTools::genTokenOutput(){

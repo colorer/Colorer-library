@@ -67,7 +67,8 @@ public:
   void setLinkSource(const String &str);
   /// If true, result file will have line numbers before each line
   void addLineNumbers(bool add);
-
+  /// File name, used as log.
+  void setLogFileName(const String &str);
 
   /** Regular Expressions tests.
       Reads RE and expression from stdin,
@@ -113,7 +114,7 @@ public:
    *  No HRD input is used, but direct tokenized output is produced with region names, as names of tokens.
    */
   void genTokenOutput();
-
+  colorer::ErrorHandler *createErrorHandler();
 private:
   bool copyrightHeader;
   bool htmlEscaping;
@@ -131,6 +132,7 @@ private:
   String *hrdName;
   String *outputFileName;
   String *inputFileName;
+  String *logFileName;
 
   Hashtable<String*> *docLinkHash;
 };
