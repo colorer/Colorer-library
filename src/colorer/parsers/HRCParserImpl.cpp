@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include<colorer/parsers/helpers/HRCParserHelpers.h>
 #include<colorer/parsers/HRCParserImpl.h>
+#include <xml/XmlParserErrorHandler.h>
+#include <xml/XmlInputSource.h>
 
 HRCParserImpl::HRCParserImpl()
  : fileTypeHash(200), fileTypeVector(150), schemeHash(4000),
@@ -35,8 +37,8 @@ void HRCParserImpl::setErrorHandler(colorer::ErrorHandler *eh){
   errorHandler = eh;
 }
 
-void HRCParserImpl::loadSource(colorer::InputSource *is){
-  colorer::InputSource *istemp = curInputSource;
+void HRCParserImpl::loadSource(xercesc::InputSource *is){
+  /*colorer::InputSource *istemp = curInputSource;
   curInputSource = is;
   if (is == null){
     if (errorHandler != null){
@@ -50,7 +52,7 @@ void HRCParserImpl::loadSource(colorer::InputSource *is){
     curInputSource = istemp;
     throw e;
   }
-  curInputSource = istemp;
+  curInputSource = istemp;*/
 }
 
 void HRCParserImpl::unloadFileType(FileTypeImpl *filetype)
@@ -85,7 +87,7 @@ void HRCParserImpl::loadFileType(FileType *filetype)
 
   try{
 
-    loadSource(thisType->inputSource);
+    //loadSource(thisType->inputSource);
 
   }catch(InputSourceException &e){
     if (errorHandler != null){

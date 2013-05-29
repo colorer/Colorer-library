@@ -80,6 +80,8 @@ set(SRC_COLORER
    ${COMMON}/io/StreamWriter.cpp ${COMMON}/io/StreamWriter.h
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
    ${XML}/xmldom.cpp ${XML}/xmldom.h
+   ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
+   ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h

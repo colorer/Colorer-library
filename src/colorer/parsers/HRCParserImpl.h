@@ -9,6 +9,10 @@
 #include<unicode/UnicodeTools.h>
 #include<colorer/parsers/helpers/HRCParserHelpers.h>
 
+#include <xercesc/framework/LocalFileInputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+
 class FileTypeImpl;
 
 /** Implementation of HRCParser.
@@ -25,7 +29,7 @@ public:
 
   void setErrorHandler(colorer::ErrorHandler *eh);
 
-  void loadSource(colorer::InputSource *is);
+  void loadSource(xercesc::InputSource *is);
   FileType *getFileType(const String *name);
   FileType *enumerateFileTypes(int index);
   FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0);

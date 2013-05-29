@@ -1,7 +1,6 @@
 #ifndef _COLORER_PARSERFACTORY_H_
 #define _COLORER_PARSERFACTORY_H_
 
-#include<xml/xmldom.h>
 #include<colorer/TextParser.h>
 #include<colorer/HRCParser.h>
 #include<colorer/handlers/DefaultErrorHandler.h>
@@ -9,6 +8,8 @@
 #include<colorer/handlers/TextHRDMapper.h>
 #include<colorer/ParserFactoryException.h>
 
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
 
 /**
  * Maintains catalog of HRC and HRD references.
@@ -109,7 +110,7 @@ public:
   /**
    * load one hrd node from hrd-sets
    */
-  void parseHRDSetsChild(Node *hrd);
+  void parseHRDSetsChild(const xercesc::DOMElement *elem);
   int countHRD(const String &classID);
 
   /**
@@ -119,16 +120,16 @@ public:
   */
   void loadCatalog(const String *catalogPath);
 private:
-  void parseCatalogBlock(Element *elem);
-  void parseHrcSetsBlock(Element *elem);
-  void addHrcSetsLocation(Element *elem);
-  void parseHrdSetsBlock(Element *elem);
+  void parseCatalogBlock(const xercesc::DOMElement *elem);
+  void parseHrcSetsBlock(const xercesc::DOMElement *elem);
+  void addHrcSetsLocation(const xercesc::DOMElement *elem);
+  void parseHrdSetsBlock(const xercesc::DOMElement *elem);
   String *searchPath();
   void searchPathWindows(Vector<String*> *paths);
   void searchPathLinux(Vector<String*> *paths);
 
   String *catalogPath;
-  colorer::InputSource *catalogFIS;
+  xercesc::InputSource *catalogXIS;
   colorer::ErrorHandler *errorHandler;
   bool ownErrorHandler;
   Vector<const String*> hrcLocations;

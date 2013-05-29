@@ -1,7 +1,9 @@
 
 #include<stdio.h>
-#include<xml/xmldom.h>
 #include<colorer/handlers/TextHRDMapper.h>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xml/XmlParserErrorHandler.h>
 
 TextHRDMapper::TextHRDMapper(){};
 TextHRDMapper::~TextHRDMapper(){
@@ -16,22 +18,38 @@ TextHRDMapper::~TextHRDMapper(){
 /** Loads region definitions from HRD file.
     Multiple files could be loaded.
 */
-void TextHRDMapper::loadRegionMappings(colorer::InputSource *is)
+void TextHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::ErrorHandler *eh)
 {
-  DocumentBuilder docbuilder;
+  const XMLCh *hrdTagMainHrd2 = L"hrd";
+  const XMLCh *hrdTagAssign2 = L"assign";
+  const XMLCh *hrdAssignAttrName2 = L"name";
+  const XMLCh *hrdAssignAttrStext = L"stext";
+  const XMLCh *hrdAssignAttrEtext = L"etext";
+  const XMLCh *hrdAssignAttrSback = L"sback";
+  const XMLCh *hrdAssignAttrEback = L"eback";
 
-  Document *hrdbase = docbuilder.parse(is);
-  Element *hbase = hrdbase->getDocumentElement();
-  if (*hbase->getNodeName() != "hrd"){
-    docbuilder.free(hrdbase);
+  xercesc::XercesDOMParser xml_parser;
+  XmlParserErrorHandler error_handler(eh);
+  xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setLoadExternalDTD(false);
+  xml_parser.setSkipDTDValidation(true);
+  xml_parser.parse(*is);
+  if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
-  };
+  }
+  xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
+  xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
+  
+  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagMainHrd2)) {
+    throw Exception(DString("Error loading HRD file"));
+  }
+  for(xercesc::DOMNode *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign2)){
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
+      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName2);
+      if (*xname == '\0') continue;
 
-  for(Node *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
-    if (curel->getNodeType() == Node::ELEMENT_NODE && *curel->getNodeName() == "assign"){
-      const String *name = ((Element*)curel)->getAttribute(DString("name"));
-      if (name == null) continue;
-
+      const String *name = new DString(xname);
       if (regionDefines.get(name) != null){
         const TextRegion *rd = TextRegion::cast(regionDefines.get(name));
         delete rd->stext; delete rd->etext;
@@ -42,21 +60,21 @@ void TextHRDMapper::loadRegionMappings(colorer::InputSource *is)
       const String *etext = null;
       const String *sback = null;
       const String *eback = null;
-      const String *sval;
-      sval = ((Element*)curel)->getAttribute(DString("stext"));
-      if (sval != null) stext = new SString(sval);
-      sval = ((Element*)curel)->getAttribute(DString("etext"));
-      if (sval != null) etext = new SString(sval);
-      sval = ((Element*)curel)->getAttribute(DString("sback"));
-      if (sval != null) sback = new SString(sval);
-      sval = ((Element*)curel)->getAttribute(DString("eback"));
-      if (sval != null) eback = new SString(sval);
+      const XMLCh *sval;
+      sval = subelem->getAttribute(hrdAssignAttrStext);
+      if (*sval != '\0') stext = new SString(DString(sval));
+      sval = subelem->getAttribute(hrdAssignAttrEtext);
+      if (*sval != '\0') etext = new SString(DString(sval));
+      sval = subelem->getAttribute(hrdAssignAttrSback);
+      if (*sval != '\0') sback = new SString(DString(sval));
+      sval = subelem->getAttribute(hrdAssignAttrEback);
+      if (*sval != '\0') eback = new SString(DString(sval));
 
       RegionDefine *rdef = new TextRegion(stext, etext, sback, eback);
       regionDefines.put(name, rdef);
+      delete name;
     };
   };
-  docbuilder.free(hrdbase);
 };
 
 /** Writes all currently loaded region definitions into

@@ -83,7 +83,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib)
+set(LIBRARIES colorer_lib xerces-c_3)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB})

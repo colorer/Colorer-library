@@ -18,6 +18,9 @@
 #include<colorer/parsers/HRCParserImpl.h>
 #include<colorer/parsers/TextParserImpl.h>
 
+#include <xml/XmlInputSource.h>
+#include <xml/XmlParserErrorHandler.h>
+
 #ifndef __TIMESTAMP__
 #define __TIMESTAMP__ "28 May 2006"
 #endif
@@ -30,92 +33,116 @@ void ParserFactory::loadCatalog(const String *catalogPath)
     this->catalogPath = new SString(catalogPath);
   }
 
-  DocumentBuilder docbuilder;
-  Document *catalog;
-
-  try{
-    catalogFIS = colorer::InputSource::newInstance(catalogPath);
-    catalog = docbuilder.parse(catalogFIS);
-  }catch(Exception &e){
-    throw ParserFactoryException(*e.getMessage());
-  };
-
-  Element *elem = catalog->getDocumentElement();
-
-  if (elem == null || *elem->getNodeName() != "catalog"){
-    throw ParserFactoryException(DString("bad catalog structure"));
+  xercesc::XercesDOMParser xml_parser;
+  XmlParserErrorHandler error_handler(errorHandler);
+  xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setLoadExternalDTD(false);
+  xml_parser.setSkipDTDValidation(true);
+  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), nullptr);
+  xml_parser.parse(*catalogXIS);
+  if (error_handler.getSawErrors()) {
+    throw ParserFactoryException(DString("Error reading catalog.xml."));
   }
+  xercesc::DOMDocument *catalog = xml_parser.getDocument();
+  xercesc::DOMElement *elem = catalog->getDocumentElement();
 
-  parseCatalogBlock(elem);
-  docbuilder.free(catalog);
-};
-
-void ParserFactory::parseCatalogBlock(Element *elem_)
-{
-  Node *elem = elem_->getFirstChild();
-  while(elem != null){
-    // hrc locations
-    if (elem->getNodeType() == Node::ELEMENT_NODE && *elem->getNodeName() == "hrc-sets"){
-      parseHrcSetsBlock((Element *)elem);
-    }
-    // hrd locations
-    if (elem->getNodeType() == Node::ELEMENT_NODE && *elem->getNodeName() == "hrd-sets"){
-      parseHrdSetsBlock((Element *)elem);
-    };
-    elem = elem->getNextSibling();
-  };
+  const XMLCh *catalogTagCatalog = L"catalog";
+  if (elem == null || !xercesc::XMLString::equals(elem->getNodeName(), catalogTagCatalog)) {
+    throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ")+catalogPath);
+    parseCatalogBlock(elem);
+  }
 }
 
-void ParserFactory::parseHrcSetsBlock(Element *elem)
+void ParserFactory::parseCatalogBlock(const xercesc::DOMElement *elem)
+{
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *catalogTagHrcSets = L"hrc-sets";
+      const XMLCh *catalogTagHrdSets = L"hrd-sets";
+      if (xercesc::XMLString::equals(subelem->getNodeName(), catalogTagHrcSets)) {
+        parseHrcSetsBlock(subelem);
+        continue;
+      }
+      if (xercesc::XMLString::equals(subelem->getNodeName(), catalogTagHrdSets)) {
+        parseHrdSetsBlock(subelem);
+      };
+      continue;
+    }
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      parseCatalogBlock(static_cast<xercesc::DOMElement*>(node));
+    }
+  }
+}
+
+void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement *elem)
 {
   if (COLORER_FEATURE_LOGLEVEL > COLORER_FEATURE_LOGLEVEL_QUIET){
     //TODO: change debug loging
-    const String *logLocation = ((Element*)elem)->getAttribute(DString("log-location"));
+    const XMLCh *catalogHrcSetsAttrLogLocation = L"log-location";
+    const XMLCh *logLocation = elem->getAttribute(catalogHrcSetsAttrLogLocation);
 
-    if ((logLocation != null) && (logLocation->length()!=0)){
-      colorer::InputSource *dfis = colorer::InputSource::newInstance(logLocation, catalogFIS);
+    if (*logLocation != '\0'){
+      xercesc::InputSource *dfis = XmlInputSource::newInstance(logLocation, catalogXIS);
       try{
-        colorer_logger_set_target(dfis->getLocation()->getChars());
+        colorer_logger_set_target((char*)dfis->getSystemId());
       }catch(Exception &){
       };
       delete dfis;
     };
   }
-
   addHrcSetsLocation(elem);
 }
 
-void ParserFactory::addHrcSetsLocation(Element *elem)
+void ParserFactory::addHrcSetsLocation(const xercesc::DOMElement *elem)
 {
-  Node *loc = elem->getFirstChild();
-  while(loc != null){
-    if (loc->getNodeType() == Node::ELEMENT_NODE &&
-      *loc->getNodeName() == "location"){
-        hrcLocations.addElement(new SString(((Element*)loc)->getAttribute(DString("link"))));
-     }
-    loc = loc->getNextSibling();
-  }
-}
-
-void ParserFactory::parseHrdSetsBlock(Element *elem)
-{
-  Node *hrd = elem->getFirstChild();
-  while(hrd != null){
-    if (hrd->getNodeType() == Node::ELEMENT_NODE && *hrd->getNodeName() == "hrd"){
-      parseHRDSetsChild(hrd);
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *elem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *catalogTagCLocation = L"location";
+      const XMLCh *catalogLocationAttrLink = L"link";
+      if (xercesc::XMLString::equals(elem->getNodeName(), catalogTagCLocation)) {
+        hrcLocations.addElement(new SString(DString(elem->getAttribute(catalogLocationAttrLink))));
+      }
+      continue;
     }
-    hrd = hrd->getNextSibling();
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      addHrcSetsLocation(static_cast<xercesc::DOMElement*>(node));
+    }
   }
 }
 
-void ParserFactory::parseHRDSetsChild(Node *hrd)
+void ParserFactory::parseHrdSetsBlock(const xercesc::DOMElement *elem)
 {
-  const String *hrd_class =((Element*)hrd)->getAttribute(DString("class"));
-  const String *hrd_name =((Element*)hrd)->getAttribute(DString("name"));
-  if (hrd_class == null || hrd_name == null){
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *catalogTagHrd = L"hrd";
+      if (xercesc::XMLString::equals(subelem->getNodeName(), catalogTagHrd)) {
+        parseHRDSetsChild(subelem);
+      }
+      continue;
+    }
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      parseHrdSetsBlock(static_cast<xercesc::DOMElement*>(node));
+    }
+  }
+}
+
+void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement *elem)
+{
+  const XMLCh *catalogHrdAttrClass = L"class";
+  const XMLCh *catalogHrdAttrName = L"name";
+  const XMLCh *catalogHrdAttrDescription = L"description";
+
+  const XMLCh *xhrd_class = elem->getAttribute(catalogHrdAttrClass);
+  const XMLCh *xhrd_name = elem->getAttribute(catalogHrdAttrName);
+  if (*xhrd_class == '\0' || *xhrd_name == '\0'){
     return;
   };
 
+  const String *hrd_class = new DString(xhrd_class);
+  const String *hrd_name = new DString(xhrd_name);
   Hashtable<Vector<const String*>*> *hrdClass = hrdLocations.get(hrd_class);
   if (hrdClass == null){
     hrdClass = new Hashtable<Vector<const String*>*>;
@@ -123,6 +150,8 @@ void ParserFactory::parseHRDSetsChild(Node *hrd)
   };
   if (hrdClass->get(hrd_name) != null){
     errorHandler->error(StringBuffer("Duplicate hrd class '")+hrd_name+"'");
+    delete hrd_class;
+    delete hrd_name;
     return;
   };
   hrdClass->put(hrd_name, new Vector<const String*>);
@@ -132,19 +161,24 @@ void ParserFactory::parseHRDSetsChild(Node *hrd)
     hrdClass->put(hrd_name, hrdLocV);
   };
 
-  const String *hrd_descr = new SString(((Element*)hrd)->getAttribute(DString("description")));
+  const String *hrd_descr = new SString(DString(elem->getAttribute(catalogHrdAttrDescription)));
   if (hrd_descr == null){
     hrd_descr = new SString(hrd_name);
   }
   hrdDescriptions.put(&(StringBuffer(hrd_class)+"-"+hrd_name), hrd_descr);
 
-  Node *loc = hrd->getFirstChild();
-  while(loc != null){
-    if (loc->getNodeType() == Node::ELEMENT_NODE && *loc->getNodeName() == "location"){
-      hrdLocV->addElement(new SString(((Element*)loc)->getAttribute(DString("link"))));
-    };
-    loc = loc->getNextSibling();
-  };
+  const XMLCh *catalogTagLocation = L"location";
+  const XMLCh *catalogLocationAttrLink = L"link";
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      if (xercesc::XMLString::equals(node->getNodeName(), catalogTagLocation)) {
+        xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+        hrdLocV->addElement(new SString(DString(subelem->getAttribute(catalogLocationAttrLink))));
+      }
+    }
+  }
+  delete hrd_class;
+  delete hrd_name;
 };
 
 String *ParserFactory::searchPath()
@@ -274,6 +308,9 @@ ParserFactory::ParserFactory(colorer::ErrorHandler *_errorHandler){
   }
   hrcParser = null;
   catalogPath = null;
+  catalogXIS = null;
+  // инициализация xerces, иначе будут ошибки работы со строками
+	xercesc::XMLPlatformUtils::Initialize();
 };
 
 ParserFactory::~ParserFactory(){
@@ -296,9 +333,11 @@ ParserFactory::~ParserFactory(){
 
   delete hrcParser;
   delete catalogPath;
-  delete catalogFIS;
+  delete catalogXIS;
   if (ownErrorHandler) delete errorHandler;
   delete[] RegExpStack;
+  // закрываем xerces, подчищая память
+  xercesc::XMLPlatformUtils::Terminate();
 };
 
 const char *ParserFactory::getVersion(){
@@ -352,12 +391,12 @@ HRCParser* ParserFactory::getHRCParser(){
         if (dir != INVALID_HANDLE_VALUE){
           while(true){
             if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-              colorer::InputSource *dfis = colorer::InputSource::newInstance(&(StringBuffer(relPath)+"\\"+SString(ffd.cFileName)), catalogFIS);
+              xercesc::InputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"\\"+SString(ffd.cFileName)).getWChars(), catalogXIS);
               try{
                 hrcParser->loadSource(dfis);
                 delete dfis;
               }catch(Exception &e){
-                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + dfis->getLocation());
+                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
                 errorHandler->fatalError(*e.getMessage());
                 delete dfis;
               };
@@ -374,13 +413,13 @@ HRCParser* ParserFactory::getHRCParser(){
           while((dire = readdir(dir)) != null){
             stat((StringBuffer(path)+"/"+dire->d_name).getChars(), &st);
             if (!(st.st_mode & S_IFDIR)){
-              InputSource *dfis = InputSource::newInstance(&(StringBuffer(relPath)+"/"+dire->d_name), catalogFIS);
+              xercesc::InputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
               try{
                 hrcParser->loadSource(dfis);
                 delete dfis;
               }catch(Exception &e){
                 if (fileErrorHandler != null){
-                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + dfis->getLocation());
+                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
                   fileErrorHandler->fatalError(*e.getMessage());
                 }
                 delete dfis;
@@ -390,13 +429,13 @@ HRCParser* ParserFactory::getHRCParser(){
         }
 #endif
       }else{
-        colorer::InputSource *dfis;
+        xercesc::InputSource *dfis;
         try{
-          dfis = colorer::InputSource::newInstance(hrcLocations.elementAt(idx), catalogFIS);
+          dfis = XmlInputSource::newInstance(hrcLocations.elementAt(idx)->getWChars(), catalogXIS);
           hrcParser->loadSource(dfis);
           delete dfis;
         }catch(Exception &e){
-          errorHandler->fatalError(DString("Can't load hrc: "));
+          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
           errorHandler->fatalError(*e.getMessage());
           delete dfis;
         };
@@ -440,10 +479,10 @@ StyledHRDMapper *ParserFactory::createStyledMapper(const String *classID, const 
   StyledHRDMapper *mapper = new StyledHRDMapper();
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
-      colorer::InputSource *dfis;
+      xercesc::InputSource *dfis = null;
       try{
-        dfis = colorer::InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
-        mapper->loadRegionMappings(dfis);
+        xercesc::InputSource *dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
+        mapper->loadRegionMappings(dfis, errorHandler);
         delete dfis;
       }catch(Exception &e){
         errorHandler->error(DString("Can't load hrd: "));
@@ -471,13 +510,15 @@ TextHRDMapper *ParserFactory::createTextMapper(const String *nameID){
   TextHRDMapper *mapper = new TextHRDMapper();
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
+      xercesc::InputSource *dfis = null;
       try{
-        colorer::InputSource *dfis = colorer::InputSource::newInstance(hrdLocV->elementAt(idx), catalogFIS);
-        mapper->loadRegionMappings(dfis);
+        dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
+        mapper->loadRegionMappings(dfis, errorHandler);
         delete dfis;
       }catch(Exception &e){
         errorHandler->error(DString("Can't load hrd: "));
         errorHandler->error(*e.getMessage());
+        delete dfis;
       };
     };
   return mapper;

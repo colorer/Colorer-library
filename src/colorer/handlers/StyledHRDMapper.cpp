@@ -2,7 +2,9 @@
 #include<stdio.h>
 #include<colorer/handlers/StyledHRDMapper.h>
 #include<unicode/UnicodeTools.h>
-#include<xml/xmldom.h>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xml/XmlParserErrorHandler.h>
 
 const int StyledRegion::RD_BOLD = 1;
 const int StyledRegion::RD_ITALIC = 2;
@@ -15,40 +17,56 @@ StyledHRDMapper::~StyledHRDMapper(){
     delete rd;
 };
 
-void StyledHRDMapper::loadRegionMappings(colorer::InputSource *is)
+void StyledHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::ErrorHandler *eh)
 {
-  DocumentBuilder docbuilder;
+  const XMLCh *hrdTagMainHrd = L"hrd";
+  const XMLCh *hrdTagAssign = L"assign";
+  const XMLCh *hrdAssignAttrName = L"name";
+  const XMLCh *hrdAssignAttrFore = L"fore";
+  const XMLCh *hrdAssignAttrBack = L"back";
+  const XMLCh *hrdAssignAttrStyle = L"style";
 
-  Document *hrdbase = docbuilder.parse(is);
-  Element *hbase = hrdbase->getDocumentElement();
-  if (*hbase->getNodeName() != "hrd"){
-    docbuilder.free(hrdbase);
+  xercesc::XercesDOMParser xml_parser;
+  XmlParserErrorHandler error_handler(eh);
+  xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setLoadExternalDTD(false);
+  xml_parser.setSkipDTDValidation(true);
+  xml_parser.parse(*is);
+  if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
-  };
+  }
+  xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
+  xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
 
-  for(Node *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
-    if (curel->getNodeType() == Node::ELEMENT_NODE && *curel->getNodeName() == "assign"){
-      const String *name = ((Element*)curel)->getAttribute(DString("name"));
-      if (name == null) continue;
+  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagMainHrd)) {
+    throw Exception(DString("Error loading HRD file"));
+  }
 
+  for(xercesc::DOMNode *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)){
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
+      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName);
+      if (*xname == '\0') continue;
+
+      const String *name = new DString(xname);
       if (regionDefines.get(name) != null){
         delete regionDefines.get(name);
       }
 
       int val = 0;
-      bool bfore = UnicodeTools::getNumber(((Element*)curel)->getAttribute(DString("fore")), &val);
+      bool bfore = UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrFore)), &val);
       int fore = val;
-      bool bback = UnicodeTools::getNumber(((Element*)curel)->getAttribute(DString("back")), &val);
+      bool bback = UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrBack)), &val);
       int back = val;
       int style = 0;
-      if (UnicodeTools::getNumber(((Element*)curel)->getAttribute(DString("style")), &val)){
+      if (UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrStyle)), &val)){
         style = val;
       }
       RegionDefine *rdef = new StyledRegion(bfore, bback, fore, back, style);
       regionDefines.put(name, rdef);
+      delete name;
     };
   };
-  docbuilder.free(hrdbase);
 };
 
 /** Writes all currently loaded region definitions into
