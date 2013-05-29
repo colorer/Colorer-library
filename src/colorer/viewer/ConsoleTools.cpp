@@ -8,7 +8,10 @@
 #include<colorer/viewer/TextConsoleViewer.h>
 
 #include<colorer/viewer/ConsoleTools.h>
-#include<xml/xmldom.h>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xml/XmlParserErrorHandler.h>
+#include <xml/XmlInputSource.h>
 
 ConsoleTools::ConsoleTools(){
   copyrightHeader = true;
@@ -123,53 +126,65 @@ void ConsoleTools::setHRDName(const String &str) {
   delete hrdName;
   hrdName = new SString(str);
 }
+
 void ConsoleTools::setLinkSource(const String &str){
-  colorer::InputSource *linkSource = null;
-  DocumentBuilder docbuilder;
-  Document *linkSourceTree = null;
-  try{
-    linkSource = colorer::InputSource::newInstance(&str);
-    linkSourceTree = docbuilder.parse(linkSource);
-  }catch(Exception &e){
-    docbuilder.free(linkSourceTree);
-    throw e;
+  const XMLCh *kTagDoclinks = L"doclinks";
+  const XMLCh *kTagLinks = L"links";
+  const XMLCh *kTagLink = L"link";
+  const XMLCh *kLinksAttrUrl = L"url";
+  const XMLCh *kLinkAttrUrl = L"url";
+  const XMLCh *kLinksAttrScheme = L"scheme";
+  const XMLCh *kLinkAttrScheme = L"scheme";
+  const XMLCh *kLinkAttrToken = L"token";
+
+  xercesc::InputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), nullptr);
+  xercesc::XercesDOMParser xml_parser;
+  XmlParserErrorHandler error_handler(nullptr);
+  xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setLoadExternalDTD(false);
+  xml_parser.setSkipDTDValidation(true);
+  xml_parser.parse(*linkSource);
+  if (error_handler.getSawErrors()) {
+    throw Exception(DString("Error loading HRD file"));
+  }
+  xercesc::DOMDocument *linkSourceTree = xml_parser.getDocument();
+  xercesc::DOMElement *elem = linkSourceTree->getDocumentElement();
+
+  if (elem == null || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
+    throw Exception(DString("Error loading HRD file"));
   }
 
-  Node *elem = linkSourceTree->getDocumentElement();
+  for(xercesc::DOMNode *curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()){
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), kTagLinks)){
 
-  if (*elem->getNodeName() != "doclinks"){
-    throw Exception(DString("Bad doclinks data file structure"));
-  }
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
+      const XMLCh *url = subelem->getAttribute(kLinksAttrUrl);
+      const XMLCh *scheme = subelem->getAttribute(kLinksAttrScheme);
 
-  elem = elem->getFirstChild();
-  while(elem != null){
-    if (elem->getNodeType() == Node::ELEMENT_NODE && *elem->getNodeName() == "links"){
-      const String *url = ((Element*)elem)->getAttribute(DString("url"));
-      const String *scheme = ((Element*)elem)->getAttribute(DString("scheme"));
-      Node *eachLink = elem->getFirstChild();
-      while(eachLink != null){
-        if (*eachLink->getNodeName() == "link"){
-          const String *l_url = ((Element*)eachLink)->getAttribute(DString("url"));
-          const String *l_scheme = ((Element*)eachLink)->getAttribute(DString("scheme"));
-          const String *token = ((Element*)eachLink)->getAttribute(DString("token"));
+      for(xercesc::DOMNode *eachLink = curel->getFirstChild(); eachLink; eachLink = eachLink->getNextSibling()){
+        if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink)){
+
+          xercesc::DOMElement *subelem2 = static_cast<xercesc::DOMElement*>(eachLink);
+          const XMLCh *l_url = subelem2->getAttribute(kLinkAttrUrl);
+          const XMLCh *l_scheme = subelem2->getAttribute(kLinkAttrScheme);
+          const XMLCh *token = subelem2->getAttribute(kLinkAttrToken);
           StringBuffer fullURL;
-          if (url != null) fullURL.append(url);
-          if (l_url != null) fullURL.append(l_url);
-          if (l_scheme == null) l_scheme = scheme;
-          if (token == null) continue;
-          StringBuffer hkey(token);
-          if (l_scheme != null && l_scheme->length() > 0){
-            hkey.append(DString("--")).append(l_scheme);
+          if (*url != '\0') fullURL.append(DString(url));
+          if (*l_url != '\0') fullURL.append(DString(l_url));
+          if (*l_scheme == '\0') l_scheme = scheme;
+          if (*token == '\0') continue;
+          String *tok = new DString(token);
+          StringBuffer hkey(tok);
+          if (*l_scheme != '\0'){
+            hkey.append(DString("--")).append(DString(l_scheme));
           }
           docLinkHash->put(&hkey, new SString(&fullURL));
+          delete tok;
         }
-        eachLink = eachLink->getNextSibling();
       }
     }
-    elem = elem->getNextSibling();
   }
   delete linkSource;
-  docbuilder.free(linkSourceTree);
 }
 
 
