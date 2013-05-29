@@ -79,7 +79,6 @@ set(SRC_COLORER
    ${COMMON}/io/MemoryFile.h ${COMMON}/io/MemoryFile.cpp 
    ${COMMON}/io/StreamWriter.cpp ${COMMON}/io/StreamWriter.h
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
-   ${XML}/xmldom.cpp ${XML}/xmldom.h
    ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
    ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
