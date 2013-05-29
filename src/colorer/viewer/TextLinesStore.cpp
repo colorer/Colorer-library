@@ -41,9 +41,9 @@ void TextLinesStore::loadFile(const String *fileName, const String *inputEncodin
     const byte *data = null;
     try{
       data = is->openStream();
-    }catch (InputSourceException &e){
+    }catch (InputSourceException &){
       delete is;
-      throw e;
+      throw;
     }
     int len = is->length();
 

@@ -51,9 +51,9 @@ void HRCParserImpl::loadSource(xercesc::InputSource *is){
   }
   try{
     parseHRC(is);
-  }catch(Exception &e){
+  }catch(Exception &){
     curInputSource = istemp;
-    throw e;
+    throw;
   }
   curInputSource = istemp;
 }
@@ -448,7 +448,6 @@ void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement *elem)
       const XMLCh *hrcTagRegion = L"region";
       const XMLCh *hrcTagEntity = L"entity";
       const XMLCh *hrcTagImport = L"import";
-      const XMLCh *hrcTagInherit = L"inherit";
       const XMLCh *hrcTagAnnotation = L"annotation";
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegion)) {
         addTypeRegion(subelem);
@@ -586,7 +585,6 @@ void HRCParserImpl::parseSchemeBlock(SchemeImpl *scheme, const xercesc::DOMEleme
       const XMLCh *hrcTagBlock = L"block";
       const XMLCh *hrcTagRegexp = L"regexp";
       const XMLCh *hrcTagKeywords = L"keywords";
-      const XMLCh *hrcTagVirtual = L"virtual";
       const XMLCh *hrcTagAnnotation = L"annotation";
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagInherit)) {
         addSchemeInherit(scheme, subelem);
@@ -918,12 +916,9 @@ int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement *elem)
 {
   const XMLCh *hrcTagWord = L"word";
   const XMLCh *hrcTagSymb = L"symb";
-  const XMLCh *hrcTagAttrName= L"name";
   int result = 0;
   for(xercesc::DOMNode *keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()){
     if (keywrd_count->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* p = static_cast<xercesc::DOMElement*>(keywrd_count);
-      const XMLCh *c= p->getAttribute(hrcTagAttrName);
       if (xercesc::XMLString::equals(keywrd_count->getNodeName() , hrcTagWord) ||
         xercesc::XMLString::equals(keywrd_count->getNodeName() , hrcTagSymb))
       {
