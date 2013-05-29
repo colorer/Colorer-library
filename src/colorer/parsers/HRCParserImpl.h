@@ -1,7 +1,6 @@
 #ifndef _COLORER_HRCPARSERIMPL_H_
 #define _COLORER_HRCPARSERIMPL_H_
 
-#include<xml/xmldom.h>
 #include<cregexp/cregexp.h>
 #include<common/Vector.h>
 #include<common/Hashtable.h>
@@ -62,38 +61,40 @@ friend class FileTypeImpl;
 
   FileTypeImpl *parseProtoType;
   FileTypeImpl *parseType;
-  colorer::InputSource *curInputSource;
+  xercesc::InputSource *curInputSource;
   bool structureChanged;
   bool updateStarted;
 
-  DocumentBuilder docbuilder;
   colorer::ErrorHandler *errorHandler;
 
   void loadFileType(FileType *filetype);
   void unloadFileType(FileTypeImpl *filetype);
 
-  void parseHRC(colorer::InputSource *is);
-  void parseHrcBlock(Element *elem);                     
-  void addPrototype(Element *elem);                      
-  void parsePrototypeBlock(Element *elem);               
-  void addPrototypeLocation(Element *elem);              
-  void addPrototypeDetectParam(Element *elem);           
-  void addPrototypeParameters(Element *elem);            
-  void addType(Element *elem);                           
-  void parseTypeBlock(Element *elem);                    
-  void addTypeRegion(Element *elem);                     
-  void addTypeEntity(Element *elem);                     
-  void addTypeImport(Element *elem);                     
+  void parseHRC(xercesc::InputSource *is);
+  void parseHrcBlock(const xercesc::DOMElement *elem);
+  void parseHrcBlockElements(const xercesc::DOMElement *elem);
+  void addPrototype(const xercesc::DOMElement *elem);
+  void parsePrototypeBlock(const xercesc::DOMElement *elem);
+  void addPrototypeLocation(const xercesc::DOMElement *elem);
+  void addPrototypeDetectParam(const xercesc::DOMElement *elem);
+  void addPrototypeParameters(const xercesc::DOMElement *elem);
+  void addType(const xercesc::DOMElement *elem);
+  void parseTypeBlock(const xercesc::DOMElement *elem);
+  void addTypeRegion(const xercesc::DOMElement *elem);
+  void addTypeEntity(const xercesc::DOMElement *elem);
+  void addTypeImport(const xercesc::DOMElement *elem);
 
-  void addScheme(Element *elem);                         
-  void addSchemeNodes(SchemeImpl *scheme, Node *elem);   
-  void addSchemeInherit(SchemeImpl *scheme, Node *elem); 
-  void addSchemeRegexp(SchemeImpl *scheme, Node *elem);  
-  void addSchemeBlock(SchemeImpl *scheme, Node *elem);   
-  void addSchemeKeywords(SchemeImpl *scheme, Node *elem);
-  
-  void loadBlockRegions(SchemeNode *node, Element *el);
-  void loadRegions(SchemeNode *node, Element *el, bool st);
+  void addScheme(const xercesc::DOMElement *elem);
+  void parseSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  void addSchemeNodes(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  void addSchemeInherit(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  void addSchemeRegexp(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  void addSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  void addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElement *elem);
+  int getSchemeKeywordsCount(const xercesc::DOMElement *elem);
+  void addKeyword(SchemeNode* scheme_node, const Region *brgn, const xercesc::DOMElement *elem);
+  void loadBlockRegions(SchemeNode *node, const xercesc::DOMElement *elem);
+  void loadRegions(SchemeNode *node, const xercesc::DOMElement *elem, bool st);
 
   String *qualifyOwnName(const String *name);
   bool checkNameExist(const String *name, FileTypeImpl *parseType, QualifyNameType qntype, bool logErrors);
@@ -101,7 +102,7 @@ friend class FileTypeImpl;
 
   void updateLinks();
   String *useEntities(const String *name);
-  const Region *getNCRegion(Element *el, const String &tag);
+  const Region *getNCRegion(const xercesc::DOMElement *elem, const String &tag);
   const Region *getNCRegion(const String *name, bool logErrors);
 };
 

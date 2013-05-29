@@ -49,8 +49,8 @@ void ParserFactory::loadCatalog(const String *catalogPath)
   const XMLCh *catalogTagCatalog = L"catalog";
   if (elem == null || !xercesc::XMLString::equals(elem->getNodeName(), catalogTagCatalog)) {
     throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ")+catalogPath);
-    parseCatalogBlock(elem);
   }
+  parseCatalogBlock(elem);
 }
 
 void ParserFactory::parseCatalogBlock(const xercesc::DOMElement *elem)
