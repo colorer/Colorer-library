@@ -18,7 +18,7 @@ TextHRDMapper::~TextHRDMapper(){
 /** Loads region definitions from HRD file.
     Multiple files could be loaded.
 */
-void TextHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::ErrorHandler *eh)
+void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
 {
   const XMLCh *hrdTagMainHrd2 = L"hrd";
   const XMLCh *hrdTagAssign2 = L"assign";
@@ -33,7 +33,7 @@ void TextHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::ErrorH
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*is);
+  xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
   }

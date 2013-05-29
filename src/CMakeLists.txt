@@ -81,6 +81,10 @@ set(SRC_COLORER
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
    ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
    ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h
+   ${XML}/BaseEntityResolver.cpp ${XML}/BaseEntityResolver.h
+   ${XML}/LocalFileXmlInputSource.h ${XML}/LocalFileXmlInputSource.cpp
+   ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
+   ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h

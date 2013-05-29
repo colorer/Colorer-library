@@ -38,8 +38,8 @@ void ParserFactory::loadCatalog(const String *catalogPath)
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), nullptr);
-  xml_parser.parse(*catalogXIS);
+  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), (XMLCh*)nullptr);
+  xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
     throw ParserFactoryException(DString("Error reading catalog.xml."));
   }
@@ -83,9 +83,9 @@ void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement *elem)
     const XMLCh *logLocation = elem->getAttribute(catalogHrcSetsAttrLogLocation);
 
     if (*logLocation != '\0'){
-      xercesc::InputSource *dfis = XmlInputSource::newInstance(logLocation, catalogXIS);
+      XmlInputSource *dfis = XmlInputSource::newInstance(logLocation, catalogXIS);
       try{
-        colorer_logger_set_target((char*)dfis->getSystemId());
+        colorer_logger_set_target((char*)dfis->getInputSource()->getSystemId());
       }catch(Exception &){
       };
       delete dfis;
@@ -391,12 +391,12 @@ HRCParser* ParserFactory::getHRCParser(){
         if (dir != INVALID_HANDLE_VALUE){
           while(true){
             if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-              xercesc::InputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"\\"+SString(ffd.cFileName)).getWChars(), catalogXIS);
+              XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"\\"+SString(ffd.cFileName)).getWChars(), catalogXIS);
               try{
                 hrcParser->loadSource(dfis);
                 delete dfis;
               }catch(Exception &e){
-                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
+                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
                 errorHandler->fatalError(*e.getMessage());
                 delete dfis;
               };
@@ -413,13 +413,13 @@ HRCParser* ParserFactory::getHRCParser(){
           while((dire = readdir(dir)) != null){
             stat((StringBuffer(path)+"/"+dire->d_name).getChars(), &st);
             if (!(st.st_mode & S_IFDIR)){
-              xercesc::InputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
+              XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
               try{
                 hrcParser->loadSource(dfis);
                 delete dfis;
               }catch(Exception &e){
                 if (fileErrorHandler != null){
-                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
+                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
                   fileErrorHandler->fatalError(*e.getMessage());
                 }
                 delete dfis;
@@ -429,13 +429,13 @@ HRCParser* ParserFactory::getHRCParser(){
         }
 #endif
       }else{
-        xercesc::InputSource *dfis;
+        XmlInputSource *dfis;
         try{
           dfis = XmlInputSource::newInstance(hrcLocations.elementAt(idx)->getWChars(), catalogXIS);
           hrcParser->loadSource(dfis);
           delete dfis;
         }catch(Exception &e){
-          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getSystemId()));
+          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
           errorHandler->fatalError(*e.getMessage());
           delete dfis;
         };
@@ -479,9 +479,9 @@ StyledHRDMapper *ParserFactory::createStyledMapper(const String *classID, const 
   StyledHRDMapper *mapper = new StyledHRDMapper();
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
-      xercesc::InputSource *dfis = null;
+      XmlInputSource *dfis = null;
       try{
-        xercesc::InputSource *dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
+        dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);
         delete dfis;
       }catch(Exception &e){
@@ -510,7 +510,7 @@ TextHRDMapper *ParserFactory::createTextMapper(const String *nameID){
   TextHRDMapper *mapper = new TextHRDMapper();
   for(int idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->elementAt(idx) != null){
-      xercesc::InputSource *dfis = null;
+      XmlInputSource *dfis = null;
       try{
         dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);

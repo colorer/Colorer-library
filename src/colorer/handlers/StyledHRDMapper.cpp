@@ -17,7 +17,7 @@ StyledHRDMapper::~StyledHRDMapper(){
     delete rd;
 };
 
-void StyledHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::ErrorHandler *eh)
+void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
 {
   const XMLCh *hrdTagMainHrd = L"hrd";
   const XMLCh *hrdTagAssign = L"assign";
@@ -31,7 +31,7 @@ void StyledHRDMapper::loadRegionMappings(xercesc::InputSource *is, colorer::Erro
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*is);
+  xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
   }

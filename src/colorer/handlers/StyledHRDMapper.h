@@ -4,9 +4,9 @@
 #include<common/Vector.h>
 #include<common/Hashtable.h>
 #include<common/io/Writer.h>
-#include<common/io/InputSource.h>
 #include<colorer/handlers/RegionMapperImpl.h>
 #include<colorer/handlers/StyledRegion.h>
+#include <xml/XmlInputSource.h>
 
 /** HRD files reader.
     HRD Files format contains mappings of HRC syntax regions into
@@ -24,7 +24,7 @@ public:
 
   /** Loads region defines from @c is InputSource
   */
-  void loadRegionMappings(xercesc::InputSource *is, colorer::ErrorHandler *eh = null);
+  void loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh = null);
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input

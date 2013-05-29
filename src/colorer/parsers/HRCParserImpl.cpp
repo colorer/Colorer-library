@@ -4,9 +4,9 @@
 #include<colorer/parsers/HRCParserImpl.h>
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/XmlInputSource.h>
+#include <xml/BaseEntityResolver.h>
 
-#define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getSystemId()) +DString(".")
-
+#define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
 HRCParserImpl::HRCParserImpl()
  : fileTypeHash(200), fileTypeVector(150), schemeHash(4000),
@@ -40,8 +40,8 @@ void HRCParserImpl::setErrorHandler(colorer::ErrorHandler *eh){
   errorHandler = eh;
 }
 
-void HRCParserImpl::loadSource(xercesc::InputSource *is){
-  xercesc::InputSource *istemp = curInputSource;
+void HRCParserImpl::loadSource(XmlInputSource *is){
+  XmlInputSource *istemp = curInputSource;
   curInputSource = is;
   if (is == null){
     if (errorHandler != null){
@@ -99,17 +99,17 @@ void HRCParserImpl::loadFileType(FileType *filetype)
     thisType->loadBroken = true;
   }catch(HRCParserException &e){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getSystemId())+"]");
+      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getInputSource()->getSystemId())+"]");
     }
     thisType->loadBroken = true;
   }catch(Exception &e){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getSystemId())+"]");
+      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getInputSource()->getSystemId())+"]");
     }
     thisType->loadBroken = true;
   }catch(...){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer("Unknown exception while loading ")+DString(thisType->inputSource->getSystemId()));
+      errorHandler->fatalError(StringBuffer("Unknown exception while loading ")+DString(thisType->inputSource->getInputSource()->getSystemId()));
     }
     thisType->loadBroken = true;
   }
@@ -175,14 +175,16 @@ const String *HRCParserImpl::getVersion() {
 // protected methods
 
 
-void HRCParserImpl::parseHRC(xercesc::InputSource *is)
+void HRCParserImpl::parseHRC(XmlInputSource *is)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(errorHandler);
+  BaseEntityResolver resolver;
   xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*is);
+  xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
     throw HRCParserException(DString("Bad structure of hrc file."));
   }
@@ -1086,7 +1088,7 @@ String *HRCParserImpl::qualifyForeignName(const String *name, QualifyNameType qn
       delete qname;
     };
     if (logErrors && errorHandler != null){
-      errorHandler->error(StringBuffer("unqualified name '")+name+"' doesn't belong to any imported type ["+DString(curInputSource->getSystemId())+"]");
+      errorHandler->error(StringBuffer("unqualified name '")+name+"' doesn't belong to any imported type ["+DString(curInputSource->getInputSource()->getSystemId())+"]");
     }
   };
   return null;

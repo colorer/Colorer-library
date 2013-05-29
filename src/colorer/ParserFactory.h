@@ -10,6 +10,7 @@
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
+#include <xml/XmlInputSource.h>
 
 /**
  * Maintains catalog of HRC and HRD references.
@@ -129,7 +130,7 @@ private:
   void searchPathLinux(Vector<String*> *paths);
 
   String *catalogPath;
-  xercesc::InputSource *catalogXIS;
+  XmlInputSource *catalogXIS;
   colorer::ErrorHandler *errorHandler;
   bool ownErrorHandler;
   Vector<const String*> hrcLocations;

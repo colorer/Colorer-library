@@ -11,6 +11,7 @@
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
+#include <xml/XmlInputSource.h>
 
 class FileTypeImpl;
 
@@ -28,7 +29,7 @@ public:
 
   void setErrorHandler(colorer::ErrorHandler *eh);
 
-  void loadSource(xercesc::InputSource *is);
+  void loadSource(XmlInputSource *is);
   FileType *getFileType(const String *name);
   FileType *enumerateFileTypes(int index);
   FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0);
@@ -61,7 +62,7 @@ friend class FileTypeImpl;
 
   FileTypeImpl *parseProtoType;
   FileTypeImpl *parseType;
-  xercesc::InputSource *curInputSource;
+  XmlInputSource *curInputSource;
   bool structureChanged;
   bool updateStarted;
 
@@ -70,7 +71,7 @@ friend class FileTypeImpl;
   void loadFileType(FileType *filetype);
   void unloadFileType(FileTypeImpl *filetype);
 
-  void parseHRC(xercesc::InputSource *is);
+  void parseHRC(XmlInputSource *is);
   void parseHrcBlock(const xercesc::DOMElement *elem);
   void parseHrcBlockElements(const xercesc::DOMElement *elem);
   void addPrototype(const xercesc::DOMElement *elem);

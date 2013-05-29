@@ -137,13 +137,13 @@ void ConsoleTools::setLinkSource(const String &str){
   const XMLCh *kLinkAttrScheme = L"scheme";
   const XMLCh *kLinkAttrToken = L"token";
 
-  xercesc::InputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), nullptr);
+  XmlInputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), (XMLCh*)nullptr);
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(nullptr);
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*linkSource);
+  xml_parser.parse(*linkSource->getInputSource());
   if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
   }
