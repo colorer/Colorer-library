@@ -128,6 +128,8 @@ private:
   String *searchPath();
   void searchPathWindows(Vector<String*> *paths);
   void searchPathLinux(Vector<String*> *paths);
+  void loadPathWindows(const String * path, const String * relPath);
+  void loadPathLinux(const String * path, const String * relPath);
 
   String *catalogPath;
   XmlInputSource *catalogXIS;

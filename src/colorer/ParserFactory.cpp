@@ -386,47 +386,10 @@ HRCParser* ParserFactory::getHRCParser(){
 
       if (ret != -1 && (st.st_mode & S_IFDIR)){
 #ifdef _WIN32
-        WIN32_FIND_DATA ffd;
-        HANDLE dir = FindFirstFile((StringBuffer(path)+"\\*.*").getTChars(), &ffd);
-        if (dir != INVALID_HANDLE_VALUE){
-          while(true){
-            if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-              XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"\\"+SString(ffd.cFileName)).getWChars(), catalogXIS);
-              try{
-                hrcParser->loadSource(dfis);
-                delete dfis;
-              }catch(Exception &e){
-                errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
-                errorHandler->fatalError(*e.getMessage());
-                delete dfis;
-              };
-            };
-            if (FindNextFile(dir, &ffd) == FALSE) break;
-          };
-          FindClose(dir);
-        };
+        loadPathWindows(path, relPath);
 #endif
 #ifdef __unix__
-        DIR *dir = opendir(path->getChars());
-        dirent *dire;
-        if (dir != null){
-          while((dire = readdir(dir)) != null){
-            stat((StringBuffer(path)+"/"+dire->d_name).getChars(), &st);
-            if (!(st.st_mode & S_IFDIR)){
-              XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
-              try{
-                hrcParser->loadSource(dfis);
-                delete dfis;
-              }catch(Exception &e){
-                if (fileErrorHandler != null){
-                  fileErrorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
-                  fileErrorHandler->fatalError(*e.getMessage());
-                }
-                delete dfis;
-              }
-            }
-          }
-        }
+        loadPathLinux(path, relPath);
 #endif
       }else{
         XmlInputSource *dfis;
@@ -445,6 +408,54 @@ HRCParser* ParserFactory::getHRCParser(){
   };
   return hrcParser;
 };
+
+void ParserFactory::loadPathWindows(const String * path, const String * relPath)
+{
+  WIN32_FIND_DATA ffd;
+  HANDLE dir = FindFirstFile((StringBuffer(path)+"\\*.*").getTChars(), &ffd);
+  if (dir != INVALID_HANDLE_VALUE){
+    while(true){
+      if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
+        XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"\\"+SString(ffd.cFileName)).getWChars(), catalogXIS);
+        try{
+          hrcParser->loadSource(dfis);
+          delete dfis;
+        }catch(Exception &e){
+          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
+          errorHandler->fatalError(*e.getMessage());
+          delete dfis;
+        };
+      };
+      if (FindNextFile(dir, &ffd) == FALSE) break;
+    };
+    FindClose(dir);
+  };
+}
+
+void ParserFactory::loadPathLinux(const String * path, const String * relPath)
+{
+#ifdef __unix__
+  DIR *dir = opendir(path->getChars());
+  dirent *dire;
+  if (dir != null){
+    while((dire = readdir(dir)) != null){
+      struct stat st;
+      stat((StringBuffer(path)+"/"+dire->d_name).getChars(), &st);
+      if (!(st.st_mode & S_IFDIR)){
+        XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
+        try{
+          hrcParser->loadSource(dfis);
+          delete dfis;
+        }catch(Exception &e){
+          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
+          errorHandler->fatalError(*e.getMessage());
+          delete dfis;
+        }
+      }
+    }
+  }
+#endif
+}
 
 TextParser *ParserFactory::createTextParser(){
   return new TextParserImpl();
