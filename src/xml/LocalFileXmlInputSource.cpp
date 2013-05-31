@@ -40,7 +40,7 @@ xercesc::InputSource *LocalFileXmlInputSource::getInputSource()
 
 XMLCh *LocalFileXmlInputSource::ExpandEnvironment(const XMLCh *path)
 {
-  size_t i=ExpandEnvironmentStringsW(path,NULL,0);
+  size_t i=ExpandEnvironmentStrings(path,NULL,0);
   XMLCh *temp = new XMLCh[i];
   ExpandEnvironmentStrings(path,temp,static_cast<DWORD>(i));
   return temp;

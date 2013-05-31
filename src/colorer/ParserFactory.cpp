@@ -374,7 +374,7 @@ HRCParser* ParserFactory::getHRCParser(){
     if (hrcLocations.elementAt(idx) != null){
       size_t i=ExpandEnvironmentStrings( hrcLocations.elementAt(idx)->getWChars(),NULL,0);
       wchar_t *temp = new wchar_t[i];
-      ExpandEnvironmentStringsW( hrcLocations.elementAt(idx)->getWChars(),temp,static_cast<DWORD>(i));
+      ExpandEnvironmentStrings( hrcLocations.elementAt(idx)->getWChars(),temp,static_cast<DWORD>(i));
       const String *relPath = new SString(temp);
       delete[] temp;
       const String *path = null;
@@ -399,7 +399,7 @@ HRCParser* ParserFactory::getHRCParser(){
         loadPathLinux(path, relPath);
 #endif
       }else{
-        XmlInputSource *dfis;
+        XmlInputSource *dfis = nullptr;
         try{
           dfis = XmlInputSource::newInstance(hrcLocations.elementAt(idx)->getWChars(), catalogXIS);
           hrcParser->loadSource(dfis);
