@@ -20,6 +20,7 @@
 
 #include <xml/XmlInputSource.h>
 #include <xml/XmlParserErrorHandler.h>
+#include <xml/BaseEntityResolver.h>
 
 #ifndef __TIMESTAMP__
 #define __TIMESTAMP__ "28 May 2006"
@@ -35,7 +36,9 @@ void ParserFactory::loadCatalog(const String *catalogPath)
 
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(errorHandler);
+  BaseEntityResolver resolver;
   xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
   catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), (XMLCh*)nullptr);
@@ -369,8 +372,12 @@ HRCParser* ParserFactory::getHRCParser(){
   hrcParser->setErrorHandler(errorHandler);
   for(int idx = 0; idx < hrcLocations.size(); idx++){
     if (hrcLocations.elementAt(idx) != null){
-      const String *relPath = hrcLocations.elementAt(idx);
-      const String * path = null;
+      size_t i=ExpandEnvironmentStrings( hrcLocations.elementAt(idx)->getWChars(),NULL,0);
+      wchar_t *temp = new wchar_t[i];
+      ExpandEnvironmentStringsW( hrcLocations.elementAt(idx)->getWChars(),temp,static_cast<DWORD>(i));
+      const String *relPath = new SString(temp);
+      delete[] temp;
+      const String *path = null;
       if (colorer::InputSource::isRelative(relPath)){
         path = colorer::InputSource::getAbsolutePath(catalogPath, relPath);
         const String *path2del = path;
@@ -404,6 +411,7 @@ HRCParser* ParserFactory::getHRCParser(){
         };
       };
       delete path;
+      delete relPath;
     };
   };
   return hrcParser;

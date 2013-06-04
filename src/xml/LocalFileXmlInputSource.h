@@ -12,7 +12,7 @@ public:
   XmlInputSource *createRelative(const XMLCh *relPath) const;
   xercesc::InputSource *getInputSource();
 private:
-
+  XMLCh *ExpandEnvironment(const XMLCh *path);
 };
 
 
