@@ -22,10 +22,6 @@
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/BaseEntityResolver.h>
 
-#ifndef __TIMESTAMP__
-#define __TIMESTAMP__ "28 May 2006"
-#endif
-
 void ParserFactory::loadCatalog(const String *catalogPath)
 {
   if (catalogPath == null){
@@ -344,7 +340,7 @@ ParserFactory::~ParserFactory(){
 };
 
 const char *ParserFactory::getVersion(){
-  return "Colorer-take5 Library be5 "__TIMESTAMP__;
+  return "Colorer-take5 Library be5 28 May 2006";
 };
 
 int ParserFactory::countHRD(const String &classID)

@@ -29,7 +29,7 @@ endif()
 #====================================================
 add_subdirectory(../../src ./build)
 include_directories (../../src/)
-
+include_directories (../../libs/xercesc/src)
 set(SRC_CPP ConsoleToolsRunner.cpp)
 
 #====================================================
@@ -65,7 +65,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(COLORER_WARNING_FLAGS )
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive")
+  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -std=c++11")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
   set(FLAGS_DEBUG "${FLAGS_DEBUG}")
@@ -83,7 +83,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c_3)
+set(LIBRARIES colorer_lib xerces-c_3_1)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB})
