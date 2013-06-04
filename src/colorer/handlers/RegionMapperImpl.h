@@ -4,9 +4,11 @@
 #include<common/Vector.h>
 #include<common/Hashtable.h>
 #include<common/io/Writer.h>
-#include<common/io/InputSource.h>
 #include<colorer/handlers/RegionMapper.h>
 #include<colorer/handlers/RegionDefine.h>
+#include <xercesc/sax/InputSource.hpp>
+#include<colorer/ErrorHandler.h>
+#include <xml/XmlInputSource.h>
 
 /** Abstract RegionMapper.
     Stores all region mappings in hashtable and sequental vector.
@@ -20,7 +22,7 @@ public:
 
   /** Loads region defines from @c is InputSource
   */
-  virtual void  loadRegionMappings(colorer::InputSource *is) = 0;
+  virtual void  loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh = null) = 0;
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input

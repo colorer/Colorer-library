@@ -10,6 +10,14 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF()
 
 #====================================================
+# xercesc_lib
+#====================================================
+set(XERCESC_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../libs/xercesc" CACHE STRING "path to the xerces-c")
+add_subdirectory(../libs/xercesc/src ./build)
+include_directories(../libs/xercesc/src)
+set(CMAKE_CXX_FLAGS "-DXERCES_STATIC_LIBRARY")
+
+#====================================================
 # colorer
 #====================================================
 IF (NOT COLORER_FEATURE_HTTPINPUTSOURCE)
@@ -79,7 +87,12 @@ set(SRC_COLORER
    ${COMMON}/io/MemoryFile.h ${COMMON}/io/MemoryFile.cpp 
    ${COMMON}/io/StreamWriter.cpp ${COMMON}/io/StreamWriter.h
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
-   ${XML}/xmldom.cpp ${XML}/xmldom.h
+   ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
+   ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h
+   ${XML}/BaseEntityResolver.cpp ${XML}/BaseEntityResolver.h
+   ${XML}/LocalFileXmlInputSource.h ${XML}/LocalFileXmlInputSource.cpp
+   ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
+   ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
@@ -134,7 +147,7 @@ if(MSVC)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
   set(COLORER_WARNING_FLAGS "")
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /Zi")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /Zi")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1")
@@ -143,7 +156,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(COLORER_WARNING_FLAGS )
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
   set(FLAGS_DEBUG "${FLAGS_DEBUG}")

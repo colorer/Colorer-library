@@ -6,6 +6,7 @@
 #include<colorer/ErrorHandler.h>
 #include<colorer/FileType.h>
 #include<colorer/Region.h>
+#include <xml/XmlInputSource.h>
 
 
 /** Informs application about internal HRC parsing problems.
@@ -38,7 +39,7 @@ public:
       real type load must be performed before using with #loadType() method
       @param is InputSource stream of HRC file
   */
-  virtual void loadSource(colorer::InputSource *is) = 0;
+  virtual void loadSource(XmlInputSource *is) = 0;
 
   /** Enumerates sequentially all prototypes
       @param index index of type.

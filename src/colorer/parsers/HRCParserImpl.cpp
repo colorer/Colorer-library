@@ -2,6 +2,11 @@
 #include<stdio.h>
 #include<colorer/parsers/helpers/HRCParserHelpers.h>
 #include<colorer/parsers/HRCParserImpl.h>
+#include <xml/XmlParserErrorHandler.h>
+#include <xml/XmlInputSource.h>
+#include <xml/BaseEntityResolver.h>
+
+#define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
 HRCParserImpl::HRCParserImpl()
  : fileTypeHash(200), fileTypeVector(150), schemeHash(4000),
@@ -35,8 +40,8 @@ void HRCParserImpl::setErrorHandler(colorer::ErrorHandler *eh){
   errorHandler = eh;
 }
 
-void HRCParserImpl::loadSource(colorer::InputSource *is){
-  colorer::InputSource *istemp = curInputSource;
+void HRCParserImpl::loadSource(XmlInputSource *is){
+  XmlInputSource *istemp = curInputSource;
   curInputSource = is;
   if (is == null){
     if (errorHandler != null){
@@ -46,9 +51,9 @@ void HRCParserImpl::loadSource(colorer::InputSource *is){
   }
   try{
     parseHRC(is);
-  }catch(Exception &e){
+  }catch(Exception &){
     curInputSource = istemp;
-    throw e;
+    throw;
   }
   curInputSource = istemp;
 }
@@ -94,17 +99,17 @@ void HRCParserImpl::loadFileType(FileType *filetype)
     thisType->loadBroken = true;
   }catch(HRCParserException &e){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+thisType->inputSource->getLocation()+"]");
+      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getInputSource()->getSystemId())+"]");
     }
     thisType->loadBroken = true;
   }catch(Exception &e){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+thisType->inputSource->getLocation()+"]");
+      errorHandler->fatalError(StringBuffer(e.getMessage())+" ["+DString(thisType->inputSource->getInputSource()->getSystemId())+"]");
     }
     thisType->loadBroken = true;
   }catch(...){
     if (errorHandler != null){
-      errorHandler->fatalError(StringBuffer("Unknown exception while loading ")+thisType->inputSource->getLocation());
+      errorHandler->fatalError(StringBuffer("Unknown exception while loading ")+DString(thisType->inputSource->getInputSource()->getSystemId()));
     }
     thisType->loadBroken = true;
   }
@@ -170,25 +175,38 @@ const String *HRCParserImpl::getVersion() {
 // protected methods
 
 
-void HRCParserImpl::parseHRC(colorer::InputSource *is)
+void HRCParserImpl::parseHRC(XmlInputSource *is)
 {
-  Document *xmlDocument = docbuilder.parse(is);
-  Element *types = xmlDocument->getDocumentElement();
-  if (*types->getNodeName() != "hrc"){
-    docbuilder.free(xmlDocument);
-    throw HRCParserException(DString("main '<hrc>' block not found"));
-  }else{
-    if (versionName == null)
-      versionName = new SString(types->getAttribute(DString("version")));
-  };
+  xercesc::XercesDOMParser xml_parser;
+  XmlParserErrorHandler error_handler(errorHandler);
+  BaseEntityResolver resolver;
+  xml_parser.setErrorHandler(&error_handler);
+  xml_parser.setXMLEntityResolver(&resolver);
+  xml_parser.setLoadExternalDTD(false);
+  xml_parser.setSkipDTDValidation(true);
+  xml_parser.parse(*is->getInputSource());
+  if (error_handler.getSawErrors()) {
+    throw HRCParserException(DString("Bad structure of hrc file."));
+  }
+  xercesc::DOMDocument *doc = xml_parser.getDocument();
+  xercesc::DOMElement *root = doc->getDocumentElement();
+
+  const XMLCh *hrcTagHrc = L"hrc";
+  const XMLCh *hrcHrcAttVersion = L"version";
+  if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
+    throw HRCParserException(StringBuffer("Bad hrc structure. Main '<hrc>' block not found.")+ CURRENT_FILE);
+  }
+  if (versionName == null)
+    versionName = new DString(root->getAttribute(hrcHrcAttVersion));
 
   bool globalUpdateStarted = false;
   if (!updateStarted){
     globalUpdateStarted = true;
     updateStarted = true;
   };
-  parseHrcBlock(types);
-  docbuilder.free(xmlDocument);
+
+  parseHrcBlock(root);
+
   structureChanged = true;
   if (globalUpdateStarted){
     updateLinks();
@@ -196,160 +214,210 @@ void HRCParserImpl::parseHRC(colorer::InputSource *is)
   };
 }
 
-void HRCParserImpl::parseHrcBlock(Element *elem)
+void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement *elem)
 {
-  for (Node *node = elem->getFirstChild(); node; node = node->getNextSibling()){
-    if (*node->getNodeName() == "prototype"){
-      addPrototype((Element*)node);
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *elem = static_cast<xercesc::DOMElement*>(node);
+      parseHrcBlockElements(elem);
       continue;
-    };
-    if (*node->getNodeName() == "package"){
-      addPrototype((Element*)node);
-      continue;
-    };
-    if (*node->getNodeName() == "type"){
-      addType((Element*)node);
-      continue;
-    };
-  };
-
+    }
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      for (xercesc::DOMNode *sub_node = node->getFirstChild(); sub_node != nullptr; sub_node = sub_node->getNextSibling()) {
+        xercesc::DOMElement *elem = static_cast<xercesc::DOMElement*>(sub_node);
+        parseHrcBlockElements(elem);
+      }
+    }
+  }
 }
 
-void HRCParserImpl::addPrototype(Element *elem)
+void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement *elem)
 {
-  const String *typeName = elem->getAttribute(DString("name"));
-  const String *typeGroup = elem->getAttribute(DString("group"));
-  const String *typeDescription = elem->getAttribute(DString("description"));
-  if (typeName == null){
+  const XMLCh *hrcTagPrototype = L"prototype";
+  const XMLCh *hrcTagPackage = L"package";
+  const XMLCh *hrcTagType = L"type";
+  const XMLCh *hrcTagAnnotation = L"annotation";
+  if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype)) {
+      addPrototype(elem);
+      return;
+    };
+    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
+      addPrototype(elem);
+      return;
+    };
+    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagType)) {
+      addType(elem);
+      return;
+    };
+    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
+      // not read anotation
+      return;
+    };
+    errorHandler->warning(StringBuffer("Unused element '") + DString(elem->getNodeName()) + DString("'.") + CURRENT_FILE);
+  }
+}
+
+void HRCParserImpl::addPrototype(const xercesc::DOMElement *elem)
+{
+  const XMLCh *hrcProtoAttrName = L"name";
+  const XMLCh *hrcProtoAttrDescription = L"description";
+  const XMLCh *hrcProtoAttrGroup = L"group";
+  const XMLCh *typeName = elem->getAttribute(hrcProtoAttrName);
+  const XMLCh *typeGroup = elem->getAttribute(hrcProtoAttrGroup);
+  const XMLCh *typeDescription = elem->getAttribute(hrcProtoAttrDescription);
+  if (*typeName == '\0'){
     if (errorHandler != null) errorHandler->error(DString("unnamed prototype "));
     return;
   }
   if (typeDescription == null){
     typeDescription = typeName;
   }
-	FileTypeImpl* f=fileTypeHash.get(typeName);
+	FileTypeImpl* f=fileTypeHash.get(&DString(typeName));
   if (f != null){
 		unloadFileType(f);
     if (errorHandler != null){
-      errorHandler->warning(StringBuffer("Duplicate prototype '")+typeName+"'");
+      errorHandler->warning(StringBuffer("Duplicate prototype '")+DString(typeName)+"'");
     }
   //  return;
   };
   FileTypeImpl *type = new FileTypeImpl(this);
-  type->name = new SString(typeName);
-  type->description = new SString(typeDescription);
+  type->name = new SString(DString(typeName));
+  type->description = new SString(DString(typeDescription));
   if (typeGroup != null){
-    type->group = new SString(typeGroup);
+    type->group = new SString(DString(typeGroup));
   }
-  if (*elem->getNodeName() == "package"){
+  const XMLCh *hrcTagPackage = L"package";
+  if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)){
     type->isPackage = true;
   }
-
   parseProtoType = type;
   parsePrototypeBlock(elem);
 
   type->protoLoaded = true;
-  fileTypeHash.put(typeName, type);
+  fileTypeHash.put(type->name, type);
   if (!type->isPackage){
     fileTypeVector.addElement(type);
   };
 }
-
-void HRCParserImpl::parsePrototypeBlock(Element *elem)
+void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement *elem)
 {
-  for(Node *content = elem->getFirstChild(); content != null; content = content->getNextSibling()){
-    if (*content->getNodeName() == "location"){
-      addPrototypeLocation((Element*)content);
-      continue;
-    };
-    if (*content->getNodeName() == "filename" || *content->getNodeName() == "firstline"){
-      addPrototypeDetectParam((Element*)content);
-      continue;    
-    };
-    if (*content->getNodeName() == "parameters"){
-      addPrototypeParameters((Element*)content);
-      continue;
+  const XMLCh *hrcTagLocation = L"location";
+  const XMLCh *hrcTagFilename = L"filename";
+  const XMLCh *hrcTagFirstLine = L"firstline";
+  const XMLCh *hrcTagParametrs = L"parameters";
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagLocation)){
+        addPrototypeLocation(subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
+			        xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstLine)){
+        addPrototypeDetectParam(subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)){
+        addPrototypeParameters(subelem);
+        continue;
+      };
     };
   };
 }
 
-void HRCParserImpl::addPrototypeLocation(Element *elem)
+void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement *elem)
 {
-  const String *locationLink = ((Element*)elem)->getAttribute(DString("link"));
-  if (locationLink == null){
+  const XMLCh *hrcProtoAttrLink = L"link";
+  const XMLCh *locationLink = elem->getAttribute(hrcProtoAttrLink);
+  if (*locationLink == '\0'){
     if (errorHandler != null){
       errorHandler->error(StringBuffer("Bad 'location' link attribute in prototype '")+parseProtoType->name+"'");
       return;
     }
   };
-  parseProtoType->inputSource = colorer::InputSource::newInstance(locationLink, curInputSource);
+  parseProtoType->inputSource = XmlInputSource::newInstance(locationLink, curInputSource);
 }
 
-void HRCParserImpl::addPrototypeDetectParam(Element *elem)
+void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement *elem)
 {
-  if (elem->getFirstChild() == null || elem->getFirstChild()->getNodeType() != Node::TEXT_NODE){
-    if (errorHandler != null) errorHandler->warning(StringBuffer("Bad '")+elem->getNodeName()+"' element in prototype '"+parseProtoType->name+"'");
+  if (elem->getFirstChild() == null || elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE){
+    if (errorHandler != null) errorHandler->warning(StringBuffer("Bad '")+DString(elem->getNodeName())+"' element in prototype '"+parseProtoType->name+"'");
     return;
   };
-  const String *match = ((Text*)elem->getFirstChild())->getData();
-  CRegExp *matchRE = new CRegExp(match);
+  const XMLCh *match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
+  CRegExp *matchRE = new CRegExp(&DString(match));
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()){
     if (errorHandler != null){
-      errorHandler->warning(StringBuffer("Fault compiling chooser RE '")+match+"' in prototype '"+parseProtoType->name+"'");
+      errorHandler->warning(StringBuffer("Fault compiling chooser RE '")+DString(match)+"' in prototype '"+parseProtoType->name+"'");
     }
     delete matchRE;
     return;
   };
-  int ctype = *elem->getNodeName() == "filename" ? 0 : 1;
+  const XMLCh *hrcTagFilename = L"filename";
+  int ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? 0 : 1;
   double prior = ctype ? 1 : 2;
-  UnicodeTools::getNumber(((Element*)elem)->getAttribute(DString("weight")), &prior);
+  const XMLCh *hrcProtoAttrWeight = L"weight";
+  UnicodeTools::getNumber(&DString(elem->getAttribute(hrcProtoAttrWeight)), &prior);
   FileTypeChooser *ftc = new FileTypeChooser(ctype, prior, matchRE);
   parseProtoType->chooserVector.addElement(ftc);
 }
 
-void HRCParserImpl::addPrototypeParameters(Element *elem)
+void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement *elem)
 {
-  for(Node *param = elem->getFirstChild(); param != null; param = param->getNextSibling()){
-    if (*param->getNodeName() == "param"){
-      const String *name = ((Element*)param)->getAttribute(DString("name"));
-      const String *value = ((Element*)param)->getAttribute(DString("value"));
-      const String *descr = ((Element*)param)->getAttribute(DString("description"));
-      if (name == null || value == null){
-        if (errorHandler != null){
-          errorHandler->warning(StringBuffer("Bad parameter in prototype '")+parseProtoType->name+"'");
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *hrcTagParam = L"param";
+      const XMLCh *hrcProtoAttrParamName = L"name";
+      const XMLCh *hrcProtoAttrParamValue = L"value";
+      const XMLCh *hrcProtoAttrParamDescription = L"description";
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
+        const XMLCh *name = subelem->getAttribute(hrcProtoAttrParamName);
+        const XMLCh *value = subelem->getAttribute(hrcProtoAttrParamValue);
+        const XMLCh *descr = subelem->getAttribute(hrcProtoAttrParamDescription);
+        if (*name == '\0' || *value == '\0'){
+          if (errorHandler != null){
+            errorHandler->warning(StringBuffer("Bad parameter in prototype '")+parseProtoType->name+"'");
+          }
+          continue;
+        };
+        parseProtoType->paramVector.addElement(new SString(DString(name)));
+        if (*descr != '\0'){
+          parseProtoType->paramDescriptionHash.put(&DString(name), new SString(DString(descr)));
         }
-        continue;
+        parseProtoType->paramDefaultHash.put(&DString(name), new SString(DString(value)));
       };
-      parseProtoType->paramVector.addElement(new SString(name));
-      if (descr != null){
-        parseProtoType->paramDescriptionHash.put(name, new SString(descr));
-      }
-      parseProtoType->paramDefaultHash.put(name, new SString(value));
+      continue;
     };
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      addPrototypeParameters(static_cast<xercesc::DOMElement*>(node));
+    }
   };
 }
 
-void HRCParserImpl::addType(Element *elem)
+void HRCParserImpl::addType(const xercesc::DOMElement *elem)
 {
-  const String *typeName = elem->getAttribute(DString("name"));
+  const XMLCh *hrcTypeAttrName = L"name";
+  const XMLCh *typeName = elem->getAttribute(hrcTypeAttrName);
 
-  if (typeName == null){
+  if (*typeName == '\0'){
     if (errorHandler != null){
       errorHandler->error(DString("Unnamed type found"));
     }
     return;
   };
-  FileTypeImpl *type_ref = fileTypeHash.get(typeName);
+  FileTypeImpl *type_ref = fileTypeHash.get(&DString(typeName));
   if (type_ref == null){
     if (errorHandler != null){
-      errorHandler->error(StringBuffer("type '")+typeName+"' without prototype");
+      errorHandler->error(StringBuffer("type '")+DString(typeName)+"' without prototype");
     }
     return;
   };
   FileTypeImpl *type = type_ref;
   if (type->typeLoaded){
-    if (errorHandler != null) errorHandler->warning(StringBuffer("type '")+typeName+"' is already loaded");
+    if (errorHandler != null) errorHandler->warning(StringBuffer("type '")+DString(typeName)+"' is already loaded");
     return;
   };
   type->typeLoaded = true;
@@ -366,46 +434,66 @@ void HRCParserImpl::addType(Element *elem)
   delete baseSchemeName;
   if (type->baseScheme == null && !type->isPackage){
     if (errorHandler != null){
-      errorHandler->warning(StringBuffer("type '")+typeName+"' has no default scheme");
+      errorHandler->warning(StringBuffer("type '")+DString(typeName)+"' has no default scheme");
     }
   }
   type->loadDone = true;
   parseType = o_parseType;
 }
 
-void HRCParserImpl::parseTypeBlock(Element *elem)
+void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement *elem)
 {
-  for(Node *xmlpar = elem->getFirstChild(); xmlpar; xmlpar = xmlpar->getNextSibling()){
-    if (*xmlpar->getNodeName() == "region"){
-      addTypeRegion((Element*)xmlpar);
-      continue;
-    };
-    if (*xmlpar->getNodeName() == "entity"){
-      addTypeEntity((Element*)xmlpar);
-      continue;
-    };
-    if (*xmlpar->getNodeName() == "import"){
-      addTypeImport((Element*)xmlpar);
-      continue;
-    };
-    if (*xmlpar->getNodeName() == "scheme"){
-      addScheme((Element*)xmlpar);
-    };
-  };
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *hrcTagScheme = L"scheme";
+      const XMLCh *hrcTagRegion = L"region";
+      const XMLCh *hrcTagEntity = L"entity";
+      const XMLCh *hrcTagImport = L"import";
+      const XMLCh *hrcTagAnnotation = L"annotation";
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegion)) {
+        addTypeRegion(subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagEntity)) {
+        addTypeEntity(subelem);
+        continue;
+      }
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagImport)) {
+        addTypeImport(subelem);
+        continue;
+      }
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagScheme)) {
+        addScheme(subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
+        // not read anotation
+        continue;
+      };
+    }
+    // случай entity ссылки на другой файл.
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      parseTypeBlock(static_cast<xercesc::DOMElement*>(node));
+    }
+  }
 }
 
-void HRCParserImpl::addTypeRegion(Element *elem)
+void HRCParserImpl::addTypeRegion(const xercesc::DOMElement *elem)
 {
-  const String *regionName = ((Element*)elem)->getAttribute(DString("name"));
-  const String *regionParent = ((Element*)elem)->getAttribute(DString("parent"));
-  const String *regionDescr = ((Element*)elem)->getAttribute(DString("description"));
-  if (regionName == null){
+  const XMLCh *hrcRegionAttrName = L"name";
+  const XMLCh *hrcRegionAttrParent = L"parent";
+  const XMLCh *hrcRegionAttrDescription = L"description";
+  const XMLCh *regionName = elem->getAttribute(hrcRegionAttrName);
+  const XMLCh *regionParent = elem->getAttribute(hrcRegionAttrParent);
+  const XMLCh *regionDescr = elem->getAttribute(hrcRegionAttrDescription);
+  if (*regionName == '\0'){
     if (errorHandler != null) errorHandler->error(DString("No 'name' attribute in <region> element"));
     return;
   };
-  String *qname1 = qualifyOwnName(regionName);
+  String *qname1 = qualifyOwnName(&DString(regionName));
   if (qname1 == null) return;
-  String *qname2 = qualifyForeignName(regionParent, QNT_DEFINE, true);
+  String *qname2 = qualifyForeignName(*regionParent!='\0'?&DString(regionParent):null, QNT_DEFINE, true);
   if (regionNamesHash.get(qname1) != null){
     if (errorHandler != null){
       errorHandler->warning(StringBuffer("Duplicate region '") + qname1 + "' definition in type '"+parseType->getName()+"'");
@@ -415,7 +503,7 @@ void HRCParserImpl::addTypeRegion(Element *elem)
     return;
   };
 
-  const Region *region = new Region(qname1, regionDescr, getRegion(qname2), regionNamesVector.size());
+  const Region *region = new Region(qname1, &DString(regionDescr), getRegion(qname2), regionNamesVector.size());
   regionNamesVector.addElement(region);
   regionNamesHash.put(qname1, region);
 
@@ -423,40 +511,44 @@ void HRCParserImpl::addTypeRegion(Element *elem)
   delete qname2;
 }
 
-void HRCParserImpl::addTypeEntity(Element *elem)
+void HRCParserImpl::addTypeEntity(const xercesc::DOMElement *elem)
 {
-  const String *entityName  = ((Element*)elem)->getAttribute(DString("name"));
-  const String *entityValue = ((Element*)elem)->getAttribute(DString("value"));
-  if (entityName == null || entityValue == null){
+  const XMLCh *hrcEntityAttrName = L"name";
+  const XMLCh *hrcEntityAttrValue = L"value";
+  const XMLCh *entityName  = elem->getAttribute(hrcEntityAttrName);
+  const XMLCh *entityValue = elem->getAttribute(hrcEntityAttrValue);
+  if (*entityName == '\0' ||  elem->getAttributeNode(hrcEntityAttrValue) == null){
     if (errorHandler != null){
       errorHandler->error(DString("Bad entity attributes"));
     }
     return;
   };
-  String *qname1 = qualifyOwnName(entityName);
-  String *qname2 = useEntities(entityValue);
+  String *qname1 = qualifyOwnName(&DString(entityName));
+  String *qname2 = useEntities(&DString(entityValue));
   if (qname1 != null && qname2 != null){
     schemeEntitiesHash.put(qname1, qname2);
     delete qname1;
   };
 }
 
-void HRCParserImpl::addTypeImport(Element *elem)
+void HRCParserImpl::addTypeImport(const xercesc::DOMElement *elem)
 {
-  const String *typeParam = ((Element*)elem)->getAttribute(DString("type"));
-  if (typeParam == null || fileTypeHash.get(typeParam) == null){
+  const XMLCh *hrcImportAttrType = L"type";
+  const XMLCh *typeParam = elem->getAttribute(hrcImportAttrType);
+  if (*typeParam == '\0' || fileTypeHash.get(&DString(typeParam)) == null){
     if (errorHandler != null){
-      errorHandler->error(StringBuffer("Import with bad '")+typeParam+"' attribute in type '"+parseType->name+"'");
+      errorHandler->error(StringBuffer("Import with bad '")+DString(typeParam)+"' attribute in type '"+parseType->name+"'");
     }
     return;
   };
-  parseType->importVector.addElement(new SString(typeParam));
+  parseType->importVector.addElement(new SString(DString(typeParam)));
 }
 
-void HRCParserImpl::addScheme(Element *elem)
+void HRCParserImpl::addScheme(const xercesc::DOMElement *elem)
 {
-  const String *schemeName = elem->getAttribute(DString("name"));
-  String *qSchemeName = qualifyOwnName(schemeName);
+  const XMLCh *hrcSchemeAttrName = L"name";
+  const XMLCh *schemeName = elem->getAttribute(hrcSchemeAttrName);
+  String *qSchemeName = qualifyOwnName(*schemeName!='\0'?&DString(schemeName):null);
   if (qSchemeName == null){
     if (errorHandler != null) errorHandler->error(StringBuffer("bad scheme name in type '")+parseType->getName()+"'");
     return;
@@ -473,135 +565,201 @@ void HRCParserImpl::addScheme(Element *elem)
   scheme->fileType = parseType;
 
   schemeHash.put(scheme->schemeName, scheme);
-
-  const String *condIf = elem->getAttribute(DString("if"));
-  const String *condUnless = elem->getAttribute(DString("unless"));
-  if ((condIf != null && !DString("true").equals(parseType->getParamValue(*condIf))) ||
-      (condUnless != null && DString("true").equals(parseType->getParamValue(*condUnless)))){
+  const XMLCh *hrcSchemeAttrIf = L"if";
+  const XMLCh *hrcSchemeAttrUnless = L"unless";
+  const XMLCh *condIf = elem->getAttribute(hrcSchemeAttrIf);
+  const XMLCh *condUnless = elem->getAttribute(hrcSchemeAttrUnless);
+  const String* p1 = parseType->getParamValue(DString(condIf));
+  const String* p2 = parseType->getParamValue(DString(condUnless));
+  if ((*condIf != '\0' && !DString("true").equals(p1)) ||
+      (*condUnless != '\0' && DString("true").equals(p2))){
     //disabledSchemes.put(scheme->schemeName, 1);
     return;
   }
-
-  addSchemeNodes(scheme, elem->getFirstChild());
+  parseSchemeBlock(scheme, elem);
 }
 
-void HRCParserImpl::addSchemeNodes(SchemeImpl *scheme, Node *elem)
-{
-  for(Node *tmpel = elem; tmpel; tmpel = tmpel->getNextSibling()){
-    if (!tmpel->getNodeName()) continue;
-
-    if (*tmpel->getNodeName() == "inherit"){
-      addSchemeInherit(scheme,tmpel);
-      continue;
-    };
-
-    if (*tmpel->getNodeName() == "regexp"){
-      addSchemeRegexp(scheme,tmpel);
-      continue;
+void HRCParserImpl::parseSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement *elem) {
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *hrcTagInherit = L"inherit";
+      const XMLCh *hrcTagBlock = L"block";
+      const XMLCh *hrcTagRegexp = L"regexp";
+      const XMLCh *hrcTagKeywords = L"keywords";
+      const XMLCh *hrcTagAnnotation = L"annotation";
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagInherit)) {
+        addSchemeInherit(scheme, subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegexp)) {
+        addSchemeRegexp(scheme, subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagBlock)) {
+        addSchemeBlock(scheme, subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagKeywords)) {
+        addSchemeKeywords(scheme, subelem);
+        continue;
+      };
+      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
+        // not read anotation
+        continue;
+      };
     }
-    if (*tmpel->getNodeName() == "block"){
-      addSchemeBlock(scheme,tmpel);
-      continue;
+    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      parseSchemeBlock(scheme, static_cast<xercesc::DOMElement*>(node));
     }
-    if (*tmpel->getNodeName() == "keywords"){
-      addSchemeKeywords(scheme,tmpel);
-    };
-  };
-};
+  }
+}
 
-void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, Node *elem) 
+void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const String *nqSchemeName = ((Element*) elem)->getAttribute(DString("scheme"));
-  if (nqSchemeName == null || nqSchemeName->length() == 0) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("empty scheme name in inheritance operator in scheme '") + scheme->schemeName + "'");
+  const XMLCh *hrcInheritAttrScheme = L"scheme";
+  const XMLCh *nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
+  if (*nqSchemeName == '\0'){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("empty scheme name in inheritance operator in scheme '")+scheme->schemeName+"'");
     }
     return;
   };
-  SchemeNode *next = new SchemeNode();
-  next->type = SNT_INHERIT;
-  next->schemeName = new SString(nqSchemeName);
-  String *schemeName = qualifyForeignName(nqSchemeName, QNT_SCHEME, false);
-  if (schemeName == null) {
+  SchemeNode *scheme_node = new SchemeNode();
+  scheme_node->type = SNT_INHERIT;
+  scheme_node->schemeName = new SString(DString(nqSchemeName));
+  String *schemeName = qualifyForeignName(&DString(nqSchemeName), QNT_SCHEME, false);
+  if (schemeName == null){
     //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with '"+scheme->schemeName+"'");
     //        delete next;
     //        continue;
-  } else
-    next->scheme = schemeHash.get(schemeName);
-  if (schemeName != null) {
-    delete next->schemeName;
-    next->schemeName = schemeName;
+  }else
+    scheme_node->scheme = schemeHash.get(schemeName);
+  if (schemeName != null){
+    delete scheme_node->schemeName;
+    scheme_node->schemeName = schemeName;
   };
-  if (elem->getFirstChild() != null) {
-    for (Node *vel = elem->getFirstChild(); vel; vel = vel->getNextSibling()) {
-      if (*vel->getNodeName() != "virtual") {
-        continue;
-      }
-      const String *schemeName = ((Element*) vel)->getAttribute(DString("scheme"));
-      const String *substName = ((Element*) vel)->getAttribute(DString("subst-scheme"));
-      if (schemeName == null || substName == null) {
-        if (errorHandler != null) {
-          errorHandler->error(StringBuffer("bad virtualize attributes in scheme '") + scheme->schemeName + "'");
-        }
-        continue;
+
+  for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
+      const XMLCh *hrcVirtualAttrScheme = L"scheme";
+      const XMLCh *hrcVirtualAttrSubstScheme = L"subst-scheme";
+      const XMLCh *hrcTagVirtual = L"virtual";
+      if (xercesc::XMLString::equals(subelem->getNodeName() , hrcTagVirtual)) {
+        const XMLCh *schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
+        const XMLCh *substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
+        if (*schemeName == '\0' || *substName == '\0'){
+          if (errorHandler != null){
+            errorHandler->error(StringBuffer("bad virtualize attributes in scheme '")+scheme->schemeName+"'");
+          }
+          continue;
+        };
+        scheme_node->virtualEntryVector.addElement(new VirtualEntry(&DString(schemeName), &DString(substName)));
       };
-      next->virtualEntryVector.addElement(new VirtualEntry(schemeName, substName));
     };
   };
-  scheme->nodes.addElement(next);
+  scheme->nodes.addElement(scheme_node);
 }
 
-void HRCParserImpl::addSchemeRegexp(SchemeImpl *scheme, Node *elem) 
+void HRCParserImpl::addSchemeRegexp(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const String *matchParam = ((Element*) elem)->getAttribute(DString("match"));
-  if (matchParam == null && elem->getFirstChild() && elem->getFirstChild()->getNodeType() == Node::TEXT_NODE) {
-    matchParam = ((Text*) elem->getFirstChild())->getData();
+  const XMLCh *hrcRegexpAttrMatch = L"match";
+  const XMLCh *hrcRegexpAttrPriority = L"priority";
+
+  const XMLCh *matchParam = elem->getAttribute(hrcRegexpAttrMatch);
+  if (*matchParam == '\0'){
+    for (xercesc::DOMNode *child = elem->getFirstChild(); child!=nullptr; child = child->getNextSibling()) {
+      if(child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE){
+        matchParam = ((xercesc::DOMCDATASection*)child)->getData();
+        break;
+      }
+      if(child->getNodeType() == xercesc::DOMNode::TEXT_NODE){
+        const XMLCh *matchParam1;
+        matchParam1 = ((xercesc::DOMText*)child)->getData();
+        xercesc::XMLString::trim((XMLCh*)matchParam1);
+        if (*matchParam1!='\0') {
+          matchParam = matchParam1;
+          break;
+        }
+      }
+    }
   }
-  if (matchParam == null) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("no 'match' in regexp in scheme ") + scheme->schemeName);
+  if (matchParam == null){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("no 'match' in regexp in scheme ")+scheme->schemeName);
     }
     return;
   };
-  String *entMatchParam = useEntities(matchParam);
-  SchemeNode *next = new SchemeNode();
-  next->lowPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("priority")));
-  next->type = SNT_RE;
-  next->start = new CRegExp(entMatchParam);
-  if (!next->start || !next->start->isOk())
-    if (errorHandler != null) errorHandler->error(StringBuffer("fault compiling regexp '") + entMatchParam + "' in scheme '" + scheme->schemeName + "'");
+  String *entMatchParam = useEntities(&DString(matchParam));
+  SchemeNode *scheme_node = new SchemeNode();
+  scheme_node->lowPriority = DString("low").equals(&DString(elem->getAttribute(hrcRegexpAttrPriority)));
+  scheme_node->type = SNT_RE;
+  scheme_node->start = new CRegExp(entMatchParam);
+  if (!scheme_node->start || !scheme_node->start->isOk())
+    if (errorHandler != null) errorHandler->error(StringBuffer("fault compiling regexp '")+entMatchParam+"' in scheme '"+scheme->schemeName+"'");
   delete entMatchParam;
-  next->start->setPositionMoves(false);
-  next->end = 0;
+  scheme_node->start->setPositionMoves(false);
+  scheme_node->end = 0;
 
-  loadRegions(next, (Element*) elem, true);
-  if (next->region) {
-    next->regions[0] = next->region;
+  loadRegions(scheme_node, elem, true);
+  if(scheme_node->region){
+    scheme_node->regions[0] = scheme_node->region;
   }
 
-  scheme->nodes.addElement(next);
+  scheme->nodes.addElement(scheme_node);
 }
 
-void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, Node *elem)
+void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const String *sParam = ((Element*) elem)->getAttribute(DString("start"));
-  const String *eParam = ((Element*) elem)->getAttribute(DString("end"));
-  Element *eStart = NULL, *eEnd = NULL;
+  const XMLCh *hrcBlockAttrStart = L"start";
+  const XMLCh *hrcBlockAttrEnd = L"end";
+  const XMLCh *hrcBlockAttrScheme = L"scheme";
+  const XMLCh *hrcBlockAttrPriority = L"priority";
+  const XMLCh *hrcBlockAttrCPriority = L"content-priority";
+  const XMLCh *hrcBlockAttrInnerRegion = L"inner-region";
+  const XMLCh *hrcBlockAttrMatch = L"match";
+  const XMLCh *sParam = elem->getAttribute(hrcBlockAttrStart);
+  const XMLCh *eParam = elem->getAttribute(hrcBlockAttrEnd);
 
-  for (Node *blkn = elem->getFirstChild(); blkn && !(eParam && sParam); blkn = blkn->getNextSibling()) {
-    Element *blkel;
-    if (blkn->getNodeType() == Node::ELEMENT_NODE) blkel = (Element*) blkn;
+  xercesc::DOMElement *eStart = NULL, *eEnd = NULL;
+
+  for(xercesc::DOMNode *blkn = elem->getFirstChild(); blkn && !(*eParam!='\0' && *sParam!='\0'); blkn = blkn->getNextSibling())
+  {
+    xercesc::DOMElement *blkel;
+    if(blkn->getNodeType() == xercesc::DOMNode::ELEMENT_NODE){
+      blkel = static_cast<xercesc::DOMElement*>(blkn);
+    }
     else continue;
 
-    const String *p = (blkel->getFirstChild() && blkel->getFirstChild()->getNodeType() == Node::TEXT_NODE)
-            ? ((Text*) blkel->getFirstChild())->getData()
-            : blkel->getAttribute(DString("match"));
+    const XMLCh *p='\0';
+    if (blkel->getAttributeNode(hrcBlockAttrMatch)){
+      p = blkel->getAttribute(hrcBlockAttrMatch);
+    }else{
+      for (xercesc::DOMNode *child = blkel->getFirstChild(); child!=nullptr; child = child->getNextSibling()) {
+        if(child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE){
+          p = ((xercesc::DOMCDATASection*)child)->getData();
+          break;
+        }
+        if(child->getNodeType() == xercesc::DOMNode::TEXT_NODE){
+          const XMLCh *p1;
+          p1 = ((xercesc::DOMText*)child)->getData();
+          xercesc::XMLString::trim((XMLCh*)p1);
+          if (*p1!='\0') {
+            p = p1;
+            break;
+          }
+        }
+      }
+    }
 
-    if (*blkel->getNodeName() == "start") {
+    if(xercesc::XMLString::equals(blkel->getNodeName() , hrcBlockAttrStart))
+    {
       sParam = p;
       eStart = blkel;
     }
-    if (*blkel->getNodeName() == "end") {
+    if(xercesc::XMLString::equals(blkel->getNodeName() , hrcBlockAttrEnd))
+    {
       eParam = p;
       eEnd = blkel;
     }
@@ -609,177 +767,217 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, Node *elem)
 
   String *startParam;
   String *endParam;
-  if (!(startParam = useEntities(sParam))) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("'start' block attribute not found in scheme '") + scheme->schemeName + "'");
+  if (!(startParam = useEntities(&DString(sParam)))){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("'start' block attribute not found in scheme '")+scheme->schemeName+"'");
     }
     delete startParam;
     return;
   }
-  if (!(endParam = useEntities(eParam))) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("'end' block attribute not found in scheme '") + scheme->schemeName + "'");
-    }
-    delete startParam;
-    delete endParam;
-    return;
-  }
-  const String *schemeName = ((Element*) elem)->getAttribute(DString("scheme"));
-  if (schemeName == null || schemeName->length() == 0) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("block with bad scheme attribute in scheme '") + scheme->getName() + "'");
+  if (!(endParam = useEntities(&DString(eParam)))){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("'end' block attribute not found in scheme '")+scheme->schemeName+"'");
     }
     delete startParam;
     delete endParam;
     return;
   }
-  SchemeNode *next = new SchemeNode();
-  next->schemeName = new SString(schemeName);
-  next->lowPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("priority")));
-  next->lowContentPriority = DString("low").equals(((Element*) elem)->getAttribute(DString("content-priority")));
-  next->innerRegion = DString("yes").equals(((Element*) elem)->getAttribute(DString("inner-region")));
-  next->type = SNT_SCHEME;
-  next->start = new CRegExp(startParam);
-  next->start->setPositionMoves(false);
-  if (!next->start->isOk()) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("fault compiling regexp '") + startParam + "' in scheme '" + scheme->schemeName + "'");
+  const XMLCh *schemeName = elem->getAttribute(hrcBlockAttrScheme);
+  if (*schemeName == '\0'){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("block with bad scheme attribute in scheme '")+scheme->getName()+"'");
+    }
+    delete startParam;
+    delete endParam;
+    return;
+  }
+  SchemeNode *scheme_node = new SchemeNode();
+  scheme_node->schemeName = new SString(DString(schemeName));
+  scheme_node->lowPriority = DString("low").equals(&DString(elem->getAttribute(hrcBlockAttrPriority)));
+  scheme_node->lowContentPriority = DString("low").equals(&DString(elem->getAttribute(hrcBlockAttrCPriority)));
+  scheme_node->innerRegion = DString("yes").equals(&DString(elem->getAttribute(hrcBlockAttrInnerRegion)));
+  scheme_node->type = SNT_SCHEME;
+  scheme_node->start = new CRegExp(startParam);
+  scheme_node->start->setPositionMoves(false);
+  if (!scheme_node->start->isOk()){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("fault compiling regexp '")+startParam+"' in scheme '"+scheme->schemeName+"'");
     }
   }
-  next->end = new CRegExp();
-  next->end->setPositionMoves(true);
-  next->end->setBackRE(next->start);
-  next->end->setRE(endParam);
-  if (!next->end->isOk()) {
-    if (errorHandler != null) {
-      errorHandler->error(StringBuffer("fault compiling regexp '") + endParam + "' in scheme '" + scheme->schemeName + "'");
+  scheme_node->end = new CRegExp();
+  scheme_node->end->setPositionMoves(true);
+  scheme_node->end->setBackRE(scheme_node->start);
+  scheme_node->end->setRE(endParam);
+  if (!scheme_node->end->isOk()){
+    if (errorHandler != null){
+      errorHandler->error(StringBuffer("fault compiling regexp '")+endParam+"' in scheme '"+scheme->schemeName+"'");
     }
   }
   delete startParam;
   delete endParam;
 
   // !! EE
-  loadBlockRegions(next, (Element*) elem);
-  loadRegions(next, eStart, true);
-  loadRegions(next, eEnd, false);
-  scheme->nodes.addElement(next);
-
+  loadBlockRegions(scheme_node, elem);
+  loadRegions(scheme_node, eStart, true);
+  loadRegions(scheme_node, eEnd, false);
+  scheme->nodes.addElement(scheme_node);
 }
 
-void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, Node *elem) 
+void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  SchemeNode *next = new SchemeNode();
-  bool isCase = !DString("yes").equals(((Element*) elem)->getAttribute(DString("ignorecase")));
-  next->lowPriority = !DString("normal").equals(((Element*) elem)->getAttribute(DString("priority")));
-  const Region *brgn = getNCRegion((Element*) elem, DString("region"));
-  if (brgn == null) {
+  const XMLCh *hrcKeywordsAttrIgnorecase = L"ignorecase";
+  const XMLCh *hrcKeywordsAttrPriority = L"priority";
+  const XMLCh *hrcKeywordsAttrWordDiv = L"worddiv";
+  SchemeNode *scheme_node = new SchemeNode();
+  bool isCase = !DString("yes").equals(&DString(elem->getAttribute(hrcKeywordsAttrIgnorecase)));
+  scheme_node->lowPriority = !DString("normal").equals(&DString(elem->getAttribute(hrcKeywordsAttrPriority)));
+  const Region *brgn = getNCRegion(elem, DString("region"));
+  if (brgn == null){
     return;
   }
-  const String *worddiv = ((Element*) elem)->getAttribute(DString("worddiv"));
+  const XMLCh *worddiv = elem->getAttribute(hrcKeywordsAttrWordDiv);
 
-  next->worddiv = null;
-  if (worddiv) {
-    String *entWordDiv = useEntities(worddiv);
-    next->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, null);
-    if (next->worddiv == null) {
-      if (errorHandler != null) errorHandler->warning(StringBuffer("fault compiling worddiv regexp '") + entWordDiv + "' in scheme '" + scheme->schemeName + "'");
+  scheme_node->worddiv = null;
+  if (*worddiv!='\0'){
+    String *entWordDiv = useEntities(&DString(worddiv));
+    scheme_node->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, null);
+    if(scheme_node->worddiv == null){
+      if (errorHandler != null) errorHandler->warning(StringBuffer("fault compiling worddiv regexp '")+entWordDiv+"' in scheme '"+scheme->schemeName+"'");
     }
     delete entWordDiv;
   };
 
-  next->kwList = new KeywordList;
-  for (Node *keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()) {
-    if (*keywrd_count->getNodeName() == "word" ||
-            *keywrd_count->getNodeName() == "symb") {
-      next->kwList->num++;
-    }
-  }
+  scheme_node->kwList = new KeywordList;
+  scheme_node->kwList->num = getSchemeKeywordsCount(elem);
 
-  next->kwList->kwList = new KeywordInfo[next->kwList->num];
-  memset(next->kwList->kwList, 0, sizeof (KeywordInfo) * next->kwList->num);
-  next->kwList->num = 0;
-  KeywordInfo *pIDs = next->kwList->kwList;
-  next->kwList->matchCase = isCase;
-  next->kwList->kwList = pIDs;
-  next->type = SNT_KEYWORDS;
+  scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
+  memset(scheme_node->kwList->kwList ,0,sizeof(KeywordInfo)*scheme_node->kwList->num);
+  scheme_node->kwList->num = 0;
+  KeywordInfo *pIDs = scheme_node->kwList->kwList;
+  scheme_node->kwList->matchCase = isCase;
+  scheme_node->kwList->kwList = pIDs;
+  scheme_node->type = SNT_KEYWORDS;
 
-  for (Node *keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
-    int type = 0;
-    if (*keywrd->getNodeName() == "word") type = 1;
-    if (*keywrd->getNodeName() == "symb") type = 2;
-    if (!type) {
+  for(xercesc::DOMNode *keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()){
+    if (keywrd->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      addKeyword(scheme_node, brgn, static_cast<xercesc::DOMElement*>(keywrd));
       continue;
     }
-    const String *param;
-    if (!(param = ((Element*) keywrd)->getAttribute(DString("name"))) || !param->length()) {
-      continue;
+    if (keywrd->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      for(xercesc::DOMNode *keywrd2 = keywrd->getFirstChild(); keywrd2; keywrd2 = keywrd2->getNextSibling()){
+        if (keywrd2->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+          addKeyword(scheme_node, brgn, static_cast<xercesc::DOMElement*>(keywrd2));
+        }
+      }
     }
-
-    const Region *rgn = brgn;
-    if (((Element*) keywrd)->getAttribute(DString("region")))
-      rgn = getNCRegion((Element*) keywrd, DString("region"));
-
-    int pos = next->kwList->num;
-    pIDs[pos].keyword = new SString(param);
-    pIDs[pos].region = rgn;
-    pIDs[pos].isSymbol = (type == 2);
-    pIDs[pos].ssShorter = -1;
-    next->kwList->firstChar->addChar((*param)[0]);
-    if (!isCase) {
-      next->kwList->firstChar->addChar(Character::toLowerCase((*param)[0]));
-      next->kwList->firstChar->addChar(Character::toUpperCase((*param)[0]));
-      next->kwList->firstChar->addChar(Character::toTitleCase((*param)[0]));
-    };
-    next->kwList->num++;
-    if (next->kwList->minKeywordLength > pIDs[pos].keyword->length())
-      next->kwList->minKeywordLength = pIDs[pos].keyword->length();
   };
-  next->kwList->sortList();
-  next->kwList->substrIndex();
-  scheme->nodes.addElement(next);
+  scheme_node->kwList->sortList();
+  scheme_node->kwList->substrIndex();
+  scheme->nodes.addElement(scheme_node);
 }
 
+void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region *brgn, const xercesc::DOMElement *elem)
+{
+  const XMLCh *hrcTagWord = L"word";
+  const XMLCh *hrcTagSymb = L"symb";
+  const XMLCh *hrcTagAttrName= L"name";
+  const XMLCh *hrcTagAttrRegion = L"region";
+  int type = 0;
+  if (xercesc::XMLString::equals(elem->getNodeName() , hrcTagWord)) type = 1;
+  if (xercesc::XMLString::equals(elem->getNodeName() , hrcTagSymb)) type = 2;
+  if (!type){
+    return;
+  }
+  const XMLCh *param = elem->getAttribute(hrcTagAttrName);
+  if (*param =='\0'){
+    return;
+  }
 
-void HRCParserImpl::loadRegions(SchemeNode *node, Element *el, bool st)
+  const Region *rgn = brgn;
+  const XMLCh *reg=elem->getAttribute(hrcTagAttrRegion);
+  if (*reg!='\0')
+    rgn = getNCRegion(elem, DString(hrcTagAttrRegion));
+
+  int pos = scheme_node->kwList->num;
+  scheme_node->kwList->kwList[pos].keyword = new SString(DString(param));
+  scheme_node->kwList->kwList[pos].region = rgn;
+  scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
+  scheme_node->kwList->kwList[pos].ssShorter = -1;
+  scheme_node->kwList->firstChar->addChar(param[0]);
+  if (!scheme_node->kwList->matchCase){
+    scheme_node->kwList->firstChar->addChar(Character::toLowerCase(param[0]));
+    scheme_node->kwList->firstChar->addChar(Character::toUpperCase(param[0]));
+    scheme_node->kwList->firstChar->addChar(Character::toTitleCase(param[0]));
+  };
+  scheme_node->kwList->num++;
+  if (scheme_node->kwList->minKeywordLength > scheme_node->kwList->kwList[pos].keyword->length())
+    scheme_node->kwList->minKeywordLength = scheme_node->kwList->kwList[pos].keyword->length();
+}
+
+int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement *elem)
+{
+  const XMLCh *hrcTagWord = L"word";
+  const XMLCh *hrcTagSymb = L"symb";
+  int result = 0;
+  for(xercesc::DOMNode *keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()){
+    if (keywrd_count->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      if (xercesc::XMLString::equals(keywrd_count->getNodeName() , hrcTagWord) ||
+        xercesc::XMLString::equals(keywrd_count->getNodeName() , hrcTagSymb))
+      {
+        result++;
+      }
+      continue;
+    }
+    if (keywrd_count->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      result +=getSchemeKeywordsCount(static_cast<xercesc::DOMElement*>(keywrd_count));
+    }
+  }
+  return result;
+}
+
+void HRCParserImpl::loadRegions(SchemeNode *node, const xercesc::DOMElement *el, bool st)
 {
   static char rg_tmpl[8] = "region\0";
-  if (el) {
-    if (node->region == null) {
+
+  if(el)
+  {
+    if (node->region == null){
       node->region = getNCRegion(el, DString("region"));
     }
 
-    for (int i = 0; i < REGIONS_NUM; i++) {
-      rg_tmpl[6] = (i < 0xA ? i : i + 7 + 32) + '0';
+    for(int i = 0; i < REGIONS_NUM; i++)
+    {
+      rg_tmpl[6] = (i < 0xA ? i : i+7+32) + '0';
 
-      if (st) {
+      if(st){
         node->regions[i] = getNCRegion(el, DString(rg_tmpl));
-      } else {
+      }
+      else{
         node->regione[i] = getNCRegion(el, DString(rg_tmpl));
       }
     }
   }
 
-  for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
-    if (st) node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
-    else node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
+  for (int i = 0; i < NAMED_REGIONS_NUM; i++)
+  {
+    if(st) node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
+    else   node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
   }
 }
 
-
-void HRCParserImpl::loadBlockRegions(SchemeNode *node, Element *el)
+void HRCParserImpl::loadBlockRegions(SchemeNode *node, const xercesc::DOMElement *el)
 {
-int i;
-static char rg_tmpl[9] = "region\0\0";
+  int i;
+  static char rg_tmpl[9] = "region\0\0";
 
   node->region = getNCRegion(el, DString("region"));
   for (i = 0; i < REGIONS_NUM; i++){
-      rg_tmpl[6] = '0'; rg_tmpl[7] = (i<0xA?i:i+7+32)+'0';
-      node->regions[i] = getNCRegion(el, DString(rg_tmpl));
-      rg_tmpl[6] = '1';
-      node->regione[i] = getNCRegion(el, DString(rg_tmpl));
+    rg_tmpl[6] = '0'; rg_tmpl[7] = (i<0xA?i:i+7+32)+'0';
+    node->regions[i] = getNCRegion(el, DString(rg_tmpl));
+    rg_tmpl[6] = '1';
+    node->regione[i] = getNCRegion(el, DString(rg_tmpl));
   }
 }
-  
 
 void HRCParserImpl::updateLinks()
 {
@@ -830,8 +1028,6 @@ void HRCParserImpl::updateLinks()
   };
 };
 
-
-
 String *HRCParserImpl::qualifyOwnName(const String *name) {
   if (name == null) return null;
   int colon = name->indexOf(':');
@@ -845,8 +1041,9 @@ String *HRCParserImpl::qualifyOwnName(const String *name) {
     StringBuffer *sbuf = new StringBuffer(parseType->name);
     sbuf->append(DString(":")).append(name);
     return sbuf;
-  };
-};
+  }
+}
+
 bool HRCParserImpl::checkNameExist(const String *name, FileTypeImpl *parseType, QualifyNameType qntype, bool logErrors) {
   if (qntype == QNT_DEFINE && regionNamesHash.get(name) == null){
     if (logErrors)
@@ -862,7 +1059,8 @@ bool HRCParserImpl::checkNameExist(const String *name, FileTypeImpl *parseType, 
     return false;
   };
   return true;
-};
+}
+
 String *HRCParserImpl::qualifyForeignName(const String *name, QualifyNameType qntype, bool logErrors){
   if (name == null) return null;
   int colon = name->indexOf(':');
@@ -890,12 +1088,11 @@ String *HRCParserImpl::qualifyForeignName(const String *name, QualifyNameType qn
       delete qname;
     };
     if (logErrors && errorHandler != null){
-      errorHandler->error(StringBuffer("unqualified name '")+name+"' doesn't belong to any imported type ["+curInputSource->getLocation()+"]");
+      errorHandler->error(StringBuffer("unqualified name '")+name+"' doesn't belong to any imported type ["+DString(curInputSource->getInputSource()->getSystemId())+"]");
     }
   };
   return null;
-};
-
+}
 
 String *HRCParserImpl::useEntities(const String *name)
 {
@@ -959,10 +1156,10 @@ const Region* HRCParserImpl::getNCRegion(const String *name, bool logErrors){
   return reg;
 };
 
-const Region* HRCParserImpl::getNCRegion(Element *el, const String &tag){
-  const String *par = el->getAttribute(tag);
-  if (par == null) return null;
-  return getNCRegion(par, true);
+const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement *el, const String &tag){
+  const XMLCh *par = el->getAttribute(tag.getWChars());
+  if (*par == '\0') return null;
+  return getNCRegion(&DString(par), true);
 };
 
 /* ***** BEGIN LICENSE BLOCK *****

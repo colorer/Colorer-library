@@ -127,7 +127,7 @@ protected:
   Hashtable<String*> paramDescriptionHash;
   Vector<String*> paramVector;
   Vector<String*> importVector;
-  colorer::InputSource *inputSource;
+  XmlInputSource *inputSource;
 
   FileTypeImpl(HRCParserImpl *hrcParser){
     this->hrcParser = hrcParser;
