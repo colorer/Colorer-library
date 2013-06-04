@@ -1,3 +1,6 @@
 [submodule "libs/xercesc"]
 	path = libs/xercesc
 	url = https://github.com/colorer/xerces-c.git
+[submodule "libs/zlib"]
+	path = libs/zlib
+	url = https://github.com/colorer/zlib.git
