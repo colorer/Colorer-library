@@ -12,8 +12,12 @@ ENDIF()
 #====================================================
 # xercesc_lib
 #====================================================
-set(XERCESC_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../libs/xercesc" CACHE STRING "path to the xerces-c")
-add_subdirectory(../libs/xercesc/src ./build)
+if(CONF STREQUAL "x86")
+  set(LIBRARY_BITS "32")
+else()
+  set(LIBRARY_BITS "64")
+endif()
+add_subdirectory(../libs/xercesc ./build)
 include_directories(../libs/xercesc/src)
 set(CMAKE_CXX_FLAGS "-DXERCES_STATIC_LIBRARY")
 
