@@ -17,11 +17,13 @@ ENDIF()
 if(NOT DEFINED CONF)
   set(CONF "x86")
 endif()
-        
-if(CONF STREQUAL "x86")
-  set(PLATFORM "Win32")
-else()
-  set(PLATFORM "x64")
+   
+if (WIN32)     
+  if(CONF STREQUAL "x86")
+    set(PLATFORM "Win32")
+  else()
+    set(PLATFORM "x64")
+  endif()
 endif()
 
 #====================================================
@@ -74,10 +76,10 @@ endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COLORER_WARNING_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COLORER_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_RELEASE "${FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${FLAGS_DEBUG}")
 
 #====================================================
 # build
