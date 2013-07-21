@@ -217,6 +217,7 @@ String *ParserFactory::searchPath()
 
 void ParserFactory::searchPathWindows(Vector<String*> *paths)
 {
+#ifdef _WIN32
   // image_path/  image_path/..  image_path/../..
   wchar_t cname[256];
   HMODULE hmod;
@@ -271,10 +272,12 @@ void ParserFactory::searchPathWindows(Vector<String*> *paths)
       }
     }catch(InputSourceException &){};
   };
+#endif
 }
 
 void ParserFactory::searchPathLinux(Vector<String*> *paths)
 {
+#ifdef __unix__
   // %COLORER5CATALOG%
   char *c = getenv("COLORER5CATALOG");
   if (c != null) paths->addElement(new SString(c));
@@ -293,6 +296,7 @@ void ParserFactory::searchPathLinux(Vector<String*> *paths)
   // /usr/share/colorer/catalog.xml
   paths->addElement(new SString("/usr/share/colorer/catalog.xml"));
   paths->addElement(new SString("/usr/local/share/colorer/catalog.xml"));
+#endif
 }
 
 ParserFactory::ParserFactory(colorer::ErrorHandler *_errorHandler){
@@ -368,11 +372,15 @@ HRCParser* ParserFactory::getHRCParser(){
   hrcParser->setErrorHandler(errorHandler);
   for(int idx = 0; idx < hrcLocations.size(); idx++){
     if (hrcLocations.elementAt(idx) != null){
+#ifdef _WIN32
       size_t i=ExpandEnvironmentStrings( hrcLocations.elementAt(idx)->getWChars(),NULL,0);
       wchar_t *temp = new wchar_t[i];
       ExpandEnvironmentStrings( hrcLocations.elementAt(idx)->getWChars(),temp,static_cast<DWORD>(i));
       const String *relPath = new SString(temp);
       delete[] temp;
+#else
+      const String *relPath = new SString(hrcLocations.elementAt(idx));
+#endif
       const String *path = null;
       if (colorer::InputSource::isRelative(relPath)){
         path = colorer::InputSource::getAbsolutePath(catalogPath, relPath);
@@ -415,6 +423,7 @@ HRCParser* ParserFactory::getHRCParser(){
 
 void ParserFactory::loadPathWindows(const String * path, const String * relPath)
 {
+#ifdef _WIN32
   WIN32_FIND_DATA ffd;
   HANDLE dir = FindFirstFile((StringBuffer(path)+"\\*.*").getTChars(), &ffd);
   if (dir != INVALID_HANDLE_VALUE){
@@ -434,6 +443,7 @@ void ParserFactory::loadPathWindows(const String * path, const String * relPath)
     };
     FindClose(dir);
   };
+#endif
 }
 
 void ParserFactory::loadPathLinux(const String * path, const String * relPath)
@@ -446,7 +456,7 @@ void ParserFactory::loadPathLinux(const String * path, const String * relPath)
       struct stat st;
       stat((StringBuffer(path)+"/"+dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)){
-        XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name)->getWChar(), catalogXIS);
+        XmlInputSource *dfis = XmlInputSource::newInstance((StringBuffer(relPath)+"/"+dire->d_name).getWChars(), catalogXIS);
         try{
           hrcParser->loadSource(dfis);
           delete dfis;
