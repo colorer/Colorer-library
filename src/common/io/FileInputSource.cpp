@@ -36,7 +36,7 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
 #if defined _WIN32
    // replace the environment variables to their values
   size_t i=ExpandEnvironmentStrings(baseLocation->getTChars(),NULL,0);
-  TCHAR *temp = new TCHAR[i];
+  wchar_t *temp = new wchar_t[i];
   ExpandEnvironmentStrings(baseLocation->getTChars(),temp,static_cast<DWORD>(i));
   delete baseLocation;
   baseLocation = new SString(temp);

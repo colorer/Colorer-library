@@ -218,11 +218,11 @@ String *ParserFactory::searchPath()
 void ParserFactory::searchPathWindows(Vector<String*> *paths)
 {
   // image_path/  image_path/..  image_path/../..
-  TCHAR cname[256];
+  wchar_t cname[256];
   HMODULE hmod;
-  hmod = GetModuleHandle(TEXT("colorer"));
+  hmod = GetModuleHandle(L"colorer");
 #ifdef _WIN64
-  if (hmod == null) hmod = GetModuleHandle(TEXT("colorer_x64"));
+  if (hmod == null) hmod = GetModuleHandle(L"colorer_x64");
 #endif
   if (hmod == null) hmod = GetModuleHandle(null);
   int len = GetModuleFileName(hmod, cname, 256) - 1;

@@ -42,7 +42,7 @@ const byte *HTTPInputSource::openStream()
   Vector<byte*> streamVector;
   Vector<int> streamSizeVector;
 
-  HINTERNET ihandle = InternetOpen(TEXT("Colorer-take5 library connector"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+  HINTERNET ihandle = InternetOpen("Colorer-take5 library connector", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (ihandle == NULL) throw InputSourceException(StringBuffer("Can't create internet connection"));
 
   DWORD dw;

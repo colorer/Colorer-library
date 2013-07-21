@@ -18,7 +18,7 @@ int topline, leftpos;
 leftpos = topline = 0;
 INPUT_RECORD ir;
 
-  HANDLE hConI = CreateFile(TEXT("CONIN$"), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+  HANDLE hConI = CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
   if (hConI == INVALID_HANDLE_VALUE) return;
   SetConsoleMode(hConI, ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT);
 
