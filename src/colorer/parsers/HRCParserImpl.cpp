@@ -5,6 +5,7 @@
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/XmlInputSource.h>
 #include <xml/BaseEntityResolver.h>
+#include <xml/XmlTagDefs.h>
 
 #define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
@@ -191,13 +192,11 @@ void HRCParserImpl::parseHRC(XmlInputSource *is)
   xercesc::DOMDocument *doc = xml_parser.getDocument();
   xercesc::DOMElement *root = doc->getDocumentElement();
 
-  const XMLCh *hrcTagHrc = L"hrc";
-  const XMLCh *hrcHrcAttVersion = L"version";
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
     throw HRCParserException(StringBuffer("Bad hrc structure. Main '<hrc>' block not found.")+ CURRENT_FILE);
   }
   if (versionName == null)
-    versionName = new DString(root->getAttribute(hrcHrcAttVersion));
+    versionName = new DString(root->getAttribute(hrcHrcAttrVersion));
 
   bool globalUpdateStarted = false;
   if (!updateStarted){
@@ -233,10 +232,6 @@ void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcTagPrototype = L"prototype";
-  const XMLCh *hrcTagPackage = L"package";
-  const XMLCh *hrcTagType = L"type";
-  const XMLCh *hrcTagAnnotation = L"annotation";
   if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype)) {
       addPrototype(elem);
@@ -260,12 +255,9 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addPrototype(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcProtoAttrName = L"name";
-  const XMLCh *hrcProtoAttrDescription = L"description";
-  const XMLCh *hrcProtoAttrGroup = L"group";
-  const XMLCh *typeName = elem->getAttribute(hrcProtoAttrName);
-  const XMLCh *typeGroup = elem->getAttribute(hrcProtoAttrGroup);
-  const XMLCh *typeDescription = elem->getAttribute(hrcProtoAttrDescription);
+  const XMLCh *typeName = elem->getAttribute(hrcPrototypeAttrName);
+  const XMLCh *typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
+  const XMLCh *typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
   if (*typeName == '\0'){
     if (errorHandler != null) errorHandler->error(DString("unnamed prototype "));
     return;
@@ -287,7 +279,6 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement *elem)
   if (typeGroup != null){
     type->group = new SString(DString(typeGroup));
   }
-  const XMLCh *hrcTagPackage = L"package";
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)){
     type->isPackage = true;
   }
@@ -302,10 +293,6 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement *elem)
 }
 void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcTagLocation = L"location";
-  const XMLCh *hrcTagFilename = L"filename";
-  const XMLCh *hrcTagFirstLine = L"firstline";
-  const XMLCh *hrcTagParametrs = L"parameters";
   for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
@@ -314,7 +301,7 @@ void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement *elem)
         continue;
       };
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
-			        xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstLine)){
+			        xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline)){
         addPrototypeDetectParam(subelem);
         continue;
       };
@@ -328,8 +315,7 @@ void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcProtoAttrLink = L"link";
-  const XMLCh *locationLink = elem->getAttribute(hrcProtoAttrLink);
+  const XMLCh *locationLink = elem->getAttribute(hrcLocationAttrLink);
   if (*locationLink == '\0'){
     if (errorHandler != null){
       errorHandler->error(StringBuffer("Bad 'location' link attribute in prototype '")+parseProtoType->name+"'");
@@ -355,11 +341,9 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement *elem)
     delete matchRE;
     return;
   };
-  const XMLCh *hrcTagFilename = L"filename";
   int ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? 0 : 1;
   double prior = ctype ? 1 : 2;
-  const XMLCh *hrcProtoAttrWeight = L"weight";
-  UnicodeTools::getNumber(&DString(elem->getAttribute(hrcProtoAttrWeight)), &prior);
+  UnicodeTools::getNumber(&DString(elem->getAttribute(hrcFilenameAttrWeight)), &prior);
   FileTypeChooser *ftc = new FileTypeChooser(ctype, prior, matchRE);
   parseProtoType->chooserVector.addElement(ftc);
 }
@@ -369,14 +353,10 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement *elem)
   for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
-      const XMLCh *hrcTagParam = L"param";
-      const XMLCh *hrcProtoAttrParamName = L"name";
-      const XMLCh *hrcProtoAttrParamValue = L"value";
-      const XMLCh *hrcProtoAttrParamDescription = L"description";
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
-        const XMLCh *name = subelem->getAttribute(hrcProtoAttrParamName);
-        const XMLCh *value = subelem->getAttribute(hrcProtoAttrParamValue);
-        const XMLCh *descr = subelem->getAttribute(hrcProtoAttrParamDescription);
+        const XMLCh *name = subelem->getAttribute(hrcParamAttrName);
+        const XMLCh *value = subelem->getAttribute(hrcParamAttrValue);
+        const XMLCh *descr = subelem->getAttribute(hrcParamAttrDescription);
         if (*name == '\0' || *value == '\0'){
           if (errorHandler != null){
             errorHandler->warning(StringBuffer("Bad parameter in prototype '")+parseProtoType->name+"'");
@@ -399,7 +379,6 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addType(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcTypeAttrName = L"name";
   const XMLCh *typeName = elem->getAttribute(hrcTypeAttrName);
 
   if (*typeName == '\0'){
@@ -446,11 +425,6 @@ void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement *elem)
   for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
-      const XMLCh *hrcTagScheme = L"scheme";
-      const XMLCh *hrcTagRegion = L"region";
-      const XMLCh *hrcTagEntity = L"entity";
-      const XMLCh *hrcTagImport = L"import";
-      const XMLCh *hrcTagAnnotation = L"annotation";
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegion)) {
         addTypeRegion(subelem);
         continue;
@@ -481,9 +455,6 @@ void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addTypeRegion(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcRegionAttrName = L"name";
-  const XMLCh *hrcRegionAttrParent = L"parent";
-  const XMLCh *hrcRegionAttrDescription = L"description";
   const XMLCh *regionName = elem->getAttribute(hrcRegionAttrName);
   const XMLCh *regionParent = elem->getAttribute(hrcRegionAttrParent);
   const XMLCh *regionDescr = elem->getAttribute(hrcRegionAttrDescription);
@@ -513,11 +484,9 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addTypeEntity(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcEntityAttrName = L"name";
-  const XMLCh *hrcEntityAttrValue = L"value";
   const XMLCh *entityName  = elem->getAttribute(hrcEntityAttrName);
   const XMLCh *entityValue = elem->getAttribute(hrcEntityAttrValue);
-  if (*entityName == '\0' ||  elem->getAttributeNode(hrcEntityAttrValue) == null){
+  if (*entityName == '\0' || elem->getAttributeNode(hrcEntityAttrValue) == null){
     if (errorHandler != null){
       errorHandler->error(DString("Bad entity attributes"));
     }
@@ -533,7 +502,6 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addTypeImport(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcImportAttrType = L"type";
   const XMLCh *typeParam = elem->getAttribute(hrcImportAttrType);
   if (*typeParam == '\0' || fileTypeHash.get(&DString(typeParam)) == null){
     if (errorHandler != null){
@@ -546,7 +514,6 @@ void HRCParserImpl::addTypeImport(const xercesc::DOMElement *elem)
 
 void HRCParserImpl::addScheme(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcSchemeAttrName = L"name";
   const XMLCh *schemeName = elem->getAttribute(hrcSchemeAttrName);
   String *qSchemeName = qualifyOwnName(*schemeName!='\0'?&DString(schemeName):null);
   if (qSchemeName == null){
@@ -565,8 +532,6 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement *elem)
   scheme->fileType = parseType;
 
   schemeHash.put(scheme->schemeName, scheme);
-  const XMLCh *hrcSchemeAttrIf = L"if";
-  const XMLCh *hrcSchemeAttrUnless = L"unless";
   const XMLCh *condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh *condUnless = elem->getAttribute(hrcSchemeAttrUnless);
   const String* p1 = parseType->getParamValue(DString(condIf));
@@ -583,11 +548,6 @@ void HRCParserImpl::parseSchemeBlock(SchemeImpl *scheme, const xercesc::DOMEleme
   for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
-      const XMLCh *hrcTagInherit = L"inherit";
-      const XMLCh *hrcTagBlock = L"block";
-      const XMLCh *hrcTagRegexp = L"regexp";
-      const XMLCh *hrcTagKeywords = L"keywords";
-      const XMLCh *hrcTagAnnotation = L"annotation";
       if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagInherit)) {
         addSchemeInherit(scheme, subelem);
         continue;
@@ -617,7 +577,6 @@ void HRCParserImpl::parseSchemeBlock(SchemeImpl *scheme, const xercesc::DOMEleme
 
 void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcInheritAttrScheme = L"scheme";
   const XMLCh *nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
   if (*nqSchemeName == '\0'){
     if (errorHandler != null){
@@ -643,9 +602,6 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, const xercesc::DOMEleme
   for (xercesc::DOMNode *node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(node);
-      const XMLCh *hrcVirtualAttrScheme = L"scheme";
-      const XMLCh *hrcVirtualAttrSubstScheme = L"subst-scheme";
-      const XMLCh *hrcTagVirtual = L"virtual";
       if (xercesc::XMLString::equals(subelem->getNodeName() , hrcTagVirtual)) {
         const XMLCh *schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
         const XMLCh *substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
@@ -664,9 +620,6 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl *scheme, const xercesc::DOMEleme
 
 void HRCParserImpl::addSchemeRegexp(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcRegexpAttrMatch = L"match";
-  const XMLCh *hrcRegexpAttrPriority = L"priority";
-
   const XMLCh *matchParam = elem->getAttribute(hrcRegexpAttrMatch);
   if (*matchParam == '\0'){
     for (xercesc::DOMNode *child = elem->getFirstChild(); child!=nullptr; child = child->getNextSibling()) {
@@ -712,13 +665,6 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl *scheme, const xercesc::DOMElemen
 
 void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcBlockAttrStart = L"start";
-  const XMLCh *hrcBlockAttrEnd = L"end";
-  const XMLCh *hrcBlockAttrScheme = L"scheme";
-  const XMLCh *hrcBlockAttrPriority = L"priority";
-  const XMLCh *hrcBlockAttrCPriority = L"content-priority";
-  const XMLCh *hrcBlockAttrInnerRegion = L"inner-region";
-  const XMLCh *hrcBlockAttrMatch = L"match";
   const XMLCh *sParam = elem->getAttribute(hrcBlockAttrStart);
   const XMLCh *eParam = elem->getAttribute(hrcBlockAttrEnd);
 
@@ -794,7 +740,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement
   SchemeNode *scheme_node = new SchemeNode();
   scheme_node->schemeName = new SString(DString(schemeName));
   scheme_node->lowPriority = DString("low").equals(&DString(elem->getAttribute(hrcBlockAttrPriority)));
-  scheme_node->lowContentPriority = DString("low").equals(&DString(elem->getAttribute(hrcBlockAttrCPriority)));
+  scheme_node->lowContentPriority = DString("low").equals(&DString(elem->getAttribute(hrcBlockAttrContentPriority)));
   scheme_node->innerRegion = DString("yes").equals(&DString(elem->getAttribute(hrcBlockAttrInnerRegion)));
   scheme_node->type = SNT_SCHEME;
   scheme_node->start = new CRegExp(startParam);
@@ -825,9 +771,6 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl *scheme, const xercesc::DOMElement
 
 void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcKeywordsAttrIgnorecase = L"ignorecase";
-  const XMLCh *hrcKeywordsAttrPriority = L"priority";
-  const XMLCh *hrcKeywordsAttrWordDiv = L"worddiv";
   SchemeNode *scheme_node = new SchemeNode();
   bool isCase = !DString("yes").equals(&DString(elem->getAttribute(hrcKeywordsAttrIgnorecase)));
   scheme_node->lowPriority = !DString("normal").equals(&DString(elem->getAttribute(hrcKeywordsAttrPriority)));
@@ -835,7 +778,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElem
   if (brgn == null){
     return;
   }
-  const XMLCh *worddiv = elem->getAttribute(hrcKeywordsAttrWordDiv);
+  const XMLCh *worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
 
   scheme_node->worddiv = null;
   if (*worddiv!='\0'){
@@ -878,25 +821,21 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElem
 
 void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region *brgn, const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcTagWord = L"word";
-  const XMLCh *hrcTagSymb = L"symb";
-  const XMLCh *hrcTagAttrName= L"name";
-  const XMLCh *hrcTagAttrRegion = L"region";
   int type = 0;
   if (xercesc::XMLString::equals(elem->getNodeName() , hrcTagWord)) type = 1;
   if (xercesc::XMLString::equals(elem->getNodeName() , hrcTagSymb)) type = 2;
   if (!type){
     return;
   }
-  const XMLCh *param = elem->getAttribute(hrcTagAttrName);
+  const XMLCh *param = elem->getAttribute(hrcWordAttrName);
   if (*param =='\0'){
     return;
   }
 
   const Region *rgn = brgn;
-  const XMLCh *reg=elem->getAttribute(hrcTagAttrRegion);
+  const XMLCh *reg=elem->getAttribute(hrcWordAttrRegion);
   if (*reg!='\0')
-    rgn = getNCRegion(elem, DString(hrcTagAttrRegion));
+    rgn = getNCRegion(elem, DString(hrcWordAttrRegion));
 
   int pos = scheme_node->kwList->num;
   scheme_node->kwList->kwList[pos].keyword = new SString(DString(param));
@@ -916,8 +855,6 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region *brgn, cons
 
 int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement *elem)
 {
-  const XMLCh *hrcTagWord = L"word";
-  const XMLCh *hrcTagSymb = L"symb";
   int result = 0;
   for(xercesc::DOMNode *keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()){
     if (keywrd_count->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
