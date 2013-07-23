@@ -4,6 +4,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
+#include <xml/XmlTagDefs.h>
 
 TextHRDMapper::TextHRDMapper(){};
 TextHRDMapper::~TextHRDMapper(){
@@ -20,14 +21,6 @@ TextHRDMapper::~TextHRDMapper(){
 */
 void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
 {
-  const XMLCh *hrdTagMainHrd2 = L"hrd";
-  const XMLCh *hrdTagAssign2 = L"assign";
-  const XMLCh *hrdAssignAttrName2 = L"name";
-  const XMLCh *hrdAssignAttrStext = L"stext";
-  const XMLCh *hrdAssignAttrEtext = L"etext";
-  const XMLCh *hrdAssignAttrSback = L"sback";
-  const XMLCh *hrdAssignAttrEback = L"eback";
-
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(eh);
   xml_parser.setErrorHandler(&error_handler);
@@ -40,13 +33,13 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler
   xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
   xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
   
-  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagMainHrd2)) {
+  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
   for(xercesc::DOMNode *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign2)){
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)){
       xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
-      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName2);
+      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName);
       if (*xname == '\0') continue;
 
       const String *name = new DString(xname);
@@ -61,13 +54,13 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler
       const String *sback = null;
       const String *eback = null;
       const XMLCh *sval;
-      sval = subelem->getAttribute(hrdAssignAttrStext);
+      sval = subelem->getAttribute(hrdAssignAttrSText);
       if (*sval != '\0') stext = new SString(DString(sval));
-      sval = subelem->getAttribute(hrdAssignAttrEtext);
+      sval = subelem->getAttribute(hrdAssignAttrEText);
       if (*sval != '\0') etext = new SString(DString(sval));
-      sval = subelem->getAttribute(hrdAssignAttrSback);
+      sval = subelem->getAttribute(hrdAssignAttrSBack);
       if (*sval != '\0') sback = new SString(DString(sval));
-      sval = subelem->getAttribute(hrdAssignAttrEback);
+      sval = subelem->getAttribute(hrdAssignAttrEBack);
       if (*sval != '\0') eback = new SString(DString(sval));
 
       RegionDefine *rdef = new TextRegion(stext, etext, sback, eback);

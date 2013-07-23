@@ -5,6 +5,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
+#include <xml/XmlTagDefs.h>
 
 const int StyledRegion::RD_BOLD = 1;
 const int StyledRegion::RD_ITALIC = 2;
@@ -19,13 +20,6 @@ StyledHRDMapper::~StyledHRDMapper(){
 
 void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
 {
-  const XMLCh *hrdTagMainHrd = L"hrd";
-  const XMLCh *hrdTagAssign = L"assign";
-  const XMLCh *hrdAssignAttrName = L"name";
-  const XMLCh *hrdAssignAttrFore = L"fore";
-  const XMLCh *hrdAssignAttrBack = L"back";
-  const XMLCh *hrdAssignAttrStyle = L"style";
-
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(eh);
   xml_parser.setErrorHandler(&error_handler);
@@ -38,7 +32,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandl
   xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
   xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
 
-  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagMainHrd)) {
+  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
 

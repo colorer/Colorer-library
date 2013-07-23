@@ -3,6 +3,30 @@
 
 #include <xercesc/util/XMLUniDefs.hpp>
 using namespace xercesc;
+/* catalog.xml
+
+<catalog>
+  <hrc-sets log-location="">
+    <location link=""/>
+  </hrc-sets>
+  <hrd-sets>
+    <hrd class="" name="" description="">
+      <location link=""/>
+    </hrd>   
+  </hrd-sets>
+</catalog>
+*/
+
+const XMLCh catTagCatalog[] = {chLatin_c, chLatin_a, chLatin_t, chLatin_a, chLatin_l, chLatin_o, chLatin_g, chNull};
+const XMLCh catTagHrcSets[] = {chLatin_h, chLatin_r, chLatin_c, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
+const XMLCh catHrcSetsAttrLoglocation[] = {chLatin_l, chLatin_o, chLatin_g, chDash, chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
+const XMLCh catTagLocation[] = {chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
+const XMLCh catLocationAttrLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
+const XMLCh catTagHrdSets[] = {chLatin_h, chLatin_r, chLatin_d, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
+const XMLCh catTagHrd[] = {chLatin_h, chLatin_r, chLatin_d, chNull};
+const XMLCh catHrdAttrClass[] = {chLatin_c, chLatin_l, chLatin_a, chLatin_s, chLatin_s, chNull};
+const XMLCh catHrdAttrName[] =  {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
+const XMLCh catHrdAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r,  chLatin_i, chLatin_p, chLatin_t,  chLatin_i, chLatin_o, chLatin_n, chNull};
 
 /* hrc file
 
@@ -108,5 +132,21 @@ const XMLCh hrcTagVirtual[] = {chLatin_v, chLatin_i, chLatin_r, chLatin_t, chLat
 const XMLCh hrcVirtualAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
 const XMLCh hrcVirtualAttrSubstScheme[] = {chLatin_s, chLatin_u, chLatin_b, chLatin_s, chLatin_t, chDash, chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
 
+/* hrd file
+<hrd>
+  <assign name="" fore="" back="" style=""/>
+  <assign name="" stext="" etext="" sback="" eback=""/>
+</hrc>
+*/
+const XMLCh hrdTagHrd[] = {chLatin_h, chLatin_r, chLatin_d, chNull};
+const XMLCh hrdTagAssign[] = {chLatin_a, chLatin_s, chLatin_s, chLatin_i, chLatin_g, chLatin_n, chNull};
+const XMLCh hrdAssignAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
+const XMLCh hrdAssignAttrFore[] = {chLatin_f, chLatin_o, chLatin_r, chLatin_e, chNull};
+const XMLCh hrdAssignAttrBack[] = {chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
+const XMLCh hrdAssignAttrStyle[] = {chLatin_s, chLatin_t, chLatin_y, chLatin_l, chLatin_e, chNull};
+const XMLCh hrdAssignAttrSBack[] = {chLatin_s, chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
+const XMLCh hrdAssignAttrEBack[] = {chLatin_e, chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
+const XMLCh hrdAssignAttrSText[] = {chLatin_s, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull};
+const XMLCh hrdAssignAttrEText[] = {chLatin_e, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull};
 
 #endif // _COLORER_XMLTAGDEFS_H_
