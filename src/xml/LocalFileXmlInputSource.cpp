@@ -8,7 +8,7 @@
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh *path, const XMLCh *base):
   xercesc::LocalFileInputSource(base,path)
 {
-  if (xercesc::XMLString::findAny(path, L"%")!=0){
+  if (xercesc::XMLString::findAny(path, kPercent)!=0){
     XMLCh* e_path = ExpandEnvironment(path);
     this->setSystemId(e_path);
     delete e_path;

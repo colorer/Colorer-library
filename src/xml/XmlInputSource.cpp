@@ -6,7 +6,7 @@
 
 XmlInputSource *XmlInputSource::newInstance(const XMLCh *path, XmlInputSource *base)
 {
-  if (xercesc::XMLString::startsWith(path,L"jar:")){
+  if (xercesc::XMLString::startsWith(path,kJar)){
     return new ZipXmlInputSource(path, base);
   };
   if (base != null){
@@ -22,10 +22,10 @@ XmlInputSource *XmlInputSource::newInstance(const XMLCh *path, const XMLCh *base
   if ((path == null) || (*path == '\0')){
     throw Exception(DString("XmlInputSource::newInstance: path is null"));
   }
-  if (xercesc::XMLString::startsWith(path,L"jar:")){
+  if (xercesc::XMLString::startsWith(path,kJar)){
     return new ZipXmlInputSource(path, base);
   };
-  if (base!=null && xercesc::XMLString::startsWith(base,L"jar:")){
+  if (base!=null && xercesc::XMLString::startsWith(base,kJar)){
     return new ZipXmlInputSource(path,base,true);
   }
   return new LocalFileXmlInputSource(path, base);

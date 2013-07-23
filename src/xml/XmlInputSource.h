@@ -4,6 +4,10 @@
 #include <xercesc/sax/InputSource.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include<common/Common.h>
+#include <xercesc/util/XMLUniDefs.hpp>
+
+const XMLCh kJar[] = {xercesc::chLatin_j, xercesc::chLatin_a, xercesc::chLatin_r, xercesc::chColon, xercesc::chNull};
+const XMLCh kPercent[] = {xercesc::chPercent, xercesc::chNull};
 
 class XmlInputSource
 {

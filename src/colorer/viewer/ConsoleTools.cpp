@@ -12,6 +12,9 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/XmlInputSource.h>
+#include <xml/XmlInputSource.h>
+
+using namespace xercesc;
 
 ConsoleTools::ConsoleTools(){
   copyrightHeader = true;
@@ -128,14 +131,14 @@ void ConsoleTools::setHRDName(const String &str) {
 }
 
 void ConsoleTools::setLinkSource(const String &str){
-  const XMLCh *kTagDoclinks = L"doclinks";
-  const XMLCh *kTagLinks = L"links";
-  const XMLCh *kTagLink = L"link";
-  const XMLCh *kLinksAttrUrl = L"url";
-  const XMLCh *kLinkAttrUrl = L"url";
-  const XMLCh *kLinksAttrScheme = L"scheme";
-  const XMLCh *kLinkAttrScheme = L"scheme";
-  const XMLCh *kLinkAttrToken = L"token";
+  const XMLCh kTagDoclinks[] = {chLatin_d, chLatin_o, chLatin_k, chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
+  const XMLCh kTagLinks[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
+  const XMLCh kTagLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
+  const XMLCh kLinksAttrUrl[] = {chLatin_u, chLatin_r, chLatin_l, chNull};
+  const XMLCh kLinkAttrUrl[] = {chLatin_u, chLatin_r, chLatin_l, chNull};
+  const XMLCh kLinksAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
+  const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
+  const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
 
   XmlInputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), (XMLCh*)nullptr);
   xercesc::XercesDOMParser xml_parser;
