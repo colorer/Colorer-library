@@ -71,7 +71,13 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
   set(FLAGS_DEBUG "${FLAGS_DEBUG}")
-
+  
+  if(NOT(WIN32 OR MINGW OR MSYS))
+    INCLUDE(FindThreads)
+    if(CMAKE_USE_PTHREADS_INIT)
+      set(THREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+    endif()
+  endif()
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COLORER_WARNING_FLAGS}")
@@ -85,7 +91,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c_3_1)
+set(LIBRARIES colorer_lib xerces-c_3_1 )
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
-target_link_libraries(colorer ${LIBRARIES} ${WININETLIB})
+target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})
