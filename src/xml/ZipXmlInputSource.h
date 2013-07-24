@@ -21,7 +21,6 @@ private:
   void create(const XMLCh *path, const XMLCh *base);
   String *inJarLocation;
   SharedXmlInputSource *jarIS;
-  String *baseLocation;
 };
 
 

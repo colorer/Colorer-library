@@ -25,7 +25,7 @@ xercesc::BinInputStream *LocalFileXmlInputSource::makeStream() const
   if (!stream->getIsOpen())
   {
     delete stream;
-    return NULL;
+    throw InputSourceException(StringBuffer("Can't open file '")+DString(this->getSystemId())+"'");
   }
   return stream;
 }

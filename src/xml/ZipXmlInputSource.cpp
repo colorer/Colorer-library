@@ -75,11 +75,16 @@ xercesc::InputSource *ZipXmlInputSource::getInputSource()
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const   
 {
   const XMLByte* mSrc;
-	XMLSize_t mSize;
+  XMLSize_t mSize;
   jarIS->openStream();
   mSize = jarIS->length();
   mSrc = jarIS->getStream();
-  return new UnZip(mSrc,mSize,inJarLocation);
+  try {
+    UnZip* un = new UnZip(mSrc,mSize,inJarLocation);
+    return un;
+  }catch(InputSourceException &e){
+    throw InputSourceException(StringBuffer(DString(this->getSystemId())).append(DString(L": ")).append(e.getMessage()));
+  }
 }
 
 
