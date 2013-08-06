@@ -18,14 +18,6 @@ if(NOT DEFINED CONF)
   set(CONF "x86")
 endif()
    
-if (WIN32)     
-  if(CONF STREQUAL "x86")
-    set(PLATFORM "Win32")
-  else()
-    set(PLATFORM "x64")
-  endif()
-endif()
-
 #====================================================
 # colorer_lib
 #====================================================
@@ -42,35 +34,44 @@ if (COLORER_FEATURE_HTTPINPUTSOURCE AND WIN32)
   set(WININETLIB wininet)
 endif()
 
-if(PLATFORM STREQUAL "Win32")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32")
-else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
-endif()
+if(WIN32)
+  add_definitions(-D_WINDOWS)
+  add_definitions(-DWIN32)
+  if(CONF STREQUAL "x64")
+    add_definitions(-DWIN64)
+  endif()
+endif(WIN32)
 
+add_definitions(-D_UNICODE -DUNICODE)
 
-set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -D_UNICODE -DUNICODE")
-
-set(FLAGS_DEBUG "-D_DEBUG -DDEBUG -D_UNICODE -DUNICODE")
+set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
+set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
   set(COLORER_WARNING_FLAGS "")
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHsc /Zi")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /EHsc /Zi")
+  set(FLAGS_C_DEFAULT "${FLAGS_C_DEFAULT}")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
-  set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1")
+  set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
+  set(LINK_FLAGS_RELEASE "/LTCG")
 
+  if(CONF STREQUAL "x64")
+    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X64")
+  else()
+    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X86")
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(COLORER_WARNING_FLAGS )
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fpermissive -std=c++11")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++11")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
-  set(FLAGS_DEBUG "${FLAGS_DEBUG}")
+  set(FLAGS_DEBUG "${FLAGS_DEBUG} -g3")
   
   if(NOT(WIN32 OR MINGW OR MSYS))
     INCLUDE(FindThreads)
@@ -80,12 +81,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COLORER_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COLORER_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS "${FLAGS_C_DEFAULT} ${COLORER_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS "${FLAGS_CXX_DEFAULT} ${COLORER_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "${FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "${FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 
 #====================================================
 # build
@@ -95,3 +96,7 @@ set(LIBRARIES colorer_lib xerces-c_3_1 )
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})
+set_target_properties(
+  colorer PROPERTIES
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+)

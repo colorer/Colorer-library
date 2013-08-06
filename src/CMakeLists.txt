@@ -19,7 +19,7 @@ else()
 endif()
 add_subdirectory(../libs/xercesc ./build)
 include_directories(../libs/xercesc/src)
-set(CMAKE_CXX_FLAGS "-DXERCES_STATIC_LIBRARY")
+add_definitions(-DXERCES_STATIC_LIBRARY)
 
 #====================================================
 # colorer
@@ -143,37 +143,53 @@ add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX)
 #====================================================
 # common flags
 #====================================================
+if(WIN32)
+  add_definitions(-D_WINDOWS)
+  add_definitions(-DWIN32)
+  if(CONF STREQUAL "x64")
+    add_definitions(-DWIN64)
+  endif()
+endif(WIN32)
 
-set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -D_UNICODE -DUNICODE -DCOLORER_FEATURE_LOGLEVEL=COLORER_FEATURE_LOGLEVEL_QUIET")
-set(FLAGS_DEBUG "-D_DEBUG -DDEBUG -D_UNICODE -DUNICODE")
+set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -DCOLORER_FEATURE_LOGLEVEL=COLORER_FEATURE_LOGLEVEL_QUIET")
+set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
+
+add_definitions(-D_UNICODE -DUNICODE)
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
   set(COLORER_WARNING_FLAGS "")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /Zi")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /EHsc /Zi")
+  set(FLAGS_C_DEFAULT "${FLAGS_C_DEFAULT}")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
-  set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1")
-
+  set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
+  set(STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+  if(CONF STREQUAL "x64")
+    add_definitions(-DWIN64)
+    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X64")
+  else()
+    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X86")
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  set(COLORER_WARNING_FLAGS )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11")
+  set(COLORER_WARNING_FLAGS "")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++11")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
-  set(FLAGS_DEBUG "${FLAGS_DEBUG}")
+  set(FLAGS_DEBUG "${FLAGS_DEBUG} -g3")
 
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COLORER_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COLORER_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS "${FLAGS_C_DEFAULT} ${COLORER_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS "${FLAGS_CXX_DEFAULT} ${COLORER_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "${FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "${FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 
 #====================================================
 # build
@@ -181,3 +197,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${FLAGS_DEBUG}")
 
 set(SRC_FILES ${SRC_COLORER} ${SRC_ZLIB} ${SRC_MALLOC})
 add_library(colorer_lib STATIC ${SRC_FILES})
+set_target_properties(
+  colorer_lib PROPERTIES
+  STATIC_LIBRARY_FLAGS "${STATIC_LIBRARY_FLAGS}"
+  STATIC_LIBRARY_FLAGS_RELEASE "${STATIC_LIBRARY_FLAGS_RELEASE}"
+)
