@@ -23,7 +23,6 @@ SharedXmlInputSource::SharedXmlInputSource(XmlInputSource *source){
   ref_count = 1;
   mSrc = null;
   mSize = 0;
-  bfis = null;
 }
 
 SharedXmlInputSource::~SharedXmlInputSource(){
@@ -32,7 +31,6 @@ SharedXmlInputSource::~SharedXmlInputSource(){
     delete isHash;
     isHash = NULL;
     delete mSrc;
-    delete bfis;
   }
   delete is;
 }
@@ -66,9 +64,11 @@ xercesc::InputSource *SharedXmlInputSource::getInputSource()
 
 void SharedXmlInputSource::openStream()
 {
-  if (bfis) return;
+  if (mSrc) return;
+  xercesc::BinFileInputStream* bfis;
   bfis = (xercesc::BinFileInputStream*)is->getInputSource()->makeStream();
   mSize = (XMLSize_t)bfis->getSize();
   mSrc = new XMLByte[mSize];
   bfis->readBytes(mSrc, mSize);
+  delete bfis;
 }

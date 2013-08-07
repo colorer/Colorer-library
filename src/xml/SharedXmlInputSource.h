@@ -42,7 +42,6 @@ private:
   int ref_count;
   XMLByte* mSrc;
 	XMLSize_t mSize;
-  xercesc::BinFileInputStream* bfis;
 };
 
 #endif
