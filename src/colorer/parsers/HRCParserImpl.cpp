@@ -363,11 +363,11 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement *elem)
           }
           continue;
         };
-        parseProtoType->paramVector.addElement(new SString(DString(name)));
+        TypeParameter* tp = parseProtoType->addParam(&DString(name));
+        tp->default_value = new SString(DString(value));
         if (*descr != '\0'){
-          parseProtoType->paramDescriptionHash.put(&DString(name), new SString(DString(descr)));
+          tp->description = new SString(DString(descr));
         }
-        parseProtoType->paramDefaultHash.put(&DString(name), new SString(DString(value)));
       };
       continue;
     };

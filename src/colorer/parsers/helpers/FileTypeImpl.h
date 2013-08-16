@@ -4,6 +4,27 @@
 #include<colorer/parsers/HRCParserImpl.h>
 #include<unicode/UnicodeTools.h>
 
+/* structure for storing data of scheme parameter*/
+class TypeParameter {
+public:
+  TypeParameter(): name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
+  ~TypeParameter() {
+    delete name;
+    delete description;
+    delete default_value;
+    delete user_value;
+  }
+
+  /* parameter name*/
+  String* name;
+  /* parameter description*/
+  String* description;
+  /* default value*/
+  String* default_value;
+  /* user value*/
+  String* user_value;
+};
+
 /**
  * File Type storage implementation.
  * Contains different attributes of HRC file type.
@@ -29,21 +50,31 @@ public:
   }
 
   const String *enumerateParameters(int idx) {
-    if (idx >= paramVector.size() || idx < 0){
-      return null;
+    TypeParameter* tp = nullptr;
+    if (idx==0){
+      tp = paramsHash.enumerate();
+    }else{
+      tp = paramsHash.next();
     }
-    return paramVector.elementAt(idx);
+    if (tp) return tp->name;
+    return nullptr;
   }
 
   const String *getParameterDescription(const String &name) {
-    return paramDescriptionHash.get(&name);
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) return tp->description;
+    return nullptr;
   }
 
   const String *getParamValue(const String &name) {
-    const String *val = paramHash.get(&name);
-    if (val == null) return getParamDefaultValue(name);
-    return val;
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp){
+      if(tp->user_value) return tp->user_value;
+      return tp->default_value;
+    }
+    return nullptr;
   }
+
   int getParamValueInt(const String &name, int def)
   {
     int val = def;
@@ -52,33 +83,53 @@ public:
   }
 
   const String *getParamDefaultValue(const String &name) {
-    return paramDefaultHash.get(&name);
-  }
-  const String *getParamNotDefaultValue(const String &name) {
-    return paramHash.get(&name);
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) return tp->default_value;
+    return nullptr;
   }
 
-  void addParam(const String *name){
-    paramVector.addElement(new SString(name));
+  const String *getParamUserValue(const String &name) {
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) return tp->user_value;
+    return nullptr;
   }
+
+  TypeParameter* addParam(const String *name){
+    TypeParameter* tp = new TypeParameter;
+    tp->name = new SString(name);
+    paramsHash.put(name, tp);
+    return tp;
+  }
+
   void setParamValue(const String &name, const String *value){
-    paramHash.put(&name, new SString(value));
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) tp->user_value = new SString(value);
   }
+
   void setParamDefaultValue(const String &name, const String *value){
-    paramDefaultHash.put(&name, new SString(value));
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) tp->default_value = new SString(value);
   }
+
   void setParamDescription(const String &name, const String *value){
-    paramDescriptionHash.put(&name, new SString(value));
+    TypeParameter* tp = paramsHash.get(&name);
+    if (tp) tp->description = new SString(value);
   }
 
   void removeParamValue(const String *name){
-    paramHash.remove(name);
+    paramsHash.remove(name);
   }
+
   size_t getParamCount(){
-    return paramVector.size();
+    return paramsHash.size();
   }
-  size_t getParamNotDefaultValueCount(){
-    return paramHash.size();
+
+  size_t getParamUserValueCount(){
+    size_t count=0;
+    for (TypeParameter* it = paramsHash.enumerate(); it!=nullptr;it=paramsHash.next()){
+      if (it && it->user_value) count++;
+    }
+    return count;
   }
   /**
    * Returns total priority, accordingly to all it's
@@ -122,10 +173,7 @@ protected:
   SchemeImpl *baseScheme;
 
   Vector<FileTypeChooser*> chooserVector;
-  Hashtable<String*> paramDefaultHash;
-  Hashtable<String*> paramHash;
-  Hashtable<String*> paramDescriptionHash;
-  Vector<String*> paramVector;
+  Hashtable<TypeParameter*> paramsHash;
   Vector<String*> importVector;
   XmlInputSource *inputSource;
 
@@ -150,17 +198,7 @@ protected:
     for (idx = 0; idx < importVector.size(); idx++){
       delete importVector.elementAt(idx);
     }
-    for (idx = 0; idx < paramVector.size(); idx++){
-      delete paramVector.elementAt(idx);
-    }
-    String *s;
-    for (s = paramHash.enumerate(); s!=null; s = paramHash.next()){
-      delete s;
-    }
-    for (s = paramDefaultHash.enumerate(); s!=null; s = paramDefaultHash.next()){
-      delete s;
-    }
-    for (s = paramDescriptionHash.enumerate(); s!=null; s = paramDescriptionHash.next()){
+    for (TypeParameter* s = paramsHash.enumerate(); s!=null; s = paramsHash.next()){
       delete s;
     }
   }
