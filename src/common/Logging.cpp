@@ -10,30 +10,30 @@ static const char *levelNames[] = {"QUIET", "ERROR", "WARN", "TRACE", "INFO"};
 
 static const char *toTrace[] = {"BaseEditorNative", "JavaLineSource" };
 
-static FILE *log = 0;
+static FILE *logg = 0;
 
 static void file_logger(int level, const char *cname, const char *msg, va_list v){
 
   int idx = 0;
 
-  while (log == 0 && idx < 10){
+  while (logg == 0 && idx < 10){
     char log_name[30];
 #ifdef __unix__
-    sprintf(log_name, "/tmp/clr-trace%d.log", idx);
+    sprintf(log_name, "/tmp/clr-trace%d.logg", idx);
 #else
-    sprintf(log_name, "c:\\clr-trace%d.log", idx);
+    sprintf(log_name, "c:\\clr-trace%d.logg", idx);
 #endif
-    log = fopen(log_name, "ab+");
+    logg = fopen(log_name, "ab+");
     idx++;
   }
 
-  fprintf(log, "[%s][%s] ", levelNames[level], cname);
+  fprintf(logg, "[%s][%s] ", levelNames[level], cname);
 
-  vfprintf(log, msg, v);
+  vfprintf(logg, msg, v);
 
-  fprintf(log, "\n");
+  fprintf(logg, "\n");
 
-  fflush(log);
+  fflush(logg);
 }
 
 static void console_logger(int level, const char *cname, const char *msg, va_list v){
@@ -48,10 +48,10 @@ static void console_logger(int level, const char *cname, const char *msg, va_lis
 
 void colorer_logger_set_target(const char *logfile){
   if (logfile == 0) return;
-  if (log != 0){
-    fclose(log);
+  if (logg != 0){
+    fclose(logg);
   }
-  log = fopen(logfile, "ab+");
+  logg = fopen(logfile, "ab+");
 }
 
 
