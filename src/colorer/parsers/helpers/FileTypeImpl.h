@@ -35,102 +35,24 @@ class FileTypeImpl : public FileType
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const String *getName() {
-    return name;
-  }
-  const String *getGroup() {
-    return group;
-  }
-  const String *getDescription() {
-    return description;
-  }
-  Scheme *getBaseScheme() {
-    if (!typeLoaded) hrcParser->loadFileType(this);
-    return baseScheme;
-  }
+  const String *getName();
+  const String *getGroup();
+  const String *getDescription();
+  Scheme *getBaseScheme();
 
-  const String *enumerateParameters(int idx) {
-    TypeParameter* tp = nullptr;
-    if (idx==0){
-      tp = paramsHash.enumerate();
-    }else{
-      tp = paramsHash.next();
-    }
-    if (tp) return tp->name;
-    return nullptr;
-  }
-
-  const String *getParameterDescription(const String &name) {
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) return tp->description;
-    return nullptr;
-  }
-
-  const String *getParamValue(const String &name) {
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp){
-      if(tp->user_value) return tp->user_value;
-      return tp->default_value;
-    }
-    return nullptr;
-  }
-
-  int getParamValueInt(const String &name, int def)
-  {
-    int val = def;
-    UnicodeTools::getNumber(getParamValue(name), &val);
-    return val;
-  }
-
-  const String *getParamDefaultValue(const String &name) {
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) return tp->default_value;
-    return nullptr;
-  }
-
-  const String *getParamUserValue(const String &name) {
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) return tp->user_value;
-    return nullptr;
-  }
-
-  TypeParameter* addParam(const String *name){
-    TypeParameter* tp = new TypeParameter;
-    tp->name = new SString(name);
-    paramsHash.put(name, tp);
-    return tp;
-  }
-
-  void setParamValue(const String &name, const String *value){
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) tp->user_value = new SString(value);
-  }
-
-  void setParamDefaultValue(const String &name, const String *value){
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) tp->default_value = new SString(value);
-  }
-
-  void setParamDescription(const String &name, const String *value){
-    TypeParameter* tp = paramsHash.get(&name);
-    if (tp) tp->description = new SString(value);
-  }
-
-  void removeParamValue(const String *name){
-    paramsHash.remove(name);
-  }
-
-  size_t getParamCount(){
-    return paramsHash.size();
-  }
-
-  size_t getParamUserValueCount(){
-    size_t count=0;
-    for (TypeParameter* it = paramsHash.enumerate(); it!=nullptr;it=paramsHash.next()){
-      if (it && it->user_value) count++;
-    }
-    return count;
-  }
+  const String *enumerateParameters(int idx);
+  const String *getParameterDescription(const String &name);
+  const String *getParamValue(const String &name);
+  int getParamValueInt(const String &name, int def);
+  const String *getParamDefaultValue(const String &name);
+  const String *getParamUserValue(const String &name);
+  TypeParameter* addParam(const String *name);
+  void setParamValue(const String &name, const String *value);
+  void setParamDefaultValue(const String &name, const String *value);
+  void setParamDescription(const String &name, const String *value);
+  void removeParamValue(const String *name);
+  size_t getParamCount();
+  size_t getParamUserValueCount();
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -143,18 +65,7 @@ public:
    *        for example). If null, skipped.
    * @return Computed total filetype priority.
    */
-  double getPriority(const String *fileName, const String *fileContent) const{
-    SMatches match;
-    double cur_prior = 0;
-    for(int idx = 0; idx < chooserVector.size(); idx++){
-      FileTypeChooser *ftc = chooserVector.elementAt(idx);
-      if (fileName != null && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
-        cur_prior += ftc->getPrior();
-      if (fileContent != null && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))
-        cur_prior += ftc->getPrior();
-    }
-    return cur_prior;
-  }
+  double getPriority(const String *fileName, const String *fileContent) const;
 protected:
   /// is prototype component loaded
   bool protoLoaded;
@@ -177,34 +88,21 @@ protected:
   Vector<String*> importVector;
   XmlInputSource *inputSource;
 
-  FileTypeImpl(HRCParserImpl *hrcParser){
-    this->hrcParser = hrcParser;
-    protoLoaded = typeLoaded = loadDone = loadBroken = inputSourceLoading = false;
-    isPackage = false;
-    name = group = description = null;
-    baseScheme = null;
-    inputSource = null;
-  }
-
-  ~FileTypeImpl(){
-    delete name;
-    delete group;
-    delete description;
-    delete inputSource;
-    int idx;
-    for (idx = 0; idx < chooserVector.size(); idx++){
-      delete chooserVector.elementAt(idx);
-    }
-    for (idx = 0; idx < importVector.size(); idx++){
-      delete importVector.elementAt(idx);
-    }
-    for (TypeParameter* s = paramsHash.enumerate(); s!=null; s = paramsHash.next()){
-      delete s;
-    }
-  }
-
+  FileTypeImpl(HRCParserImpl *hrcParser);
+  ~FileTypeImpl();
 };
 
+inline const String* FileTypeImpl::getName() {
+  return name;
+}
+
+inline const String* FileTypeImpl::getGroup() {
+  return group;
+}
+
+inline const String* FileTypeImpl::getDescription() {
+  return description;
+}
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

@@ -58,7 +58,7 @@ set(SRC_COLORER
    ${HANDLERS}/TextRegion.h
    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
-   ${PARSERS}/helpers/FileTypeImpl.h 
+   ${PARSERS}/helpers/FileTypeImpl.h ${PARSERS}/helpers/FileTypeImpl.cpp
    ${PARSERS}/helpers/HRCParserHelpers.cpp ${PARSERS}/helpers/HRCParserHelpers.h
    ${PARSERS}/helpers/TextParserHelpers.cpp ${PARSERS}/helpers/TextParserHelpers.h
    ${VIEWER}/ConsoleTools.cpp ${VIEWER}/ConsoleTools.h
