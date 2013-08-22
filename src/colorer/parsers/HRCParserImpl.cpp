@@ -796,9 +796,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl *scheme, const xercesc::DOMElem
   scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
   memset(scheme_node->kwList->kwList ,0,sizeof(KeywordInfo)*scheme_node->kwList->num);
   scheme_node->kwList->num = 0;
-  KeywordInfo *pIDs = scheme_node->kwList->kwList;
   scheme_node->kwList->matchCase = isCase;
-  scheme_node->kwList->kwList = pIDs;
   scheme_node->type = SNT_KEYWORDS;
 
   for(xercesc::DOMNode *keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()){
