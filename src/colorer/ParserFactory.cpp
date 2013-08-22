@@ -81,7 +81,7 @@ void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement *elem)
     if (*logLocation != '\0'){
       XmlInputSource *dfis = XmlInputSource::newInstance(logLocation, catalogXIS);
       try{
-        colorer_logger_set_target((char*)dfis->getInputSource()->getSystemId());
+        colorer_logger_set_target(DString(dfis->getInputSource()->getSystemId()).getChars());
       }catch(Exception &){
       };
       delete dfis;
