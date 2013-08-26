@@ -1,10 +1,8 @@
 #ifndef _COLORER_FILETYPE_H_
 #define _COLORER_FILETYPE_H_
 
-#include<common/Common.h>
-#include<colorer/Scheme.h>
-
 class Scheme;
+class String;
 
 /**
  * HRC FileType (or prototype) instance.
@@ -43,7 +41,7 @@ public:
   */
   virtual const String *enumerateParameters(int idx) = 0;
 
-  virtual const String *getParameterDescription(const String &name) = 0;
+  virtual const String *getParamDescription(const String &name) = 0;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as

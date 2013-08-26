@@ -2,7 +2,6 @@
 #define _COLORER_FILETYPEIMPL_H_
 
 #include<colorer/parsers/HRCParserImpl.h>
-#include<unicode/UnicodeTools.h>
 
 /* structure for storing data of scheme parameter*/
 class TypeParameter {
@@ -38,21 +37,30 @@ public:
   const String *getName();
   const String *getGroup();
   const String *getDescription();
-  Scheme *getBaseScheme();
 
-  const String *enumerateParameters(int idx);
-  const String *getParameterDescription(const String &name);
+  void setName(const String *name_);
+  void setGroup(const String *group_);
+  void setDescription(const String *description_);
+
   const String *getParamValue(const String &name);
-  int getParamValueInt(const String &name, int def);
   const String *getParamDefaultValue(const String &name);
   const String *getParamUserValue(const String &name);
-  TypeParameter* addParam(const String *name);
+  const String *getParamDescription(const String &name);
+
   void setParamValue(const String &name, const String *value);
+  int getParamValueInt(const String &name, int def);
   void setParamDefaultValue(const String &name, const String *value);
+  void setParamUserValue(const String &name, const String *value);
   void setParamDescription(const String &name, const String *value);
-  void removeParamValue(const String *name);
+
+  const String *enumerateParameters(int idx);
   size_t getParamCount();
   size_t getParamUserValueCount();
+
+  TypeParameter* addParam(const String *name);
+  void removeParamValue(const String *name);
+
+  Scheme *getBaseScheme();
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -102,6 +110,18 @@ inline const String* FileTypeImpl::getGroup() {
 
 inline const String* FileTypeImpl::getDescription() {
   return description;
+}
+
+inline void FileTypeImpl::setName(const String *name_) {
+  name = new SString(name_);
+}
+
+inline void FileTypeImpl::setGroup(const String *group_) {
+  group = new SString(group_);
+}
+
+inline void FileTypeImpl::setDescription(const String *description_) {
+  description = new SString(description_);
 }
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

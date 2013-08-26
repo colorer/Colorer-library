@@ -1,4 +1,5 @@
 #include <colorer/parsers/helpers/FileTypeImpl.h>
+#include <unicode/UnicodeTools.h>
 
 FileTypeImpl::FileTypeImpl(HRCParserImpl *hrcParser){
   this->hrcParser = hrcParser;
@@ -42,7 +43,7 @@ const String* FileTypeImpl::enumerateParameters(int idx) {
   return nullptr;
 }
 
-const String* FileTypeImpl::getParameterDescription(const String &name) {
+const String* FileTypeImpl::getParamDescription(const String &name) {
   TypeParameter* tp = paramsHash.get(&name);
   if (tp) return tp->description;
   return nullptr;
@@ -85,17 +86,30 @@ TypeParameter* FileTypeImpl::addParam(const String *name){
 
 void FileTypeImpl::setParamValue(const String &name, const String *value){
   TypeParameter* tp = paramsHash.get(&name);
-  if (tp) tp->user_value = new SString(value);
+  if (tp) {
+    delete tp->user_value;
+    tp->user_value = new SString(value);
+  }
 }
 
 void FileTypeImpl::setParamDefaultValue(const String &name, const String *value){
   TypeParameter* tp = paramsHash.get(&name);
-  if (tp) tp->default_value = new SString(value);
+  if (tp) {
+    delete tp->default_value;
+    tp->default_value = new SString(value);
+  }
+}
+
+void FileTypeImpl::setParamUserValue(const String &name, const String *value){
+  setParamValue(name,value);
 }
 
 void FileTypeImpl::setParamDescription(const String &name, const String *value){
   TypeParameter* tp = paramsHash.get(&name);
-  if (tp) tp->description = new SString(value);
+  if (tp) {
+    delete tp->description;
+    tp->description = new SString(value);
+  }
 }
 
 void FileTypeImpl::removeParamValue(const String *name){
