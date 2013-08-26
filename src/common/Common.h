@@ -3,22 +3,14 @@
 
 /// system dependent byte
 typedef unsigned char byte;
-/// system dependent word
-typedef unsigned short word;
-/// system dependent double byte
-typedef unsigned int dword;
-
 /// macro - number of elements in array
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))
-
 /// null pointer
 #define null (0)
-
 #define TRUE  1
 #define FALSE 0
 
 #include<common/Features.h>
-
 #include<unicode/String.h>
 #include<common/MemoryChunks.h>
 
