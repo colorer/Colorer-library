@@ -125,7 +125,7 @@ set(SRC_ZLIB
     ${ZLIB}/adler32.c ${ZLIB}/crc32.c ${ZLIB}/crc32.h ${ZLIB}/inffast.c ${ZLIB}/inffast.h
     ${ZLIB}/inflate.c ${ZLIB}/inflate.h ${ZLIB}/inftrees.c ${ZLIB}/inftrees.h 
     ${ZLIB}/uncompr.c ${ZLIB}/zutil.c ${ZLIB}/zutil.h
-    ${MINIZIP}/ioapi.h ${MINIZIP}/ioapi.c ${MINIZIP}/minizip.c ${MINIZIP}/unzip.c ${MINIZIP}/unzip.h
+    ${MINIZIP}/ioapi.h ${MINIZIP}/ioapi.c ${MINIZIP}/unzip.c ${MINIZIP}/unzip.h
 )
 
 # add ${MINIZIP} to fix build on farmanager server
