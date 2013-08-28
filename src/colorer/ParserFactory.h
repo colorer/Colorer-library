@@ -119,7 +119,7 @@ public:
   *        standard search method is used.
   * @throw ParserFactoryException If can't load specified catalog.
   */
-  void loadCatalog(const String *catalogPath);
+  void loadCatalog(const String *catalogPath_);
 private:
   void parseCatalogBlock(const xercesc::DOMElement *elem);
   void parseHrcSetsBlock(const xercesc::DOMElement *elem);

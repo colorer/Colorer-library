@@ -23,12 +23,12 @@
 #include <xml/BaseEntityResolver.h>
 #include <xml/XmlTagDefs.h>
 
-void ParserFactory::loadCatalog(const String *catalogPath)
+void ParserFactory::loadCatalog(const String *catalogPath_)
 {
-  if (catalogPath == null){
-    this->catalogPath = searchPath();
+  if (catalogPath_ == null){
+    catalogPath = searchPath();
   }else{
-    this->catalogPath = new SString(catalogPath);
+    catalogPath = new SString(catalogPath_);
   }
 
   xercesc::XercesDOMParser xml_parser;
