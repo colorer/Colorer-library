@@ -15,18 +15,18 @@ public:
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  virtual const String *getName() = 0;
+  virtual const String *getName() const = 0;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  virtual const String *getGroup() = 0;
+  virtual const String *getGroup() const = 0;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  virtual const String *getDescription() = 0;
+  virtual const String *getDescription() const = 0;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.
@@ -41,7 +41,7 @@ public:
   */
   virtual const String *enumerateParameters(int idx) = 0;
 
-  virtual const String *getParamDescription(const String &name) = 0;
+  virtual const String *getParamDescription(const String &name) const = 0;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -58,8 +58,8 @@ public:
       @param name Parameter's name
       @return Value (changed or default) of this parameter
   */
-  virtual const String *getParamValue(const String &name) = 0;
-  virtual int getParamValueInt(const String &name, int def) = 0;
+  virtual const String *getParamValue(const String &name) const = 0;
+  virtual int getParamValueInt(const String &name, int def) const = 0;
 
   /** Returns parameter's default value of this file type.
       Default values are the values, explicitly pointed with
@@ -67,7 +67,7 @@ public:
       @param name Parameter's name
       @return Default value of this parameter
   */
-  virtual const String *getParamDefaultValue(const String &name) = 0;
+  virtual const String *getParamDefaultValue(const String &name) const = 0;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC

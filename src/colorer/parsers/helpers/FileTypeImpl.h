@@ -34,28 +34,28 @@ class FileTypeImpl : public FileType
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const String *getName();
-  const String *getGroup();
-  const String *getDescription();
+  const String *getName() const;
+  const String *getGroup() const;
+  const String *getDescription() const;
 
   void setName(const String *name_);
   void setGroup(const String *group_);
   void setDescription(const String *description_);
 
-  const String *getParamValue(const String &name);
-  const String *getParamDefaultValue(const String &name);
-  const String *getParamUserValue(const String &name);
-  const String *getParamDescription(const String &name);
+  const String *getParamValue(const String &name) const;
+  const String *getParamDefaultValue(const String &name) const;
+  const String *getParamUserValue(const String &name) const;
+  const String *getParamDescription(const String &name) const;
+  int getParamValueInt(const String &name, int def) const;
 
   void setParamValue(const String &name, const String *value);
-  int getParamValueInt(const String &name, int def);
   void setParamDefaultValue(const String &name, const String *value);
   void setParamUserValue(const String &name, const String *value);
   void setParamDescription(const String &name, const String *value);
 
   const String *enumerateParameters(int idx);
-  size_t getParamCount();
-  size_t getParamUserValueCount();
+  size_t getParamCount() const;
+  size_t getParamUserValueCount() const;
 
   TypeParameter* addParam(const String *name);
   void removeParamValue(const String *name);
@@ -100,15 +100,15 @@ protected:
   ~FileTypeImpl();
 };
 
-inline const String* FileTypeImpl::getName() {
+inline const String* FileTypeImpl::getName() const{
   return name;
 }
 
-inline const String* FileTypeImpl::getGroup() {
+inline const String* FileTypeImpl::getGroup() const{
   return group;
 }
 
-inline const String* FileTypeImpl::getDescription() {
+inline const String* FileTypeImpl::getDescription() const{
   return description;
 }
 

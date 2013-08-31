@@ -43,13 +43,13 @@ const String* FileTypeImpl::enumerateParameters(int idx) {
   return nullptr;
 }
 
-const String* FileTypeImpl::getParamDescription(const String &name) {
+const String* FileTypeImpl::getParamDescription(const String &name) const{
   TypeParameter* tp = paramsHash.get(&name);
   if (tp) return tp->description;
   return nullptr;
 }
 
-const String *FileTypeImpl::getParamValue(const String &name) {
+const String *FileTypeImpl::getParamValue(const String &name) const{
   TypeParameter* tp = paramsHash.get(&name);
   if (tp){
     if(tp->user_value) return tp->user_value;
@@ -58,20 +58,19 @@ const String *FileTypeImpl::getParamValue(const String &name) {
   return nullptr;
 }
 
-int FileTypeImpl::getParamValueInt(const String &name, int def)
-{
+int FileTypeImpl::getParamValueInt(const String &name, int def) const{
   int val = def;
   UnicodeTools::getNumber(getParamValue(name), &val);
   return val;
 }
 
-const String* FileTypeImpl::getParamDefaultValue(const String &name) {
+const String* FileTypeImpl::getParamDefaultValue(const String &name) const{
   TypeParameter* tp = paramsHash.get(&name);
   if (tp) return tp->default_value;
   return nullptr;
 }
 
-const String* FileTypeImpl::getParamUserValue(const String &name) {
+const String* FileTypeImpl::getParamUserValue(const String &name) const{
   TypeParameter* tp = paramsHash.get(&name);
   if (tp) return tp->user_value;
   return nullptr;
@@ -116,11 +115,11 @@ void FileTypeImpl::removeParamValue(const String *name){
   paramsHash.remove(name);
 }
 
-size_t FileTypeImpl::getParamCount(){
+size_t FileTypeImpl::getParamCount() const{
   return paramsHash.size();
 }
 
-size_t FileTypeImpl::getParamUserValueCount(){
+size_t FileTypeImpl::getParamUserValueCount() const{
   size_t count=0;
   for (TypeParameter* it = paramsHash.enumerate(); it!=nullptr;it=paramsHash.next()){
     if (it && it->user_value) count++;
