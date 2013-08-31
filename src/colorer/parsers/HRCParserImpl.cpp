@@ -345,7 +345,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement *elem)
   double prior = ctype ? 1 : 2;
   UnicodeTools::getNumber(&DString(elem->getAttribute(hrcFilenameAttrWeight)), &prior);
   FileTypeChooser *ftc = new FileTypeChooser(ctype, prior, matchRE);
-  parseProtoType->chooserVector.addElement(ftc);
+  parseProtoType->chooserVector.push_back(ftc);
 }
 
 void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement *elem)
@@ -509,7 +509,7 @@ void HRCParserImpl::addTypeImport(const xercesc::DOMElement *elem)
     }
     return;
   };
-  parseType->importVector.addElement(new SString(DString(typeParam)));
+  parseType->importVector.push_back(new SString(DString(typeParam)));
 }
 
 void HRCParserImpl::addScheme(const xercesc::DOMElement *elem)
@@ -1011,9 +1011,9 @@ String *HRCParserImpl::qualifyForeignName(const String *name, QualifyNameType qn
     if (prefType == parseType || prefType->typeLoaded)
       return checkNameExist(name, prefType, qntype, logErrors)?(new SString(name)):null;
   }else{ // unqualified name
-    for(int idx = -1; parseType != null && idx < parseType->importVector.size(); idx++){
+    for(int idx = -1; parseType != null && idx < static_cast<int>(parseType->importVector.size()); idx++){
       const String *tname = parseType->name;
-      if (idx > -1) tname = parseType->importVector.elementAt(idx);
+      if (idx > -1) tname = parseType->importVector.at(idx);
       FileTypeImpl *importer = fileTypeHash.get(tname);
       if (!importer->typeLoaded) loadFileType(importer);
 

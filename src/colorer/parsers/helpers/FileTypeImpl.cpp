@@ -15,12 +15,8 @@ FileTypeImpl::~FileTypeImpl(){
   delete group;
   delete description;
   delete inputSource;
-  int idx;
-  for (idx = 0; idx < chooserVector.size(); idx++){
-    delete chooserVector.elementAt(idx);
-  }
-  for (idx = 0; idx < importVector.size(); idx++){
-    delete importVector.elementAt(idx);
+  for (size_t idx = 0; idx < chooserVector.size(); idx++){
+    delete chooserVector.at(idx);
   }
   for (TypeParameter* s = paramsHash.enumerate(); s!=null; s = paramsHash.next()){
     delete s;
@@ -130,8 +126,8 @@ size_t FileTypeImpl::getParamUserValueCount() const{
 double FileTypeImpl::getPriority(const String *fileName, const String *fileContent) const{
   SMatches match;
   double cur_prior = 0;
-  for(int idx = 0; idx < chooserVector.size(); idx++){
-    FileTypeChooser *ftc = chooserVector.elementAt(idx);
+  for(size_t idx = 0; idx < chooserVector.size(); idx++){
+    FileTypeChooser *ftc = chooserVector.at(idx);
     if (fileName != null && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
       cur_prior += ftc->getPrior();
     if (fileContent != null && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))

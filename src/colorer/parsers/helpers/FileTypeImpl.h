@@ -1,7 +1,8 @@
 #ifndef _COLORER_FILETYPEIMPL_H_
 #define _COLORER_FILETYPEIMPL_H_
 
-#include<colorer/parsers/HRCParserImpl.h>
+#include <vector>
+#include <colorer/parsers/HRCParserImpl.h>
 
 /* structure for storing data of scheme parameter*/
 class TypeParameter {
@@ -91,9 +92,9 @@ protected:
   HRCParserImpl *hrcParser;
   SchemeImpl *baseScheme;
 
-  Vector<FileTypeChooser*> chooserVector;
+  std::vector<FileTypeChooser*> chooserVector;
   Hashtable<TypeParameter*> paramsHash;
-  Vector<String*> importVector;
+  std::vector<String*> importVector;
   XmlInputSource *inputSource;
 
   FileTypeImpl(HRCParserImpl *hrcParser);
