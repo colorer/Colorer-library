@@ -2,6 +2,7 @@
 #define _COLORER_FILETYPEIMPL_H_
 
 #include <vector>
+#include <unordered_map>
 #include <colorer/parsers/HRCParserImpl.h>
 
 /* structure for storing data of scheme parameter*/
@@ -54,12 +55,12 @@ public:
   void setParamUserValue(const String &name, const String *value);
   void setParamDescription(const String &name, const String *value);
 
-  const String *enumerateParameters(int idx);
+  std::vector<SString> enumParams() const;
   size_t getParamCount() const;
   size_t getParamUserValueCount() const;
 
   TypeParameter* addParam(const String *name);
-  void removeParamValue(const String *name);
+  void removeParamValue(const String &name);
 
   Scheme *getBaseScheme();
   /**
@@ -93,7 +94,7 @@ protected:
   SchemeImpl *baseScheme;
 
   std::vector<FileTypeChooser*> chooserVector;
-  Hashtable<TypeParameter*> paramsHash;
+  std::unordered_map<SString, TypeParameter*> paramsHash;
   std::vector<String*> importVector;
   XmlInputSource *inputSource;
 

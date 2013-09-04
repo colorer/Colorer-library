@@ -1,8 +1,10 @@
 #ifndef _COLORER_FILETYPE_H_
 #define _COLORER_FILETYPE_H_
 
+#include <vector>
 class Scheme;
 class String;
+class SString;
 
 /**
  * HRC FileType (or prototype) instance.
@@ -39,7 +41,7 @@ public:
       @return Parameter name with index <code>idx</code> or <code>null</code>
       if index is too large.
   */
-  virtual const String *enumerateParameters(int idx) = 0;
+  virtual std::vector<SString> enumParams() const = 0;
 
   virtual const String *getParamDescription(const String &name) const = 0;
 

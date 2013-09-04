@@ -18,9 +18,6 @@ FileTypeImpl::~FileTypeImpl(){
   for (size_t idx = 0; idx < chooserVector.size(); idx++){
     delete chooserVector.at(idx);
   }
-  for (TypeParameter* s = paramsHash.enumerate(); s!=null; s = paramsHash.next()){
-    delete s;
-  }
 }
 
 Scheme* FileTypeImpl::getBaseScheme() {
@@ -28,28 +25,27 @@ Scheme* FileTypeImpl::getBaseScheme() {
   return baseScheme;
 }
 
-const String* FileTypeImpl::enumerateParameters(int idx) {
-  TypeParameter* tp = nullptr;
-  if (idx==0){
-    tp = paramsHash.enumerate();
-  }else{
-    tp = paramsHash.next();
+std::vector<SString> FileTypeImpl::enumParams() const {
+  std::vector<SString> r;
+  r.reserve(paramsHash.size());
+  for (auto p : paramsHash)
+  {
+    r.push_back(p.first);
   }
-  if (tp) return tp->name;
-  return nullptr;
+  return r;
 }
 
 const String* FileTypeImpl::getParamDescription(const String &name) const{
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) return tp->description;
+  auto tp = paramsHash.find(name);
+  if (tp != paramsHash.end()) return tp->second->description;
   return nullptr;
 }
 
 const String *FileTypeImpl::getParamValue(const String &name) const{
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp){
-    if(tp->user_value) return tp->user_value;
-    return tp->default_value;
+  auto tp = paramsHash.find(name);
+  if (tp != paramsHash.end()){
+    if(tp->second->user_value) return tp->second->user_value;
+    return tp->second->default_value;
   }
   return nullptr;
 }
@@ -61,37 +57,41 @@ int FileTypeImpl::getParamValueInt(const String &name, int def) const{
 }
 
 const String* FileTypeImpl::getParamDefaultValue(const String &name) const{
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) return tp->default_value;
+  auto tp = paramsHash.find(name);
+  if (tp !=paramsHash.end()) {
+    return tp->second->default_value;
+  }
   return nullptr;
 }
 
 const String* FileTypeImpl::getParamUserValue(const String &name) const{
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) return tp->user_value;
+  auto tp = paramsHash.find(name);
+  if (tp !=paramsHash.end()) {
+    return tp->second->user_value;
+  }
   return nullptr;
 }
 
 TypeParameter* FileTypeImpl::addParam(const String *name){
   TypeParameter* tp = new TypeParameter;
   tp->name = new SString(name);
-  paramsHash.put(name, tp);
+  paramsHash.emplace(name, tp);
   return tp;
 }
 
 void FileTypeImpl::setParamValue(const String &name, const String *value){
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) {
-    delete tp->user_value;
-    tp->user_value = new SString(value);
+  auto tp = paramsHash.find(name);
+  if (tp != paramsHash.end()) {
+    delete tp->second->user_value;
+    tp->second->user_value = new SString(value);
   }
 }
 
 void FileTypeImpl::setParamDefaultValue(const String &name, const String *value){
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) {
-    delete tp->default_value;
-    tp->default_value = new SString(value);
+  auto tp = paramsHash.find(name);
+  if (tp != paramsHash.end()) {
+    delete tp->second->default_value;
+    tp->second->default_value = new SString(value);
   }
 }
 
@@ -100,15 +100,15 @@ void FileTypeImpl::setParamUserValue(const String &name, const String *value){
 }
 
 void FileTypeImpl::setParamDescription(const String &name, const String *value){
-  TypeParameter* tp = paramsHash.get(&name);
-  if (tp) {
-    delete tp->description;
-    tp->description = new SString(value);
+  auto tp = paramsHash.find(name);
+  if (tp != paramsHash.end()) {
+    delete tp->second->description;
+    tp->second->description = new SString(value);
   }
 }
 
-void FileTypeImpl::removeParamValue(const String *name){
-  paramsHash.remove(name);
+void FileTypeImpl::removeParamValue(const String &name){
+  paramsHash.erase(name);
 }
 
 size_t FileTypeImpl::getParamCount() const{
@@ -117,8 +117,8 @@ size_t FileTypeImpl::getParamCount() const{
 
 size_t FileTypeImpl::getParamUserValueCount() const{
   size_t count=0;
-  for (TypeParameter* it = paramsHash.enumerate(); it!=nullptr;it=paramsHash.next()){
-    if (it && it->user_value) count++;
+  for (auto it : paramsHash){
+    if (it.second->user_value) count++;
   }
   return count;
 }

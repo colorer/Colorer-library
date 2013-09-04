@@ -13,6 +13,9 @@ void SString::construct(const String *cstring, int s, int l){
 SString::SString(const String *cstring, int s, int l){
   construct(cstring, s, l);
 }
+SString::SString(const SString &cstring){
+  construct(&cstring, 0, -1);
+}
 SString::SString(const String &cstring, int s, int l){
   construct(&cstring, s, l);
 }

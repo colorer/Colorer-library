@@ -21,6 +21,7 @@ public:
    * @param cstring source string, can't be null.
    */
   SString(const String &cstring, int s = 0, int l = -1);
+  SString(const SString &cstring);
 
   /**
    * Static string constructor from char stream
@@ -34,9 +35,6 @@ public:
    */
   SString(int no);
 
-  /**
-   * Empty static string constructor
-   */
   ~SString();
 
   String *substring(int s, int l = -1) const;
@@ -45,6 +43,9 @@ public:
   int length() const;
 
 protected:
+  /**
+   * Empty static string constructor
+   */
   SString();
   void construct(const String *cstring, int s, int l);
 
@@ -53,6 +54,27 @@ protected:
 private:
   SString &operator=(SString &cstring);
 };
+
+#include <unordered_map>
+namespace std
+{
+  // Specializations for unordered containers
+
+  template <> struct hash<SString>
+  {
+    size_t operator()(const SString& value) const
+    {
+      return static_cast<std::size_t>(value.hashCode());
+    }
+  };
+  template <> struct equal_to<SString>
+  {
+    bool operator()(const SString& u1, const SString& u2) const {
+      return u1.compareTo(u2) == 0;
+    }
+  };
+
+} // namespace std
 
 #endif
 
