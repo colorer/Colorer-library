@@ -60,9 +60,9 @@ if(MSVC)
   set(LINK_FLAGS_RELEASE "/LTCG")
 
   if(CONF STREQUAL "x64")
-    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X64")
+    set(LINK_FLAGS "/MACHINE:X64")
   else()
-    set(CMAKE_EXE_LINKER_FLAGS "/MACHINE:X86")
+    set(LINK_FLAGS "/MACHINE:X86")
   endif()
 endif()
 
@@ -98,5 +98,6 @@ add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})
 set_target_properties(
   colorer PROPERTIES
+  LINK_FLAGS "${LINK_FLAGS}"
   LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
