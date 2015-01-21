@@ -28,9 +28,9 @@ Scheme* FileTypeImpl::getBaseScheme() {
 std::vector<SString> FileTypeImpl::enumParams() const {
   std::vector<SString> r;
   r.reserve(paramsHash.size());
-  for (auto p : paramsHash)
+  for ( auto p = paramsHash.begin(); p != paramsHash.end(); ++p)
   {
-    r.push_back(p.first);
+	  r.push_back(p->first);
   }
   return r;
 }
@@ -75,7 +75,8 @@ const String* FileTypeImpl::getParamUserValue(const String &name) const{
 TypeParameter* FileTypeImpl::addParam(const String *name){
   TypeParameter* tp = new TypeParameter;
   tp->name = new SString(name);
-  paramsHash.emplace(name, tp);
+  std::pair<SString, TypeParameter*> pp(name, tp);
+  paramsHash.emplace(pp);
   return tp;
 }
 
@@ -117,8 +118,8 @@ size_t FileTypeImpl::getParamCount() const{
 
 size_t FileTypeImpl::getParamUserValueCount() const{
   size_t count=0;
-  for (auto it : paramsHash){
-    if (it.second->user_value) count++;
+  for ( auto it = paramsHash.begin(); it != paramsHash.end(); ++it){
+    if (it->second->user_value) count++;
   }
   return count;
 }

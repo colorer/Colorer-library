@@ -51,7 +51,7 @@ protected:
 
   wchar *wstr;
   int len;
-private:
+public:
   SString &operator=(SString &cstring);
 };
 

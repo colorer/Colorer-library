@@ -48,6 +48,13 @@ int SString::length() const{
   return len;
 }
 
+SString &SString::operator=(SString &cstring){
+  
+  std::swap(this->wstr,cstring.wstr);
+  std::swap(this->len,cstring.len);
+  return *this;
+}
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
