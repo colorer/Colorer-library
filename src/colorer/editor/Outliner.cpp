@@ -1,7 +1,7 @@
+#include <colorer/editor/Outliner.h>
 
-#include<colorer/editor/Outliner.h>
-
-Outliner::Outliner(BaseEditor *baseEditor, const Region *searchRegion){
+Outliner::Outliner(BaseEditor* baseEditor, const Region* searchRegion)
+{
   this->searchRegion = searchRegion;
   modifiedLine = -1;
   this->baseEditor = baseEditor;
@@ -9,93 +9,110 @@ Outliner::Outliner(BaseEditor *baseEditor, const Region *searchRegion){
   baseEditor->addEditorListener(this);
 }
 
-Outliner::~Outliner(){
+Outliner::~Outliner()
+{
   baseEditor->removeRegionHandler(this);
   baseEditor->removeEditorListener(this);
 
-  for(int idx = 0; idx < outline.size(); idx++)
+  for (int idx = 0; idx < outline.size(); idx++) {
     delete outline.elementAt(idx);
+  }
 }
 
-
-
-OutlineItem *Outliner::getItem(int idx){
+OutlineItem* Outliner::getItem(int idx)
+{
   return outline.elementAt(idx);
 }
 
-
-int Outliner::itemCount(){
+int Outliner::itemCount()
+{
   return outline.size();
 }
 
-
-int Outliner::manageTree(Vector<int> &treeStack, int newLevel){
-  while(treeStack.size() > 0 && newLevel < treeStack.lastElement())
-    treeStack.removeElementAt(treeStack.size()-1);
-  if (treeStack.size() == 0 || newLevel > treeStack.lastElement()){
+int Outliner::manageTree(Vector<int>& treeStack, int newLevel)
+{
+  while (treeStack.size() > 0 && newLevel < treeStack.lastElement()) {
+    treeStack.removeElementAt(treeStack.size() - 1);
+  }
+  if (treeStack.size() == 0 || newLevel > treeStack.lastElement()) {
     treeStack.addElement(newLevel);
-    return treeStack.size()-1;
-  };
-  if (newLevel == treeStack.lastElement()) return treeStack.size()-1;
+    return treeStack.size() - 1;
+  }
+  if (newLevel == treeStack.lastElement()) {
+    return treeStack.size() - 1;
+  }
   return 0;
 }
 
-
-bool Outliner::isOutlined(const Region*region){
+bool Outliner::isOutlined(const Region* region)
+{
   return region->hasParent(searchRegion);
 }
 
-void Outliner::modifyEvent(int topLine){
+void Outliner::modifyEvent(int topLine)
+{
   int new_size;
-  for(new_size = outline.size()-1; new_size >= 0; new_size--){
-    if (outline.elementAt(new_size)->lno < topLine) break;
+  for (new_size = outline.size() - 1; new_size >= 0; new_size--) {
+    if (outline.elementAt(new_size)->lno < topLine) {
+      break;
+    }
     delete outline.elementAt(new_size);
-  };
-  outline.setSize(new_size+1);
+  }
+  outline.setSize(new_size + 1);
 
   modifiedLine = topLine;
 }
 
-void Outliner::startParsing(int lno){
+void Outliner::startParsing(int lno)
+{
   curLevel = 0;
 }
 
-void Outliner::endParsing(int lno){
-  if (modifiedLine < lno){
-    modifiedLine = lno+1;
+void Outliner::endParsing(int lno)
+{
+  if (modifiedLine < lno) {
+    modifiedLine = lno + 1;
   }
   curLevel = 0;
 }
 
-void Outliner::clearLine(int lno, String *line){
+void Outliner::clearLine(int lno, String* line)
+{
   lineIsEmpty = true;
 }
 
-void Outliner::addRegion(int lno, String *line, int sx, int ex, const Region *region){
-  if (lno < modifiedLine) return;
-  if (!isOutlined(region)) return;
+void Outliner::addRegion(int lno, String* line, int sx, int ex, const Region* region)
+{
+  if (lno < modifiedLine) {
+    return;
+  }
+  if (!isOutlined(region)) {
+    return;
+  }
 
-  String *itemLabel = new DString(line, sx, ex-sx);
+  String* itemLabel = new DString(line, sx, ex - sx);
 
-  if (lineIsEmpty){
+  if (lineIsEmpty) {
     outline.addElement(new OutlineItem(lno, sx, curLevel, itemLabel, region));
-  }else{
-    OutlineItem *thisItem = outline.lastElement();
-    if (itemLabel != null && thisItem->token != null && thisItem->lno == lno)
+  } else {
+    OutlineItem* thisItem = outline.lastElement();
+    if (itemLabel != null && thisItem->token != null && thisItem->lno == lno) {
       thisItem->token->append(itemLabel);
-  };
+    }
+  }
   delete itemLabel;
   lineIsEmpty = false;
 }
 
-void Outliner::enterScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme){
+void Outliner::enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+{
   curLevel++;
 }
 
-void Outliner::leaveScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme){
+void Outliner::leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+{
   curLevel--;
 }
-
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

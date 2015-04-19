@@ -1,11 +1,11 @@
 #ifndef _COLORER_OUTLINER_H_
 #define _COLORER_OUTLINER_H_
 
-#include<common/Vector.h>
-#include<colorer/LineSource.h>
-#include<colorer/RegionHandler.h>
-#include<colorer/editor/OutlineItem.h>
-#include<colorer/editor/BaseEditor.h>
+#include <common/Vector.h>
+#include <colorer/LineSource.h>
+#include <colorer/RegionHandler.h>
+#include <colorer/editor/OutlineItem.h>
+#include <colorer/editor/BaseEditor.h>
 
 /**
  * Used to create, store and maintain list or tree of different special regions.
@@ -14,7 +14,8 @@
  *
  * @ingroup colorer_editor
  */
-class Outliner : public RegionHandler, public EditorListener {
+class Outliner : public RegionHandler, public EditorListener
+{
 public:
   /**
    * Creates outliner object, that searches stream for
@@ -24,7 +25,7 @@ public:
    * @param baseEditor Editor to attach this Outliner to.
    * @param searchRegion Region type to search in parser's stream
    */
-  Outliner(BaseEditor *baseEditor, const Region *searchRegion);
+  Outliner(BaseEditor* baseEditor, const Region* searchRegion);
   ~Outliner();
 
   /**
@@ -33,7 +34,7 @@ public:
    * Note, that the returned pointer is vaild only between
    * subsequent parser invocations.
    */
-  OutlineItem *getItem(int idx);
+  OutlineItem* getItem(int idx);
 
   /**
    * Static service method to make easy tree reconstruction
@@ -48,7 +49,7 @@ public:
    * @return Packed index of item, which could be used to
    *         reconstruct tree of outlined items.
    */
-  static int manageTree(Vector<int> &treeStack, int newLevel);
+  static int manageTree(Vector<int>& treeStack, int newLevel);
 
   /**
    * Total number of currently available outline items
@@ -57,17 +58,17 @@ public:
 
   void startParsing(int lno);
   void endParsing(int lno);
-  void clearLine(int lno, String *line);
-  void addRegion(int lno, String *line, int sx, int ex, const Region *region);
-  void enterScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
-  void leaveScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
+  void clearLine(int lno, String* line);
+  void addRegion(int lno, String* line, int sx, int ex, const Region* region);
+  void enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
   void modifyEvent(int topLine);
 
 protected:
-  bool isOutlined(const Region*region);
+  bool isOutlined(const Region* region);
 
-  BaseEditor *baseEditor;
-  const Region *searchRegion;
+  BaseEditor* baseEditor;
+  const Region* searchRegion;
   Vector<OutlineItem*> outline;
   bool lineIsEmpty;
   int curLevel;
