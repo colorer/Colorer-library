@@ -1,11 +1,11 @@
 #ifndef _COLORER_LINEREGIONSSUPPORT_H_
 #define _COLORER_LINEREGIONSSUPPORT_H_
 
-#include<common/Vector.h>
-#include<colorer/RegionHandler.h>
-#include<colorer/handlers/RegionDefine.h>
-#include<colorer/handlers/RegionMapper.h>
-#include<colorer/handlers/LineRegion.h>
+#include <common/Vector.h>
+#include <colorer/RegionHandler.h>
+#include <colorer/handlers/RegionDefine.h>
+#include <colorer/handlers/RegionMapper.h>
+#include <colorer/handlers/LineRegion.h>
 
 /** Region store implementation of RegionHandler.
     @ingroup colorer_handlers
@@ -54,7 +54,7 @@ public:
    * Tells handler to mark with special field
    * all Regions with specified ancestor.
    */
-  void setSpecialRegion(const Region *special);
+  void setSpecialRegion(const Region* special);
 
   /**
    * Choose the source of RegionDefine definitions.
@@ -67,30 +67,30 @@ public:
    * Returns LineRegion object for @c lno line number.
    * This object is linked with all other stored @c LineRegion objects
    */
-  LineRegion *getLineRegions(int lno) const;
+  LineRegion* getLineRegions(int lno) const;
 
   /**
    * RegionHandler implementation
    */
   void startParsing(int lno);
-  void clearLine(int lno, String *line);
-  void addRegion(int lno, String *line, int sx, int ex, const Region *region);
-  void enterScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
-  void leaveScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
+  void clearLine(int lno, String* line);
+  void addRegion(int lno, String* line, int sx, int ex, const Region* region);
+  void enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 protected:
   /**
    * Behaviour is redefined in derived classes
    */
-  virtual void addLineRegion(int lno, LineRegion *lr);
+  virtual void addLineRegion(int lno, LineRegion* lr);
   int getLineIndex(int lno) const;
   bool checkLine(int lno) const;
 
   Vector<LineRegion*> lineRegions;
   Vector<LineRegion*> schemeStack;
 
-  const RegionMapper *regionMapper;
-  LineRegion *flowBackground;
-  const Region *special;
+  const RegionMapper* regionMapper;
+  LineRegion* flowBackground;
+  const Region* special;
 
   LineRegion background;
   int firstLineNo;
