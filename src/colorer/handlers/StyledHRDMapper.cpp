@@ -106,9 +106,9 @@ void StyledHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd
   regionDefines.put(&name, rd_new);
 
   // Searches and replaces old region references
-  for (int idx = 0; idx < regionDefinesVector.size(); idx++) {
-    if (regionDefinesVector.elementAt(idx) == rd_old) {
-      regionDefinesVector.setElementAt(rd_new, idx);
+  for (size_t idx = 0; idx < regionDefinesVector.size(); idx++) {
+    if (regionDefinesVector.at(idx) == rd_old) {
+      regionDefinesVector.at(idx) = rd_new;
       break;
     }
   }

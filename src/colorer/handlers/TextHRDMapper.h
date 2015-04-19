@@ -1,7 +1,6 @@
 #ifndef _COLORER_TEXTHRDMAPPER_H_
 #define _COLORER_TEXTHRDMAPPER_H_
 
-#include <common/Vector.h>
 #include <common/Hashtable.h>
 #include <common/io/Writer.h>
 #include <colorer/handlers/RegionMapperImpl.h>

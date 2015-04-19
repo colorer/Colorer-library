@@ -12,25 +12,25 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
   }
   const RegionDefine* rd = null;
   if (region->getID() < regionDefinesVector.size()) {
-    rd = regionDefinesVector.elementAt(region->getID());
+    rd = regionDefinesVector.at(region->getID());
   }
   if (rd != null) {
     return rd;
   }
 
   if (regionDefinesVector.size() < region->getID() + 1) {
-    regionDefinesVector.setSize(region->getID() * 2);
+    regionDefinesVector.resize(region->getID() * 2);
   }
 
   RegionDefine* rd_new = regionDefines.get(region->getName());
   if (rd_new != null) {
-    regionDefinesVector.setElementAt(rd_new, region->getID());
+    regionDefinesVector.at(region->getID()) = rd_new;
     return rd_new;
   }
 
   if (region->getParent()) {
     rd = getRegionDefine(region->getParent());
-    regionDefinesVector.setElementAt(rd, region->getID());
+    regionDefinesVector.at(region->getID()) = rd;
   }
   return rd;
 }

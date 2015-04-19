@@ -1,7 +1,6 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
-#include <common/Vector.h>
 #include <common/Hashtable.h>
 #include <common/io/Writer.h>
 #include <colorer/handlers/RegionMapper.h>
@@ -45,7 +44,7 @@ public:
 
 protected:
   Hashtable<RegionDefine*> regionDefines;
-  mutable Vector<const RegionDefine*> regionDefinesVector;
+  mutable std::vector<const RegionDefine*> regionDefinesVector;
 
   RegionMapperImpl(const RegionMapperImpl&);
   void operator=(const RegionMapperImpl&);

@@ -148,9 +148,9 @@ void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
   regionDefines.put(&name, new_region);
 
   // Searches and replaces old region references
-  for (int idx = 0; idx < regionDefinesVector.size(); idx++)
-    if (regionDefinesVector.elementAt(idx) == rd_old) {
-      regionDefinesVector.setElementAt(new_region, idx);
+  for (size_t idx = 0; idx < regionDefinesVector.size(); idx++)
+    if (regionDefinesVector.at(idx) == rd_old) {
+      regionDefinesVector.at(idx) = new_region;
       break;
     }
 }
