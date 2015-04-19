@@ -12,15 +12,12 @@ LineRegionsSupport::LineRegionsSupport()
 LineRegionsSupport::~LineRegionsSupport()
 {
   clear();
-  while (schemeStack.size() > 1) {
-    delete schemeStack.lastElement();
-    schemeStack.removeElementAt(schemeStack.size() - 1);
-  }
+  schemeStack.clear();
 }
 
 void LineRegionsSupport::resize(int lineCount)
 {
-  lineRegions.setSize(lineCount);
+  lineRegions.resize(lineCount);
   this->lineCount = lineCount;
 }
 
@@ -32,8 +29,8 @@ int LineRegionsSupport::size()
 void LineRegionsSupport::clear()
 {
   for (int idx = 0; idx < lineRegions.size(); idx++) {
-    LineRegion* ln = lineRegions.elementAt(idx);
-    lineRegions.setElementAt(null, idx);
+    LineRegion* ln = lineRegions.at(idx);
+    lineRegions.at(idx) = null;
     while (ln != null) {
       LineRegion* lnn = ln->next;
       delete ln;
@@ -52,7 +49,7 @@ LineRegion* LineRegionsSupport::getLineRegions(int lno) const
   if (!checkLine(lno)) {
     return null;
   }
-  return lineRegions.elementAt(getLineIndex(lno));
+  return lineRegions.at(getLineIndex(lno));
 }
 
 void LineRegionsSupport::setFirstLine(int first)
@@ -67,7 +64,7 @@ int LineRegionsSupport::getFirstLine()
 
 void LineRegionsSupport::setBackground(const RegionDefine* back)
 {
-  background.rdef = (RegionDefine*)back;
+  background.rdef = const_cast<RegionDefine*>(back);
 }
 
 void LineRegionsSupport::setSpecialRegion(const Region* special)
@@ -91,12 +88,8 @@ bool LineRegionsSupport::checkLine(int lno) const
 
 void LineRegionsSupport::startParsing(int lno)
 {
-  while (schemeStack.size() > 1) {
-    delete schemeStack.lastElement();
-    schemeStack.removeElementAt(schemeStack.size() - 1);
-  }
   schemeStack.clear();
-  schemeStack.addElement(&background);
+  schemeStack.push_back(&background);
 }
 
 void LineRegionsSupport::clearLine(int lno, String* line)
@@ -111,12 +104,12 @@ void LineRegionsSupport::clearLine(int lno, String* line)
     delete ln;
     ln = lnn;
   }
-  LineRegion* lfirst = new LineRegion(*schemeStack.lastElement());
+  LineRegion* lfirst = new LineRegion(*schemeStack.back());
   lfirst->start = 0;
   lfirst->end = -1;
   lfirst->next = null;
   lfirst->prev = lfirst;
-  lineRegions.setElementAt(lfirst, getLineIndex(lno));
+  lineRegions.at(getLineIndex(lno)) = lfirst;
   flowBackground = lfirst;
 }
 
@@ -130,18 +123,18 @@ void LineRegionsSupport::addRegion(int lno, String* line, int sx, int ex, const 
   lnew->start = sx;
   lnew->end = ex;
   lnew->region = region;
-  lnew->scheme = schemeStack.lastElement()->scheme;
+  lnew->scheme = schemeStack.back()->scheme;
   if (region->hasParent(special)) {
     lnew->special = true;
   }
   if (regionMapper != null) {
     const RegionDefine* rd = regionMapper->getRegionDefine(region);
     if (rd == null) {
-      rd = schemeStack.lastElement()->rdef;
+      rd = schemeStack.back()->rdef;
     }
     if (rd != null) {
       lnew->rdef = rd->clone();
-      lnew->rdef->assignParent(schemeStack.lastElement()->rdef);
+      lnew->rdef->assignParent(schemeStack.back()->rdef);
     }
   }
   addLineRegion(lno, lnew);
@@ -157,14 +150,14 @@ void LineRegionsSupport::enterScheme(int lno, String* line, int sx, int ex, cons
   if (regionMapper != null) {
     const RegionDefine* rd = regionMapper->getRegionDefine(region);
     if (rd == null) {
-      rd = schemeStack.lastElement()->rdef;
+      rd = schemeStack.back()->rdef;
     }
     if (rd != null) {
       lr->rdef = rd->clone();
-      lr->rdef->assignParent(schemeStack.lastElement()->rdef);
+      lr->rdef->assignParent(schemeStack.back()->rdef);
     }
   }
-  schemeStack.addElement(lr);
+  schemeStack.push_back(lr);
   // ignoring out of cached interval lines
   if (!checkLine(lno)) {
     return;
@@ -180,16 +173,15 @@ void LineRegionsSupport::enterScheme(int lno, String* line, int sx, int ex, cons
 
 void LineRegionsSupport::leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
-  const Region* scheme_region = schemeStack.lastElement()->region;
-  delete schemeStack.lastElement();
-  schemeStack.setSize(schemeStack.size() - 1);
+  const Region* scheme_region = schemeStack.back()->region;
+  schemeStack.pop_back();
   // ignoring out of cached interval lines
   if (!checkLine(lno)) {
     return;
   }
   // we have to skip transparent regions
   if (scheme_region != null) {
-    LineRegion* lr = new LineRegion(*schemeStack.lastElement());
+    LineRegion* lr = new LineRegion(*schemeStack.back());
     lr->start = ex;
     lr->end = -1;
     flowBackground->end = lr->start;
@@ -204,7 +196,7 @@ void LineRegionsSupport::addLineRegion(int lno, LineRegion* lr)
   lr->next = null;
   lr->prev = lr;
   if (lstart == null) {
-    lineRegions.setElementAt(lr, getLineIndex(lno));
+    lineRegions.at(getLineIndex(lno)) = lr;
   } else {
     lr->prev = lstart->prev;
     lr->prev->next = lr;

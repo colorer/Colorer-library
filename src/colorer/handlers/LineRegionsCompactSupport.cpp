@@ -12,7 +12,7 @@ void LineRegionsCompactSupport::addLineRegion(int lno, LineRegion* ladd)
   if (ladd->special) {
     // adds last and returns
     if (lstart == null) {
-      lineRegions.setElementAt(ladd, getLineIndex(lno));
+      lineRegions.at(getLineIndex(lno)) = ladd;
     } else {
       ladd->prev = lstart->prev;
       lstart->prev->next = ladd;
@@ -21,7 +21,7 @@ void LineRegionsCompactSupport::addLineRegion(int lno, LineRegion* ladd)
     return;
   }
   if (lstart == null) {
-    lineRegions.setElementAt(ladd, getLineIndex(lno));
+    lineRegions.at(getLineIndex(lno)) = ladd;
     return;
   }
 
@@ -116,7 +116,7 @@ void LineRegionsCompactSupport::addLineRegion(int lno, LineRegion* ladd)
       continue;
     }
   }
-  lineRegions.setElementAt(lstart, getLineIndex(lno));
+  lineRegions.at(getLineIndex(lno)) = lstart;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

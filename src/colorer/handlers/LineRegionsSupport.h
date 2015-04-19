@@ -1,7 +1,6 @@
 #ifndef _COLORER_LINEREGIONSSUPPORT_H_
 #define _COLORER_LINEREGIONSSUPPORT_H_
 
-#include <common/Vector.h>
 #include <colorer/RegionHandler.h>
 #include <colorer/handlers/RegionDefine.h>
 #include <colorer/handlers/RegionMapper.h>
@@ -85,8 +84,8 @@ protected:
   int getLineIndex(int lno) const;
   bool checkLine(int lno) const;
 
-  Vector<LineRegion*> lineRegions;
-  Vector<LineRegion*> schemeStack;
+  std::vector<LineRegion*> lineRegions;
+  std::vector<LineRegion*> schemeStack;
 
   const RegionMapper* regionMapper;
   LineRegion* flowBackground;
