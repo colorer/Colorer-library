@@ -1,14 +1,14 @@
 #ifndef _COLORER_HRCPARSERPELPERS_H_
 #define _COLORER_HRCPARSERPELPERS_H_
 
-#include<cregexp/cregexp.h>
+#include <cregexp/cregexp.h>
 
-#include<common/Vector.h>
-#include<common/Hashtable.h>
-#include<common/io/InputSource.h>
+#include <common/Vector.h>
+#include <common/Hashtable.h>
+#include <common/io/InputSource.h>
 
-#include<colorer/Region.h>
-#include<colorer/Scheme.h>
+#include <colorer/Region.h>
+#include <colorer/Scheme.h>
 
 // Must be not less than MATCHES_NUM in cregexp.h
 #define REGIONS_NUM MATCHES_NUM
@@ -23,8 +23,8 @@ class FileTypeImpl;
     and internal optimization field.
     @ingroup colorer_parsers
 */
-struct KeywordInfo{
-  const SString *keyword;
+struct KeywordInfo {
+  const SString* keyword;
   const Region* region;
   bool isSymbol;
   int  ssShorter;
@@ -36,13 +36,14 @@ struct KeywordInfo{
 /** List of keywords.
     @ingroup colorer_parsers
 */
-class KeywordList{
+class KeywordList
+{
 public:
   int num;
   int matchCase;
   int minKeywordLength;
-  CharacterClass *firstChar;
-  KeywordInfo *kwList;
+  CharacterClass* firstChar;
+  KeywordInfo* kwList;
   KeywordList();
   ~KeywordList();
   void sortList();
@@ -55,27 +56,31 @@ public:
 /** One entry of 'inherit' element virtualization content.
     @ingroup colorer_parsers
 */
-class VirtualEntry{
+class VirtualEntry
+{
 public:
-  SchemeImpl *virtScheme, *substScheme;
-  String *virtSchemeName, *substSchemeName;
+  SchemeImpl* virtScheme, *substScheme;
+  String* virtSchemeName, *substSchemeName;
 
-  VirtualEntry(const String *scheme, const String *subst){
+  VirtualEntry(const String* scheme, const String* subst)
+  {
     virtScheme = substScheme = null;
     virtSchemeName = new SString(scheme);
     substSchemeName = new SString(subst);
-  };
-  ~VirtualEntry(){
+  }
+
+  ~VirtualEntry()
+  {
     delete virtSchemeName;
     delete substSchemeName;
-  };
+  }
 
 #include<common/MemoryOperator.h>
 
 };
 
 enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
-extern char*schemeNodeTypeNames[];
+extern char* schemeNodeTypeNames[];
 
 typedef Vector<VirtualEntry*> VirtualEntryVector;
 
@@ -87,19 +92,19 @@ class SchemeNode
 public:
   SchemeNodeType type;
 
-  String *schemeName;
-  SchemeImpl *scheme;
+  String* schemeName;
+  SchemeImpl* scheme;
 
   VirtualEntryVector virtualEntryVector;
-  KeywordList *kwList;
-  CharacterClass *worddiv;
+  KeywordList* kwList;
+  CharacterClass* worddiv;
 
   const Region* region;
   const Region* regions[REGIONS_NUM];
   const Region* regionsn[NAMED_REGIONS_NUM];
   const Region* regione[REGIONS_NUM];
   const Region* regionen[NAMED_REGIONS_NUM];
-  CRegExp *start, *end;
+  CRegExp* start, *end;
   bool innerRegion, lowPriority, lowContentPriority;
 
 #include<common/MemoryOperator.h>
@@ -113,62 +118,88 @@ public:
     Manages the vector of SchemeNode's.
     @ingroup colorer_parsers
 */
-class SchemeImpl : public Scheme{
+class SchemeImpl : public Scheme
+{
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const String *getName() const { return schemeName; };
-  FileType *getFileType() const { return (FileType*)fileType; };
+  const String* getName() const
+  {
+    return schemeName;
+  }
+
+  FileType* getFileType() const
+  {
+    return (FileType*)fileType;
+  }
 
 #include<common/MemoryOperator.h>
 
 protected:
-  String *schemeName;
+  String* schemeName;
   Vector<SchemeNode*> nodes;
-  FileTypeImpl *fileType;
+  FileTypeImpl* fileType;
 
-  SchemeImpl(const String *sn){
+  SchemeImpl(const String* sn)
+  {
     schemeName = new SString(sn);
     fileType = null;
-  };
-  ~SchemeImpl(){
-    delete schemeName;
-    for (int idx = 0; idx < nodes.size(); idx++)
-      delete nodes.elementAt(idx);
-  };
-};
+  }
 
+  ~SchemeImpl()
+  {
+    delete schemeName;
+    for (int idx = 0; idx < nodes.size(); idx++) {
+      delete nodes.elementAt(idx);
+    }
+  }
+};
 
 /** Stores regular expressions of filename and firstline
     elements and helps to detect file type.
     @ingroup colorer_parsers
 */
-class FileTypeChooser{
+class FileTypeChooser
+{
 public:
   /** Creates choose entry.
       @param type If 0 - filename RE, if 1 - firstline RE
       @param prior Priority of this rule
       @param re Associated regular expression
   */
-  FileTypeChooser(int type, double prior, CRegExp *re){
+  FileTypeChooser(int type, double prior, CRegExp* re)
+  {
     this->type = type;
     this->prior = prior;
     this->re = re;
   };
   /** Default destructor */
-  ~FileTypeChooser(){
+  ~FileTypeChooser()
+  {
     delete re;
   };
   /** Returns type of chooser */
-  bool isFileName() const { return type == 0; };
+  bool isFileName() const
+  {
+    return type == 0;
+  };
   /** Returns type of chooser */
-  bool isFileContent() const { return type == 1; };
+  bool isFileContent() const
+  {
+    return type == 1;
+  };
   /** Returns chooser priority */
-  double getPrior() const { return prior; };
+  double getPrior() const
+  {
+    return prior;
+  };
   /** Returns associated regular expression */
-  CRegExp *getRE() const { return re; };
+  CRegExp* getRE() const
+  {
+    return re;
+  };
 private:
-  CRegExp *re;
+  CRegExp* re;
   int type;
   double prior;
 };

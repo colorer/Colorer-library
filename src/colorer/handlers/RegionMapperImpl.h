@@ -1,13 +1,13 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
-#include<common/Vector.h>
-#include<common/Hashtable.h>
-#include<common/io/Writer.h>
-#include<colorer/handlers/RegionMapper.h>
-#include<colorer/handlers/RegionDefine.h>
+#include <common/Vector.h>
+#include <common/Hashtable.h>
+#include <common/io/Writer.h>
+#include <colorer/handlers/RegionMapper.h>
+#include <colorer/handlers/RegionDefine.h>
 #include <xercesc/sax/InputSource.hpp>
-#include<colorer/ErrorHandler.h>
+#include <colorer/ErrorHandler.h>
 #include <xml/XmlInputSource.h>
 
 /** Abstract RegionMapper.
@@ -17,31 +17,31 @@
 class RegionMapperImpl : public RegionMapper
 {
 public:
-  RegionMapperImpl(){};
-  ~RegionMapperImpl(){};
+  RegionMapperImpl() {};
+  ~RegionMapperImpl() {};
 
   /** Loads region defines from @c is InputSource
   */
-  virtual void  loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh = null) = 0;
+  virtual void  loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = null) = 0;
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input
       documents.
   */
-  virtual void  saveRegionMappings(Writer *writer) const = 0;
+  virtual void  saveRegionMappings(Writer* writer) const = 0;
   /** Changes specified region definition to @c rdnew
       @param region Region full qualified name.
       @param rdnew  New region definition to replace old one
   */
-  virtual void  setRegionDefine(const String &region, const RegionDefine *rdnew) = 0;
+  virtual void  setRegionDefine(const String& region, const RegionDefine* rdnew) = 0;
 
   /** Enumerates all loaded region defines.
       @return RegionDefine with specified internal index, or null if @c idx is too big
   */
-  const RegionDefine *enumerateRegionDefines(int idx) const;
+  const RegionDefine* enumerateRegionDefines(int idx) const;
 
-  const RegionDefine *getRegionDefine(const Region *region) const;
-  const RegionDefine *getRegionDefine(const String &name) const;
+  const RegionDefine* getRegionDefine(const Region* region) const;
+  const RegionDefine* getRegionDefine(const String& name) const;
 
 protected:
   Hashtable<RegionDefine*> regionDefines;

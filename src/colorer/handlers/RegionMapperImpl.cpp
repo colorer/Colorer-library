@@ -1,38 +1,46 @@
+#include <colorer/handlers/RegionMapperImpl.h>
 
-#include<colorer/handlers/RegionMapperImpl.h>
-
-const RegionDefine *RegionMapperImpl::enumerateRegionDefines(int idx) const{
+const RegionDefine* RegionMapperImpl::enumerateRegionDefines(int idx) const
+{
   return regionDefines.get(regionDefines.key(idx));
-};
+}
 
-const RegionDefine *RegionMapperImpl::getRegionDefine(const Region *region) const{
-  if (region == null) return null;
-  const RegionDefine *rd = null;
-  if (region->getID() < regionDefinesVector.size())
+const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) const
+{
+  if (region == null) {
+    return null;
+  }
+  const RegionDefine* rd = null;
+  if (region->getID() < regionDefinesVector.size()) {
     rd = regionDefinesVector.elementAt(region->getID());
-  if (rd != null) return rd;
+  }
+  if (rd != null) {
+    return rd;
+  }
 
-  if (regionDefinesVector.size() < region->getID()+1)
-    regionDefinesVector.setSize(region->getID()*2);
+  if (regionDefinesVector.size() < region->getID() + 1) {
+    regionDefinesVector.setSize(region->getID() * 2);
+  }
 
-  RegionDefine *rd_new = regionDefines.get(region->getName());
-  if (rd_new != null){
+  RegionDefine* rd_new = regionDefines.get(region->getName());
+  if (rd_new != null) {
     regionDefinesVector.setElementAt(rd_new, region->getID());
     return rd_new;
-  };
+  }
 
-  if (region->getParent()){
+  if (region->getParent()) {
     rd = getRegionDefine(region->getParent());
     regionDefinesVector.setElementAt(rd, region->getID());
-  };
+  }
   return rd;
-};
+}
 
 /** Returns region mapping by it's full qualified name.
 */
-const RegionDefine *RegionMapperImpl::getRegionDefine(const String &name) const{
+const RegionDefine* RegionMapperImpl::getRegionDefine(const String& name) const
+{
   return regionDefines.get(&name);
-};
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

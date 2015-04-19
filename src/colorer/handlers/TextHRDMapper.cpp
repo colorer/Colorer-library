@@ -1,25 +1,27 @@
-
-#include<stdio.h>
-#include<colorer/handlers/TextHRDMapper.h>
+#include <stdio.h>
+#include <colorer/handlers/TextHRDMapper.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/XmlTagDefs.h>
 
-TextHRDMapper::TextHRDMapper(){};
-TextHRDMapper::~TextHRDMapper(){
-  for(RegionDefine *rdef = regionDefines.enumerate(); rdef; rdef=regionDefines.next()){
-    const TextRegion *rd = TextRegion::cast(rdef);
-    delete rd->stext; delete rd->etext;
-    delete rd->sback; delete rd->eback;
+TextHRDMapper::TextHRDMapper() {}
+TextHRDMapper::~TextHRDMapper()
+{
+  for (RegionDefine* rdef = regionDefines.enumerate(); rdef; rdef = regionDefines.next()) {
+    const TextRegion* rd = TextRegion::cast(rdef);
+    delete rd->stext;
+    delete rd->etext;
+    delete rd->sback;
+    delete rd->eback;
     delete rd;
-  };
-};
+  }
+}
 
 /** Loads region definitions from HRD file.
     Multiple files could be loaded.
 */
-void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
+void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(eh);
@@ -30,98 +32,128 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler
   if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
   }
-  xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
-  xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
-  
+  xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
+  xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
+
   if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
-  for(xercesc::DOMNode *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)){
-      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
-      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName);
-      if (*xname == '\0') continue;
+  for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
+      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(curel);
+      const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
+      if (*xname == '\0') {
+        continue;
+      }
 
-      const String *name = new DString(xname);
-      if (regionDefines.get(name) != null){
-        const TextRegion *rd = TextRegion::cast(regionDefines.get(name));
-        delete rd->stext; delete rd->etext;
-        delete rd->sback; delete rd->eback;
+      const String* name = new DString(xname);
+      if (regionDefines.get(name) != null) {
+        const TextRegion* rd = TextRegion::cast(regionDefines.get(name));
+        delete rd->stext;
+        delete rd->etext;
+        delete rd->sback;
+        delete rd->eback;
         delete rd;
-      };
-      const String *stext = null;
-      const String *etext = null;
-      const String *sback = null;
-      const String *eback = null;
-      const XMLCh *sval;
+      }
+      const String* stext = null;
+      const String* etext = null;
+      const String* sback = null;
+      const String* eback = null;
+      const XMLCh* sval;
       sval = subelem->getAttribute(hrdAssignAttrSText);
-      if (*sval != '\0') stext = new SString(DString(sval));
+      if (*sval != '\0') {
+        stext = new SString(DString(sval));
+      }
       sval = subelem->getAttribute(hrdAssignAttrEText);
-      if (*sval != '\0') etext = new SString(DString(sval));
+      if (*sval != '\0') {
+        etext = new SString(DString(sval));
+      }
       sval = subelem->getAttribute(hrdAssignAttrSBack);
-      if (*sval != '\0') sback = new SString(DString(sval));
+      if (*sval != '\0') {
+        sback = new SString(DString(sval));
+      }
       sval = subelem->getAttribute(hrdAssignAttrEBack);
-      if (*sval != '\0') eback = new SString(DString(sval));
+      if (*sval != '\0') {
+        eback = new SString(DString(sval));
+      }
 
-      RegionDefine *rdef = new TextRegion(stext, etext, sback, eback);
+      RegionDefine* rdef = new TextRegion(stext, etext, sback, eback);
       regionDefines.put(name, rdef);
       delete name;
-    };
-  };
-};
+    }
+  }
+}
 
 /** Writes all currently loaded region definitions into
     XML file. Note, that this method writes all loaded
     defines from all loaded HRD files.
 */
-void TextHRDMapper::saveRegionMappings(Writer *writer) const
+void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write(DString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
-  for(String *key = regionDefines.enumerateKey(); key; key=regionDefines.nextkey()){
-    const TextRegion *rdef = TextRegion::cast(regionDefines.get(key));
-    writer->write(StringBuffer("  <define name='")+key+"'");
-    if (rdef->stext != null) writer->write(StringBuffer(" stext='")+rdef->stext+"'");
-    if (rdef->etext != null) writer->write(StringBuffer(" etext='")+rdef->etext+"'");
-    if (rdef->sback != null) writer->write(StringBuffer(" sback='")+rdef->sback+"'");
-    if (rdef->eback != null) writer->write(StringBuffer(" eback='")+rdef->eback+"'");
+  for (String* key = regionDefines.enumerateKey(); key; key = regionDefines.nextkey()) {
+    const TextRegion* rdef = TextRegion::cast(regionDefines.get(key));
+    writer->write(StringBuffer("  <define name='") + key + "'");
+    if (rdef->stext != null) {
+      writer->write(StringBuffer(" stext='") + rdef->stext + "'");
+    }
+    if (rdef->etext != null) {
+      writer->write(StringBuffer(" etext='") + rdef->etext + "'");
+    }
+    if (rdef->sback != null) {
+      writer->write(StringBuffer(" sback='") + rdef->sback + "'");
+    }
+    if (rdef->eback != null) {
+      writer->write(StringBuffer(" eback='") + rdef->eback + "'");
+    }
     writer->write(DString("/>\n"));
-  };
+  }
   writer->write(DString("\n</hrd>\n"));
-};
+}
 
 /** Adds or replaces region definition */
-void TextHRDMapper::setRegionDefine(const String &name, const RegionDefine *rd)
+void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
 {
-  const TextRegion *rd_new = TextRegion::cast(rd);
-  const String *stext = null;
-  const String *etext = null;
-  const String *sback = null;
-  const String *eback = null;
-  if (rd_new->stext != null) stext = new SString(rd_new->stext);
-  if (rd_new->etext != null) etext = new SString(rd_new->etext);
-  if (rd_new->sback != null) sback = new SString(rd_new->sback);
-  if (rd_new->eback != null) eback = new SString(rd_new->eback);
+  const TextRegion* rd_new = TextRegion::cast(rd);
+  const String* stext = null;
+  const String* etext = null;
+  const String* sback = null;
+  const String* eback = null;
+  if (rd_new->stext != null) {
+    stext = new SString(rd_new->stext);
+  }
+  if (rd_new->etext != null) {
+    etext = new SString(rd_new->etext);
+  }
+  if (rd_new->sback != null) {
+    sback = new SString(rd_new->sback);
+  }
+  if (rd_new->eback != null) {
+    eback = new SString(rd_new->eback);
+  }
 
-  RegionDefine *rd_old = regionDefines.get(&name);
-  if (rd_old != null){
-    const TextRegion *rdef = TextRegion::cast(rd_old);
-    delete rdef->stext; delete rdef->etext;
-    delete rdef->sback; delete rdef->eback;
+  RegionDefine* rd_old = regionDefines.get(&name);
+  if (rd_old != null) {
+    const TextRegion* rdef = TextRegion::cast(rd_old);
+    delete rdef->stext;
+    delete rdef->etext;
+    delete rdef->sback;
+    delete rdef->eback;
     delete rdef;
-  };
+  }
 
-  RegionDefine *new_region = new TextRegion(stext, etext, sback, eback);
+  RegionDefine* new_region = new TextRegion(stext, etext, sback, eback);
   regionDefines.put(&name, new_region);
 
   // Searches and replaces old region references
-  for(int idx = 0; idx < regionDefinesVector.size(); idx++)
-  if (regionDefinesVector.elementAt(idx) == rd_old){
-    regionDefinesVector.setElementAt(new_region, idx);
-    break;
-  };
-};
+  for (int idx = 0; idx < regionDefinesVector.size(); idx++)
+    if (regionDefinesVector.elementAt(idx) == rd_old) {
+      regionDefinesVector.setElementAt(new_region, idx);
+      break;
+    }
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
