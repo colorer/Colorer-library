@@ -1,11 +1,12 @@
 #include <colorer/viewer/TextLinesStore.h>
+#include <common/io/InputSource.h>
 #include <stdio.h>
 
-void TextLinesStore::replaceTabs(int lno)
+void TextLinesStore::replaceTabs(size_t lno)
 {
-  String* od = lines.elementAt(lno)->replace(DString("\t"), DString("    "));
-  delete lines.elementAt(lno);
-  lines.setElementAt(od, lno);
+  String* od = lines.at(lno)->replace(DString("\t"), DString("    "));
+  delete lines.at(lno);
+  lines.at(lno) = od;
 }
 
 TextLinesStore::TextLinesStore()
@@ -22,31 +23,28 @@ void TextLinesStore::freeFile()
 {
   delete fileName;
   fileName = null;
-  for (int i = 0; i < lines.size(); i++) {
-    delete lines.elementAt(i);
-  }
-  lines.setSize(0);
+  lines.clear();
 }
 
-void TextLinesStore::loadFile(const String* fileName, const String* inputEncoding, bool tab2spaces)
+void TextLinesStore::loadFile(const String* fileName_, const String* inputEncoding, bool tab2spaces)
 {
   if (this->fileName != null) {
     freeFile();
   }
 
-  if (fileName == null) {
+  if (fileName_ == null) {
     char line[256];
     while (gets(line) != null) {
-      lines.addElement(new SString(line));
+      lines.push_back(new SString(line));
       if (tab2spaces) {
         replaceTabs(lines.size() - 1);
       }
     }
   } else {
-    this->fileName = new SString(fileName);
-    colorer::InputSource* is = colorer::InputSource::newInstance(fileName);
+    this->fileName = new SString(fileName_);
+    colorer::InputSource* is = colorer::InputSource::newInstance(fileName_);
 
-    const byte* data = null;
+    const byte* data;
     try {
       data = is->openStream();
     } catch (InputSourceException&) {
@@ -58,7 +56,7 @@ void TextLinesStore::loadFile(const String* fileName, const String* inputEncodin
     int ei = inputEncoding == null ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
     DString file(data, len, ei);
     int length = file.length();
-    lines.ensureCapacity(length / 30); // estimate number of lines
+    lines.reserve(static_cast<size_t>(length / 30)); // estimate number of lines
 
     int i = 0;
     int filepos = 0;
@@ -68,7 +66,7 @@ void TextLinesStore::loadFile(const String* fileName, const String* inputEncodin
     }
     while (filepos < length + 1) {
       if (filepos == length || file[filepos] == '\r' || file[filepos] == '\n') {
-        lines.addElement(new SString(&file, prevpos, filepos - prevpos));
+        lines.push_back(new SString(&file, prevpos, filepos - prevpos));
         if (tab2spaces) {
           replaceTabs(lines.size() - 1);
         }
@@ -91,15 +89,15 @@ const String* TextLinesStore::getFileName()
   return fileName;
 }
 
-String* TextLinesStore::getLine(int lno)
+String* TextLinesStore::getLine(size_t lno)
 {
   if (lines.size() <= lno) {
     return null;
   }
-  return lines.elementAt(lno);
+  return lines[lno];
 }
 
-int TextLinesStore::getLineCount()
+size_t TextLinesStore::getLineCount()
 {
   return lines.size();
 }

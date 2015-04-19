@@ -1,8 +1,6 @@
 #ifndef _COLORER_TEXTLINESSTORE_H_
 #define _COLORER_TEXTLINESSTORE_H_
 
-#include <common/Vector.h>
-#include <common/io/InputSource.h>
 #include <colorer/LineSource.h>
 
 /** Reads array of text lines and
@@ -30,17 +28,17 @@ public:
   */
   const String* getFileName();
   /** Returns total lines count in text. */
-  int getLineCount();
+  size_t getLineCount();
 
-  String* getLine(int lno);
+  String* getLine(size_t lno);
 protected:
   /** Frees loaded file lines.
   */
   void freeFile();
 private:
-  Vector<String*> lines;
+  std::vector<String*> lines;
   SString* fileName;
-  void replaceTabs(int lno);
+  void replaceTabs(size_t lno);
 
 };
 
