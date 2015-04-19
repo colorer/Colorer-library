@@ -1,7 +1,6 @@
 #ifndef _COLORER_OUTLINER_H_
 #define _COLORER_OUTLINER_H_
 
-#include <common/Vector.h>
 #include <colorer/LineSource.h>
 #include <colorer/RegionHandler.h>
 #include <colorer/editor/OutlineItem.h>
@@ -34,7 +33,7 @@ public:
    * Note, that the returned pointer is vaild only between
    * subsequent parser invocations.
    */
-  OutlineItem* getItem(int idx);
+  OutlineItem* getItem(size_t idx);
 
   /**
    * Static service method to make easy tree reconstruction
@@ -54,7 +53,7 @@ public:
   /**
    * Total number of currently available outline items
    */
-  int itemCount();
+  size_t itemCount();
 
   void startParsing(int lno);
   void endParsing(int lno);
@@ -69,7 +68,7 @@ protected:
 
   BaseEditor* baseEditor;
   const Region* searchRegion;
-  Vector<OutlineItem*> outline;
+  std::vector<OutlineItem*> outline;
   bool lineIsEmpty;
   int curLevel;
   int modifiedLine;

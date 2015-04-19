@@ -14,17 +14,15 @@ Outliner::~Outliner()
   baseEditor->removeRegionHandler(this);
   baseEditor->removeEditorListener(this);
 
-  for (int idx = 0; idx < outline.size(); idx++) {
-    delete outline.elementAt(idx);
-  }
+  outline.clear();
 }
 
-OutlineItem* Outliner::getItem(int idx)
+OutlineItem* Outliner::getItem(size_t idx)
 {
-  return outline.elementAt(idx);
+  return outline.at(idx);
 }
 
-int Outliner::itemCount()
+size_t Outliner::itemCount()
 {
   return outline.size();
 }
@@ -51,14 +49,14 @@ bool Outliner::isOutlined(const Region* region)
 
 void Outliner::modifyEvent(int topLine)
 {
-  int new_size;
-  for (new_size = outline.size() - 1; new_size >= 0; new_size--) {
-    if (outline.elementAt(new_size)->lno < topLine) {
+  auto it = outline.end();
+  for (; it != outline.begin(); --it) {
+    if ((*it)->lno < topLine) {
+      ++it;
       break;
     }
-    delete outline.elementAt(new_size);
   }
-  outline.setSize(new_size + 1);
+  outline.erase(it, outline.end());
 
   modifiedLine = topLine;
 }
@@ -93,10 +91,10 @@ void Outliner::addRegion(int lno, String* line, int sx, int ex, const Region* re
   String* itemLabel = new DString(line, sx, ex - sx);
 
   if (lineIsEmpty) {
-    outline.addElement(new OutlineItem(lno, sx, curLevel, itemLabel, region));
+    outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
   } else {
-    OutlineItem* thisItem = outline.lastElement();
-    if (itemLabel != null && thisItem->token != null && thisItem->lno == lno) {
+    OutlineItem* thisItem = outline.back();
+    if (thisItem->token != null && thisItem->lno == lno) {
       thisItem->token->append(itemLabel);
     }
   }
