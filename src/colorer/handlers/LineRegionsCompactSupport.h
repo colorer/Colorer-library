@@ -19,7 +19,7 @@ protected:
   /** This method compacts regions while
      adding them into list structure
   */
-  void addLineRegion(int lno, LineRegion* ladd);
+  void addLineRegion(size_t lno, LineRegion* ladd);
 };
 
 #endif

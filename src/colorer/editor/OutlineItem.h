@@ -12,7 +12,7 @@
 class OutlineItem {
 public:
   /** Line number */
-  int lno;
+  size_t lno;
   /** Position in line */
   int pos;
   /** Level of enclosure */
@@ -29,7 +29,7 @@ public:
   }
 
   /** Initializing constructor */
-  OutlineItem(int lno, int pos, int level, String *token, const Region *region){
+  OutlineItem(size_t lno, int pos, int level, String *token, const Region *region){
     this->lno = lno;
     this->pos = pos;
     this->level = level;

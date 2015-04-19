@@ -233,12 +233,12 @@ public:
   /** Basic HRC region mapping */
   const RegionDefine* rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
 
-  void startParsing(int lno);
-  void endParsing(int lno);
-  void clearLine(int lno, String* line);
-  void addRegion(int lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void startParsing(size_t lno);
+  void endParsing(size_t lno);
+  void clearLine(size_t lno, String* line);
+  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
+  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 
   bool haveInvalidLine();
 

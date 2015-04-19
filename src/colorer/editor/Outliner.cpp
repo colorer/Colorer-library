@@ -47,7 +47,7 @@ bool Outliner::isOutlined(const Region* region)
   return region->hasParent(searchRegion);
 }
 
-void Outliner::modifyEvent(int topLine)
+void Outliner::modifyEvent(size_t topLine)
 {
   auto it = outline.end();
   for (; it != outline.begin(); --it) {
@@ -61,12 +61,12 @@ void Outliner::modifyEvent(int topLine)
   modifiedLine = topLine;
 }
 
-void Outliner::startParsing(int lno)
+void Outliner::startParsing(size_t lno)
 {
   curLevel = 0;
 }
 
-void Outliner::endParsing(int lno)
+void Outliner::endParsing(size_t lno)
 {
   if (modifiedLine < lno) {
     modifiedLine = lno + 1;
@@ -74,12 +74,12 @@ void Outliner::endParsing(int lno)
   curLevel = 0;
 }
 
-void Outliner::clearLine(int lno, String* line)
+void Outliner::clearLine(size_t lno, String* line)
 {
   lineIsEmpty = true;
 }
 
-void Outliner::addRegion(int lno, String* line, int sx, int ex, const Region* region)
+void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
 {
   if (lno < modifiedLine) {
     return;
@@ -102,12 +102,12 @@ void Outliner::addRegion(int lno, String* line, int sx, int ex, const Region* re
   lineIsEmpty = false;
 }
 
-void Outliner::enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   curLevel++;
 }
 
-void Outliner::leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   curLevel--;
 }

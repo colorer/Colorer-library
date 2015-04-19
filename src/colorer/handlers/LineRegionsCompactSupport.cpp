@@ -3,7 +3,7 @@
 LineRegionsCompactSupport::LineRegionsCompactSupport() {}
 LineRegionsCompactSupport::~LineRegionsCompactSupport() {}
 
-void LineRegionsCompactSupport::addLineRegion(int lno, LineRegion* ladd)
+void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
 {
   LineRegion* lstart = getLineRegions(lno);
   ladd->next = null;

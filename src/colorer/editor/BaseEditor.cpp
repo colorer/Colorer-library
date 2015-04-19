@@ -417,7 +417,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     lno = lineCount - 1;
   }
 
-  int firstLine = lrSupport->getFirstLine();
+  size_t firstLine = lrSupport->getFirstLine();
   parseFrom = parseTo = (wStart + wSize);
 
   /*
@@ -508,7 +508,7 @@ void BaseEditor::idleJob(int time)
   }
 }
 
-void BaseEditor::startParsing(int lno)
+void BaseEditor::startParsing(size_t lno)
 {
   lrSupport->startParsing(lno);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {
@@ -516,7 +516,7 @@ void BaseEditor::startParsing(int lno)
   }
 }
 
-void BaseEditor::endParsing(int lno)
+void BaseEditor::endParsing(size_t lno)
 {
   lrSupport->endParsing(lno);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {
@@ -524,7 +524,7 @@ void BaseEditor::endParsing(int lno)
   }
 }
 
-void BaseEditor::clearLine(int lno, String* line)
+void BaseEditor::clearLine(size_t lno, String* line)
 {
   lrSupport->clearLine(lno, line);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {
@@ -532,7 +532,7 @@ void BaseEditor::clearLine(int lno, String* line)
   }
 }
 
-void BaseEditor::addRegion(int lno, String* line, int sx, int ex, const Region* region)
+void BaseEditor::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
 {
   lrSupport->addRegion(lno, line, sx, ex, region);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {
@@ -540,7 +540,7 @@ void BaseEditor::addRegion(int lno, String* line, int sx, int ex, const Region* 
   }
 }
 
-void BaseEditor::enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {
@@ -548,7 +548,7 @@ void BaseEditor::enterScheme(int lno, String* line, int sx, int ex, const Region
   }
 }
 
-void BaseEditor::leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
   for (int idx = 0; idx < regionHandlers.size(); idx++) {

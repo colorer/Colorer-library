@@ -18,12 +18,12 @@ public:
   /**
    * Resizes structures to mantain regions for @c lineCount lines.
    */
-  void resize(int lineCount);
+  void resize(size_t lineCount);
 
   /**
    * Return current size of this line regions structure
    */
-  int size();
+  size_t size();
 
   /**
    * Drops all internal structures
@@ -35,12 +35,12 @@ public:
    * This position tells, that first line structure refers
    * not to first line of text, but to @c first parameter value.
    */
-  void setFirstLine(int first);
+  void setFirstLine(size_t first);
 
   /**
    * Returns first line position, installed in this line structures.
    */
-  int getFirstLine();
+  size_t getFirstLine();
 
   /**
    * Background region define, which is used to
@@ -66,23 +66,23 @@ public:
    * Returns LineRegion object for @c lno line number.
    * This object is linked with all other stored @c LineRegion objects
    */
-  LineRegion* getLineRegions(int lno) const;
+  LineRegion* getLineRegions(size_t lno) const;
 
   /**
    * RegionHandler implementation
    */
-  void startParsing(int lno);
-  void clearLine(int lno, String* line);
-  void addRegion(int lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(int lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void startParsing(size_t lno);
+  void clearLine(size_t lno, String* line);
+  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
+  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 protected:
   /**
    * Behaviour is redefined in derived classes
    */
-  virtual void addLineRegion(int lno, LineRegion* lr);
-  int getLineIndex(int lno) const;
-  bool checkLine(int lno) const;
+  virtual void addLineRegion(size_t lno, LineRegion* lr);
+  size_t getLineIndex(size_t lno) const;
+  bool checkLine(size_t lno) const;
 
   std::vector<LineRegion*> lineRegions;
   std::vector<LineRegion*> schemeStack;
@@ -92,8 +92,8 @@ protected:
   const Region* special;
 
   LineRegion background;
-  int firstLineNo;
-  int lineCount;
+  size_t firstLineNo;
+  size_t lineCount;
 };
 
 #endif
