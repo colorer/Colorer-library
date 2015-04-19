@@ -1,9 +1,9 @@
 #ifndef _COLORER_TEXTLINESSTORE_H_
 #define _COLORER_TEXTLINESSTORE_H_
 
-#include<common/Vector.h>
-#include<common/io/InputSource.h>
-#include<colorer/LineSource.h>
+#include <common/Vector.h>
+#include <common/io/InputSource.h>
+#include <colorer/LineSource.h>
 
 /** Reads array of text lines and
     makes it accessible with LineSource interface.
@@ -25,24 +25,25 @@ public:
       @param inputEncoding Input file encoding.
       @param tab2spaces Points, if we have to convert all tabs in file into spaces.
   */
-  void loadFile(const String *fileName, const String *inputEncoding, bool tab2spaces);
+  void loadFile(const String* fileName, const String* inputEncoding, bool tab2spaces);
   /** Returns loaded file name.
   */
-  const String *getFileName();
+  const String* getFileName();
   /** Returns total lines count in text. */
   int getLineCount();
 
-  String *getLine(int lno);
+  String* getLine(int lno);
 protected:
   /** Frees loaded file lines.
   */
   void freeFile();
 private:
   Vector<String*> lines;
-  SString *fileName;
+  SString* fileName;
   void replaceTabs(int lno);
 
 };
+
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

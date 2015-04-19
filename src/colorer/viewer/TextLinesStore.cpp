@@ -1,47 +1,55 @@
+#include <colorer/viewer/TextLinesStore.h>
+#include <stdio.h>
 
-#include<colorer/viewer/TextLinesStore.h>
-#include<stdio.h>
-
-void TextLinesStore::replaceTabs(int lno){
-  String *od = lines.elementAt(lno)->replace(DString("\t"), DString("    "));
+void TextLinesStore::replaceTabs(int lno)
+{
+  String* od = lines.elementAt(lno)->replace(DString("\t"), DString("    "));
   delete lines.elementAt(lno);
   lines.setElementAt(od, lno);
-};
+}
 
-TextLinesStore::TextLinesStore(){
+TextLinesStore::TextLinesStore()
+{
   fileName = null;
-};
-TextLinesStore::~TextLinesStore(){
+}
+
+TextLinesStore::~TextLinesStore()
+{
   freeFile();
-};
-void TextLinesStore::freeFile(){
+}
+
+void TextLinesStore::freeFile()
+{
   delete fileName;
   fileName = null;
-  for(int i = 0; i < lines.size(); i++)
+  for (int i = 0; i < lines.size(); i++) {
     delete lines.elementAt(i);
+  }
   lines.setSize(0);
-};
+}
 
-void TextLinesStore::loadFile(const String *fileName, const String *inputEncoding, bool tab2spaces)
+void TextLinesStore::loadFile(const String* fileName, const String* inputEncoding, bool tab2spaces)
 {
-  if (this->fileName != null){
+  if (this->fileName != null) {
     freeFile();
   }
 
-  if (fileName == null){
+  if (fileName == null) {
     char line[256];
-    while(gets(line) != null){
+    while (gets(line) != null) {
       lines.addElement(new SString(line));
-      if (tab2spaces) replaceTabs(lines.size()-1);
+      if (tab2spaces) {
+        replaceTabs(lines.size() - 1);
+      }
     }
-  }else{
+  } else {
     this->fileName = new SString(fileName);
-    colorer::InputSource *is = colorer::InputSource::newInstance(fileName);
+    colorer::InputSource* is = colorer::InputSource::newInstance(fileName);
 
-    const byte *data = null;
-    try{
+    const byte* data = null;
+    try {
       data = is->openStream();
-    }catch (InputSourceException &){
+    } catch (InputSourceException&) {
       delete is;
       throw;
     }
@@ -50,39 +58,52 @@ void TextLinesStore::loadFile(const String *fileName, const String *inputEncodin
     int ei = inputEncoding == null ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
     DString file(data, len, ei);
     int length = file.length();
-    lines.ensureCapacity(length/30); // estimate number of lines
+    lines.ensureCapacity(length / 30); // estimate number of lines
 
     int i = 0;
     int filepos = 0;
     int prevpos = 0;
-    if (length && file[0] == 0xFEFF) filepos = prevpos = 1;
-    while(filepos < length+1){
-      if (filepos == length || file[filepos] == '\r' || file[filepos] == '\n'){
-        lines.addElement(new SString(&file, prevpos, filepos-prevpos));
-        if (tab2spaces) replaceTabs(lines.size()-1);
-        if (filepos+1 < length && file[filepos] == '\r' && file[filepos+1] == '\n')
+    if (length && file[0] == 0xFEFF) {
+      filepos = prevpos = 1;
+    }
+    while (filepos < length + 1) {
+      if (filepos == length || file[filepos] == '\r' || file[filepos] == '\n') {
+        lines.addElement(new SString(&file, prevpos, filepos - prevpos));
+        if (tab2spaces) {
+          replaceTabs(lines.size() - 1);
+        }
+        if (filepos + 1 < length && file[filepos] == '\r' && file[filepos + 1] == '\n') {
           filepos++;
-        else if (filepos+1 < length && file[filepos] == '\n' && file[filepos+1] == '\r')
+        } else if (filepos + 1 < length && file[filepos] == '\n' && file[filepos + 1] == '\r') {
           filepos++;
-        prevpos = filepos+1;
+        }
+        prevpos = filepos + 1;
         i++;
-      };
+      }
       filepos++;
-    };
+    }
     delete is;
   }
-};
-const String *TextLinesStore::getFileName(){
-  return fileName;
-};
+}
 
-String *TextLinesStore::getLine(int lno){
-  if (lines.size() <= lno) return null;
+const String* TextLinesStore::getFileName()
+{
+  return fileName;
+}
+
+String* TextLinesStore::getLine(int lno)
+{
+  if (lines.size() <= lno) {
+    return null;
+  }
   return lines.elementAt(lno);
-};
-int TextLinesStore::getLineCount(){
+}
+
+int TextLinesStore::getLineCount()
+{
   return lines.size();
-};
+}
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
