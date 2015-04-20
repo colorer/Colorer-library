@@ -96,7 +96,7 @@ void ParserFactory::addHrcSetsLocation(const xercesc::DOMElement* elem)
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement* elem = static_cast<xercesc::DOMElement*>(node);
       if (xercesc::XMLString::equals(elem->getNodeName(), catTagLocation)) {
-        hrcLocations.addElement(new SString(DString(elem->getAttribute(catLocationAttrLink))));
+        hrcLocations.push_back(new SString(DString(elem->getAttribute(catLocationAttrLink))));
       }
       continue;
     }
@@ -132,9 +132,9 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
 
   const String* hrd_class = new DString(xhrd_class);
   const String* hrd_name = new DString(xhrd_name);
-  Hashtable<Vector<const String*>*>* hrdClass = hrdLocations.get(hrd_class);
+  Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.get(hrd_class);
   if (hrdClass == null) {
-    hrdClass = new Hashtable<Vector<const String*>*>;
+    hrdClass = new Hashtable<std::vector<const String*>*>;
     hrdLocations.put(hrd_class, hrdClass);
   }
   if (hrdClass->get(hrd_name) != null) {
@@ -143,10 +143,10 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
     delete hrd_name;
     return;
   }
-  hrdClass->put(hrd_name, new Vector<const String*>);
-  Vector<const String*>* hrdLocV = hrdClass->get(hrd_name);
+  hrdClass->put(hrd_name, new std::vector<const String*>);
+  std::vector<const String*>* hrdLocV = hrdClass->get(hrd_name);
   if (hrdLocV == null) {
-    hrdLocV = new Vector<const String*>;
+    hrdLocV = new std::vector<const String*>;
     hrdClass->put(hrd_name, hrdLocV);
   }
 
@@ -160,7 +160,7 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       if (xercesc::XMLString::equals(node->getNodeName(), catTagLocation)) {
         xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
-        hrdLocV->addElement(new SString(DString(subelem->getAttribute(catLocationAttrLink))));
+        hrdLocV->push_back(new SString(DString(subelem->getAttribute(catLocationAttrLink))));
       }
     }
   }
@@ -170,7 +170,7 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
 
 String* ParserFactory::searchPath()
 {
-  Vector<String*> paths;
+  std::vector<String*> paths;
   TextLinesStore tls;
 
 #ifdef _WIN32
@@ -180,8 +180,8 @@ String* ParserFactory::searchPath()
 #endif
 
   String* right_path = null;
-  for (int i = 0; i < paths.size(); i++) {
-    String* path = paths.elementAt(i);
+  for (size_t i = 0; i < paths.size(); i++) {
+    String* path = paths.at(i);
     if (right_path == null) {
       colorer::InputSource* is = null;
       try {
@@ -203,7 +203,7 @@ String* ParserFactory::searchPath()
 
 }
 
-void ParserFactory::searchPathWindows(Vector<String*>* paths)
+void ParserFactory::searchPathWindows(std::vector<String*>* paths)
 {
 #ifdef _WIN32
   // image_path/  image_path/..  image_path/../..
@@ -226,13 +226,13 @@ void ParserFactory::searchPathWindows(Vector<String*>* paths)
   pos[2] = module.lastIndexOf('\\', pos[1]);
   for (int idx = 0; idx < 3; idx++)
     if (pos[idx] >= 0) {
-      paths->addElement(&(new StringBuffer(DString(module, 0, pos[idx])))->append(DString("\\catalog.xml")));
+      paths->push_back(&(new StringBuffer(DString(module, 0, pos[idx])))->append(DString("\\catalog.xml")));
     }
 
   // %COLORER5CATALOG%
   char* c = getenv("COLORER5CATALOG");
   if (c != null) {
-    paths->addElement(new SString(c));
+    paths->push_back(new SString(c));
   }
   // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
   char* b = getenv("HOMEDRIVE");
@@ -245,7 +245,7 @@ void ParserFactory::searchPathWindows(Vector<String*>* paths)
         TextLinesStore tls;
         tls.loadFile(d, null, false);
         if (tls.getLineCount() > 0) {
-          paths->addElement(new SString(tls.getLine(0)));
+          paths->push_back(new SString(tls.getLine(0)));
         }
       }
       delete d;
@@ -264,7 +264,7 @@ void ParserFactory::searchPathWindows(Vector<String*>* paths)
         TextLinesStore tls;
         tls.loadFile(d, null, false);
         if (tls.getLineCount() > 0) {
-          paths->addElement(new SString(tls.getLine(0)));
+          paths->push_back(new SString(tls.getLine(0)));
         }
       }
     } catch (InputSourceException&) {}
@@ -272,13 +272,13 @@ void ParserFactory::searchPathWindows(Vector<String*>* paths)
 #endif
 }
 
-void ParserFactory::searchPathLinux(Vector<String*>* paths)
+void ParserFactory::searchPathLinux(std::vector<String*>* paths)
 {
 #ifdef __unix__
   // %COLORER5CATALOG%
   char* c = getenv("COLORER5CATALOG");
   if (c != null) {
-    paths->addElement(new SString(c));
+    paths->push_back(new SString(c));
   }
 
   // %HOME%/.colorer5catalog or %HOMEPATH%
@@ -291,14 +291,14 @@ void ParserFactory::searchPathLinux(Vector<String*>* paths)
       TextLinesStore tls;
       tls.loadFile(&StringBuffer(c).append(DString("/.colorer5catalog")), null, false);
       if (tls.getLineCount() > 0) {
-        paths->addElement(new SString(tls.getLine(0)));
+        paths->push_back(new SString(tls.getLine(0)));
       }
     } catch (InputSourceException&) {}
   }
 
   // /usr/share/colorer/catalog.xml
-  paths->addElement(new SString("/usr/share/colorer/catalog.xml"));
-  paths->addElement(new SString("/usr/local/share/colorer/catalog.xml"));
+  paths->push_back(new SString("/usr/share/colorer/catalog.xml"));
+  paths->push_back(new SString("/usr/local/share/colorer/catalog.xml"));
 #endif
 }
 
@@ -322,21 +322,18 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
 
 ParserFactory::~ParserFactory()
 {
-  for (Hashtable<Vector<const String*>*>* hrdClass = hrdLocations.enumerate();
+  for (Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.enumerate();
        hrdClass;
        hrdClass = hrdLocations.next()) {
-    for (Vector<const String*>* hrd_name = hrdClass->enumerate(); hrd_name ; hrd_name = hrdClass->next()) {
-      for (int i = 0; i < hrd_name->size(); i++) {
-        delete hrd_name->elementAt(i);
-      }
+    for (std::vector<const String*>* hrd_name = hrdClass->enumerate(); hrd_name; hrd_name = hrdClass->next()) {
+      hrd_name->clear();
       delete hrd_name;
     }
 
     delete hrdClass;
   }
-  for (int i = 0; i < hrcLocations.size(); i++) {
-    delete hrcLocations.elementAt(i);
-  }
+  hrcLocations.clear();
+
   for (const String* hrdD = hrdDescriptions.enumerate(); hrdD; hrdD = hrdDescriptions.next()) {
     delete hrdD;
   }
@@ -359,7 +356,7 @@ const char* ParserFactory::getVersion()
 
 int ParserFactory::countHRD(const String& classID)
 {
-  Hashtable<Vector<const String*>*>* hash = hrdLocations.get(&classID);
+  Hashtable<std::vector<const String*>*>* hash = hrdLocations.get(&classID);
   if (hash == null) {
     return 0;
   }
@@ -372,7 +369,7 @@ const String* ParserFactory::enumerateHRDClasses(int idx)
 }
 const String* ParserFactory::enumerateHRDInstances(const String& classID, int idx)
 {
-  Hashtable<Vector<const String*>*>* hash = hrdLocations.get(&classID);
+  Hashtable<std::vector<const String*>*>* hash = hrdLocations.get(&classID);
   if (hash == null) {
     return null;
   }
@@ -390,12 +387,12 @@ HRCParser* ParserFactory::getHRCParser()
   }
   hrcParser = new HRCParserImpl();
   hrcParser->setErrorHandler(errorHandler);
-  for (int idx = 0; idx < hrcLocations.size(); idx++) {
-    if (hrcLocations.elementAt(idx) != null) {
+  for (size_t idx = 0; idx < hrcLocations.size(); idx++) {
+    if (hrcLocations.at(idx) != null) {
 #ifdef _WIN32
-      size_t i = ExpandEnvironmentStrings(hrcLocations.elementAt(idx)->getWChars(), NULL, 0);
+      size_t i = ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), NULL, 0);
       wchar_t* temp = new wchar_t[i];
-      ExpandEnvironmentStrings(hrcLocations.elementAt(idx)->getWChars(), temp, static_cast<DWORD>(i));
+      ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), temp, static_cast<DWORD>(i));
       const String* relPath = new SString(temp);
       delete[] temp;
 #else
@@ -434,7 +431,7 @@ HRCParser* ParserFactory::getHRCParser()
       } else {
         XmlInputSource* dfis = nullptr;
         try {
-          dfis = XmlInputSource::newInstance(hrcLocations.elementAt(idx)->getWChars(), catalogXIS);
+          dfis = XmlInputSource::newInstance(hrcLocations.at(idx)->getWChars(), catalogXIS);
           hrcParser->loadSource(dfis);
           delete dfis;
         } catch (Exception& e) {
@@ -509,7 +506,7 @@ TextParser* ParserFactory::createTextParser()
 
 StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const String* nameID)
 {
-  Hashtable<Vector<const String*>*>* hrdClass = null;
+  Hashtable<std::vector<const String*>*>* hrdClass = null;
   if (classID == null) {
     hrdClass = hrdLocations.get(&DString("rgb"));
   } else {
@@ -520,7 +517,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
     throw ParserFactoryException(StringBuffer("can't find hrdClass '") + classID + "'");
   }
 
-  Vector<const String*>* hrdLocV = null;
+  std::vector<const String*>* hrdLocV = null;
   if (nameID == null) {
     char* hrd = getenv("COLORER5HRD");
     hrdLocV = (hrd) ? hrdClass->get(&DString(hrd)) : hrdClass->get(&DString("default"));
@@ -535,11 +532,11 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
   }
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
-  for (int idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->elementAt(idx) != null) {
+  for (size_t idx = 0; idx < hrdLocV->size(); idx++)
+    if (hrdLocV->at(idx) != null) {
       XmlInputSource* dfis = null;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
+        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);
         delete dfis;
       } catch (Exception& e) {
@@ -555,12 +552,12 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 {
   // fixed class 'text'
-  Hashtable<Vector<const String*>*>* hrdClass = hrdLocations.get(&DString("text"));
+  Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.get(&DString("text"));
   if (hrdClass == null) {
     throw ParserFactoryException(StringBuffer("can't find hrdClass 'text'"));
   }
 
-  Vector<const String*>* hrdLocV = null;
+  std::vector<const String*>* hrdLocV = null;
   if (nameID == null) {
     hrdLocV = hrdClass->get(&DString("default"));
   } else {
@@ -571,11 +568,11 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
   }
 
   TextHRDMapper* mapper = new TextHRDMapper();
-  for (int idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->elementAt(idx) != null) {
+  for (size_t idx = 0; idx < hrdLocV->size(); idx++)
+    if (hrdLocV->at(idx) != null) {
       XmlInputSource* dfis = null;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->elementAt(idx)->getWChars(), catalogXIS);
+        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);
         delete dfis;
       } catch (Exception& e) {

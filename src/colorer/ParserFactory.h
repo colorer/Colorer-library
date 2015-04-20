@@ -1,7 +1,6 @@
 #ifndef _COLORER_PARSERFACTORY_H_
 #define _COLORER_PARSERFACTORY_H_
 
-#include <common/Vector.h>
 #include <colorer/TextParser.h>
 #include <colorer/HRCParser.h>
 #include <colorer/handlers/DefaultErrorHandler.h>
@@ -129,8 +128,8 @@ private:
   void addHrcSetsLocation(const xercesc::DOMElement* elem);
   void parseHrdSetsBlock(const xercesc::DOMElement* elem);
   String* searchPath();
-  void searchPathWindows(Vector<String*>* paths);
-  void searchPathLinux(Vector<String*>* paths);
+  void searchPathWindows(std::vector<String*>* paths);
+  void searchPathLinux(std::vector<String*>* paths);
   void loadPathWindows(const String* path, const String* relPath);
   void loadPathLinux(const String* path, const String* relPath);
 
@@ -138,8 +137,8 @@ private:
   XmlInputSource* catalogXIS;
   colorer::ErrorHandler* errorHandler;
   bool ownErrorHandler;
-  Vector<const String*> hrcLocations;
-  Hashtable<Hashtable<Vector<const String*>*>*> hrdLocations;
+  std::vector<const String*> hrcLocations;
+  Hashtable<Hashtable<std::vector<const String*>*>*> hrdLocations;
   Hashtable<const String*>hrdDescriptions;
   HRCParser*  hrcParser;
 
