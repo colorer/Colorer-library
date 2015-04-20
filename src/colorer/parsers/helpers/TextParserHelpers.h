@@ -1,7 +1,7 @@
 #ifndef _COLORER_TEXTPARSERPELPERS_H_
 #define _COLORER_TEXTPARSERPELPERS_H_
 
-#include<colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/HRCParserImpl.h>
 
 #if !defined COLORERMODE || defined NAMED_MATCHES_IN_HASH
 #error need (COLORERMODE & !NAMED_MATCHES_IN_HASH) in cregexp
@@ -19,20 +19,20 @@
 */
 class VTList
 {
-  VirtualEntryVector *vlist;
-  VTList *prev, *next, *last, *shadowlast;
+  VirtualEntryVector* vlist;
+  VTList* prev, *next, *last, *shadowlast;
   int nodesnum;
 public:
   VTList();
   ~VTList();
   void deltree();
-  bool push(SchemeNode *node);
+  bool push(SchemeNode* node);
   bool pop();
-  SchemeImpl *pushvirt(SchemeImpl *scheme);
+  SchemeImpl* pushvirt(SchemeImpl* scheme);
   void popvirt();
   void clear();
-  VirtualEntryVector **store();
-  bool restore(VirtualEntryVector **store);
+  VirtualEntryVector** store();
+  bool restore(VirtualEntryVector** store);
 };
 
 /**
@@ -49,15 +49,15 @@ public:
   /** Start and end lines of this scheme match */
   int sline, eline;
   /** Scheme, matched for this cache entry */
-  SchemeImpl *scheme;
+  SchemeImpl* scheme;
   /** Particular parent block object, caused this scheme to
     * be instantiated.
     */
-  const SchemeNode *clender;
+  const SchemeNode* clender;
   /**
    * Scheme virtualization cache entry
    */
-  VirtualEntryVector **vcache;
+  VirtualEntryVector** vcache;
   /**
    * RE Match object for start RE of the enwrapped &lt;block> object
    */
@@ -65,12 +65,12 @@ public:
   /**
    * Copy of the line with parent's start RE.
    */
-  SString *backLine;
+  SString* backLine;
 
   /**
    * Tree structure references in parse cache
    */
-  ParseCache *children, *next, *prev, *parent;
+  ParseCache* children, *next, *prev, *parent;
   ParseCache();
   ~ParseCache();
   /**
@@ -79,7 +79,7 @@ public:
    * @param cache  Cache entry, filled with last child cache entry.
    * @return       Cache entry, assigned to the specified line number
    */
-  ParseCache *searchLine(int ln, ParseCache **cache);
+  ParseCache* searchLine(int ln, ParseCache** cache);
 };
 
 #endif

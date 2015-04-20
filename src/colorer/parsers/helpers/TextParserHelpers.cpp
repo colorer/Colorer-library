@@ -1,6 +1,5 @@
-
-#include<colorer/parsers/helpers/TextParserHelpers.h>
-#include<common/Logging.h>
+#include <colorer/parsers/helpers/TextParserHelpers.h>
+#include <common/Logging.h>
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -10,7 +9,8 @@ ParseCache::ParseCache()
   children = next = prev = parent = null;
   backLine = null;
   vcache = 0;
-};
+}
+
 ParseCache::~ParseCache()
 {
   CLR_TRACE("TPCache", "~ParseCache():%s,%d-%d", scheme->getName()->getChars(), sline, eline);
@@ -18,14 +18,14 @@ ParseCache::~ParseCache()
   delete children;
   prev = null;
 
-  while (next){
-    ParseCache *tmp;
-    tmp=next;
-    while (tmp->next){
-      tmp=tmp->next;
+  while (next) {
+    ParseCache* tmp;
+    tmp = next;
+    while (tmp->next) {
+      tmp = tmp->next;
     }
-    while (tmp->prev){
-      tmp=tmp->prev;
+    while (tmp->prev) {
+      tmp = tmp->prev;
       delete tmp->next;
       tmp->next = null;
     }
@@ -34,27 +34,30 @@ ParseCache::~ParseCache()
   }
 
   delete[] vcache;
-};
-ParseCache *ParseCache::searchLine(int ln, ParseCache **cache)
+}
+
+ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
 {
-ParseCache *r1, *r2, *tmp = this;
+  ParseCache* r1, *r2, *tmp = this;
   *cache = null;
-  while(tmp){
+  while (tmp) {
     CLR_TRACE("TPCache", "  searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline);
-    if (tmp->sline <=ln && tmp->eline >= ln){
+    if (tmp->sline <= ln && tmp->eline >= ln) {
       r1 = tmp->children->searchLine(ln, &r2);
-      if (r1){
+      if (r1) {
         *cache = r2;
         return r1;
-      };
+      }
       *cache = r2; // last child
       return tmp;
-    };
-    if (tmp->sline <= ln) *cache = tmp;
+    }
+    if (tmp->sline <= ln) {
+      *cache = tmp;
+    }
     tmp = tmp->next;
-  };
+  }
   return null;
-};
+}
 
 /////////////////////////////////////////////////////////////////////////
 // Virtual tables list
@@ -65,118 +68,136 @@ VTList::VTList()
   last = this;
   shadowlast = null;
   nodesnum = 0;
-};
+}
+
 VTList::~VTList()
 {
 //  FAULT(next == this);
   // deletes only from root
-  if (!prev && next) next->deltree();
-};
+  if (!prev && next) {
+    next->deltree();
+  }
+}
+
 void VTList::deltree()
 {
-  if (next)
+  if (next) {
     next->deltree();
+  }
   delete this;
-};
+}
 
-bool VTList::push(SchemeNode *node)
+bool VTList::push(SchemeNode* node)
 {
-VTList *newitem;
-  if(!node || node->virtualEntryVector.size() == 0) return false;
+  VTList* newitem;
+  if (!node || node->virtualEntryVector.size() == 0) {
+    return false;
+  }
   newitem = new VTList();
-  if(last->next){
+  if (last->next) {
     last->next->prev = newitem;
     newitem->next = last->next;
-  };
+  }
   newitem->prev = last;
   last->next = newitem;
   last = last->next;
   last->vlist = &node->virtualEntryVector;
   nodesnum++;
   return true;
-};
+}
+
 bool VTList::pop()
 {
-VTList *ditem;
+  VTList* ditem;
 //  FAULT(last == this);
   ditem = last;
-  if (ditem->next){
+  if (ditem->next) {
     ditem->next->prev = ditem->prev;
-  };
+  }
   ditem->prev->next = ditem->next;
   last = ditem->prev;
   delete ditem;
   nodesnum--;
   return true;
-};
-SchemeImpl *VTList::pushvirt(SchemeImpl *scheme)
-{
-SchemeImpl *ret = scheme;
-VTList *curvl = 0;
+}
 
-  for(VTList *vl = last; vl && vl->prev; vl = vl->prev){
-    for(int idx = 0; idx < vl->vlist->size(); idx++){
-      VirtualEntry *ve = vl->vlist->elementAt(idx);
-      if (ret == ve->virtScheme && ve->substScheme){
+SchemeImpl* VTList::pushvirt(SchemeImpl* scheme)
+{
+  SchemeImpl* ret = scheme;
+  VTList* curvl = 0;
+
+  for (VTList* vl = last; vl && vl->prev; vl = vl->prev) {
+    for (int idx = 0; idx < vl->vlist->size(); idx++) {
+      VirtualEntry* ve = vl->vlist->elementAt(idx);
+      if (ret == ve->virtScheme && ve->substScheme) {
         ret = ve->substScheme;
         curvl = vl;
-      };
-    };
-  };
-  if (curvl){
+      }
+    }
+  }
+  if (curvl) {
     curvl->shadowlast = last;
     last = curvl->prev;
     return ret;
-  };
+  }
   return 0;
-};
+}
+
 void VTList::popvirt()
 {
-VTList *that = last->next;
+  VTList* that = last->next;
 //  FAULT(!last->next || !that->shadowlast);
   last = that->shadowlast;
   that->shadowlast = 0;
-};
+}
+
 void VTList::clear()
 {
   nodesnum = 0;
-  if (!prev && next){
+  if (!prev && next) {
     next->deltree();
     next = 0;
-  };
+  }
   last = this;
-};
+}
 
-VirtualEntryVector **VTList::store()
+VirtualEntryVector** VTList::store()
 {
-VirtualEntryVector **store;
-int i = 0;
-  if (!nodesnum || last == this) return 0;
+  VirtualEntryVector** store;
+  int i = 0;
+  if (!nodesnum || last == this) {
+    return 0;
+  }
   store = new VirtualEntryVector*[nodesnum + 1];
-  for(VTList *list = this->next; list; list = list->next){
+  for (VTList* list = this->next; list; list = list->next) {
     store[i++] = list->vlist;
-    if (list == this->last) break;
-  };
+    if (list == this->last) {
+      break;
+    }
+  }
   store[i] = 0;
   return store;
-};
-bool VTList::restore(VirtualEntryVector **store)
+}
+
+bool VTList::restore(VirtualEntryVector** store)
 {
-VTList *prevpos, *pos = this;
-  if (next || prev || !store) return false;
+  VTList* prevpos, *pos = this;
+  if (next || prev || !store) {
+    return false;
+  }
 //  nodesnum = store[0].shadowlast;
   prevpos = last = 0;
-  for(int i = 0; store[i] != null; i++){
+  for (int i = 0; store[i] != null; i++) {
     pos->next = new VTList;
     prevpos = pos;
     pos = pos->next;
     pos->prev = prevpos;
     pos->vlist = store[i];
     nodesnum++;
-  };
+  }
   last = pos;
   return true;
-};
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
