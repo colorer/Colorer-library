@@ -9,8 +9,7 @@
 #define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
 HRCParserImpl::HRCParserImpl()
-  : fileTypeHash(200), fileTypeVector(150), schemeHash(4000),
-    regionNamesVector(1000, 200), regionNamesHash(1000)
+  : fileTypeHash(200), schemeHash(4000), regionNamesHash(1000)
 {
   parseType = null;
   parseProtoType = null;
@@ -18,20 +17,19 @@ HRCParserImpl::HRCParserImpl()
   errorHandler = null;
   curInputSource = null;
   updateStarted = false;
+  fileTypeVector.reserve(150);
+  regionNamesVector.reserve(1000);
 }
 
 HRCParserImpl::~HRCParserImpl()
 {
-  int idx;
   for (FileTypeImpl* ft = fileTypeHash.enumerate(); ft != null; ft = fileTypeHash.next()) {
     delete ft;
   }
   for (SchemeImpl* scheme = schemeHash.enumerate(); scheme != null; scheme = schemeHash.next()) {
     delete scheme;
   }
-  for (idx = 0; idx < regionNamesVector.size(); idx++) {
-    delete regionNamesVector.elementAt(idx);
-  }
+  regionNamesVector.clear();
   for (String* se = schemeEntitiesHash.enumerate(); se; se = schemeEntitiesHash.next()) {
     delete se;
   }
@@ -76,7 +74,12 @@ void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
       }
     }
   }
-  fileTypeVector.removeElement(filetype);
+  for (auto ft = fileTypeVector.begin(); ft != fileTypeVector.end(); ++ft) {
+    if (*ft == filetype) {
+      fileTypeVector.erase(ft);
+      break;
+    }
+  }
   fileTypeHash.remove(filetype->getName());
   delete filetype;
 }
@@ -127,7 +130,7 @@ FileType* HRCParserImpl::chooseFileType(const String* fileName, const String* fi
   double max_prior = 0;
   const double DELTA = 1e-6;
   for (int idx = 0; idx < fileTypeVector.size(); idx++) {
-    FileTypeImpl* ret = fileTypeVector.elementAt(idx);
+    FileTypeImpl* ret = fileTypeVector.at(idx);
     double prior = ret->getPriority(fileName, firstLine);
 
     if (typeNo > 0 && (prior - max_prior < DELTA)) {
@@ -156,17 +159,17 @@ FileType* HRCParserImpl::getFileType(const String* name)
 FileType* HRCParserImpl::enumerateFileTypes(int index)
 {
   if (index < fileTypeVector.size()) {
-    return fileTypeVector.elementAt(index);
+    return fileTypeVector[index];
   }
   return null;
 }
 
-int HRCParserImpl::getFileTypesCount()
+size_t HRCParserImpl::getFileTypesCount()
 {
   return fileTypeVector.size();
 }
 
-int HRCParserImpl::getRegionCount()
+size_t HRCParserImpl::getRegionCount()
 {
   return regionNamesVector.size();
 }
@@ -176,7 +179,7 @@ const Region* HRCParserImpl::getRegion(int id)
   if (id < 0 || id >= regionNamesVector.size()) {
     return null;
   }
-  return regionNamesVector.elementAt(id);
+  return regionNamesVector[id];
 }
 
 const Region* HRCParserImpl::getRegion(const String* name)
@@ -311,7 +314,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   type->protoLoaded = true;
   fileTypeHash.put(type->name, type);
   if (!type->isPackage) {
-    fileTypeVector.addElement(type);
+    fileTypeVector.push_back(type);
   }
 }
 void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement* elem)
@@ -506,7 +509,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   const Region* region = new Region(qname1, &DString(regionDescr), getRegion(qname2), regionNamesVector.size());
-  regionNamesVector.addElement(region);
+  regionNamesVector.push_back(region);
   regionNamesHash.put(qname1, region);
 
   delete qname1;

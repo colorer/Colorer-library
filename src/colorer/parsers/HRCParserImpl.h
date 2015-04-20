@@ -2,7 +2,6 @@
 #define _COLORER_HRCPARSERIMPL_H_
 
 #include <cregexp/cregexp.h>
-#include <common/Vector.h>
 #include <common/Hashtable.h>
 #include <colorer/HRCParser.h>
 #include <unicode/UnicodeTools.h>
@@ -33,9 +32,9 @@ public:
   FileType* getFileType(const String* name);
   FileType* enumerateFileTypes(int index);
   FileType* chooseFileType(const String* fileName, const String* firstLine, int typeNo = 0);
-  int getFileTypesCount();
+  size_t getFileTypesCount();
 
-  int getRegionCount();
+  size_t getRegionCount();
   const Region* getRegion(int id);
   const Region* getRegion(const String* name);
 
@@ -49,12 +48,12 @@ protected:
   // types and packages
   Hashtable<FileTypeImpl*> fileTypeHash;
   // types, not packages
-  Vector<FileTypeImpl*>    fileTypeVector;
+  std::vector<FileTypeImpl*>    fileTypeVector;
 
   Hashtable<SchemeImpl*>   schemeHash;
   Hashtable<int>           disabledSchemes;
 
-  Vector<const Region*>    regionNamesVector;
+  std::vector<const Region*>    regionNamesVector;
   Hashtable<const Region*> regionNamesHash;
   Hashtable<String*>       schemeEntitiesHash;
 
