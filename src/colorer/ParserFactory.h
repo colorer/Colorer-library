@@ -1,13 +1,13 @@
 #ifndef _COLORER_PARSERFACTORY_H_
 #define _COLORER_PARSERFACTORY_H_
 
-#include<common/Vector.h>
-#include<colorer/TextParser.h>
-#include<colorer/HRCParser.h>
-#include<colorer/handlers/DefaultErrorHandler.h>
-#include<colorer/handlers/StyledHRDMapper.h>
-#include<colorer/handlers/TextHRDMapper.h>
-#include<colorer/ParserFactoryException.h>
+#include <common/Vector.h>
+#include <colorer/TextParser.h>
+#include <colorer/HRCParser.h>
+#include <colorer/handlers/DefaultErrorHandler.h>
+#include <colorer/handlers/StyledHRDMapper.h>
+#include <colorer/handlers/TextHRDMapper.h>
+#include <colorer/ParserFactoryException.h>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -41,7 +41,8 @@
  *
  * @ingroup colorer
  */
-class ParserFactory{
+class ParserFactory
+{
 public:
 
   /**
@@ -49,26 +50,26 @@ public:
    * Searches for catalog.xml in the set of predefined locations
    * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
-  ParserFactory(colorer::ErrorHandler *errorHandler);
+  ParserFactory(colorer::ErrorHandler* errorHandler);
 
   virtual ~ParserFactory();
 
-  static const char *getVersion();
+  static const char* getVersion();
 
   /**
    * Enumerates all declared hrd classes
    */
-  const String *enumerateHRDClasses(int idx);
+  const String* enumerateHRDClasses(int idx);
 
   /**
    * Enumerates all declared hrd instances of specified class
    */
-  const String *enumerateHRDInstances(const String &classID, int idx);
+  const String* enumerateHRDInstances(const String& classID, int idx);
 
   /**
    * Returns description of HRD instance, pointed by classID and nameID parameters.
    */
-  const String *getHRDescription(const String &classID, const String &nameID);
+  const String* getHRDescription(const String& classID, const String& nameID);
 
   /**
    * Creates and loads HRCParser instance from catalog.xml file.
@@ -78,12 +79,12 @@ public:
    * create input data stream.
    * Only one HRCParser instance is created for each ParserFactory instance.
    */
-  HRCParser  *getHRCParser();
+  HRCParser*  getHRCParser();
 
   /**
    * Creates TextParser instance
    */
-  TextParser *createTextParser();
+  TextParser* createTextParser();
 
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
@@ -92,7 +93,7 @@ public:
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  StyledHRDMapper *createStyledMapper(const String *classID, const String *nameID);
+  StyledHRDMapper* createStyledMapper(const String* classID, const String* nameID);
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
    * It uses 'text' class by default.
@@ -100,50 +101,52 @@ public:
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  TextHRDMapper *createTextMapper(const String *nameID);
+  TextHRDMapper* createTextMapper(const String* nameID);
 
   /**
    * Returns currently used global error handler.
    * If no error handler were installed, returns null.
    */
-  colorer::ErrorHandler *getErrorHandler(){
+  colorer::ErrorHandler* getErrorHandler()
+  {
     return errorHandler;
   };
   /**
    * load one hrd node from hrd-sets
    */
-  void parseHRDSetsChild(const xercesc::DOMElement *elem);
-  int countHRD(const String &classID);
+  void parseHRDSetsChild(const xercesc::DOMElement* elem);
+  int countHRD(const String& classID);
 
   /**
   * @param catalogPath Path to catalog.xml file. If null,
   *        standard search method is used.
   * @throw ParserFactoryException If can't load specified catalog.
   */
-  void loadCatalog(const String *catalogPath_);
+  void loadCatalog(const String* catalogPath_);
 private:
-  void parseCatalogBlock(const xercesc::DOMElement *elem);
-  void parseHrcSetsBlock(const xercesc::DOMElement *elem);
-  void addHrcSetsLocation(const xercesc::DOMElement *elem);
-  void parseHrdSetsBlock(const xercesc::DOMElement *elem);
-  String *searchPath();
-  void searchPathWindows(Vector<String*> *paths);
-  void searchPathLinux(Vector<String*> *paths);
-  void loadPathWindows(const String * path, const String * relPath);
-  void loadPathLinux(const String * path, const String * relPath);
+  void parseCatalogBlock(const xercesc::DOMElement* elem);
+  void parseHrcSetsBlock(const xercesc::DOMElement* elem);
+  void addHrcSetsLocation(const xercesc::DOMElement* elem);
+  void parseHrdSetsBlock(const xercesc::DOMElement* elem);
+  String* searchPath();
+  void searchPathWindows(Vector<String*>* paths);
+  void searchPathLinux(Vector<String*>* paths);
+  void loadPathWindows(const String* path, const String* relPath);
+  void loadPathLinux(const String* path, const String* relPath);
 
-  String *catalogPath;
-  XmlInputSource *catalogXIS;
-  colorer::ErrorHandler *errorHandler;
+  String* catalogPath;
+  XmlInputSource* catalogXIS;
+  colorer::ErrorHandler* errorHandler;
   bool ownErrorHandler;
   Vector<const String*> hrcLocations;
   Hashtable<Hashtable<Vector<const String*>*>*> hrdLocations;
-  Hashtable<const String *>hrdDescriptions;
-  HRCParser  *hrcParser;
+  Hashtable<const String*>hrdDescriptions;
+  HRCParser*  hrcParser;
 
   ParserFactory(const ParserFactory&);
   void operator=(const ParserFactory&);
 };
+
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
