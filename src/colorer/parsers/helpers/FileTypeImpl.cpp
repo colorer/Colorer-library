@@ -15,9 +15,7 @@ FileTypeImpl::~FileTypeImpl(){
   delete group;
   delete description;
   delete inputSource;
-  for (size_t idx = 0; idx < chooserVector.size(); idx++){
-    delete chooserVector.at(idx);
-  }
+  chooserVector.clear();
 }
 
 Scheme* FileTypeImpl::getBaseScheme() {
