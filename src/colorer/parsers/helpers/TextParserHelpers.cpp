@@ -128,7 +128,7 @@ SchemeImpl* VTList::pushvirt(SchemeImpl* scheme)
 
   for (VTList* vl = last; vl && vl->prev; vl = vl->prev) {
     for (int idx = 0; idx < vl->vlist->size(); idx++) {
-      VirtualEntry* ve = vl->vlist->elementAt(idx);
+      VirtualEntry* ve = vl->vlist->at(idx);
       if (ret == ve->virtScheme && ve->substScheme) {
         ret = ve->substScheme;
         curvl = vl;

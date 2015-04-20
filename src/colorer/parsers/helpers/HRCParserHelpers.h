@@ -2,11 +2,8 @@
 #define _COLORER_HRCPARSERPELPERS_H_
 
 #include <cregexp/cregexp.h>
-
-#include <common/Vector.h>
 #include <common/Hashtable.h>
 #include <common/io/InputSource.h>
-
 #include <colorer/Region.h>
 #include <colorer/Scheme.h>
 
@@ -82,7 +79,7 @@ public:
 enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
 extern char* schemeNodeTypeNames[];
 
-typedef Vector<VirtualEntry*> VirtualEntryVector;
+typedef std::vector<VirtualEntry*> VirtualEntryVector;
 
 /** Scheme node.
     @ingroup colorer_parsers
@@ -137,7 +134,7 @@ public:
 
 protected:
   String* schemeName;
-  Vector<SchemeNode*> nodes;
+  std::vector<SchemeNode*> nodes;
   FileTypeImpl* fileType;
 
   SchemeImpl(const String* sn)
@@ -148,10 +145,7 @@ protected:
 
   ~SchemeImpl()
   {
-    delete schemeName;
-    for (int idx = 0; idx < nodes.size(); idx++) {
-      delete nodes.elementAt(idx);
-    }
+    nodes.clear();
   }
 };
 

@@ -316,7 +316,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
     return MATCH_NOTHING;
   }
   for (int idx = 0; idx < cscheme->nodes.size(); idx++) {
-    SchemeNode* schemeNode = cscheme->nodes.elementAt(idx);
+    SchemeNode* schemeNode = cscheme->nodes.at(idx);
     CLR_TRACE("TextParserImpl", "searchRE: processing node:%d/%d, type:%s", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]);
     switch (schemeNode->type) {
       case SNT_INHERIT:

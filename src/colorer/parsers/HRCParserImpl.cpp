@@ -648,11 +648,11 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
           }
           continue;
         }
-        scheme_node->virtualEntryVector.addElement(new VirtualEntry(&DString(schemeName), &DString(substName)));
+        scheme_node->virtualEntryVector.push_back(new VirtualEntry(&DString(schemeName), &DString(substName)));
       }
     }
   }
-  scheme->nodes.addElement(scheme_node);
+  scheme->nodes.push_back(scheme_node);
 }
 
 void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -699,7 +699,7 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
     scheme_node->regions[0] = scheme_node->region;
   }
 
-  scheme->nodes.addElement(scheme_node);
+  scheme->nodes.push_back(scheme_node);
 }
 
 void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -803,7 +803,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   loadBlockRegions(scheme_node, elem);
   loadRegions(scheme_node, eStart, true);
   loadRegions(scheme_node, eEnd, false);
-  scheme->nodes.addElement(scheme_node);
+  scheme->nodes.push_back(scheme_node);
 }
 
 void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -853,7 +853,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   }
   scheme_node->kwList->sortList();
   scheme_node->kwList->substrIndex();
-  scheme->nodes.addElement(scheme_node);
+  scheme->nodes.push_back(scheme_node);
 }
 
 void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem)
@@ -969,7 +969,7 @@ void HRCParserImpl::updateLinks()
       FileTypeImpl* old_parseType = parseType;
       parseType = scheme->fileType;
       for (int sni = 0; sni < scheme->nodes.size(); sni++) {
-        SchemeNode* snode = scheme->nodes.elementAt(sni);
+        SchemeNode* snode = scheme->nodes.at(sni);
         if (snode->schemeName != null && (snode->type == SNT_SCHEME || snode->type == SNT_INHERIT) && snode->scheme == null) {
           String* schemeName = qualifyForeignName(snode->schemeName, QNT_SCHEME, true);
           if (schemeName != null) {
@@ -985,7 +985,7 @@ void HRCParserImpl::updateLinks()
         }
         if (snode->type == SNT_INHERIT) {
           for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
-            VirtualEntry* vt = snode->virtualEntryVector.elementAt(vti);
+            VirtualEntry* vt = snode->virtualEntryVector.at(vti);
             if (vt->virtScheme == null && vt->virtSchemeName != null) {
               String* vsn = qualifyForeignName(vt->virtSchemeName, QNT_SCHEME, true);
               if (vsn) {

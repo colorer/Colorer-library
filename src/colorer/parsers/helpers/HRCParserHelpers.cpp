@@ -107,8 +107,9 @@ void KeywordList::substrIndex()
 char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
 
 
-SchemeNode::SchemeNode() : virtualEntryVector(5)
+SchemeNode::SchemeNode()
 {
+  virtualEntryVector.reserve(5);
   type = SNT_EMPTY;
   schemeName = null;
   scheme = null;
@@ -130,18 +131,16 @@ SchemeNode::~SchemeNode()
   if (type == SNT_RE || type == SNT_SCHEME) {
     delete start;
     delete end;
-  };
+  }
   if (type == SNT_KEYWORDS) {
     delete kwList;
     delete worddiv;
-  };
+  }
   if (type == SNT_INHERIT) {
-    for (int idx = 0; idx < virtualEntryVector.size(); idx++) {
-      delete virtualEntryVector.elementAt(idx);
-    }
-  };
+    virtualEntryVector.clear();
+  }
   delete schemeName;
-};
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
