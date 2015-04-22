@@ -1,8 +1,13 @@
 #include <colorer/handlers/RegionMapperImpl.h>
 
-const RegionDefine* RegionMapperImpl::enumerateRegionDefines(int idx) const
+std::vector<const RegionDefine*> RegionMapperImpl::enumerateRegionDefines() const
 {
-  return regionDefines.get(regionDefines.key(idx));
+  std::vector<const RegionDefine*> r;
+  r.reserve(regionDefines.size());
+  for (auto p = regionDefines.begin(); p != regionDefines.end(); ++p) {
+    r.push_back(p->second);
+  }
+  return r;
 }
 
 const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) const
@@ -22,10 +27,10 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
     regionDefinesVector.resize(region->getID() * 2);
   }
 
-  RegionDefine* rd_new = regionDefines.get(region->getName());
-  if (rd_new != null) {
-    regionDefinesVector.at(region->getID()) = rd_new;
-    return rd_new;
+  auto rd_new = regionDefines.find(region->getName());
+  if (rd_new != regionDefines.end()) {
+    regionDefinesVector.at(region->getID()) = rd_new->second;
+    return rd_new->second;
   }
 
   if (region->getParent()) {
@@ -39,7 +44,11 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
 */
 const RegionDefine* RegionMapperImpl::getRegionDefine(const String& name) const
 {
-  return regionDefines.get(&name);
+  auto tp = regionDefines.find(name);
+  if (tp != regionDefines.end()) {
+    return tp->second;
+  }
+  return null;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

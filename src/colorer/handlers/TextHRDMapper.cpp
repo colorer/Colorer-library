@@ -8,8 +8,8 @@
 TextHRDMapper::TextHRDMapper() {}
 TextHRDMapper::~TextHRDMapper()
 {
-  for (RegionDefine* rdef = regionDefines.enumerate(); rdef; rdef = regionDefines.next()) {
-    const TextRegion* rd = TextRegion::cast(rdef);
+  for (auto rdef = regionDefines.begin(); rdef != regionDefines.end(); ++rdef) {
+    const TextRegion* rd = TextRegion::cast(rdef->second);
     delete rd->stext;
     delete rd->etext;
     delete rd->sback;
@@ -47,8 +47,9 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler
       }
 
       const String* name = new DString(xname);
-      if (regionDefines.get(name) != null) {
-        const TextRegion* rd = TextRegion::cast(regionDefines.get(name));
+      auto tp = regionDefines.find(name);
+      if (tp != regionDefines.end()) {
+        const TextRegion* rd = TextRegion::cast(tp->second);
         delete rd->stext;
         delete rd->etext;
         delete rd->sback;
@@ -78,7 +79,8 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler
       }
 
       RegionDefine* rdef = new TextRegion(stext, etext, sback, eback);
-      regionDefines.put(name, rdef);
+      std::pair<SString, RegionDefine*> pp(name, rdef);
+      regionDefines.emplace(pp);
       delete name;
     }
   }
@@ -93,9 +95,9 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
   writer->write(DString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
-  for (String* key = regionDefines.enumerateKey(); key; key = regionDefines.nextkey()) {
-    const TextRegion* rdef = TextRegion::cast(regionDefines.get(key));
-    writer->write(StringBuffer("  <define name='") + key + "'");
+  for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
+    const TextRegion* rdef = TextRegion::cast(it->second);
+    writer->write(StringBuffer("  <define name='") + it->first + "'");
     if (rdef->stext != null) {
       writer->write(StringBuffer(" stext='") + rdef->stext + "'");
     }
@@ -134,9 +136,9 @@ void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
     eback = new SString(rd_new->eback);
   }
 
-  RegionDefine* rd_old = regionDefines.get(&name);
-  if (rd_old != null) {
-    const TextRegion* rdef = TextRegion::cast(rd_old);
+  auto rd_old = regionDefines.find(name);
+  if (rd_old != regionDefines.end()) {
+    const TextRegion* rdef = TextRegion::cast(rd_old->second);
     delete rdef->stext;
     delete rdef->etext;
     delete rdef->sback;
@@ -145,11 +147,12 @@ void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
   }
 
   RegionDefine* new_region = new TextRegion(stext, etext, sback, eback);
-  regionDefines.put(&name, new_region);
+  std::pair<SString, RegionDefine*> p(name, new_region);
+  regionDefines.emplace(p);
 
   // Searches and replaces old region references
   for (size_t idx = 0; idx < regionDefinesVector.size(); idx++)
-    if (regionDefinesVector.at(idx) == rd_old) {
+    if (regionDefinesVector.at(idx) == rd_old->second) {
       regionDefinesVector.at(idx) = new_region;
       break;
     }

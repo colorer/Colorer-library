@@ -14,9 +14,7 @@ const int StyledRegion::RD_STRIKEOUT = 8;
 StyledHRDMapper::StyledHRDMapper() {}
 StyledHRDMapper::~StyledHRDMapper()
 {
-  for (RegionDefine* rd = regionDefines.enumerate(); rd; rd = regionDefines.next()) {
-    delete rd;
-  }
+  regionDefines.clear();
 }
 
 void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh)
@@ -46,8 +44,9 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandl
       }
 
       const String* name = new DString(xname);
-      if (regionDefines.get(name) != null) {
-        delete regionDefines.get(name);
+      auto rd_new = regionDefines.find(name);
+      if (rd_new != regionDefines.end()) {
+        regionDefines.erase(rd_new);
       }
 
       int val = 0;
@@ -60,7 +59,9 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandl
         style = val;
       }
       RegionDefine* rdef = new StyledRegion(bfore, bback, fore, back, style);
-      regionDefines.put(name, rdef);
+      std::pair<SString, RegionDefine*> pp(name, rdef);
+      regionDefines.emplace(pp);
+
       delete name;
     }
   }
@@ -75,10 +76,10 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
   writer->write(DString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
-  for (String* key = regionDefines.enumerateKey(); key; key = regionDefines.nextkey()) {
-    const StyledRegion* rdef = StyledRegion::cast(regionDefines.get(key));
+  for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
+    const StyledRegion* rdef = StyledRegion::cast(it->second);
     char temporary[256];
-    writer->write(StringBuffer("  <define name='") + key + "'");
+    writer->write(StringBuffer("  <define name='") + it->first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(DString(temporary));
@@ -99,20 +100,20 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 /** Adds or replaces region definition */
 void StyledHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
 {
-  RegionDefine* rd_old = regionDefines.get(&name);
+  auto rd_old = regionDefines.find(&name);
 
   const StyledRegion* new_region = StyledRegion::cast(rd);
   RegionDefine* rd_new = new StyledRegion(*new_region);
-  regionDefines.put(&name, rd_new);
+  std::pair<SString, RegionDefine*> pp(name, rd_new);
+  regionDefines.emplace(pp);
 
   // Searches and replaces old region references
   for (size_t idx = 0; idx < regionDefinesVector.size(); idx++) {
-    if (regionDefinesVector.at(idx) == rd_old) {
+    if (regionDefinesVector.at(idx) == rd_old->second) {
       regionDefinesVector.at(idx) = rd_new;
       break;
     }
   }
-  delete rd_old;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

@@ -1,7 +1,6 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
-#include <common/Hashtable.h>
 #include <common/io/Writer.h>
 #include <colorer/handlers/RegionMapper.h>
 #include <colorer/handlers/RegionDefine.h>
@@ -37,13 +36,13 @@ public:
   /** Enumerates all loaded region defines.
       @return RegionDefine with specified internal index, or null if @c idx is too big
   */
-  const RegionDefine* enumerateRegionDefines(int idx) const;
+  std::vector<const RegionDefine*> enumerateRegionDefines() const;
 
   const RegionDefine* getRegionDefine(const Region* region) const;
   const RegionDefine* getRegionDefine(const String& name) const;
 
 protected:
-  Hashtable<RegionDefine*> regionDefines;
+  std::unordered_map<SString, RegionDefine*> regionDefines;
   mutable std::vector<const RegionDefine*> regionDefinesVector;
 
   RegionMapperImpl(const RegionMapperImpl&);

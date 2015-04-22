@@ -1,6 +1,7 @@
 #ifndef _COLORER_PARSERFACTORY_H_
 #define _COLORER_PARSERFACTORY_H_
 
+#include <common/Hashtable.h>
 #include <colorer/TextParser.h>
 #include <colorer/HRCParser.h>
 #include <colorer/handlers/DefaultErrorHandler.h>
