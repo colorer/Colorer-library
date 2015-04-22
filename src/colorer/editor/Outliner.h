@@ -1,7 +1,6 @@
 #ifndef _COLORER_OUTLINER_H_
 #define _COLORER_OUTLINER_H_
 
-#include <common/Vector.h>
 #include <colorer/LineSource.h>
 #include <colorer/RegionHandler.h>
 #include <colorer/editor/OutlineItem.h>
@@ -49,7 +48,7 @@ public:
    * @return Packed index of item, which could be used to
    *         reconstruct tree of outlined items.
    */
-  static int manageTree(Vector<int>& treeStack, int newLevel);
+  static int manageTree(std::vector<int>& treeStack, int newLevel);
 
   /**
    * Total number of currently available outline items

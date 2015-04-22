@@ -27,16 +27,16 @@ size_t Outliner::itemCount()
   return outline.size();
 }
 
-int Outliner::manageTree(Vector<int>& treeStack, int newLevel)
+int Outliner::manageTree(std::vector<int>& treeStack, int newLevel)
 {
-  while (treeStack.size() > 0 && newLevel < treeStack.lastElement()) {
-    treeStack.removeElementAt(treeStack.size() - 1);
+  while (treeStack.size() > 0 && newLevel < treeStack.back()) {
+    treeStack.pop_back();
   }
-  if (treeStack.size() == 0 || newLevel > treeStack.lastElement()) {
-    treeStack.addElement(newLevel);
+  if (treeStack.size() == 0 || newLevel > treeStack.back()) {
+    treeStack.push_back(newLevel);
     return treeStack.size() - 1;
   }
-  if (newLevel == treeStack.lastElement()) {
+  if (newLevel == treeStack.back()) {
     return treeStack.size() - 1;
   }
   return 0;
