@@ -1,7 +1,6 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
-#include <common/Vector.h>
 #include <colorer/ParserFactory.h>
 #include <colorer/handlers/FileErrorHandler.h>
 #include <colorer/handlers/LineRegionsSupport.h>
@@ -255,8 +254,8 @@ private:
   LineRegionsSupport* lrSupport;
 
   FileType* currentFileType;
-  Vector<RegionHandler*> regionHandlers;
-  Vector<EditorListener*> editorListeners;
+  std::vector<RegionHandler*> regionHandlers;
+  std::vector<EditorListener*> editorListeners;
 
   int backParse;
   // window area

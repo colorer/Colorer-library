@@ -1,6 +1,7 @@
 #ifndef _COLORER_OUTLINER_H_
 #define _COLORER_OUTLINER_H_
 
+#include <common/Vector.h>
 #include <colorer/LineSource.h>
 #include <colorer/RegionHandler.h>
 #include <colorer/editor/OutlineItem.h>

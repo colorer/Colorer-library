@@ -189,22 +189,32 @@ void BaseEditor::setBackParse(int backParse)
 
 void BaseEditor::addRegionHandler(RegionHandler* rh)
 {
-  regionHandlers.addElement(rh);
+  regionHandlers.push_back(rh);
 }
 
 void BaseEditor::removeRegionHandler(RegionHandler* rh)
 {
-  regionHandlers.removeElement(rh);
+  for (auto ft = regionHandlers.begin(); ft != regionHandlers.end(); ++ft) {
+    if (*ft == rh) {
+      regionHandlers.erase(ft);
+      break;
+    }
+  }
 }
 
 void BaseEditor::addEditorListener(EditorListener* el)
 {
-  editorListeners.addElement(el);
+  editorListeners.push_back(el);
 }
 
 void BaseEditor::removeEditorListener(EditorListener* el)
 {
-  editorListeners.removeElement(el);
+  for (auto ft = editorListeners.begin(); ft != editorListeners.end(); ++ft) {
+    if (*ft == el) {
+      editorListeners.erase(ft);
+      break;
+    }
+  }
 }
 
 
@@ -372,8 +382,8 @@ void BaseEditor::modifyEvent(int topLine)
   CLR_TRACE("BaseEditor", "modifyEvent:%d", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
-    for (int idx = editorListeners.size() - 1; idx >= 0; idx--) {
-      editorListeners.elementAt(idx)->modifyEvent(topLine);
+    for (size_t idx = editorListeners.size() - 1; idx >= 0; idx--) {
+      editorListeners.at(idx)->modifyEvent(topLine);
     }
   }
 }
@@ -511,48 +521,48 @@ void BaseEditor::idleJob(int time)
 void BaseEditor::startParsing(size_t lno)
 {
   lrSupport->startParsing(lno);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->startParsing(lno);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->startParsing(lno);
   }
 }
 
 void BaseEditor::endParsing(size_t lno)
 {
   lrSupport->endParsing(lno);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->endParsing(lno);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->endParsing(lno);
   }
 }
 
 void BaseEditor::clearLine(size_t lno, String* line)
 {
   lrSupport->clearLine(lno, line);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->clearLine(lno, line);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->clearLine(lno, line);
   }
 }
 
 void BaseEditor::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
 {
   lrSupport->addRegion(lno, line, sx, ex, region);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->addRegion(lno, line, sx, ex, region);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->addRegion(lno, line, sx, ex, region);
   }
 }
 
 void BaseEditor::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->enterScheme(lno, line, sx, ex, region, scheme);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->enterScheme(lno, line, sx, ex, region, scheme);
   }
 }
 
 void BaseEditor::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
-  for (int idx = 0; idx < regionHandlers.size(); idx++) {
-    regionHandlers.elementAt(idx)->leaveScheme(lno, line, sx, ex, region, scheme);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->leaveScheme(lno, line, sx, ex, region, scheme);
   }
 }
 
