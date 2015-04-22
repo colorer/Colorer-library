@@ -1,8 +1,8 @@
-#include <common/Vector.h>
 #include <memory.h>
 #include <stdio.h>
 #include <time.h>
 
+#include <common/Common.h>
 #include <common/MemoryChunks.h>
 
 size_t total_req = 0;
@@ -74,7 +74,7 @@ void operator delete[](void* ptr)
 /**
   List of currently allocated memory chunks with size CHUNK_SIZE
 */
-static Vector<byte*>* chunks = null;
+static std::vector<byte*>* chunks = null;
 
 /**
   Pointer to the last allocated chunk
@@ -103,18 +103,18 @@ void* chunk_alloc(size_t size)
   }
   /* Init static - cygwin problems workaround */
   if (chunks == null) {
-    chunks = new Vector<byte*>;
+    chunks = new std::vector<byte*>;
   }
 
   if (chunks->size() == 0) {
     currentChunk = new byte[CHUNK_SIZE];
-    chunks->addElement(currentChunk);
+    chunks->push_back(currentChunk);
     currentChunkAlloc = 0;
   }
   size = ((size - 1) | 0x3) + 1; // 4-byte aling
   if (currentChunkAlloc + size > CHUNK_SIZE) {
     currentChunk = new byte[CHUNK_SIZE];
-    chunks->addElement(currentChunk);
+    chunks->push_back(currentChunk);
     currentChunkAlloc = 0;
   }
   void* retVal = (void*)(currentChunk + currentChunkAlloc);
@@ -137,10 +137,10 @@ void chunk_free(void* ptr)
   //printf("cfree\t%d\n", clock());
   allocCount--;
   if (allocCount == 0) {
-    for (int idx = 0; idx < chunks->size(); idx++) {
-      delete[] chunks->elementAt(idx);
+    for (size_t idx = 0; idx < chunks->size(); idx++) {
+      delete[] chunks->at(idx);
     }
-    chunks->setSize(0);
+    chunks->clear();
   }
 //  printf("cf:%d, ", allocCount);
 }
