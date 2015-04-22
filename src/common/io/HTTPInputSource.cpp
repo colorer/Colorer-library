@@ -1,5 +1,4 @@
 #include <common/io/HTTPInputSource.h>
-#include <common/Vector.h>
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
 #ifdef _WIN32
@@ -47,10 +46,10 @@ const byte* HTTPInputSource::openStream()
 #if COLORER_FEATURE_HTTPINPUTSOURCE
 #ifdef _WIN32
   const int blockSize = 0x1000;
-  Vector<byte*> streamVector;
-  Vector<int> streamSizeVector;
+  std::vector<byte*> streamVector;
+  std::vector<int> streamSizeVector;
 
-  HINTERNET ihandle = InternetOpen("Colorer-take5 library connector", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+  HINTERNET ihandle = InternetOpen(L"Colorer-take5 library connector", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (ihandle == NULL) {
     throw InputSourceException(StringBuffer("Can't create internet connection"));
   }
@@ -73,8 +72,8 @@ const byte* HTTPInputSource::openStream()
       delete[] block;
       break;
     }
-    streamVector.addElement(block);
-    streamSizeVector.addElement(bread);
+    streamVector.push_back(block);
+    streamSizeVector.push_back(bread);
     len += bread;
   }
   if (ok == FALSE) {
@@ -83,14 +82,12 @@ const byte* HTTPInputSource::openStream()
     stream = new byte[len];
     int csize = 0;
     for (int idx = 0; idx < streamVector.size(); idx++) {
-      int thisSize = streamSizeVector.elementAt(idx);
-      memmove(stream + csize, streamVector.elementAt(idx), thisSize);
+      int thisSize = streamSizeVector.at(idx);
+      memmove(stream + csize, streamVector.at(idx), thisSize);
       csize += thisSize;
     }
   }
-  for (int idx = 0; idx < streamVector.size(); idx++) {
-    delete streamVector.elementAt(idx);
-  }
+  streamVector.clear();
 
   InternetCloseHandle(iurl);
   InternetCloseHandle(ihandle);
