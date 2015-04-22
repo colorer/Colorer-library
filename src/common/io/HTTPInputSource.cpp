@@ -1,11 +1,10 @@
-
-#include<common/io/HTTPInputSource.h>
-#include<common/Vector.h>
+#include <common/io/HTTPInputSource.h>
+#include <common/Vector.h>
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
 #ifdef _WIN32
-#include<windows.h>
-#include<wininet.h>
+#include <windows.h>
+#include <wininet.h>
 #endif
 #endif
 
@@ -13,28 +12,37 @@
 #define DWORD_PTR DWORD
 #endif
 
-HTTPInputSource::HTTPInputSource(const String *basePath, HTTPInputSource *base){
-  if (isRelative(basePath) && base != null)
+HTTPInputSource::HTTPInputSource(const String* basePath, HTTPInputSource* base)
+{
+  if (isRelative(basePath) && base != null) {
     baseLocation = getAbsolutePath(base->getLocation(), basePath);
-  else
+  } else {
     baseLocation = new SString(basePath);
+  }
   stream = null;
-};
-HTTPInputSource::~HTTPInputSource(){
+}
+
+HTTPInputSource::~HTTPInputSource()
+{
   delete baseLocation;
   delete[] stream;
-};
-colorer::InputSource *HTTPInputSource::createRelative(const String *relPath){
-  return new HTTPInputSource(relPath, this);
-};
+}
 
-const String *HTTPInputSource::getLocation() const{
-  return baseLocation;
-};
-
-const byte *HTTPInputSource::openStream()
+colorer::InputSource* HTTPInputSource::createRelative(const String* relPath)
 {
-  if (stream != null) throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
+  return new HTTPInputSource(relPath, this);
+}
+
+const String* HTTPInputSource::getLocation() const
+{
+  return baseLocation;
+}
+
+const byte* HTTPInputSource::openStream()
+{
+  if (stream != null) {
+    throw InputSourceException(StringBuffer("openStream(): source stream already opened: '") + baseLocation + "'");
+  }
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
 #ifdef _WIN32
@@ -43,62 +51,70 @@ const byte *HTTPInputSource::openStream()
   Vector<int> streamSizeVector;
 
   HINTERNET ihandle = InternetOpen("Colorer-take5 library connector", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
-  if (ihandle == NULL) throw InputSourceException(StringBuffer("Can't create internet connection"));
+  if (ihandle == NULL) {
+    throw InputSourceException(StringBuffer("Can't create internet connection"));
+  }
 
   DWORD dw;
-  HINTERNET iurl = InternetOpenUrl(ihandle, baseLocation->getTChars(), NULL, 0, INTERNET_FLAG_PRAGMA_NOCACHE|INTERNET_FLAG_NO_UI, (DWORD_PTR)(size_t)&dw);
-  if (iurl == NULL) throw InputSourceException(StringBuffer("Can't access URL '")+baseLocation+"'");
+  HINTERNET iurl = InternetOpenUrl(ihandle, baseLocation->getTChars(), NULL, 0, INTERNET_FLAG_PRAGMA_NOCACHE | INTERNET_FLAG_NO_UI, (DWORD_PTR)(size_t)&dw);
+  if (iurl == NULL) {
+    throw InputSourceException(StringBuffer("Can't access URL '") + baseLocation + "'");
+  }
 
   len = 0;
   DWORD bread;
   BOOL ok = TRUE;
-  while(true){
-    byte *block = new byte[blockSize];
+  while (true) {
+    byte* block = new byte[blockSize];
 
     ok = InternetReadFile(iurl, block, blockSize, &bread);
 
-    if (ok == FALSE || bread == 0)
-    {
+    if (ok == FALSE || bread == 0) {
       delete[] block;
       break;
     }
     streamVector.addElement(block);
     streamSizeVector.addElement(bread);
     len += bread;
-  };
-  if (ok == FALSE){
-    throw InputSourceException(StringBuffer("Can't read http stream: ")+baseLocation);
-  }else{
+  }
+  if (ok == FALSE) {
+    throw InputSourceException(StringBuffer("Can't read http stream: ") + baseLocation);
+  } else {
     stream = new byte[len];
     int csize = 0;
-    for(int idx = 0; idx < streamVector.size(); idx++){
+    for (int idx = 0; idx < streamVector.size(); idx++) {
       int thisSize = streamSizeVector.elementAt(idx);
       memmove(stream + csize, streamVector.elementAt(idx), thisSize);
       csize += thisSize;
-    };
-  };
-  for(int idx = 0; idx < streamVector.size(); idx++){
+    }
+  }
+  for (int idx = 0; idx < streamVector.size(); idx++) {
     delete streamVector.elementAt(idx);
-  };
+  }
 
   InternetCloseHandle(iurl);
   InternetCloseHandle(ihandle);
 #endif
 #endif
   return stream;
-};
+}
 
-void HTTPInputSource::closeStream(){
-  if (stream == null) throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
+void HTTPInputSource::closeStream()
+{
+  if (stream == null) {
+    throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
+  }
   delete[] stream;
   stream = null;
-};
+}
 
-int HTTPInputSource::length() const{
-  if (stream == null)
+int HTTPInputSource::length() const
+{
+  if (stream == null) {
     throw InputSourceException(DString("length(): stream is not yet opened"));
+  }
   return len;
-};
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
