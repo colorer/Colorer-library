@@ -200,10 +200,12 @@ void ConsoleTools::RETest(){
   re = new CRegExp();
   do{
     printf("\nregexp:");
-    gets(text);
+    fgets(text, sizeof(text), stdin);
+    strtok(text, "\r\n");
     if (!re->setRE(&DString(text))) continue;
     printf("exprn:");
-    gets(text);
+    fgets(text, sizeof(text), stdin);
+    strtok(text, "\r\n");
     res = re->parse(&DString(text), &match);
     printf("%s\nmatch:  ",res?"ok":"error");
     for(int i = 0; i < match.cMatch; i++){
