@@ -2,7 +2,6 @@
 #define _COLORER_HRCPARSERPELPERS_H_
 
 #include <cregexp/cregexp.h>
-#include <common/Hashtable.h>
 #include <common/io/InputSource.h>
 #include <colorer/Region.h>
 #include <colorer/Scheme.h>

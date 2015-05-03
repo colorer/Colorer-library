@@ -2,7 +2,6 @@
 #define _COLORER_HRCPARSERIMPL_H_
 
 #include <cregexp/cregexp.h>
-#include <common/Hashtable.h>
 #include <colorer/HRCParser.h>
 #include <unicode/UnicodeTools.h>
 #include <colorer/parsers/helpers/HRCParserHelpers.h>
@@ -46,16 +45,16 @@ protected:
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
-  Hashtable<FileTypeImpl*> fileTypeHash;
+  std::unordered_map<SString, FileTypeImpl*> fileTypeHash;
   // types, not packages
   std::vector<FileTypeImpl*>    fileTypeVector;
 
-  Hashtable<SchemeImpl*>   schemeHash;
-  Hashtable<int>           disabledSchemes;
+  std::unordered_map<SString, SchemeImpl*>   schemeHash;
+  std::unordered_map<SString, int> disabledSchemes;
 
-  std::vector<const Region*>    regionNamesVector;
-  Hashtable<const Region*> regionNamesHash;
-  Hashtable<String*>       schemeEntitiesHash;
+  std::vector<const Region*> regionNamesVector;
+  std::unordered_map<SString, const Region*> regionNamesHash;
+  std::unordered_map<SString, String*> schemeEntitiesHash;
 
   String* versionName;
 

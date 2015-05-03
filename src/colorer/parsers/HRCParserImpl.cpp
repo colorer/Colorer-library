@@ -9,7 +9,6 @@
 #define CURRENT_FILE SString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
 HRCParserImpl::HRCParserImpl()
-  : fileTypeHash(200), schemeHash(4000), regionNamesHash(1000)
 {
   parseType = null;
   parseProtoType = null;
@@ -19,20 +18,18 @@ HRCParserImpl::HRCParserImpl()
   updateStarted = false;
   fileTypeVector.reserve(150);
   regionNamesVector.reserve(1000);
+  // need reserve, but in vc2010 not implemented
+  schemeHash.rehash(static_cast<size_t>(ceil(4000 / schemeHash.max_load_factor())));
+  regionNamesHash.rehash(static_cast<size_t>(ceil(1000 / regionNamesHash.max_load_factor())));
+  fileTypeHash.rehash(static_cast<size_t>(ceil(200 / fileTypeHash.max_load_factor())));
 }
 
 HRCParserImpl::~HRCParserImpl()
 {
-  for (FileTypeImpl* ft = fileTypeHash.enumerate(); ft != null; ft = fileTypeHash.next()) {
-    delete ft;
-  }
-  for (SchemeImpl* scheme = schemeHash.enumerate(); scheme != null; scheme = schemeHash.next()) {
-    delete scheme;
-  }
+  fileTypeHash.clear();
+  schemeHash.clear();
   regionNamesVector.clear();
-  for (String* se = schemeEntitiesHash.enumerate(); se; se = schemeEntitiesHash.next()) {
-    delete se;
-  }
+  schemeEntitiesHash.clear();
   delete versionName;
 }
 
@@ -65,10 +62,9 @@ void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
   bool loop = true;
   while (loop) {
     loop = false;
-    for (SchemeImpl* scheme = schemeHash.enumerate(); scheme != null; scheme = schemeHash.next()) {
-      if (scheme->fileType == filetype) {
-        schemeHash.remove(scheme->getName());
-        delete scheme;
+    for (auto scheme = schemeHash.begin(); scheme != schemeHash.end(); ++scheme) {
+      if (scheme->second->fileType == filetype) {
+        schemeHash.erase(scheme);
         loop = true;
         break;
       }
@@ -80,7 +76,7 @@ void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
       break;
     }
   }
-  fileTypeHash.remove(filetype->getName());
+  fileTypeHash.erase(filetype->getName());
   delete filetype;
 }
 
@@ -153,7 +149,7 @@ FileType* HRCParserImpl::getFileType(const String* name)
   if (name == null) {
     return null;
   }
-  return fileTypeHash.get(name);
+  return fileTypeHash.find(name)->second;
 }
 
 FileType* HRCParserImpl::enumerateFileTypes(int index)
@@ -291,7 +287,11 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   if (typeDescription == null) {
     typeDescription = typeName;
   }
-  FileTypeImpl* f = fileTypeHash.get(&DString(typeName));
+  FileTypeImpl* f = null;
+  auto ft = fileTypeHash.find(&DString(typeName));
+  if (ft != fileTypeHash.end()) {
+    f = ft->second;
+  }
   if (f != null) {
     unloadFileType(f);
     if (errorHandler != null) {
@@ -312,7 +312,9 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   parsePrototypeBlock(elem);
 
   type->protoLoaded = true;
-  fileTypeHash.put(type->name, type);
+  std::pair<SString, FileTypeImpl*> pp(type->name, type);
+  fileTypeHash.emplace(pp);
+
   if (!type->isPackage) {
     fileTypeVector.push_back(type);
   }
@@ -415,14 +417,14 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
     }
     return;
   }
-  FileTypeImpl* type_ref = fileTypeHash.get(&DString(typeName));
-  if (type_ref == null) {
+  auto type_ref = fileTypeHash.find(&DString(typeName));
+  if (type_ref == fileTypeHash.end()) {
     if (errorHandler != null) {
       errorHandler->error(StringBuffer("type '") + DString(typeName) + "' without prototype");
     }
     return;
   }
-  FileTypeImpl* type = type_ref;
+  FileTypeImpl* type = type_ref->second;
   if (type->typeLoaded) {
     if (errorHandler != null) {
       errorHandler->warning(StringBuffer("type '") + DString(typeName) + "' is already loaded");
@@ -438,7 +440,8 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
 
   String* baseSchemeName = qualifyOwnName(type->name);
   if (baseSchemeName != null) {
-    type->baseScheme = schemeHash.get(baseSchemeName);
+    auto sh = schemeHash.find(baseSchemeName);
+    type->baseScheme = sh == schemeHash.end() ? null : sh->second;
   }
   delete baseSchemeName;
   if (type->baseScheme == null && !type->isPackage) {
@@ -499,7 +502,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
     return;
   }
   String* qname2 = qualifyForeignName(*regionParent != '\0' ? &DString(regionParent) : null, QNT_DEFINE, true);
-  if (regionNamesHash.get(qname1) != null) {
+  if (regionNamesHash.find(qname1) != regionNamesHash.end()) {
     if (errorHandler != null) {
       errorHandler->warning(StringBuffer("Duplicate region '") + qname1 + "' definition in type '" + parseType->getName() + "'");
     }
@@ -510,7 +513,8 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
 
   const Region* region = new Region(qname1, &DString(regionDescr), getRegion(qname2), regionNamesVector.size());
   regionNamesVector.push_back(region);
-  regionNamesHash.put(qname1, region);
+  std::pair<SString, const Region*> pp(qname1, region);
+  regionNamesHash.emplace(pp);
 
   delete qname1;
   delete qname2;
@@ -529,7 +533,8 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
   String* qname1 = qualifyOwnName(&DString(entityName));
   String* qname2 = useEntities(&DString(entityValue));
   if (qname1 != null && qname2 != null) {
-    schemeEntitiesHash.put(qname1, qname2);
+    std::pair<SString, String*> pp(qname1, qname2);
+    schemeEntitiesHash.emplace(pp);
     delete qname1;
   }
 }
@@ -537,7 +542,7 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
 void HRCParserImpl::addTypeImport(const xercesc::DOMElement* elem)
 {
   const XMLCh* typeParam = elem->getAttribute(hrcImportAttrType);
-  if (*typeParam == '\0' || fileTypeHash.get(&DString(typeParam)) == null) {
+  if (*typeParam == '\0' || fileTypeHash.find(&DString(typeParam)) == fileTypeHash.end()) {
     if (errorHandler != null) {
       errorHandler->error(StringBuffer("Import with bad '") + DString(typeParam) + "' attribute in type '" + parseType->name + "'");
     }
@@ -556,8 +561,8 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
     }
     return;
   }
-  if (schemeHash.get(qSchemeName) != null ||
-      disabledSchemes.get(qSchemeName) != 0) {
+  if (schemeHash.find(qSchemeName) != schemeHash.end() ||
+      disabledSchemes.find(qSchemeName) != disabledSchemes.end()) {
     if (errorHandler != null) {
       errorHandler->error(StringBuffer("duplicate scheme name '") + qSchemeName + "'");
     }
@@ -569,7 +574,8 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
   delete qSchemeName;
   scheme->fileType = parseType;
 
-  schemeHash.put(scheme->schemeName, scheme);
+  std::pair<SString, SchemeImpl*> pp(scheme->schemeName, scheme);
+  schemeHash.emplace(pp);
   const XMLCh* condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh* condUnless = elem->getAttribute(hrcSchemeAttrUnless);
   const String* p1 = parseType->getParamValue(DString(condIf));
@@ -632,7 +638,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
     //        delete next;
     //        continue;
   } else {
-    scheme_node->scheme = schemeHash.get(schemeName);
+    scheme_node->scheme = schemeHash.find(schemeName)->second;
   }
   if (schemeName != null) {
     delete scheme_node->schemeName;
@@ -965,7 +971,8 @@ void HRCParserImpl::updateLinks()
 {
   while (structureChanged) {
     structureChanged = false;
-    for (SchemeImpl* scheme = schemeHash.enumerate(); scheme != null; scheme = schemeHash.next()) {
+    for (auto scheme_it = schemeHash.begin(); scheme_it != schemeHash.end(); ++scheme_it) {
+      SchemeImpl* scheme = scheme_it->second;
       if (!scheme->fileType->loadDone) {
         continue;
       }
@@ -976,7 +983,7 @@ void HRCParserImpl::updateLinks()
         if (snode->schemeName != null && (snode->type == SNT_SCHEME || snode->type == SNT_INHERIT) && snode->scheme == null) {
           String* schemeName = qualifyForeignName(snode->schemeName, QNT_SCHEME, true);
           if (schemeName != null) {
-            snode->scheme = schemeHash.get(schemeName);
+            snode->scheme = schemeHash.find(schemeName)->second;
           } else {
             if (errorHandler != null) {
               errorHandler->error(StringBuffer("cannot resolve scheme name '") + snode->schemeName + "' in scheme '" + scheme->schemeName + "'");
@@ -992,7 +999,7 @@ void HRCParserImpl::updateLinks()
             if (vt->virtScheme == null && vt->virtSchemeName != null) {
               String* vsn = qualifyForeignName(vt->virtSchemeName, QNT_SCHEME, true);
               if (vsn) {
-                vt->virtScheme = schemeHash.get(vsn);
+                vt->virtScheme = schemeHash.find(vsn)->second;
               }
               if (!vsn) if (errorHandler != null) {
                   errorHandler->error(StringBuffer("cannot virtualize scheme '") + vt->virtSchemeName + "' in scheme '" + scheme->schemeName + "'");
@@ -1004,7 +1011,7 @@ void HRCParserImpl::updateLinks()
             if (vt->substScheme == null && vt->substSchemeName != null) {
               String* vsn = qualifyForeignName(vt->substSchemeName, QNT_SCHEME, true);
               if (vsn) {
-                vt->substScheme = schemeHash.get(vsn);
+                vt->substScheme = schemeHash.find(vsn)->second;
               } else if (errorHandler != null) {
                 errorHandler->error(StringBuffer("cannot virtualize using subst-scheme scheme '") + vt->substSchemeName + "' in scheme '" + scheme->schemeName + "'");
               }
@@ -1050,19 +1057,19 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
 
 bool HRCParserImpl::checkNameExist(const String* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors)
 {
-  if (qntype == QNT_DEFINE && regionNamesHash.get(name) == null) {
+  if (qntype == QNT_DEFINE && regionNamesHash.find(name) == regionNamesHash.end()) {
     if (logErrors)
       if (errorHandler != null) {
         errorHandler->error(StringBuffer("region '") + name + "', referenced in type '" + parseType->name + "', is not defined");
       }
     return false;
-  } else if (qntype == QNT_ENTITY && schemeEntitiesHash.get(name) == null) {
+  } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(name) == schemeEntitiesHash.end()) {
     if (logErrors)
       if (errorHandler != null) {
         errorHandler->error(StringBuffer("entity '") + name + "', referenced in type '" + parseType->name + "', is not defined");
       }
     return false;
-  } else if (qntype == QNT_SCHEME && schemeHash.get(name) == null) {
+  } else if (qntype == QNT_SCHEME && schemeHash.find(name) == schemeHash.end()) {
     if (logErrors)
       if (errorHandler != null) {
         errorHandler->error(StringBuffer("scheme '") + name + "', referenced in type '" + parseType->name + "', is not defined");
@@ -1080,7 +1087,11 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
   int colon = name->indexOf(':');
   if (colon != -1) { // qualified name
     DString prefix(name, 0, colon);
-    FileTypeImpl* prefType = fileTypeHash.get(&prefix);
+    auto ft = fileTypeHash.find(&prefix);
+    FileTypeImpl* prefType = null;
+    if (ft != fileTypeHash.end()) {
+      prefType = ft->second;
+    }
 
     if (prefType == null) {
       if (logErrors && errorHandler != null) {
@@ -1099,7 +1110,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
       if (idx > -1) {
         tname = parseType->importVector.at(idx);
       }
-      FileTypeImpl* importer = fileTypeHash.get(tname);
+      FileTypeImpl* importer = fileTypeHash.find(tname)->second;
       if (!importer->typeLoaded) {
         loadFileType(importer);
       }
@@ -1148,7 +1159,7 @@ String* HRCParserImpl::useEntities(const String* name)
     String* qEnName = qualifyForeignName(&enname, QNT_ENTITY, true);
     const String* enval = null;
     if (qEnName != null) {
-      enval = schemeEntitiesHash.get(qEnName);
+      enval = schemeEntitiesHash.find(qEnName)->second;
       delete qEnName;
     }
     if (enval == null) {
@@ -1176,7 +1187,13 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   if (qname == null) {
     return null;
   }
-  reg = regionNamesHash.get(qname);
+  auto reg_ = regionNamesHash.find(qname);
+  if (reg_ != regionNamesHash.end()) {
+    reg = reg_->second;
+  } else {
+    reg = null;
+  }
+
   delete qname;
   /** Check for 'default' region request.
       Regions with this name are always transparent
