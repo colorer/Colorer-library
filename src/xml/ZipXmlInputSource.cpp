@@ -83,7 +83,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
     UnZip* un = new UnZip(mSrc,mSize,inJarLocation);
     return un;
   }catch(InputSourceException &e){
-    throw InputSourceException(StringBuffer(DString(this->getSystemId())).append(DString(L": ")).append(e.getMessage()));
+    throw InputSourceException(StringBuffer(DString(this->getSystemId())).append(DString(": ")).append(e.getMessage()));
   }
 }
 
