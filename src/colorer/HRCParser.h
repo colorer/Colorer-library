@@ -62,11 +62,11 @@ public:
   */
   virtual FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0) = 0;
 
-  virtual int getFileTypesCount() = 0;
+  virtual size_t getFileTypesCount() = 0;
 
   /** Total number of declared regions
   */
-  virtual int getRegionCount() = 0;
+  virtual size_t getRegionCount() = 0;
   /** Returns region by internal id
   */
   virtual const Region *getRegion(int id) = 0;

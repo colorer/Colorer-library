@@ -11,7 +11,7 @@ public:
    * All the text becomes invalid after the specified line.
    * @param topLine Topmost modified line of text.
    */
-  virtual void modifyEvent(int topLine) = 0;
+  virtual void modifyEvent(size_t topLine) = 0;
 
 };
 

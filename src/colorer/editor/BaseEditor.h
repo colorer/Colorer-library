@@ -1,13 +1,12 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
-#include<colorer/ParserFactory.h>
-#include<colorer/handlers/FileErrorHandler.h>
-#include<colorer/handlers/LineRegionsSupport.h>
-#include<colorer/handlers/LineRegionsCompactSupport.h>
-
-#include<colorer/editor/EditorListener.h>
-#include<colorer/editor/PairMatch.h>
+#include <colorer/ParserFactory.h>
+#include <colorer/handlers/FileErrorHandler.h>
+#include <colorer/handlers/LineRegionsSupport.h>
+#include <colorer/handlers/LineRegionsCompactSupport.h>
+#include <colorer/editor/EditorListener.h>
+#include <colorer/editor/PairMatch.h>
 
 /**
  * Base Editor functionality.
@@ -19,7 +18,8 @@
  * is passed into this object and gets internal processing.
  * @ingroup colorer_editor
  */
-class BaseEditor : public RegionHandler{
+class BaseEditor : public RegionHandler
+{
 public:
   /**
    * Initial constructor.
@@ -29,7 +29,7 @@ public:
    * @param lineSource Object, that provides parser with
    *        text data in line-separated form. Can't be null.
    */
-  BaseEditor(ParserFactory *pf, LineSource *lineSource);
+  BaseEditor(ParserFactory* pf, LineSource* lineSource);
   ~BaseEditor();
 
   /**
@@ -50,7 +50,7 @@ public:
    * maps HRC Regions into color data.
    * @param rm RegionMapper object to map region values into colors.
    */
-  void setRegionMapper(RegionMapper *rm);
+  void setRegionMapper(RegionMapper* rm);
 
   /**
    * Installs specified RegionMapper, which
@@ -60,7 +60,7 @@ public:
    * @param hrdClass Class of RegionMapper instance
    * @param hrdName  Name of RegionMapper instance
    */
-  void setRegionMapper(const String *hrdClass, const String *hrdName);
+  void setRegionMapper(const String* hrdClass, const String* hrdName);
 
   /**
    * Specifies number of lines, for which parser
@@ -76,43 +76,43 @@ public:
    * If changed during processing, all text information
    * is invalidated.
    */
-  void setFileType(FileType *ftype);
+  void setFileType(FileType* ftype);
   /**
    * Initial HRC type, used for parse processing.
    * If changed during processing, all text information is invalidated.
    */
-  FileType *setFileType(const String &fileType);
+  FileType* setFileType(const String& fileType);
   /**
    * Tries to choose appropriate file type from HRC database
    * using passed fileName and first line of text (if available through lineSource)
    */
-  FileType *chooseFileType(const String *fileName);
+  FileType* chooseFileType(const String* fileName);
 
   /**
    * Returns currently used HRC file type
    */
-  FileType *getFileType();
+  FileType* getFileType();
 
   /**
    * Adds specified RegionHandler object
    * into parse process.
    */
-  void addRegionHandler(RegionHandler *rh);
+  void addRegionHandler(RegionHandler* rh);
 
   /**
    * Removes previously added RegionHandler object.
    */
-  void removeRegionHandler(RegionHandler *rh);
+  void removeRegionHandler(RegionHandler* rh);
 
   /**
    * Adds specified EditorListener object into parse process.
    */
-  void addEditorListener(EditorListener *el);
+  void addEditorListener(EditorListener* el);
 
   /**
    * Removes previously added EditorListener object.
    */
-  void removeEditorListener(EditorListener *el);
+  void removeEditorListener(EditorListener* el);
 
   /**
    * Searches and creates pair match object in currently visible text.
@@ -121,7 +121,7 @@ public:
    *        Paired Region is found, if it includes specified position
    *        or ends directly at one char before line position.
   */
-  PairMatch *searchLocalPair(int lineNo, int pos);
+  PairMatch* searchLocalPair(int lineNo, int pos);
 
   /**
    * Searches pair match in all available text, possibly,
@@ -130,7 +130,7 @@ public:
    *        Paired Region is found, if it includes specified position
    *        or ends directly at one char before line position.
    */
-  PairMatch *searchGlobalPair(int lineNo, int pos);
+  PairMatch* searchGlobalPair(int lineNo, int pos);
 
   /**
    * Searches and creates pair match object of first enwrapping block.
@@ -142,13 +142,13 @@ public:
    * @param lineNo Line number, where to search paired region.
    * @param pos Position in line, where paired region to be searched.
    */
-  PairMatch *getEnwrappedPairMatch(int lineNo, int pos);
+  PairMatch* getEnwrappedPairMatch(int lineNo, int pos);
 
   /**
    * Frees previously allocated PairMatch object.
    * @param pm PairMatch object to free.
    */
-  void releasePairMatch(PairMatch *pm);
+  void releasePairMatch(PairMatch* pm);
 
 
   /**
@@ -160,7 +160,7 @@ public:
    * @todo If number of lines, to be reparsed is more, than backParse parameter,
    * then method will return null, until validate() method is called.
    */
-  LineRegion *getLineRegions(int lno);
+  LineRegion* getLineRegions(int lno);
 
   /**
    * Validates current state of the editor and runs parser, if needed.
@@ -220,42 +220,42 @@ public:
   void lineCountEvent(int newLineCount);
 
   /** Basic HRC region - default text (background color) */
-  const Region *def_Text;
+  const Region* def_Text;
   /** Basic HRC region - syntax checkable region */
-  const Region *def_Syntax;
+  const Region* def_Syntax;
   /** Basic HRC region - special region */
-  const Region *def_Special;
+  const Region* def_Special;
   /** Basic HRC region - Paired region start */
-  const Region *def_PairStart;
+  const Region* def_PairStart;
   /** Basic HRC region - Paired region end */
-  const Region *def_PairEnd;
+  const Region* def_PairEnd;
 
   /** Basic HRC region mapping */
-  const RegionDefine *rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
+  const RegionDefine* rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
 
-  void startParsing(int lno);
-  void endParsing(int lno);
-  void clearLine(int lno, String *line);
-  void addRegion(int lno, String *line, int sx, int ex, const Region *region);
-  void enterScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
-  void leaveScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme);
+  void startParsing(size_t lno);
+  void endParsing(size_t lno);
+  void clearLine(size_t lno, String* line);
+  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
+  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 
   bool haveInvalidLine();
 
 private:
 
-  FileType *chooseFileTypeCh(const String *fileName, int chooseStr, int chooseLen);
+  FileType* chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen);
 
-  HRCParser *hrcParser;
-  TextParser *textParser;
-  ParserFactory *parserFactory;
-  LineSource *lineSource;
-  RegionMapper *regionMapper;
-  LineRegionsSupport *lrSupport;
+  HRCParser* hrcParser;
+  TextParser* textParser;
+  ParserFactory* parserFactory;
+  LineSource* lineSource;
+  RegionMapper* regionMapper;
+  LineRegionsSupport* lrSupport;
 
-  FileType *currentFileType;
-  Vector<RegionHandler*> regionHandlers;
-  Vector<EditorListener*> editorListeners;
+  FileType* currentFileType;
+  std::vector<RegionHandler*> regionHandlers;
+  std::vector<EditorListener*> editorListeners;
 
   int backParse;
   // window area
@@ -280,9 +280,9 @@ private:
    * Searches for the paired token and creates PairMatch
    * object with valid initial properties filled.
    */
-  PairMatch *getPairMatch(int lineNo, int pos);
+  PairMatch* getPairMatch(int lineNo, int pos);
 protected:
-  colorer::ErrorHandler *feh;
+  colorer::ErrorHandler* feh;
 };
 
 #endif

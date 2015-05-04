@@ -1,38 +1,55 @@
+#include <colorer/handlers/RegionMapperImpl.h>
 
-#include<colorer/handlers/RegionMapperImpl.h>
+std::vector<const RegionDefine*> RegionMapperImpl::enumerateRegionDefines() const
+{
+  std::vector<const RegionDefine*> r;
+  r.reserve(regionDefines.size());
+  for (auto p = regionDefines.begin(); p != regionDefines.end(); ++p) {
+    r.push_back(p->second);
+  }
+  return r;
+}
 
-const RegionDefine *RegionMapperImpl::enumerateRegionDefines(int idx) const{
-  return regionDefines.get(regionDefines.key(idx));
-};
+const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) const
+{
+  if (region == null) {
+    return null;
+  }
+  const RegionDefine* rd = null;
+  if (region->getID() < regionDefinesVector.size()) {
+    rd = regionDefinesVector.at(region->getID());
+  }
+  if (rd != null) {
+    return rd;
+  }
 
-const RegionDefine *RegionMapperImpl::getRegionDefine(const Region *region) const{
-  if (region == null) return null;
-  const RegionDefine *rd = null;
-  if (region->getID() < regionDefinesVector.size())
-    rd = regionDefinesVector.elementAt(region->getID());
-  if (rd != null) return rd;
+  if (regionDefinesVector.size() < region->getID() + 1) {
+    regionDefinesVector.resize(region->getID() * 2);
+  }
 
-  if (regionDefinesVector.size() < region->getID()+1)
-    regionDefinesVector.setSize(region->getID()*2);
+  auto rd_new = regionDefines.find(region->getName());
+  if (rd_new != regionDefines.end()) {
+    regionDefinesVector.at(region->getID()) = rd_new->second;
+    return rd_new->second;
+  }
 
-  RegionDefine *rd_new = regionDefines.get(region->getName());
-  if (rd_new != null){
-    regionDefinesVector.setElementAt(rd_new, region->getID());
-    return rd_new;
-  };
-
-  if (region->getParent()){
+  if (region->getParent()) {
     rd = getRegionDefine(region->getParent());
-    regionDefinesVector.setElementAt(rd, region->getID());
-  };
+    regionDefinesVector.at(region->getID()) = rd;
+  }
   return rd;
-};
+}
 
 /** Returns region mapping by it's full qualified name.
 */
-const RegionDefine *RegionMapperImpl::getRegionDefine(const String &name) const{
-  return regionDefines.get(&name);
-};
+const RegionDefine* RegionMapperImpl::getRegionDefine(const String& name) const
+{
+  auto tp = regionDefines.find(name);
+  if (tp != regionDefines.end()) {
+    return tp->second;
+  }
+  return null;
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

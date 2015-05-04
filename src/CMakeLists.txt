@@ -80,7 +80,6 @@ set(SRC_COLORER
    ${COMMON}/Logging.cpp ${COMMON}/Logging.h
    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
    ${COMMON}/Features.h
-   ${COMMON}/Vector.h
    ${COMMON}/io/FileInputSource.cpp ${COMMON}/io/FileInputSource.h
    ${COMMON}/io/FileWriter.h ${COMMON}/io/FileWriter.cpp
    ${COMMON}/io/InputSource.cpp ${COMMON}/io/InputSource.h

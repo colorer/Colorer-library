@@ -1,6 +1,5 @@
-
-#include<colorer/parsers/helpers/HRCParserHelpers.h>
-#include<stdlib.h>
+#include <colorer/parsers/helpers/HRCParserHelpers.h>
+#include <stdlib.h>
 
 /*
 KeywordInfo::KeywordInfo(){
@@ -43,32 +42,42 @@ KeywordInfo::~KeywordInfo(){
 };
 */
 
-KeywordList::KeywordList(){
+KeywordList::KeywordList()
+{
   num = 0;
   matchCase = false;
   minKeywordLength = 0;
   kwList = null;
   firstChar = new CharacterClass();
 };
-KeywordList::~KeywordList(){
-  for(int idx = 0; idx < num; idx++) {
+KeywordList::~KeywordList()
+{
+  for (int idx = 0; idx < num; idx++) {
     delete kwList[idx].keyword;
   }
   delete[] kwList;
   delete   firstChar;
 };
 
-int kwCompare(const void*e1, const void*e2){
+int kwCompare(const void* e1, const void* e2)
+{
   return ((KeywordInfo*)e1)->keyword->compareTo(*((KeywordInfo*)e2)->keyword);
 };
-int kwCompareI(const void*e1, const void*e2){
+int kwCompareI(const void* e1, const void* e2)
+{
   return ((KeywordInfo*)e1)->keyword->compareToIgnoreCase(*((KeywordInfo*)e2)->keyword);
 };
-void KeywordList::sortList(){
-  if (num < 2) return;
+void KeywordList::sortList()
+{
+  if (num < 2) {
+    return;
+  }
 
-  if (matchCase) qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompare);
-  else qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompareI);
+  if (matchCase) {
+    qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompare);
+  } else {
+    qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompareI);
+  }
 };
 
 /* Searches previous elements num with same partial name
@@ -79,12 +88,15 @@ fe:
 0: getPar            -1
 
 */
-void KeywordList::substrIndex(){
-  for(int i = num-1; i > 0; i--)
-    for(int ii = i-1; ii != 0; ii--){
-      if ((*kwList[ii].keyword)[0] != (*kwList[i].keyword)[0]) break;
+void KeywordList::substrIndex()
+{
+  for (int i = num - 1; i > 0; i--)
+    for (int ii = i - 1; ii != 0; ii--) {
+      if ((*kwList[ii].keyword)[0] != (*kwList[i].keyword)[0]) {
+        break;
+      }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          DString(kwList[i].keyword, 0, kwList[ii].keyword->length()) == *kwList[ii].keyword){
+          DString(kwList[i].keyword, 0, kwList[ii].keyword->length()) == *kwList[ii].keyword) {
         kwList[i].ssShorter = ii;
         break;
       };
@@ -92,10 +104,12 @@ void KeywordList::substrIndex(){
 };
 
 
-char*schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
+char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
 
 
-SchemeNode::SchemeNode() : virtualEntryVector(5){
+SchemeNode::SchemeNode()
+{
+  virtualEntryVector.reserve(5);
   type = SNT_EMPTY;
   schemeName = null;
   scheme = null;
@@ -112,21 +126,21 @@ SchemeNode::SchemeNode() : virtualEntryVector(5){
   memset(regionen, 0, sizeof(regionen));
 };
 
-SchemeNode::~SchemeNode(){
-  if (type == SNT_RE || type == SNT_SCHEME){
+SchemeNode::~SchemeNode()
+{
+  if (type == SNT_RE || type == SNT_SCHEME) {
     delete start;
     delete end;
-  };
-  if (type == SNT_KEYWORDS){
+  }
+  if (type == SNT_KEYWORDS) {
     delete kwList;
     delete worddiv;
-  };
-  if (type == SNT_INHERIT){
-    for(int idx = 0; idx < virtualEntryVector.size(); idx++)
-      delete virtualEntryVector.elementAt(idx);
-  };
+  }
+  if (type == SNT_INHERIT) {
+    virtualEntryVector.clear();
+  }
   delete schemeName;
-};
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

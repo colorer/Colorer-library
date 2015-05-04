@@ -2,7 +2,6 @@
 #define _COLORER_SHAREDINPUTSOURCE_H_
 
 #include<common/Common.h>
-#include<common/Hashtable.h>
 #include<common/Logging.h>
 #include<common/io/InputSource.h>
 
@@ -16,22 +15,24 @@ class SharedInputSource : colorer::InputSource
 
 public:
 
-  static SharedInputSource *getInputSource(const String *path, colorer::InputSource *base);
+  static SharedInputSource* getInputSource(const String* path, colorer::InputSource* base);
 
   /** Increments reference counter */
-  int addref(){
+  int addref()
+  {
     return ++ref_count;
   }
 
   /** Decrements reference counter */
-  int delref(){
-    if (ref_count == 0){
+  int delref()
+  {
+    if (ref_count == 0) {
       CLR_ERROR("SharedInputSource", "delref: already zeroed references");
     }
     ref_count--;
-    if (ref_count <= 0){
+    if (ref_count <= 0) {
       delete this;
-	  return -1;
+      return -1;
     }
     return ref_count;
   }
@@ -40,34 +41,43 @@ public:
    * Returns currently opened stream.
    * Opens it, if not yet opened.
    */
-  const byte *getStream(){
-    if (stream == null){
+  const byte* getStream()
+  {
+    if (stream == null) {
       stream = openStream();
     }
     return stream;
   }
 
-  const String *getLocation() const{
+  const String* getLocation() const
+  {
     return is->getLocation();
   }
 
-  const byte *openStream(){
+  const byte* openStream()
+  {
     return is->openStream();
   }
 
-  void closeStream(){ is->closeStream(); }
+  void closeStream()
+  {
+    is->closeStream();
+  }
 
-  int length() const{ return is->length(); }
+  int length() const
+  {
+    return is->length();
+  }
 
 private:
 
-  SharedInputSource(colorer::InputSource *source);
+  SharedInputSource(colorer::InputSource* source);
   ~SharedInputSource();
 
-  static Hashtable<SharedInputSource*> *isHash;
+  static std::unordered_map<SString, SharedInputSource*>* isHash;
 
-  colorer::InputSource *is;
-  const byte *stream;
+  colorer::InputSource* is;
+  const byte* stream;
   int ref_count;
 };
 

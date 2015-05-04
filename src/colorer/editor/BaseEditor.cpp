@@ -1,17 +1,16 @@
-
-#include<common/Logging.h>
-#include<colorer/editor/BaseEditor.h>
+#include <common/Logging.h>
+#include <colorer/editor/BaseEditor.h>
 
 #define IDLE_PARSE(time) (100+time*4)
 
 const int CHOOSE_STR = 4;
 const int CHOOSE_LEN = 200 * CHOOSE_STR;
 
-colorer::ErrorHandler *eh;
+colorer::ErrorHandler* eh;
 
-BaseEditor::BaseEditor(ParserFactory *parserFactory, LineSource *lineSource)
+BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 {
-  if (parserFactory == null || lineSource == null){
+  if (parserFactory == null || lineSource == null) {
     throw Exception(DString("Bad BaseEditor constructor parameters"));
   }
   this->parserFactory = parserFactory;
@@ -31,7 +30,7 @@ BaseEditor::BaseEditor(ParserFactory *parserFactory, LineSource *lineSource)
   lineCount = 0;
   wStart = 0;
   wSize = 20;
-  lrSize = wSize*3;
+  lrSize = wSize * 3;
   internalRM = false;
   regionMapper = null;
   regionCompact = false;
@@ -42,124 +41,135 @@ BaseEditor::BaseEditor(ParserFactory *parserFactory, LineSource *lineSource)
 
   def_Text = hrcParser->getRegion(&DString("def:Text"));
   def_Syntax = hrcParser->getRegion(&DString("def:Syntax"));
-	def_Special = hrcParser->getRegion(&DString("def:Special"));
-	def_PairStart = hrcParser->getRegion(&DString("def:PairStart"));
-	def_PairEnd = hrcParser->getRegion(&DString("def:PairEnd"));
+  def_Special = hrcParser->getRegion(&DString("def:Special"));
+  def_PairStart = hrcParser->getRegion(&DString("def:PairStart"));
+  def_PairEnd = hrcParser->getRegion(&DString("def:PairEnd"));
 
-	setRegionCompact(regionCompact);
+  setRegionCompact(regionCompact);
 
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = null;
   eh = parserFactory->getErrorHandler();
 }
 
-BaseEditor::~BaseEditor(){
+BaseEditor::~BaseEditor()
+{
   textParser->breakParse();
   breakParse = true;
-  while(validationProcess); /// @todo wait until validation is finished
-  if (internalRM) delete regionMapper;
+  while (validationProcess); /// @todo wait until validation is finished
+  if (internalRM) {
+    delete regionMapper;
+  }
   delete lrSupport;
   delete textParser;
 }
 
-void BaseEditor::setRegionCompact(bool compact){
-  if (!lrSupport || regionCompact != compact){
+void BaseEditor::setRegionCompact(bool compact)
+{
+  if (!lrSupport || regionCompact != compact) {
     regionCompact = compact;
     remapLRS(true);
   }
 }
 
-void BaseEditor::setRegionMapper(RegionMapper *rs){
-  if (internalRM) delete regionMapper;
+void BaseEditor::setRegionMapper(RegionMapper* rs)
+{
+  if (internalRM) {
+    delete regionMapper;
+  }
   regionMapper = rs;
   internalRM = false;
   remapLRS(false);
 }
 
-void BaseEditor::setRegionMapper(const String *hrdClass, const String *hrdName){
-  if (internalRM) delete regionMapper;
+void BaseEditor::setRegionMapper(const String* hrdClass, const String* hrdName)
+{
+  if (internalRM) {
+    delete regionMapper;
+  }
   regionMapper = parserFactory->createStyledMapper(hrdClass, hrdName);
   internalRM = true;
   remapLRS(false);
 }
 
-void BaseEditor::remapLRS(bool recreate){
-  if (recreate || lrSupport == null){
+void BaseEditor::remapLRS(bool recreate)
+{
+  if (recreate || lrSupport == null) {
     delete lrSupport;
-    if (regionCompact){
+    if (regionCompact) {
       lrSupport = new LineRegionsCompactSupport();
-    }else{
+    } else {
       lrSupport = new LineRegionsSupport();
     }
     lrSupport->resize(lrSize);
     lrSupport->clear();
-  };
+  }
   lrSupport->setRegionMapper(regionMapper);
   lrSupport->setSpecialRegion(def_Special);
   invalidLine = 0;
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = null;
-  if (regionMapper != null){
+  if (regionMapper != null) {
     rd_def_Text = regionMapper->getRegionDefine(DString("def:Text"));
     rd_def_HorzCross = regionMapper->getRegionDefine(DString("def:HorzCross"));
     rd_def_VertCross = regionMapper->getRegionDefine(DString("def:VertCross"));
-  };
+  }
 }
 
-void BaseEditor::setFileType(FileType *ftype){
+void BaseEditor::setFileType(FileType* ftype)
+{
   CLR_INFO("BaseEditor", "setFileType:%s", ftype->getName()->getChars());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
 }
 
-FileType *BaseEditor::setFileType(const String &fileType){
+FileType* BaseEditor::setFileType(const String& fileType)
+{
   currentFileType = hrcParser->getFileType(&fileType);
   setFileType(currentFileType);
   return currentFileType;
 }
 
 
-FileType *BaseEditor::chooseFileTypeCh(const String *fileName, int chooseStr, int chooseLen)
+FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen)
 {
   StringBuffer textStart;
   int totalLength = 0;
-  for(int i = 0; i < chooseStr; i++)
-  {
-    String *iLine = lineSource->getLine(i);
-    if (iLine == null) break;
+  for (int i = 0; i < chooseStr; i++) {
+    String* iLine = lineSource->getLine(i);
+    if (iLine == null) {
+      break;
+    }
     textStart.append(iLine);
     textStart.append(DString("\n"));
     totalLength += iLine->length();
-    if (totalLength > chooseLen) break;
+    if (totalLength > chooseLen) {
+      break;
+    }
   }
   currentFileType = hrcParser->chooseFileType(fileName, &textStart);
-  
-  int chooseStrNext=currentFileType->getParamValueInt(DString("firstlines"), chooseStr);
-  int chooseLenNext=currentFileType->getParamValueInt(DString("firstlinebytes"), chooseLen);
-  
-  if(chooseStrNext != chooseStr || chooseLenNext != chooseLen)
-  {
+
+  int chooseStrNext = currentFileType->getParamValueInt(DString("firstlines"), chooseStr);
+  int chooseLenNext = currentFileType->getParamValueInt(DString("firstlinebytes"), chooseLen);
+
+  if (chooseStrNext != chooseStr || chooseLenNext != chooseLen) {
     currentFileType = chooseFileTypeCh(fileName, chooseStrNext, chooseLenNext);
   }
   return currentFileType;
 }
 
-FileType *BaseEditor::chooseFileType(const String *fileName)
+FileType* BaseEditor::chooseFileType(const String* fileName)
 {
-  if (lineSource == null)
-  {
+  if (lineSource == null) {
     currentFileType = hrcParser->chooseFileType(fileName, null);
-  }
-  else
-  {
-    int chooseStr=CHOOSE_STR, chooseLen=CHOOSE_LEN;
-    
-    FileType *def = hrcParser->getFileType(&DString("default"));
-    if(def)
-    {
+  } else {
+    int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
+
+    FileType* def = hrcParser->getFileType(&DString("default"));
+    if (def) {
       chooseStr = def->getParamValueInt(DString("firstlines"), chooseStr);
       chooseLen = def->getParamValueInt(DString("firstlinebytes"), chooseLen);
     }
-    
+
     currentFileType = chooseFileTypeCh(fileName, chooseStr, chooseLen);
   }
   setFileType(currentFileType);
@@ -167,152 +177,187 @@ FileType *BaseEditor::chooseFileType(const String *fileName)
 }
 
 
-FileType *BaseEditor::getFileType(){
+FileType* BaseEditor::getFileType()
+{
   return currentFileType;
 }
 
-void BaseEditor::setBackParse(int backParse){
+void BaseEditor::setBackParse(int backParse)
+{
   this->backParse = backParse;
 }
 
-void BaseEditor::addRegionHandler(RegionHandler *rh){
-  regionHandlers.addElement(rh);
-}
-
-void BaseEditor::removeRegionHandler(RegionHandler *rh){
-  regionHandlers.removeElement(rh);
-}
-
-void BaseEditor::addEditorListener(EditorListener *el){
-  editorListeners.addElement(el);
-}
-
-void BaseEditor::removeEditorListener(EditorListener *el){
-  editorListeners.removeElement(el);
-}
-
-
-PairMatch *BaseEditor::getPairMatch(int lineNo, int linePos)
+void BaseEditor::addRegionHandler(RegionHandler* rh)
 {
-  LineRegion *lrStart = getLineRegions(lineNo);
-  if (lrStart == null){
+  regionHandlers.push_back(rh);
+}
+
+void BaseEditor::removeRegionHandler(RegionHandler* rh)
+{
+  for (auto ft = regionHandlers.begin(); ft != regionHandlers.end(); ++ft) {
+    if (*ft == rh) {
+      regionHandlers.erase(ft);
+      break;
+    }
+  }
+}
+
+void BaseEditor::addEditorListener(EditorListener* el)
+{
+  editorListeners.push_back(el);
+}
+
+void BaseEditor::removeEditorListener(EditorListener* el)
+{
+  for (auto ft = editorListeners.begin(); ft != editorListeners.end(); ++ft) {
+    if (*ft == el) {
+      editorListeners.erase(ft);
+      break;
+    }
+  }
+}
+
+
+PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
+{
+  LineRegion* lrStart = getLineRegions(lineNo);
+  if (lrStart == null) {
     return null;
   }
-  LineRegion *pair = null;
-  for(LineRegion *l1 = lrStart; l1; l1 = l1->next){
+  LineRegion* pair = null;
+  for (LineRegion* l1 = lrStart; l1; l1 = l1->next) {
     if ((l1->region->hasParent(def_PairStart) ||
          l1->region->hasParent(def_PairEnd)) &&
-         linePos >= l1->start && linePos <= l1->end)
+        linePos >= l1->start && linePos <= l1->end) {
       pair = l1;
+    }
   }
-  if (pair != null){
-    PairMatch *pm = new PairMatch(pair, lineNo, pair->region->hasParent(def_PairStart));
+  if (pair != null) {
+    PairMatch* pm = new PairMatch(pair, lineNo, pair->region->hasParent(def_PairStart));
     pm->setStart(pair);
     return pm;
   }
   return null;
 }
 
-PairMatch *BaseEditor::getEnwrappedPairMatch(int lineNo, int pos){
+PairMatch* BaseEditor::getEnwrappedPairMatch(int lineNo, int pos)
+{
   return null;
 }
 
-void BaseEditor::releasePairMatch(PairMatch *pm){
+void BaseEditor::releasePairMatch(PairMatch* pm)
+{
   delete pm;
 }
 
-PairMatch *BaseEditor::searchLocalPair(int lineNo, int pos)
+PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
 {
   int lno;
   int end_line = getLastVisibleLine();
-  PairMatch *pm = getPairMatch(lineNo, pos);
-  if (pm == null){
+  PairMatch* pm = getPairMatch(lineNo, pos);
+  if (pm == null) {
     return null;
   }
 
   lno = pm->sline;
 
-  LineRegion *pair = pm->getStartRef();
-  LineRegion *slr = getLineRegions(lno);
-  while(true){
-    if (pm->pairBalance > 0){
+  LineRegion* pair = pm->getStartRef();
+  LineRegion* slr = getLineRegions(lno);
+  while (true) {
+    if (pm->pairBalance > 0) {
       pair = pair->next;
-      while(pair == null){
+      while (pair == null) {
         lno++;
-        if (lno > end_line) break;
+        if (lno > end_line) {
+          break;
+        }
         pair = getLineRegions(lno);
       }
-      if (lno > end_line) break;
-    }else{
-      if(pair->prev == slr->prev){ // first region
+      if (lno > end_line) {
+        break;
+      }
+    } else {
+      if (pair->prev == slr->prev) { // first region
         lno--;
-        if (lno < wStart) break;
+        if (lno < wStart) {
+          break;
+        }
         slr = getLineRegions(lno);
         pair = slr;
       }
-      if (lno < wStart) break;
+      if (lno < wStart) {
+        break;
+      }
       pair = pair->prev;
     }
-    if (pair->region->hasParent(def_PairStart)){
+    if (pair->region->hasParent(def_PairStart)) {
       pm->pairBalance++;
     }
-    if (pair->region->hasParent(def_PairEnd)){
+    if (pair->region->hasParent(def_PairEnd)) {
       pm->pairBalance--;
     }
-    if (pm->pairBalance == 0){
+    if (pm->pairBalance == 0) {
       break;
     }
   }
-  if (pm->pairBalance == 0){
+  if (pm->pairBalance == 0) {
     pm->eline = lno;
     pm->setEnd(pair);
   }
   return pm;
 }
 
-PairMatch *BaseEditor::searchGlobalPair(int lineNo, int pos)
+PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
 {
   int lno;
   int end_line = lineCount;
-  PairMatch *pm = getPairMatch(lineNo, pos);
-  if (pm == null){
+  PairMatch* pm = getPairMatch(lineNo, pos);
+  if (pm == null) {
     return null;
   }
 
   lno = pm->sline;
 
-  LineRegion *pair = pm->getStartRef();
-  LineRegion *slr = getLineRegions(lno);
-  while(true){
-    if (pm->pairBalance > 0){
+  LineRegion* pair = pm->getStartRef();
+  LineRegion* slr = getLineRegions(lno);
+  while (true) {
+    if (pm->pairBalance > 0) {
       pair = pair->next;
-      while(pair == null){
+      while (pair == null) {
         lno++;
-        if (lno > end_line) break;
+        if (lno > end_line) {
+          break;
+        }
         pair = getLineRegions(lno);
       }
-      if (lno > end_line) break;
-    }else{
-      if(pair->prev == slr->prev){ // first region
+      if (lno > end_line) {
+        break;
+      }
+    } else {
+      if (pair->prev == slr->prev) { // first region
         lno--;
-        if (lno < 0) break;
+        if (lno < 0) {
+          break;
+        }
         slr = getLineRegions(lno);
         pair = slr;
       }
-      if (lno < 0) break;
+      if (lno < 0) {
+        break;
+      }
       pair = pair->prev;
     }
-    if (pair->region->hasParent(def_PairStart)){
+    if (pair->region->hasParent(def_PairStart)) {
       pm->pairBalance++;
     }
-    if (pair->region->hasParent(def_PairEnd)){
+    if (pair->region->hasParent(def_PairEnd)) {
       pm->pairBalance--;
     }
-    if (pm->pairBalance == 0){
+    if (pm->pairBalance == 0) {
       break;
     }
   }
-  if (pm->pairBalance == 0){
+  if (pm->pairBalance == 0) {
     pm->eline = lno;
     pm->setEnd(pair);
   }
@@ -320,50 +365,56 @@ PairMatch *BaseEditor::searchGlobalPair(int lineNo, int pos)
 }
 
 
-LineRegion *BaseEditor::getLineRegions(int lno){
+LineRegion* BaseEditor::getLineRegions(int lno)
+{
   /*
    * Backparse value check
    */
-  if (backParse > 0 && lno - invalidLine > backParse){
+  if (backParse > 0 && lno - invalidLine > backParse) {
     return null;
   }
   validate(lno, true);
   return lrSupport->getLineRegions(lno);
 }
 
-void BaseEditor::modifyEvent(int topLine){
+void BaseEditor::modifyEvent(int topLine)
+{
   CLR_TRACE("BaseEditor", "modifyEvent:%d", topLine);
-  if (invalidLine > topLine){
+  if (invalidLine > topLine) {
     invalidLine = topLine;
-    for(int idx = editorListeners.size()-1; idx >= 0; idx--){
-      editorListeners.elementAt(idx)->modifyEvent(topLine);
+    for (size_t idx = editorListeners.size() - 1; idx >= 0; idx--) {
+      editorListeners.at(idx)->modifyEvent(topLine);
     }
   }
 }
 
-void BaseEditor::modifyLineEvent(int line){
-  if (invalidLine > line){
+void BaseEditor::modifyLineEvent(int line)
+{
+  if (invalidLine > line) {
     invalidLine = line;
   }
   // changedLine = topLine;!!!
 }
 
-void BaseEditor::visibleTextEvent(int wStart, int wSize){
+void BaseEditor::visibleTextEvent(int wStart, int wSize)
+{
   CLR_TRACE("BaseEditor", "visibleTextEvent:%d-%d", wStart, wSize);
   this->wStart = wStart;
   this->wSize = wSize;
 }
 
-void BaseEditor::lineCountEvent(int newLineCount){
+void BaseEditor::lineCountEvent(int newLineCount)
+{
   CLR_TRACE("BaseEditor", "lineCountEvent:%d", newLineCount);
   lineCount = newLineCount;
 }
 
 
-inline int BaseEditor::getLastVisibleLine(){
-  int r1 = (wStart+wSize);
+inline int BaseEditor::getLastVisibleLine()
+{
+  int r1 = (wStart + wSize);
   int r2 = lineCount;
-  return ((r1 > r2)?r2:r1)-1;
+  return ((r1 > r2) ? r2 : r1) - 1;
 }
 
 void BaseEditor::validate(int lno, bool rebuildRegions)
@@ -372,18 +423,18 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   bool layoutChanged = false;
   TextParseMode tpmode = TPM_CACHE_READ;
 
-  if (lno == -1 || lno > lineCount){
-    lno = lineCount-1;
+  if (lno == -1 || lno > lineCount) {
+    lno = lineCount - 1;
   }
 
-  int firstLine = lrSupport->getFirstLine();
-  parseFrom = parseTo = (wStart+wSize);
+  size_t firstLine = lrSupport->getFirstLine();
+  parseFrom = parseTo = (wStart + wSize);
 
   /*
    * Calculate changes, required by new screen position, if any
    */
-  if (lrSize != wSize*2){
-    lrSize = wSize*2;
+  if (lrSize != wSize * 2) {
+    lrSize = wSize * 2;
     lrSupport->resize(lrSize);
     lrSupport->clear();
     // Regions were dropped
@@ -392,63 +443,63 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   }
 
   /* Fixes window position according to line number */
-  if (lno < wStart || lno > wStart+wSize){
+  if (lno < wStart || lno > wStart + wSize) {
     wStart = lno;
     //if enable, introduces heavy delays on pair searching
     //layoutChanged = true;
   }
 
-  if (layoutChanged || wStart < firstLine || wStart+wSize > firstLine+lrSize){
+  if (layoutChanged || wStart < firstLine || wStart + wSize > firstLine + lrSize) {
     /*
      * visible area is shifted and line regions
      * should be rearranged according to
      */
-    int newFirstLine = (wStart/wSize)*wSize;
+    int newFirstLine = (wStart / wSize) * wSize;
     parseFrom = newFirstLine;
-    parseTo   = newFirstLine+lrSize;
+    parseTo   = newFirstLine + lrSize;
     /*
      * Change LineRegions parameters only in case
      * of validate-for-usage request.
      */
-    if (rebuildRegions){
+    if (rebuildRegions) {
       lrSupport->setFirstLine(newFirstLine);
     }
     /* Save time - already has the info in line cache */
-    if (!layoutChanged && firstLine - newFirstLine == wSize){
-      parseTo -= wSize-1;
+    if (!layoutChanged && firstLine - newFirstLine == wSize) {
+      parseTo -= wSize - 1;
     }
     firstLine = newFirstLine;
     layoutChanged = true;
     CLR_TRACE("BaseEditor", "newFirstLine=%d, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
   }
 
-  if (!layoutChanged){
+  if (!layoutChanged) {
     /* Text modification only event */
-    if (invalidLine <= parseTo){
+    if (invalidLine <= parseTo) {
       parseFrom = invalidLine;
       tpmode = TPM_CACHE_UPDATE;
     }
   }
 
   /* Text modification general ajustment */
-  if (invalidLine <= parseFrom){
+  if (invalidLine <= parseFrom) {
     parseFrom = invalidLine;
     tpmode = TPM_CACHE_UPDATE;
   }
 
-  if (parseTo > lineCount){
+  if (parseTo > lineCount) {
     parseTo = lineCount;
   }
 
   /* Runs parser */
-  if (parseTo-parseFrom > 0){
+  if (parseTo - parseFrom > 0) {
 
-    CLR_TRACE("BaseEditor", "validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ?"READ":"UPDATE");
+    CLR_TRACE("BaseEditor", "validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
 
-    int stopLine = textParser->parse(parseFrom, parseTo-parseFrom, tpmode);
+    int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
-    if (tpmode == TPM_CACHE_UPDATE){
-      invalidLine = stopLine+1;
+    if (tpmode == TPM_CACHE_UPDATE) {
+      invalidLine = stopLine + 1;
     }
     CLR_TRACE("BaseEditor", "validate:parsed: invalidLine=%d", invalidLine);
   }
@@ -457,47 +508,69 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
 void BaseEditor::idleJob(int time)
 {
   if (invalidLine < lineCount) {
-    if (time < 0) time = 0;
-    if (time > 100) time = 100;
-    validate(invalidLine+IDLE_PARSE(time), false);
+    if (time < 0) {
+      time = 0;
+    }
+    if (time > 100) {
+      time = 100;
+    }
+    validate(invalidLine + IDLE_PARSE(time), false);
   }
 }
 
-void BaseEditor::startParsing(int lno){
+void BaseEditor::startParsing(size_t lno)
+{
   lrSupport->startParsing(lno);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->startParsing(lno);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->startParsing(lno);
+  }
 }
-void BaseEditor::endParsing(int lno){
+
+void BaseEditor::endParsing(size_t lno)
+{
   lrSupport->endParsing(lno);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->endParsing(lno);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->endParsing(lno);
+  }
 }
-void BaseEditor::clearLine(int lno, String *line){
+
+void BaseEditor::clearLine(size_t lno, String* line)
+{
   lrSupport->clearLine(lno, line);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->clearLine(lno, line);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->clearLine(lno, line);
+  }
 }
-void BaseEditor::addRegion(int lno, String *line, int sx, int ex, const Region *region){
+
+void BaseEditor::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
+{
   lrSupport->addRegion(lno, line, sx, ex, region);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->addRegion(lno, line, sx, ex, region);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->addRegion(lno, line, sx, ex, region);
+  }
 }
-void BaseEditor::enterScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme){
+
+void BaseEditor::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+{
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->enterScheme(lno, line, sx, ex, region, scheme);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->enterScheme(lno, line, sx, ex, region, scheme);
+  }
 }
-void BaseEditor::leaveScheme(int lno, String *line, int sx, int ex, const Region *region, const Scheme *scheme){
+
+void BaseEditor::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+{
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
-  for(int idx = 0; idx < regionHandlers.size(); idx++)
-    regionHandlers.elementAt(idx)->leaveScheme(lno, line, sx, ex, region, scheme);
+  for (size_t idx = 0; idx < regionHandlers.size(); idx++) {
+    regionHandlers.at(idx)->leaveScheme(lno, line, sx, ex, region, scheme);
+  }
 }
 
 bool BaseEditor::haveInvalidLine()
-{ 
+{
   return invalidLine < lineCount;
 }
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

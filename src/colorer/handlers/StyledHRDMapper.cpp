@@ -1,7 +1,6 @@
-
-#include<stdio.h>
-#include<colorer/handlers/StyledHRDMapper.h>
-#include<unicode/UnicodeTools.h>
+#include <stdio.h>
+#include <colorer/handlers/StyledHRDMapper.h>
+#include <unicode/UnicodeTools.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
@@ -12,13 +11,13 @@ const int StyledRegion::RD_ITALIC = 2;
 const int StyledRegion::RD_UNDERLINE = 4;
 const int StyledRegion::RD_STRIKEOUT = 8;
 
-StyledHRDMapper::StyledHRDMapper(){};
-StyledHRDMapper::~StyledHRDMapper(){
-  for(RegionDefine *rd = regionDefines.enumerate(); rd;rd = regionDefines.next())
-    delete rd;
-};
+StyledHRDMapper::StyledHRDMapper() {}
+StyledHRDMapper::~StyledHRDMapper()
+{
+  regionDefines.clear();
+}
 
-void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandler *eh)
+void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(eh);
@@ -29,22 +28,25 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandl
   if (error_handler.getSawErrors()) {
     throw Exception(DString("Error loading HRD file"));
   }
-  xercesc::DOMDocument *hrdbase = xml_parser.getDocument();
-  xercesc::DOMElement *hbase = hrdbase->getDocumentElement();
+  xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
+  xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
 
-  for(xercesc::DOMNode *curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()){
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)){
-      xercesc::DOMElement *subelem = static_cast<xercesc::DOMElement*>(curel);
-      const XMLCh *xname = subelem->getAttribute(hrdAssignAttrName);
-      if (*xname == '\0') continue;
+  for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
+      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(curel);
+      const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
+      if (*xname == '\0') {
+        continue;
+      }
 
-      const String *name = new DString(xname);
-      if (regionDefines.get(name) != null){
-        delete regionDefines.get(name);
+      const String* name = new DString(xname);
+      auto rd_new = regionDefines.find(name);
+      if (rd_new != regionDefines.end()) {
+        regionDefines.erase(rd_new);
       }
 
       int val = 0;
@@ -53,64 +55,66 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource *is, colorer::ErrorHandl
       bool bback = UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrBack)), &val);
       int back = val;
       int style = 0;
-      if (UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrStyle)), &val)){
+      if (UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrStyle)), &val)) {
         style = val;
       }
-      RegionDefine *rdef = new StyledRegion(bfore, bback, fore, back, style);
-      regionDefines.put(name, rdef);
+      RegionDefine* rdef = new StyledRegion(bfore, bback, fore, back, style);
+      std::pair<SString, RegionDefine*> pp(name, rdef);
+      regionDefines.emplace(pp);
+
       delete name;
-    };
-  };
-};
+    }
+  }
+}
 
 /** Writes all currently loaded region definitions into
     XML file. Note, that this method writes all loaded
     defines from all loaded HRD files.
 */
-void StyledHRDMapper::saveRegionMappings(Writer *writer) const
+void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write(DString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
-  for(String *key = regionDefines.enumerateKey(); key; key=regionDefines.nextkey()){
-    const StyledRegion *rdef = StyledRegion::cast(regionDefines.get(key));
+  for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
+    const StyledRegion* rdef = StyledRegion::cast(it->second);
     char temporary[256];
-    writer->write(StringBuffer("  <define name='")+key+"'");
-    if (rdef->bfore){
+    writer->write(StringBuffer("  <define name='") + it->first + "'");
+    if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(DString(temporary));
-    };
-    if (rdef->bback){
+    }
+    if (rdef->bback) {
       sprintf(temporary, " back=\"#%06x\"", rdef->back);
       writer->write(DString(temporary));
-    };
-    if (rdef->style){
+    }
+    if (rdef->style) {
       sprintf(temporary, " style=\"#%06x\"", rdef->style);
       writer->write(DString(temporary));
-    };
+    }
     writer->write(DString("/>\n"));
-  };
+  }
   writer->write(DString("\n</hrd>\n"));
-};
+}
 
 /** Adds or replaces region definition */
-void StyledHRDMapper::setRegionDefine(const String &name, const RegionDefine *rd)
+void StyledHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
 {
-  RegionDefine *rd_old = regionDefines.get(&name);
+  auto rd_old = regionDefines.find(&name);
 
-  const StyledRegion *new_region = StyledRegion::cast(rd);
-  RegionDefine *rd_new = new StyledRegion(*new_region);
-  regionDefines.put(&name, rd_new);
+  const StyledRegion* new_region = StyledRegion::cast(rd);
+  RegionDefine* rd_new = new StyledRegion(*new_region);
+  std::pair<SString, RegionDefine*> pp(name, rd_new);
+  regionDefines.emplace(pp);
 
   // Searches and replaces old region references
-  for(int idx = 0; idx < regionDefinesVector.size(); idx++){
-    if (regionDefinesVector.elementAt(idx) == rd_old){
-      regionDefinesVector.setElementAt(rd_new, idx);
+  for (size_t idx = 0; idx < regionDefinesVector.size(); idx++) {
+    if (regionDefinesVector.at(idx) == rd_old->second) {
+      regionDefinesVector.at(idx) = rd_new;
       break;
-    };
-  };
-  delete rd_old;
-};
+    }
+  }
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

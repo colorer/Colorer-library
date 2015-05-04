@@ -1,7 +1,7 @@
 #ifndef _COLORER_REGION_H_
 #define _COLORER_REGION_H_
 
-#include<common/Common.h>
+#include <common/Common.h>
 
 /**
   HRC Region implementation.
@@ -13,49 +13,71 @@
   </ul>
   @ingroup colorer
 */
-class Region{
+class Region
+{
 public:
   /** Full Qualified region name (<code>def:Text</code> for example) */
-  virtual const String *getName() const{ return name; };
+  virtual const String* getName() const
+  {
+    return name;
+  }
   /** Region description */
-  virtual const String *getDescription() const{ return description; };
+  virtual const String* getDescription() const
+  {
+    return description;
+  }
   /** Direct region ancestor (parent) */
-  virtual const Region *getParent() const{ return parent; };
+  virtual const Region* getParent() const
+  {
+    return parent;
+  }
   /** Quick access region id (incrementable) */
-  virtual int getID() const{ return id; };
+  virtual int getID() const
+  {
+    return id;
+  }
   /** Checks if region has the specified parent in all of it's ancestors.
       This method is useful to check if region has specified parent,
       and use this information, as region type specification.
       For example, <code>def:Comment</code> has <code>def:Syntax</code> parent,
       so, some syntax checking can be made with it's content.
   */
-  bool hasParent(const Region *region) const{
-    const Region *elem = this;
-    while(elem != null){
-      if (region == elem) return true;
+  bool hasParent(const Region* region) const
+  {
+    const Region* elem = this;
+    while (elem != null) {
+      if (region == elem) {
+        return true;
+      }
       elem = elem->getParent();
-    };
+    }
     return false;
-  };
+  }
   /**
     Basic constructor.
     Used only by HRCParser.
   */
-  Region(const String *_name, const String* _description, const Region *_parent, int _id){
+  Region(const String* _name, const String* _description, const Region* _parent, int _id)
+  {
     name = new SString(_name);
     description = null;
-    if (_description != null) description = new SString(_description);
+    if (_description != null) {
+      description = new SString(_description);
+    }
     parent = _parent;
     id = _id;
-  };
-  virtual ~Region(){
+  }
+
+  virtual ~Region()
+  {
     delete name;
     delete description;
-  };
+  }
+
 protected:
   /** Internal members */
-  String *name, *description;
-  const Region *parent;
+  String* name, *description;
+  const Region* parent;
   int id;
 };
 

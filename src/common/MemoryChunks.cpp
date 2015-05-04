@@ -1,30 +1,40 @@
-#include<common/Vector.h>
-#include<memory.h>
-#include<stdio.h>
-#include<time.h>
+#include <memory.h>
+#include <stdio.h>
+#include <time.h>
 
-#include<common/MemoryChunks.h>
+#include <common/Common.h>
+#include <common/MemoryChunks.h>
 
 size_t total_req = 0;
 int new_calls = 0;
 int free_calls = 0;
 
 extern "C" {
-  size_t get_total_req(){ return total_req; }
-  int get_new_calls(){ return new_calls; }
-  int get_free_calls(){ return free_calls; }
+  size_t get_total_req()
+  {
+    return total_req;
+  }
+  int get_new_calls()
+  {
+    return new_calls;
+  }
+  int get_free_calls()
+  {
+    return free_calls;
+  }
 }
 
 /**
   @ingroup common @{
 */
 #if COLORER_FEATURE_USE_DL_MALLOC
-extern "C"{
-  void *dlmalloc(size_t size);
-  void dlfree(void *ptr);
+extern "C" {
+  void* dlmalloc(size_t size);
+  void dlfree(void* ptr);
 }
 
-void *operator new(size_t size){
+void* operator new(size_t size)
+{
 
 #if MEMORY_PROFILE
   total_req += size;
@@ -33,7 +43,8 @@ void *operator new(size_t size){
   return dlmalloc(size);
 }
 
-void operator delete(void *ptr){
+void operator delete(void* ptr)
+{
 #if MEMORY_PROFILE
   free_calls++;
 #endif
@@ -41,7 +52,8 @@ void operator delete(void *ptr){
   return;
 }
 
-void *operator new[](size_t size){
+void* operator new[](size_t size)
+{
 #if MEMORY_PROFILE
   total_req += size;
   new_calls++;
@@ -49,24 +61,25 @@ void *operator new[](size_t size){
   return dlmalloc(size);
 }
 
-void operator delete[](void *ptr){
+void operator delete[](void* ptr)
+{
 #if MEMORY_PROFILE
   free_calls++;
 #endif
   dlfree(ptr);
   return;
-};
+}
 #endif
 
 /**
   List of currently allocated memory chunks with size CHUNK_SIZE
 */
-static Vector<byte*> *chunks = null;
+static std::vector<byte*>* chunks = null;
 
 /**
   Pointer to the last allocated chunk
 */
-static byte *currentChunk = null;
+static byte* currentChunk = null;
 
 /**
   Currently used size of the last allocated chunk
@@ -83,48 +96,54 @@ static int allocCount = 0;
   @param size Requested number of bytes.
   @throw Exception If no more memory, Exception is thrown.
 */
-void *chunk_alloc(size_t size){
-  if (size >= CHUNK_SIZE+4) throw Exception(DString("Too big memory request"));
+void* chunk_alloc(size_t size)
+{
+  if (size >= CHUNK_SIZE + 4) {
+    throw Exception(DString("Too big memory request"));
+  }
   /* Init static - cygwin problems workaround */
-  if (chunks == null){
-    chunks = new Vector<byte*>;
-  };
+  if (chunks == null) {
+    chunks = new std::vector<byte*>;
+  }
 
-  if (chunks->size() == 0){
+  if (chunks->size() == 0) {
     currentChunk = new byte[CHUNK_SIZE];
-    chunks->addElement(currentChunk);
+    chunks->push_back(currentChunk);
     currentChunkAlloc = 0;
-  };
-  size = ((size-1) | 0x3) + 1; // 4-byte aling
-  if (currentChunkAlloc+size > CHUNK_SIZE){
+  }
+  size = ((size - 1) | 0x3) + 1; // 4-byte aling
+  if (currentChunkAlloc + size > CHUNK_SIZE) {
     currentChunk = new byte[CHUNK_SIZE];
-    chunks->addElement(currentChunk);
+    chunks->push_back(currentChunk);
     currentChunkAlloc = 0;
-  };
-  void *retVal = (void*)(currentChunk+currentChunkAlloc);
+  }
+  void* retVal = (void*)(currentChunk + currentChunkAlloc);
   currentChunkAlloc += (int)size;
   allocCount++;
   //printf("ca:%d - %db, all=%dKb\n", allocCount, size, ((chunks->size()-1)*CHUNK_SIZE+currentChunkAlloc)/1024);
   //printf("calloc\t%d\n", clock());
   return retVal;
-};
+}
 
 /**
   Deallocates previously allocated memory.
   @param ptr Pointer, returned by @c chunk_alloc call.
 */
-void chunk_free(void *ptr){
-  if (ptr == null) return;
+void chunk_free(void* ptr)
+{
+  if (ptr == null) {
+    return;
+  }
   //printf("cfree\t%d\n", clock());
   allocCount--;
-  if (allocCount == 0){
-    for(int idx = 0; idx < chunks->size(); idx++){
-      delete[] chunks->elementAt(idx);
-    };
-    chunks->setSize(0);
-  };
+  if (allocCount == 0) {
+    for (size_t idx = 0; idx < chunks->size(); idx++) {
+      delete[] chunks->at(idx);
+    }
+    chunks->clear();
+  }
 //  printf("cf:%d, ", allocCount);
-};
+}
 
 /**
   @}

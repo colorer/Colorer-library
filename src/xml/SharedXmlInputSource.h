@@ -2,7 +2,6 @@
 #define _COLORER_SHAREDXMLINPUTSOURCE_H_
 
 #include<common/Common.h>
-#include<common/Hashtable.h>
 #include<common/Logging.h>
 #include <xercesc/sax/InputSource.hpp>
 #include <xml/XmlInputSource.h>
@@ -12,36 +11,42 @@ class SharedXmlInputSource : XmlInputSource
 {
 public:
 
-  static SharedXmlInputSource *getSharedInputSource(const XMLCh *path, const XMLCh *base);
-  xercesc::InputSource *getInputSource();
+  static SharedXmlInputSource* getSharedInputSource(const XMLCh* path, const XMLCh* base);
+  xercesc::InputSource* getInputSource();
   /** Increments reference counter */
   int addref();
   /** Decrements reference counter */
   int delref();
 
   void openStream();
-  const XMLByte *getStream(){
-    if (mSrc == null){
+  const XMLByte* getStream()
+  {
+    if (mSrc == null) {
       openStream();
     }
     return mSrc;
   }
-  XMLSize_t length() const{ return mSize; }
 
-  static SharedXmlInputSource* getShared(String * name){
-    return isHash->get(name); 
-  };
+  XMLSize_t length() const
+  {
+    return mSize;
+  }
+
+  static SharedXmlInputSource* getShared(String* name)
+  {
+    return isHash->find(name)->second;
+  }
 
 private:
-  SharedXmlInputSource(XmlInputSource *source);
+  SharedXmlInputSource(XmlInputSource* source);
   ~SharedXmlInputSource();
 
-  static Hashtable<SharedXmlInputSource*> *isHash;
+  static std::unordered_map<SString, SharedXmlInputSource*>* isHash;
 
-  XmlInputSource *is;
+  XmlInputSource* is;
   int ref_count;
   XMLByte* mSrc;
-	XMLSize_t mSize;
+  XMLSize_t mSize;
 };
 
 #endif
