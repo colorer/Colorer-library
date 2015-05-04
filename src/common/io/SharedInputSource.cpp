@@ -1,18 +1,19 @@
 #include<common/io/SharedInputSource.h>
 #include<common/Logging.h>
 
-Hashtable<SharedInputSource*> *SharedInputSource::isHash = null;
+std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = null;
 
-
-SharedInputSource::SharedInputSource(InputSource *source){
+SharedInputSource::SharedInputSource(InputSource* source)
+{
   is = source;
   stream = null;
   ref_count = 1;
 }
 
-SharedInputSource::~SharedInputSource(){
-  isHash->remove(is->getLocation());
-  if (isHash->size()==0){ 
+SharedInputSource::~SharedInputSource()
+{
+  isHash->erase(is->getLocation());
+  if (isHash->size() == 0) {
     delete isHash;
     isHash = NULL;
   }
@@ -20,21 +21,27 @@ SharedInputSource::~SharedInputSource(){
 }
 
 
-SharedInputSource *SharedInputSource::getInputSource(const String *path, InputSource *base)
+SharedInputSource* SharedInputSource::getInputSource(const String* path, InputSource* base)
 {
-  InputSource *tempis = InputSource::newInstance(path, base);
+  InputSource* tempis = InputSource::newInstance(path, base);
 
-  if (isHash == null){
-    isHash = new Hashtable<SharedInputSource*>();
+  if (isHash == null) {
+    isHash = new std::unordered_map<SString, SharedInputSource*>();
   }
 
-  SharedInputSource *sis = isHash->get(tempis->getLocation());
+  SharedInputSource* sis = null;
+  auto s = isHash->find(tempis->getLocation());
+  if (s == isHash->end()) {
+    sis = s->second;
+  }
 
-  if (sis == null){
+  if (sis == null) {
     sis = new SharedInputSource(tempis);
-    isHash->put(tempis->getLocation(), sis);
+    std::pair<SString, SharedInputSource*> pp(tempis->getLocation(), sis);
+    isHash->emplace(pp);
+
     return sis;
-  }else{
+  } else {
     delete tempis;
   }
 
