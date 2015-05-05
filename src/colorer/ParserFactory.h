@@ -4,12 +4,9 @@
 #include <common/Hashtable.h>
 #include <colorer/TextParser.h>
 #include <colorer/HRCParser.h>
-#include <colorer/handlers/DefaultErrorHandler.h>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
-#include <colorer/ParserFactoryException.h>
 
-#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlInputSource.h>
 

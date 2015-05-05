@@ -14,9 +14,9 @@
 #include <colorer/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/handlers/DefaultErrorHandler.h>
-#include <colorer/handlers/FileErrorHandler.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/TextParserImpl.h>
+#include <colorer/ParserFactoryException.h>
 
 #include <xml/XmlInputSource.h>
 #include <xml/XmlParserErrorHandler.h>
@@ -38,7 +38,7 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), (XMLCh*)nullptr);
+  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
     throw ParserFactoryException(DString("Error reading catalog.xml."));
@@ -94,9 +94,9 @@ void ParserFactory::addHrcSetsLocation(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* elem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(elem->getNodeName(), catTagLocation)) {
-        hrcLocations.push_back(new SString(DString(elem->getAttribute(catLocationAttrLink))));
+      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
+      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
+        hrcLocations.push_back(new SString(DString(subelem->getAttribute(catLocationAttrLink))));
       }
       continue;
     }
@@ -171,7 +171,6 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
 String* ParserFactory::searchPath()
 {
   std::vector<String*> paths;
-  TextLinesStore tls;
 
 #ifdef _WIN32
   searchPathWindows(&paths);
@@ -304,7 +303,7 @@ void ParserFactory::searchPathLinux(std::vector<String*>* paths)
 
 ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
 {
-  RegExpStack = NULL;
+  RegExpStack = nullptr;
   RegExpStack_Size = 0;
   if (_errorHandler) {
     errorHandler = _errorHandler;
@@ -390,7 +389,7 @@ HRCParser* ParserFactory::getHRCParser()
   for (size_t idx = 0; idx < hrcLocations.size(); idx++) {
     if (hrcLocations.at(idx) != null) {
 #ifdef _WIN32
-      size_t i = ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), NULL, 0);
+      size_t i = ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), nullptr, 0);
       wchar_t* temp = new wchar_t[i];
       ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), temp, static_cast<DWORD>(i));
       const String* relPath = new SString(temp);
@@ -398,7 +397,7 @@ HRCParser* ParserFactory::getHRCParser()
 #else
       const String* relPath = new SString(hrcLocations.elementAt(idx));
 #endif
-      const String* path = null;
+      const String* path;
       if (colorer::InputSource::isRelative(relPath)) {
         path = colorer::InputSource::getAbsolutePath(catalogPath, relPath);
         const String* path2del = path;
@@ -506,7 +505,7 @@ TextParser* ParserFactory::createTextParser()
 
 StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const String* nameID)
 {
-  Hashtable<std::vector<const String*>*>* hrdClass = null;
+  Hashtable<std::vector<const String*>*>* hrdClass;
   if (classID == null) {
     hrdClass = hrdLocations.get(&DString("rgb"));
   } else {
@@ -517,7 +516,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
     throw ParserFactoryException(StringBuffer("can't find hrdClass '") + classID + "'");
   }
 
-  std::vector<const String*>* hrdLocV = null;
+  std::vector<const String*>* hrdLocV;
   if (nameID == null) {
     char* hrd = getenv("COLORER5HRD");
     hrdLocV = (hrd) ? hrdClass->get(&DString(hrd)) : hrdClass->get(&DString("default"));
@@ -557,7 +556,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
     throw ParserFactoryException(StringBuffer("can't find hrdClass 'text'"));
   }
 
-  std::vector<const String*>* hrdLocV = null;
+  std::vector<const String*>* hrdLocV;
   if (nameID == null) {
     hrdLocV = hrdClass->get(&DString("default"));
   } else {
