@@ -2,10 +2,8 @@
 #define _COLORER_SHAREDXMLINPUTSOURCE_H_
 
 #include<common/Common.h>
-#include<common/Logging.h>
 #include <xercesc/sax/InputSource.hpp>
 #include <xml/XmlInputSource.h>
-#include <xercesc/util/BinFileInputStream.hpp>
 
 class SharedXmlInputSource : XmlInputSource
 {

@@ -1,6 +1,4 @@
-
 #include<time.h>
-
 #include<colorer/ParserFactory.h>
 #include<colorer/editor/BaseEditor.h>
 #include<colorer/viewer/TextLinesStore.h>
@@ -12,7 +10,6 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
-#include <xml/XmlInputSource.h>
 #include <xml/XmlInputSource.h>
 
 using namespace xercesc;
@@ -116,7 +113,7 @@ void ConsoleTools::setCatalogPath(const String &str) {
   delete catalogPath;
 #if defined _WIN32
    // replace the environment variables to their values
-  size_t i=ExpandEnvironmentStrings(str.getWChars(),NULL,0);
+  size_t i=ExpandEnvironmentStrings(str.getWChars(),nullptr,0);
   wchar_t *temp = new wchar_t[i];
   ExpandEnvironmentStrings(str.getWChars(),temp,static_cast<DWORD>(i));
   catalogPath = new SString(temp);
@@ -141,7 +138,7 @@ void ConsoleTools::setLinkSource(const String &str){
   const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
   const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
 
-  XmlInputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), (XMLCh*)nullptr);
+  XmlInputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), static_cast<XMLCh*>(nullptr));
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler(nullptr);
   xml_parser.setErrorHandler(&error_handler);
@@ -353,7 +350,7 @@ void ConsoleTools::forward(){
   const byte *stream = fis->openStream();
   DString eStream(stream, fis->length(), inputEncodingIndex);
 
-  Writer *outputFile = null;
+  Writer *outputFile;
   try{
     if (outputFileName != null) outputFile = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
     else outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
@@ -406,8 +403,8 @@ void ConsoleTools::genOutput(bool useTokens){
     const RegionDefine *rd = null;
     if (mapper != null) rd = baseEditor.rd_def_Text;
 
-    Writer *escapedWriter = null;
-    Writer *commonWriter = null;
+    Writer *escapedWriter;
+    Writer *commonWriter;
     try{
       if (outputFileName != null) commonWriter = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
       else commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
