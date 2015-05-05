@@ -1,4 +1,5 @@
 #include <memory.h>
+#include <vector>
 #include <stdio.h>
 #include <time.h>
 

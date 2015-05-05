@@ -1,6 +1,7 @@
 #ifndef _COLORER_TEXTLINESSTORE_H_
 #define _COLORER_TEXTLINESSTORE_H_
 
+#include <vector>
 #include <colorer/LineSource.h>
 
 /** Reads array of text lines and

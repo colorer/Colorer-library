@@ -1,6 +1,7 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
+#include <vector>
 #include <common/io/Writer.h>
 #include <colorer/handlers/RegionMapper.h>
 #include <colorer/handlers/RegionDefine.h>
