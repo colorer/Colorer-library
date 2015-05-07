@@ -31,7 +31,7 @@ SharedInputSource* SharedInputSource::getInputSource(const String* path, InputSo
 
   SharedInputSource* sis = null;
   auto s = isHash->find(tempis->getLocation());
-  if (s == isHash->end()) {
+  if (s != isHash->end()) {
     sis = s->second;
   }
 

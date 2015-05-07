@@ -51,7 +51,7 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
 
   SharedXmlInputSource* sis = null;
   auto s = isHash->find(&DString(tempis->getInputSource()->getSystemId()));
-  if (s == isHash->end()) {
+  if (s != isHash->end()) {
     sis = s->second;
   }
 
