@@ -76,7 +76,6 @@ set(SRC_COLORER
    ${COLORER}/Scheme.h
    ${COMMON}/Common.h
    ${COMMON}/Exception.h ${COMMON}/Exception.cpp
-   ${COMMON}/Hashtable.h ${COMMON}/HashtableCore.h
    ${COMMON}/Logging.cpp ${COMMON}/Logging.h
    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
    ${COMMON}/Features.h
