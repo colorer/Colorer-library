@@ -3,7 +3,6 @@
 
 #include<common/io/Writer.h>
 #include<colorer/handlers/LineRegion.h>
-#include <common/Hashtable.h>
 /**
     Static service methods of LineRegion output.
     @ingroup colorer_viewer
@@ -21,7 +20,7 @@ public:
       @param lineRegions Linked list of LineRegion structures.
              Only region references are used there.
   */
-  static void tokenWrite(Writer *markupWriter, Writer *textWriter, Hashtable<String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->region == null) continue;
@@ -69,7 +68,7 @@ public:
       @param line Line of text
       @param lineRegions Linked list of LineRegion structures
   */
-  static void markupWrite(Writer *markupWriter, Writer *textWriter, Hashtable<String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->rdef == null) continue;
@@ -102,7 +101,7 @@ public:
       @param line Line of text
       @param lineRegions Linked list of LineRegion structures
   */
-  static void htmlRGBWrite(Writer *markupWriter, Writer *textWriter, Hashtable<String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void htmlRGBWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->rdef == null) continue;
@@ -157,13 +156,21 @@ public:
     writer->write(DString("</span>"));
   }
 
-  static void writeHref(Writer *writer, Hashtable<String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
+  static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
     String *url = null;
     if (scheme != null){
-      url = docLinkHash->get(&(StringBuffer(token).append(DString("--")).append(scheme->getName())));
+      auto it_url = docLinkHash->find(&(StringBuffer(token).append(DString("--")).append(scheme->getName())));
+      if (it_url != docLinkHash->end())
+      {
+        url = it_url->second;
+      }
     }
     if (url == null){
-      url = docLinkHash->get(&token);
+      auto it_url = docLinkHash->find(&token);
+      if (it_url != docLinkHash->end())
+      {
+        url = it_url->second;
+      }
     }
     if (url != null){
       if (start) writer->write(StringBuffer("<a href='")+url+DString("'>"));

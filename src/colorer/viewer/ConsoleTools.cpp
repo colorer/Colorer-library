@@ -29,8 +29,9 @@ ConsoleTools::ConsoleTools(){
   hrdName = null;
   logFileName = null;
 
-  docLinkHash = new Hashtable<String*>;
+  docLinkHash = new std::unordered_map<SString, String*>;
 }
+
 ConsoleTools::~ConsoleTools(){
   delete typeDescription;
   delete catalogPath;
@@ -41,8 +42,7 @@ ConsoleTools::~ConsoleTools(){
   delete inputFileName;
   delete logFileName;
 
-  for(String*st = docLinkHash->enumerate(); st; st = docLinkHash->next())
-    delete st;
+  docLinkHash->clear();
   delete docLinkHash;
 }
 
@@ -179,7 +179,8 @@ void ConsoleTools::setLinkSource(const String &str){
           if (*l_scheme != '\0'){
             hkey.append(DString("--")).append(DString(l_scheme));
           }
-          docLinkHash->put(&hkey, new SString(&fullURL));
+          std::pair<SString, String*> pair_url(&hkey, new SString(&fullURL));
+          docLinkHash->emplace(pair_url);
           delete tok;
         }
       }
