@@ -3,6 +3,7 @@
 
 #include<common/io/Writer.h>
 #include<colorer/handlers/LineRegion.h>
+#include <common/Hashtable.h>
 /**
     Static service methods of LineRegion output.
     @ingroup colorer_viewer

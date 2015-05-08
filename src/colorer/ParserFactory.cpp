@@ -132,29 +132,34 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
 
   const String* hrd_class = new DString(xhrd_class);
   const String* hrd_name = new DString(xhrd_name);
-  Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.get(hrd_class);
-  if (hrdClass == null) {
-    hrdClass = new Hashtable<std::vector<const String*>*>;
-    hrdLocations.put(hrd_class, hrdClass);
+  std::unordered_map<SString, std::vector<const String*>*>* hrdClass;
+  auto it_hrdClass = hrdLocations.find(hrd_class);
+  if (it_hrdClass == hrdLocations.end()) {
+    hrdClass = new std::unordered_map<SString, std::vector<const String*>*>;
+    std::pair<SString, std::unordered_map<SString, std::vector<const String*>*>*> pair_class(hrd_class, hrdClass);
+    hrdLocations.emplace(pair_class);
+  } else {
+    hrdClass = it_hrdClass->second;
   }
-  if (hrdClass->get(hrd_name) != null) {
-    errorHandler->error(StringBuffer("Duplicate hrd class '") + hrd_name + "'");
+
+  auto it_hrdName = hrdClass->find(hrd_name);
+  if (it_hrdName != hrdClass->end()) {
+    errorHandler->error(StringBuffer("Duplicate hrd name '") + hrd_name + "'");
     delete hrd_class;
     delete hrd_name;
     return;
   }
-  hrdClass->put(hrd_name, new std::vector<const String*>);
-  std::vector<const String*>* hrdLocV = hrdClass->get(hrd_name);
-  if (hrdLocV == null) {
-    hrdLocV = new std::vector<const String*>;
-    hrdClass->put(hrd_name, hrdLocV);
-  }
+
+  std::vector<const String*>* hrdLocV(new std::vector<const String*>);
+  std::pair<SString, std::vector<const String*>*> pair_name(hrd_name, hrdLocV);
+  hrdClass->emplace(pair_name);
 
   const String* hrd_descr = new SString(DString(elem->getAttribute(catHrdAttrDescription)));
   if (hrd_descr == null) {
     hrd_descr = new SString(hrd_name);
   }
-  hrdDescriptions.put(&(StringBuffer(hrd_class) + "-" + hrd_name), hrd_descr);
+  std::pair<SString, const String*> pp(&(StringBuffer(hrd_class) + "-" + hrd_name), hrd_descr);
+  hrdDescriptions.emplace(pp);
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -321,21 +326,8 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
 
 ParserFactory::~ParserFactory()
 {
-  for (Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.enumerate();
-       hrdClass;
-       hrdClass = hrdLocations.next()) {
-    for (std::vector<const String*>* hrd_name = hrdClass->enumerate(); hrd_name; hrd_name = hrdClass->next()) {
-      hrd_name->clear();
-      delete hrd_name;
-    }
-
-    delete hrdClass;
-  }
   hrcLocations.clear();
-
-  for (const String* hrdD = hrdDescriptions.enumerate(); hrdD; hrdD = hrdDescriptions.next()) {
-    delete hrdD;
-  }
+  hrdDescriptions.clear();
 
   delete hrcParser;
   delete catalogPath;
@@ -355,28 +347,37 @@ const char* ParserFactory::getVersion()
 
 int ParserFactory::countHRD(const String& classID)
 {
-  Hashtable<std::vector<const String*>*>* hash = hrdLocations.get(&classID);
-  if (hash == null) {
+  auto hash = hrdLocations.find(classID);
+  if (hash == hrdLocations.end()) {
     return 0;
   }
-  return hash->size();
+  return hash->second->size();
 }
 
-const String* ParserFactory::enumerateHRDClasses(int idx)
+std::vector<SString> ParserFactory::enumHRDClasses()
 {
-  return hrdLocations.key(idx);
-}
-const String* ParserFactory::enumerateHRDInstances(const String& classID, int idx)
-{
-  Hashtable<std::vector<const String*>*>* hash = hrdLocations.get(&classID);
-  if (hash == null) {
-    return null;
+  std::vector<SString> r;
+  r.reserve(hrdLocations.size());
+  for (auto p = hrdLocations.begin(); p != hrdLocations.end(); ++p) {
+    r.push_back(p->first);
   }
-  return hash->key(idx);
+  return r;
 }
+
+std::vector<SString> ParserFactory::enumHRDInstances(const String& classID)
+{
+  auto hash = hrdLocations.find(classID);
+  std::vector<SString> r;
+  r.reserve(hash->second->size());
+  for (auto p = hash->second->begin(); p != hash->second->end(); ++p) {
+    r.push_back(p->first);
+  }
+  return r;
+}
+
 const String* ParserFactory::getHRDescription(const String& classID, const String& nameID)
 {
-  return hrdDescriptions.get(&(StringBuffer(classID) + "-" + nameID));
+  return hrdDescriptions.find(&(StringBuffer(classID) + "-" + nameID))->second;
 }
 
 HRCParser* ParserFactory::getHRCParser()
@@ -505,30 +506,40 @@ TextParser* ParserFactory::createTextParser()
 
 StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const String* nameID)
 {
-  Hashtable<std::vector<const String*>*>* hrdClass;
-  if (classID == null) {
-    hrdClass = hrdLocations.get(&DString("rgb"));
+  const String* class_id;
+  const DString class_default("rgb");
+  if (classID == nullptr) {
+    class_id = &class_default;
   } else {
-    hrdClass = hrdLocations.get(classID);
+    class_id = classID;
   }
 
-  if (hrdClass == null) {
+  auto it_hrdClass = hrdLocations.find(class_id);
+  if (it_hrdClass == hrdLocations.end()) {
     throw ParserFactoryException(StringBuffer("can't find hrdClass '") + classID + "'");
   }
+  std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
 
-  std::vector<const String*>* hrdLocV;
-  if (nameID == null) {
+  const String* name_id;
+  const DString name_default("default");
+  DString name_env;
+  if (nameID == nullptr) {
     char* hrd = getenv("COLORER5HRD");
-    hrdLocV = (hrd) ? hrdClass->get(&DString(hrd)) : hrdClass->get(&DString("default"));
-    if (hrdLocV == null) {
-      hrdLocV = hrdClass->enumerate();
+    if (hrd == nullptr) {
+      name_env = DString(hrd);
+      name_id = &name_env;
+    } else {
+      name_id = &name_default;
     }
   } else {
-    hrdLocV = hrdClass->get(nameID);
+    name_id = nameID;
   }
-  if (hrdLocV == null) {
-    throw ParserFactoryException(StringBuffer("can't find hrdName '") + nameID + "'");
+
+  auto it_hrdLocV = hrdClass->find(name_id);
+  if (it_hrdLocV == hrdClass->end()) {
+    throw ParserFactoryException(StringBuffer("can't find hrdName '") + name_id + "'");
   }
+  std::vector<const String*>* hrdLocV = it_hrdLocV->second;
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)
@@ -551,20 +562,25 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 {
   // fixed class 'text'
-  Hashtable<std::vector<const String*>*>* hrdClass = hrdLocations.get(&DString("text"));
-  if (hrdClass == null) {
+  auto it_hrdClass = hrdLocations.find(&DString("text"));
+  if (it_hrdClass == hrdLocations.end()) {
     throw ParserFactoryException(StringBuffer("can't find hrdClass 'text'"));
   }
 
-  std::vector<const String*>* hrdLocV;
-  if (nameID == null) {
-    hrdLocV = hrdClass->get(&DString("default"));
+  std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
+  const String* name_id;
+  const DString name_default("default");
+  if (nameID == nullptr) {
+    name_id = &name_default;
   } else {
-    hrdLocV = hrdClass->get(nameID);
+    name_id = nameID;
   }
-  if (hrdLocV == null) {
-    throw ParserFactoryException(StringBuffer("can't find hrdName '") + nameID + "'");
+
+  auto it_hrdLocV = hrdClass->find(name_id);
+  if (it_hrdLocV == hrdClass->end()) {
+    throw ParserFactoryException(StringBuffer("can't find hrdName '") + name_id + "'");
   }
+  std::vector<const String*>* hrdLocV = it_hrdLocV->second;
 
   TextHRDMapper* mapper = new TextHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)

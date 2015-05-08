@@ -5,6 +5,7 @@
 #include<cregexp/cregexp.h>
 #include<common/io/FileWriter.h>
 #include<colorer/ParserFactory.h>
+#include<common/Hashtable.h>
 
 /** Writer interface wrapper, which
     allows escaping of XML markup characters (& and <)

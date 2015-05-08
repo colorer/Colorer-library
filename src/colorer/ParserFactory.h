@@ -1,7 +1,6 @@
 #ifndef _COLORER_PARSERFACTORY_H_
 #define _COLORER_PARSERFACTORY_H_
 
-#include <common/Hashtable.h>
 #include <colorer/TextParser.h>
 #include <colorer/HRCParser.h>
 #include <colorer/handlers/StyledHRDMapper.h>
@@ -56,12 +55,12 @@ public:
   /**
    * Enumerates all declared hrd classes
    */
-  const String* enumerateHRDClasses(int idx);
+  std::vector<SString> enumHRDClasses();
 
   /**
    * Enumerates all declared hrd instances of specified class
    */
-  const String* enumerateHRDInstances(const String& classID, int idx);
+  std::vector<SString> enumHRDInstances(const String& classID);
 
   /**
    * Returns description of HRD instance, pointed by classID and nameID parameters.
@@ -136,8 +135,8 @@ private:
   colorer::ErrorHandler* errorHandler;
   bool ownErrorHandler;
   std::vector<const String*> hrcLocations;
-  Hashtable<Hashtable<std::vector<const String*>*>*> hrdLocations;
-  Hashtable<const String*>hrdDescriptions;
+  std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;
+  std::unordered_map<SString, const String*> hrdDescriptions;
   HRCParser*  hrcParser;
 
   ParserFactory(const ParserFactory&);
