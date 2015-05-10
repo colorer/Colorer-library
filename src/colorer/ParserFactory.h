@@ -111,7 +111,7 @@ public:
    * load one hrd node from hrd-sets
    */
   void parseHRDSetsChild(const xercesc::DOMElement* elem);
-  int countHRD(const String& classID);
+  size_t countHRD(const String& classID);
 
   /**
   * @param catalogPath Path to catalog.xml file. If null,

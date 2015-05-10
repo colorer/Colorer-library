@@ -345,7 +345,7 @@ const char* ParserFactory::getVersion()
   return "Colorer-take5 Library be5 28 May 2006";
 }
 
-int ParserFactory::countHRD(const String& classID)
+size_t ParserFactory::countHRD(const String& classID)
 {
   auto hash = hrdLocations.find(classID);
   if (hash == hrdLocations.end()) {

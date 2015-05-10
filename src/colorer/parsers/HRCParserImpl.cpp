@@ -238,14 +238,14 @@ void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* elem = static_cast<xercesc::DOMElement*>(node);
-      parseHrcBlockElements(elem);
+      xercesc::DOMElement* sub_elem = static_cast<xercesc::DOMElement*>(node);
+      parseHrcBlockElements(sub_elem);
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       for (xercesc::DOMNode* sub_node = node->getFirstChild(); sub_node != nullptr; sub_node = sub_node->getNextSibling()) {
-        xercesc::DOMElement* elem = static_cast<xercesc::DOMElement*>(sub_node);
-        parseHrcBlockElements(elem);
+        xercesc::DOMElement* sub_elem = static_cast<xercesc::DOMElement*>(sub_node);
+        parseHrcBlockElements(sub_elem);
       }
     }
   }
@@ -650,15 +650,15 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
       if (xercesc::XMLString::equals(subelem->getNodeName() , hrcTagVirtual)) {
-        const XMLCh* schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
-        const XMLCh* substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
-        if (*schemeName == '\0' || *substName == '\0') {
+        const XMLCh* x_schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
+        const XMLCh* x_substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
+        if (*x_schemeName == '\0' || *x_substName == '\0') {
           if (errorHandler != nullptr) {
             errorHandler->error(StringBuffer("bad virtualize attributes in scheme '") + scheme->schemeName + "'");
           }
           continue;
         }
-        scheme_node->virtualEntryVector.push_back(new VirtualEntry(&DString(schemeName), &DString(substName)));
+        scheme_node->virtualEntryVector.push_back(new VirtualEntry(&DString(x_schemeName), &DString(x_substName)));
       }
     }
   }
@@ -1183,7 +1183,7 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   if (name == nullptr) {
     return nullptr;
   }
-  const Region* reg = nullptr;
+  const Region* reg;
   String* qname = qualifyForeignName(name, QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
@@ -1200,9 +1200,9 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
       Regions with this name are always transparent
   */
   if (reg != nullptr) {
-    const String* name = reg->getName();
-    int idx = name->indexOf(DString(":default"));
-    if (idx != -1  && idx + 8 == name->length()) {
+    const String* s_name = reg->getName();
+    int idx = s_name->indexOf(DString(":default"));
+    if (idx != -1  && idx + 8 == s_name->length()) {
       return nullptr;
     }
   }
