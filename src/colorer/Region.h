@@ -45,7 +45,7 @@ public:
   bool hasParent(const Region* region) const
   {
     const Region* elem = this;
-    while (elem != null) {
+    while (elem != nullptr) {
       if (region == elem) {
         return true;
       }
@@ -60,8 +60,8 @@ public:
   Region(const String* _name, const String* _description, const Region* _parent, int _id)
   {
     name = new SString(_name);
-    description = null;
-    if (_description != null) {
+    description = nullptr;
+    if (_description != nullptr) {
       description = new SString(_description);
     }
     parent = _parent;

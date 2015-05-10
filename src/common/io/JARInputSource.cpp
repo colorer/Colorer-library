@@ -4,7 +4,7 @@
 #include<contrib/minizip/unzip.h>
 
 JARInputSource::JARInputSource(const String *basePath, InputSource *base){
-  if (basePath == null)
+  if (basePath == nullptr)
     throw InputSourceException(StringBuffer("Can't create jar source"));
   // absolute jar uri
   int ex_idx = basePath->lastIndexOf('!');
@@ -20,7 +20,7 @@ JARInputSource::JARInputSource(const String *basePath, InputSource *base){
   str.append(inJarLocation);
   baseLocation = new SString(&str);
 
-  stream = null;
+  stream = nullptr;
   len = 0;
 }
 
@@ -34,7 +34,7 @@ JARInputSource::~JARInputSource(){
 JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, bool faked){
   // relative jar uri
   JARInputSource *parent = base;
-  if (parent == null) throw InputSourceException(StringBuffer("Bad jar uri format: ") + basePath);
+  if (parent == nullptr) throw InputSourceException(StringBuffer("Bad jar uri format: ") + basePath);
   sharedIS = parent->getShared();
   sharedIS->addref();
 
@@ -45,7 +45,7 @@ JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, boo
   str.append(DString("!"));
   str.append(inJarLocation);
   baseLocation = new SString(&str);
-  stream = null;
+  stream = nullptr;
   len = 0;
 }
 
@@ -59,7 +59,7 @@ const String *JARInputSource::getLocation() const{
 
 const byte *JARInputSource::openStream()
 {
-  if (stream != null)
+  if (stream != nullptr)
     throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
 
   MemoryFile *mf = new MemoryFile;
@@ -68,7 +68,7 @@ const byte *JARInputSource::openStream()
   zlib_filefunc_def zlib_ff;
   fill_mem_filefunc(&zlib_ff, mf);
 
-  unzFile fid = unzOpen2(null, &zlib_ff);
+  unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
   if (fid == 0) {
 	  delete mf;
@@ -82,7 +82,7 @@ const byte *JARInputSource::openStream()
 	  throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+inJarLocation+"'");
   }
   unz_file_info file_info;
-  ret = unzGetCurrentFileInfo(fid, &file_info, null, 0, null, 0, null, 0);
+  ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
@@ -115,14 +115,14 @@ const byte *JARInputSource::openStream()
 }
 
 void JARInputSource::closeStream(){
-  if (stream == null)
+  if (stream == nullptr)
     throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
   delete stream;
-  stream = null;
+  stream = nullptr;
 }
 
 int JARInputSource::length() const{
-  if (stream == null)
+  if (stream == nullptr)
     throw InputSourceException(DString("length(): stream is not yet opened"));
   return len;
 }

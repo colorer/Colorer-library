@@ -23,7 +23,7 @@ public:
   static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
-      if (l1->special || l1->region == null) continue;
+      if (l1->special || l1->region == nullptr) continue;
       if (l1->start == l1->end) continue;
       int end = l1->end;
       if (end == -1) end = line->length();
@@ -34,14 +34,14 @@ public:
       markupWriter->write(DString("<span class='"));
 
       const Region *region = l1->region;
-      while(region != null){
+      while(region != nullptr){
         String *token0 = region->getName()->replace(DString(":"),DString("-"));
         String *token = token0->replace(DString("."),DString("-"));
         delete token0;
         markupWriter->write(token);
         delete token;
         region = region->getParent();
-        if (region != null){
+        if (region != nullptr){
           markupWriter->write(' ');
         }
       }
@@ -71,7 +71,7 @@ public:
   static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
-      if (l1->special || l1->rdef == null) continue;
+      if (l1->special || l1->rdef == nullptr) continue;
       if (l1->start == l1->end) continue;
       int end = l1->end;
       if (end == -1) end = line->length();
@@ -79,11 +79,11 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       };
-      if (l1->texted()->sback != null) markupWriter->write(l1->texted()->sback);
-      if (l1->texted()->stext != null) markupWriter->write(l1->texted()->stext);
+      if (l1->texted()->sback != nullptr) markupWriter->write(l1->texted()->sback);
+      if (l1->texted()->stext != nullptr) markupWriter->write(l1->texted()->stext);
       textWriter->write(line, pos, end - l1->start);
-      if (l1->texted()->etext != null) markupWriter->write(l1->texted()->etext);
-      if (l1->texted()->eback != null) markupWriter->write(l1->texted()->eback);
+      if (l1->texted()->etext != nullptr) markupWriter->write(l1->texted()->etext);
+      if (l1->texted()->eback != nullptr) markupWriter->write(l1->texted()->eback);
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -104,7 +104,7 @@ public:
   static void htmlRGBWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
-      if (l1->special || l1->rdef == null) continue;
+      if (l1->special || l1->rdef == nullptr) continue;
       if (l1->start == l1->end) continue;
       int end = l1->end;
       if (end == -1) end = line->length();
@@ -157,22 +157,22 @@ public:
   }
 
   static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
-    String *url = null;
-    if (scheme != null){
+    String *url = nullptr;
+    if (scheme != nullptr){
       auto it_url = docLinkHash->find(&(StringBuffer(token).append(DString("--")).append(scheme->getName())));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
       }
     }
-    if (url == null){
+    if (url == nullptr){
       auto it_url = docLinkHash->find(&token);
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
       }
     }
-    if (url != null){
+    if (url != nullptr){
       if (start) writer->write(StringBuffer("<a href='")+url+DString("'>"));
       else writer->write(DString("</a>"));
     }

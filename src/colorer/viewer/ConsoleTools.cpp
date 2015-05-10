@@ -21,13 +21,13 @@ ConsoleTools::ConsoleTools(){
   htmlWrapping = true;
   lineNumbers = false;
 
-  typeDescription = null;
-  inputFileName = outputFileName = null;
-  inputEncoding = outputEncoding = null;
+  typeDescription = nullptr;
+  inputFileName = outputFileName = nullptr;
+  inputEncoding = outputEncoding = nullptr;
   inputEncodingIndex = outputEncodingIndex = -1;
-  catalogPath = null;
-  hrdName = null;
-  logFileName = null;
+  catalogPath = nullptr;
+  hrdName = nullptr;
+  logFileName = nullptr;
 
   docLinkHash = new std::unordered_map<SString, String*>;
 }
@@ -58,13 +58,13 @@ void ConsoleTools::setHtmlWrapping(bool use) { htmlWrapping = use; }
 void ConsoleTools::addLineNumbers(bool add){ lineNumbers = add; }
 
 colorer::ErrorHandler *ConsoleTools::createErrorHandler() {
-  colorer::ErrorHandler *resultHandler = null;
+  colorer::ErrorHandler *resultHandler = nullptr;
   if (logFileName && logFileName->length()!=0) {
     colorer::InputSource *dfis = colorer::InputSource::newInstance(logFileName);
     try{
       resultHandler = new FileErrorHandler(dfis->getLocation(), Encodings::ENC_UTF8, false);
     }catch(Exception &){
-      resultHandler = null;
+      resultHandler = nullptr;
     }
     delete dfis;
   }
@@ -99,7 +99,7 @@ void ConsoleTools::setInputEncoding(const String &str) {
   inputEncoding = new SString(str);
   inputEncodingIndex = Encodings::getEncodingIndex(inputEncoding->getChars());
   if (inputEncodingIndex == -1) throw Exception(StringBuffer("Unknown input encoding: ")+inputEncoding);
-  if (outputEncoding == null) outputEncodingIndex = inputEncodingIndex;
+  if (outputEncoding == nullptr) outputEncodingIndex = inputEncodingIndex;
 }
 
 void ConsoleTools::setOutputEncoding(const String &str) {
@@ -151,7 +151,7 @@ void ConsoleTools::setLinkSource(const String &str){
   xercesc::DOMDocument *linkSourceTree = xml_parser.getDocument();
   xercesc::DOMElement *elem = linkSourceTree->getDocumentElement();
 
-  if (elem == null || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
+  if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
     throw Exception(DString("Error loading HRD file"));
   }
 
@@ -215,8 +215,8 @@ void ConsoleTools::RETest(){
 }
 
 void ConsoleTools::listTypes(bool load, bool useNames){
-  Writer *writer = null;
-  colorer::ErrorHandler *err = null;
+  Writer *writer = nullptr;
+  colorer::ErrorHandler *err = nullptr;
   try{
     writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
     err = createErrorHandler();
@@ -226,11 +226,11 @@ void ConsoleTools::listTypes(bool load, bool useNames){
     fprintf(stderr, "\nloading file types...\n");
     for(int idx = 0;; idx++){
       FileType *type = hrcParser->enumerateFileTypes(idx);
-      if (type == null) break;
+      if (type == nullptr) break;
       if (useNames){
         writer->write(StringBuffer(type->getName())+"\n");
       }else{
-        if (type->getGroup() != null){
+        if (type->getGroup() != nullptr){
           writer->write(StringBuffer(type->getGroup()) + ": ");
         }
         writer->write(type->getDescription());
@@ -248,30 +248,30 @@ void ConsoleTools::listTypes(bool load, bool useNames){
 }
 
 FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource){
-  FileType *type = null;
-  if (typeDescription != null){
+  FileType *type = nullptr;
+  if (typeDescription != nullptr){
     type = hrcParser->getFileType(typeDescription);
-    if (type == null){
+    if (type == nullptr){
       for(int idx = 0;; idx++){
         type = hrcParser->enumerateFileTypes(idx);
-        if (type == null) break;
-        if (type->getDescription() != null &&
+        if (type == nullptr) break;
+        if (type->getDescription() != nullptr &&
             type->getDescription()->length() >= typeDescription->length() &&
             DString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription))
           break;
         if (type->getName()->length() >= typeDescription->length() &&
             DString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription))
           break;
-        type = null;
+        type = nullptr;
       }
     }
   }
-  if (typeDescription == null || type == null){
+  if (typeDescription == nullptr || type == nullptr){
     StringBuffer textStart;
     int totalLength = 0;
     for(int i = 0; i < 4; i++){
       String *iLine = lineSource->getLine(i);
-      if (iLine == null) break;
+      if (iLine == nullptr) break;
       textStart.append(iLine);
       textStart.append(DString("\n"));
       totalLength += iLine->length();
@@ -313,7 +313,7 @@ void ConsoleTools::profile(int loopCount){
 }
 
 void ConsoleTools::viewFile(){
-  colorer::ErrorHandler *err = null;
+  colorer::ErrorHandler *err = nullptr;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
@@ -333,7 +333,7 @@ void ConsoleTools::viewFile(){
 
     int background;
     const StyledRegion *rd = StyledRegion::cast(baseEditor.rd_def_Text);
-    if (rd != null && rd->bfore && rd->bback) background = rd->fore + (rd->back<<4);
+    if (rd != nullptr && rd->bfore && rd->bback) background = rd->fore + (rd->back<<4);
     else background = 0x1F;
     // File viewing in console window
     TextConsoleViewer viewer(&baseEditor, &textLinesStore, background, outputEncodingIndex);
@@ -353,7 +353,7 @@ void ConsoleTools::forward(){
 
   Writer *outputFile;
   try{
-    if (outputFileName != null) outputFile = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
+    if (outputFileName != nullptr) outputFile = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
     else outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
   }catch(Exception &e){
     fprintf(stderr, "can't open file '%s' for writing:", outputFileName->getChars());
@@ -368,7 +368,7 @@ void ConsoleTools::forward(){
 }
 
 void ConsoleTools::genOutput(bool useTokens){
-  colorer::ErrorHandler *err = null;
+  colorer::ErrorHandler *err = nullptr;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
@@ -381,7 +381,7 @@ void ConsoleTools::genOutput(bool useTokens){
     HRCParser *hrcParser = pf.getHRCParser();
     // HRD RegionMapper creation
     bool useMarkup = false;
-    RegionMapper *mapper = null;
+    RegionMapper *mapper = nullptr;
     if (!useTokens){
       try{
         mapper = pf.createStyledMapper(&DString("rgb"), hrdName);
@@ -401,13 +401,13 @@ void ConsoleTools::genOutput(bool useTokens){
     baseEditor.setFileType(type);
 
     //  writing result into HTML colored stream...
-    const RegionDefine *rd = null;
-    if (mapper != null) rd = baseEditor.rd_def_Text;
+    const RegionDefine *rd = nullptr;
+    if (mapper != nullptr) rd = baseEditor.rd_def_Text;
 
     Writer *escapedWriter;
     Writer *commonWriter;
     try{
-      if (outputFileName != null) commonWriter = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
+      if (outputFileName != nullptr) commonWriter = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
       else commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
       if (htmlEscaping) escapedWriter = new HtmlEscapesWriter(commonWriter);
       else escapedWriter = commonWriter;
@@ -420,7 +420,7 @@ void ConsoleTools::genOutput(bool useTokens){
 
     if (htmlWrapping && useTokens){
       commonWriter->write(DString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
-    }else if (htmlWrapping && rd != null){
+    }else if (htmlWrapping && rd != nullptr){
       if (useMarkup){
         commonWriter->write(TextRegion::cast(rd)->stext);
       }else{
@@ -461,7 +461,7 @@ void ConsoleTools::genOutput(bool useTokens){
 
     if (htmlWrapping && useTokens){
       commonWriter->write(DString("</pre></body></html>\n"));
-    }else if (htmlWrapping && rd != null){
+    }else if (htmlWrapping && rd != nullptr){
       if (useMarkup){
         commonWriter->write(TextRegion::cast(rd)->etext);
       }else{

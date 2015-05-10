@@ -5,8 +5,8 @@ LineRegionsSupport::LineRegionsSupport()
 {
   lineCount = 0;
   firstLineNo = 0;
-  regionMapper = null;
-  special = null;
+  regionMapper = nullptr;
+  special = nullptr;
 }
 
 LineRegionsSupport::~LineRegionsSupport()
@@ -30,8 +30,8 @@ void LineRegionsSupport::clear()
 {
   for (size_t idx = 0; idx < lineRegions.size(); idx++) {
     LineRegion* ln = lineRegions.at(idx);
-    lineRegions.at(idx) = null;
-    while (ln != null) {
+    lineRegions.at(idx) = nullptr;
+    while (ln != nullptr) {
       LineRegion* lnn = ln->next;
       delete ln;
       ln = lnn;
@@ -47,7 +47,7 @@ size_t LineRegionsSupport::getLineIndex(size_t lno) const
 LineRegion* LineRegionsSupport::getLineRegions(size_t lno) const
 {
   if (!checkLine(lno)) {
-    return null;
+    return nullptr;
   }
   return lineRegions.at(getLineIndex(lno));
 }
@@ -99,7 +99,7 @@ void LineRegionsSupport::clearLine(size_t lno, String* line)
   }
 
   LineRegion* ln = getLineRegions(lno);
-  while (ln != null) {
+  while (ln != nullptr) {
     LineRegion* lnn = ln->next;
     delete ln;
     ln = lnn;
@@ -107,7 +107,7 @@ void LineRegionsSupport::clearLine(size_t lno, String* line)
   LineRegion* lfirst = new LineRegion(*schemeStack.back());
   lfirst->start = 0;
   lfirst->end = -1;
-  lfirst->next = null;
+  lfirst->next = nullptr;
   lfirst->prev = lfirst;
   lineRegions.at(getLineIndex(lno)) = lfirst;
   flowBackground = lfirst;
@@ -127,12 +127,12 @@ void LineRegionsSupport::addRegion(size_t lno, String* line, int sx, int ex, con
   if (region->hasParent(special)) {
     lnew->special = true;
   }
-  if (regionMapper != null) {
+  if (regionMapper != nullptr) {
     const RegionDefine* rd = regionMapper->getRegionDefine(region);
-    if (rd == null) {
+    if (rd == nullptr) {
       rd = schemeStack.back()->rdef;
     }
-    if (rd != null) {
+    if (rd != nullptr) {
       lnew->rdef = rd->clone();
       lnew->rdef->assignParent(schemeStack.back()->rdef);
     }
@@ -147,12 +147,12 @@ void LineRegionsSupport::enterScheme(size_t lno, String* line, int sx, int ex, c
   lr->scheme = scheme;
   lr->start = sx;
   lr->end = -1;
-  if (regionMapper != null) {
+  if (regionMapper != nullptr) {
     const RegionDefine* rd = regionMapper->getRegionDefine(region);
-    if (rd == null) {
+    if (rd == nullptr) {
       rd = schemeStack.back()->rdef;
     }
-    if (rd != null) {
+    if (rd != nullptr) {
       lr->rdef = rd->clone();
       lr->rdef->assignParent(schemeStack.back()->rdef);
     }
@@ -163,7 +163,7 @@ void LineRegionsSupport::enterScheme(size_t lno, String* line, int sx, int ex, c
     return;
   }
   // we must skip transparent regions
-  if (lr->region != null) {
+  if (lr->region != nullptr) {
     LineRegion* lr_add = new LineRegion(*lr);
     flowBackground->end = lr_add->start;
     flowBackground = lr_add;
@@ -180,7 +180,7 @@ void LineRegionsSupport::leaveScheme(size_t lno, String* line, int sx, int ex, c
     return;
   }
   // we have to skip transparent regions
-  if (scheme_region != null) {
+  if (scheme_region != nullptr) {
     LineRegion* lr = new LineRegion(*schemeStack.back());
     lr->start = ex;
     lr->end = -1;
@@ -193,9 +193,9 @@ void LineRegionsSupport::leaveScheme(size_t lno, String* line, int sx, int ex, c
 void LineRegionsSupport::addLineRegion(size_t lno, LineRegion* lr)
 {
   LineRegion* lstart = getLineRegions(lno);
-  lr->next = null;
+  lr->next = nullptr;
   lr->prev = lr;
-  if (lstart == null) {
+  if (lstart == nullptr) {
     lineRegions.at(getLineIndex(lno)) = lr;
   } else {
     lr->prev = lstart->prev;

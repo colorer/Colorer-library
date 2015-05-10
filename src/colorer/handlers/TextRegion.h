@@ -31,7 +31,7 @@ public:
   }
 
   TextRegion(){
-    stext = etext = sback = eback = null;
+    stext = etext = sback = eback = nullptr;
     type = TEXT_REGION;
   }
 
@@ -50,7 +50,7 @@ public:
    * @throw Exception If casing is not available.
    */
   static const TextRegion *cast(const RegionDefine *rd){
-    if (rd == null) return null;
+    if (rd == nullptr) return nullptr;
     if (rd->type != TEXT_REGION) {
       throw Exception(DString("Bad type cast exception into TextRegion"));
     }
@@ -64,12 +64,12 @@ public:
   */
   void assignParent(const RegionDefine *_parent){
     const TextRegion *parent = TextRegion::cast(_parent);
-    if (parent == null) return;
-    if (stext == null || etext == null){
+    if (parent == nullptr) return;
+    if (stext == nullptr || etext == nullptr){
       stext = parent->stext;
       etext = parent->etext;
     }
-    if (sback == null || eback == null){
+    if (sback == nullptr || eback == nullptr){
       sback = parent->sback;
       eback = parent->eback;
     }
@@ -80,7 +80,7 @@ public:
    * Do not assign region reference.
    */
   void setValues(const RegionDefine *_rd){
-    if (_rd == null) return;
+    if (_rd == nullptr) return;
     const TextRegion *rd = TextRegion::cast(_rd);
     stext = rd->stext;
     etext = rd->etext;

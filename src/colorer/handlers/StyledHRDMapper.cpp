@@ -31,7 +31,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandl
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
-  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
+  if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
 

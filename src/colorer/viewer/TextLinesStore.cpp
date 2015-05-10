@@ -11,7 +11,7 @@ void TextLinesStore::replaceTabs(size_t lno)
 
 TextLinesStore::TextLinesStore()
 {
-  fileName = null;
+  fileName = nullptr;
 }
 
 TextLinesStore::~TextLinesStore()
@@ -22,19 +22,19 @@ TextLinesStore::~TextLinesStore()
 void TextLinesStore::freeFile()
 {
   delete fileName;
-  fileName = null;
+  fileName = nullptr;
   lines.clear();
 }
 
 void TextLinesStore::loadFile(const String* fileName_, const String* inputEncoding, bool tab2spaces)
 {
-  if (this->fileName != null) {
+  if (this->fileName != nullptr) {
     freeFile();
   }
 
-  if (fileName_ == null) {
+  if (fileName_ == nullptr) {
     char line[256];
-    while (fgets(line, sizeof(line), stdin) != null) {
+    while (fgets(line, sizeof(line), stdin) != nullptr) {
       strtok(line, "\r\n");
       lines.push_back(new SString(line));
       if (tab2spaces) {
@@ -54,7 +54,7 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
     }
     int len = is->length();
 
-    int ei = inputEncoding == null ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
+    int ei = inputEncoding == nullptr ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
     DString file(data, len, ei);
     int length = file.length();
     lines.reserve(static_cast<size_t>(length / 30)); // estimate number of lines
@@ -93,7 +93,7 @@ const String* TextLinesStore::getFileName()
 String* TextLinesStore::getLine(size_t lno)
 {
   if (lines.size() <= lno) {
-    return null;
+    return nullptr;
   }
   return lines[lno];
 }

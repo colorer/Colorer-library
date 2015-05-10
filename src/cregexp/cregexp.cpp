@@ -7,8 +7,8 @@ int RegExpStack_Size;
 //
 SRegInfo::SRegInfo()
 {
-  next = prev = parent = null;
-  un.param = null;
+  next = prev = parent = nullptr;
+  un.param = nullptr;
   op = ReEmpty;
   param0 = param1 = 0;
 };
@@ -48,8 +48,8 @@ void CRegExp::init()
   global_pattern = 0;
 #ifdef COLORERMODE
   backRE = 0;
-  backStr = null;
-  backTrace = null;
+  backStr = nullptr;
+  backTrace = nullptr;
 #endif
 #ifndef NAMED_MATCHES_IN_HASH
   cnMatch = 0;
@@ -82,7 +82,7 @@ EError CRegExp::setRELow(const String &expr)
   if (!len) return EERROR;
 
   if (tree_root) delete tree_root;
-  tree_root = null;
+  tree_root = nullptr;
 #ifndef NAMED_MATCHES_IN_HASH
   for(int bp = 0; bp < cnMatch; bp++)
     if(brnames[bp]) delete brnames[bp];
@@ -265,7 +265,7 @@ SRegInfo *next, *temp;
           }else{
             next->op = (expr[i+1] =='y'?ReBkTraceName:ReBkTraceNName);
             br_name = UnicodeTools::getCurlyContent(expr, i+2);
-            if (br_name == null) return ESYNTAX;
+            if (br_name == nullptr) return ESYNTAX;
             if (!backRE){
               delete br_name;
               return EERROR;
@@ -283,7 +283,7 @@ SRegInfo *next, *temp;
         case 'p':  // \p{name}
           next->op = ReBkBrackName;
           br_name = UnicodeTools::getCurlyContent(expr, i+2);
-          if (br_name == null) return ESYNTAX;
+          if (br_name == nullptr) return ESYNTAX;
           blen = br_name->length();
 #ifndef NAMED_MATCHES_IN_HASH
           next->param0 = getBracketNo(br_name);
@@ -458,7 +458,7 @@ SRegInfo *next, *temp;
         next->op = ReNamedBrackets;
         namedBracket = true;
         String *s_curly = UnicodeTools::getCurlyContent(expr, i+2);
-        if (s_curly == null) return EBRACKETS;
+        if (s_curly == nullptr) return EBRACKETS;
         SString *br_name = new SString(s_curly);
         delete s_curly;
         int blen = br_name->length();
@@ -516,7 +516,7 @@ SRegInfo *next, *temp;
     if (expr[i] == '['){
       int endPos;
       CharacterClass *cc = CharacterClass::createCharClass(expr, i, &endPos);
-      if (cc == null) return EENUM;
+      if (cc == nullptr) return EENUM;
 //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
       next->op = ReEnum;
       next->un.charclass = cc;
@@ -548,7 +548,7 @@ SRegInfo *next, *temp;
         wcword[idx] = resymb->un.symbol;
         SRegInfo *retmp = resymb;
         resymb = resymb->next;
-        retmp->next = null;
+        retmp->next = nullptr;
         if (idx > 0) delete retmp;
       };
       reword->op = ReWord;
@@ -791,7 +791,7 @@ void CRegExp::insert_stack(SRegInfo **re, SRegInfo **prev, int *toParse, bool *l
   ne.ifFalseReturn=ifFalseReturn;
   ne.leftenter=*leftenter;
 
-  if (prev2==null) *prev=null;
+  if (prev2==nullptr) *prev=nullptr;
   else  *prev=*prev2;
   *re=*re2; 
   *toParse=toParse2;

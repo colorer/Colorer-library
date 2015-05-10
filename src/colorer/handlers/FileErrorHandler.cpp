@@ -11,7 +11,7 @@ FileErrorHandler::FileErrorHandler(const String *fileName, int encoding, bool cl
     file = fopen(fileName->getChars(), "ab+");
     useBOM = false;
   }
-  if (file == null) throw Exception(StringBuffer("Can't open output stream for error handler: '")+fileName+"\'");
+  if (file == nullptr) throw Exception(StringBuffer("Can't open output stream for error handler: '")+fileName+"\'");
   writer = new StreamWriter(file, encoding, useBOM);
   ehw = new ErrorHandlerWriter(writer);
 }

@@ -43,7 +43,7 @@ public:
    */
   const byte* getStream()
   {
-    if (stream == null) {
+    if (stream == nullptr) {
       stream = openStream();
     }
     return stream;

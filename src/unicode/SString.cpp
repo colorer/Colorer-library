@@ -33,7 +33,7 @@ SString::SString(int no){
   construct(&DString(text), 0, -1);
 }
 SString::SString(){
-  wstr = null;
+  wstr = nullptr;
   len = 0;
 }
 SString::~SString(){

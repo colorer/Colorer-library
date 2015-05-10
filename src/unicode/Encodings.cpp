@@ -52,11 +52,11 @@ int Encodings::getEncodingIndex(const char *enc){
   return -1;
 }
 const char* Encodings::getEncodingName(int enc){
-  if (enc >= encNamesNum || enc < -6 || enc == -1) return null;
+  if (enc >= encNamesNum || enc < -6 || enc == -1) return nullptr;
   for(int i = 0; i < encAliasesNum; i++)
     if (arr_idxEncodings[i].pos == enc)
       return arr_idxEncodings[i].name;
-  return null;
+  return nullptr;
 }
 int Encodings::getEncodingNamesNum(){
   return encNamesNum;

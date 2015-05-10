@@ -9,23 +9,23 @@ XmlInputSource *XmlInputSource::newInstance(const XMLCh *path, XmlInputSource *b
   if (xercesc::XMLString::startsWith(path,kJar)){
     return new ZipXmlInputSource(path, base);
   };
-  if (base != null){
+  if (base != nullptr){
     XmlInputSource *is = base->createRelative(path);
-    if (is != null) return is;
+    if (is != nullptr) return is;
     throw InputSourceException(DString("Unknown input source type"));
   };
-  return new LocalFileXmlInputSource(path, null);
+  return new LocalFileXmlInputSource(path, nullptr);
 }
 
 XmlInputSource *XmlInputSource::newInstance(const XMLCh *path, const XMLCh *base)
 {
-  if ((path == null) || (*path == '\0')){
-    throw Exception(DString("XmlInputSource::newInstance: path is null"));
+  if ((path == nullptr) || (*path == '\0')){
+    throw Exception(DString("XmlInputSource::newInstance: path is nullptr"));
   }
   if (xercesc::XMLString::startsWith(path,kJar)){
     return new ZipXmlInputSource(path, base);
   };
-  if (base!=null && xercesc::XMLString::startsWith(base,kJar)){
+  if (base!=nullptr && xercesc::XMLString::startsWith(base,kJar)){
     return new ZipXmlInputSource(path,base,true);
   }
   return new LocalFileXmlInputSource(path, base);

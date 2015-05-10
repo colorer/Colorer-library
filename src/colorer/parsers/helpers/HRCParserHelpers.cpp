@@ -47,7 +47,7 @@ KeywordList::KeywordList()
   num = 0;
   matchCase = false;
   minKeywordLength = 0;
-  kwList = null;
+  kwList = nullptr;
   firstChar = new CharacterClass();
 };
 KeywordList::~KeywordList()
@@ -111,15 +111,15 @@ SchemeNode::SchemeNode()
 {
   virtualEntryVector.reserve(5);
   type = SNT_EMPTY;
-  schemeName = null;
-  scheme = null;
-  kwList = null;
-  worddiv = null;
-  start = end = null;
+  schemeName = nullptr;
+  scheme = nullptr;
+  kwList = nullptr;
+  worddiv = nullptr;
+  start = end = nullptr;
   lowPriority = 0;
 
   //!!regions cleanup
-  region = null;
+  region = nullptr;
   memset(regions, 0, sizeof(regions));
   memset(regionsn, 0, sizeof(regionsn));
   memset(regione, 0, sizeof(regione));

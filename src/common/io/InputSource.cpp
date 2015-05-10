@@ -25,16 +25,16 @@ String *InputSource::getAbsolutePath(const String*basePath, const String*relPath
 };
 
 InputSource *InputSource::newInstance(const String *path){
-  return newInstance(path, null);
+  return newInstance(path, nullptr);
 };
 
 InputSource *InputSource::newInstance(const String *path, InputSource *base){
-  if (path == null){
-    throw InputSourceException(DString("InputSource::newInstance: path is null"));
+  if (path == nullptr){
+    throw InputSourceException(DString("InputSource::newInstance: path is nullptr"));
   }
 #if COLORER_FEATURE_HTTPINPUTSOURCE
   if (path->startsWith(DString("http://"))){
-    return new HTTPInputSource(path, null);
+    return new HTTPInputSource(path, nullptr);
   };
 #endif
 #if COLORER_FEATURE_JARINPUTSOURCE
@@ -42,12 +42,12 @@ InputSource *InputSource::newInstance(const String *path, InputSource *base){
     return new JARInputSource(path, base);
   };
 #endif
-  if (base != null){
+  if (base != nullptr){
     InputSource *is = base->createRelative(path);
-    if (is != null) return is;
+    if (is != nullptr) return is;
     throw InputSourceException(DString("Unknown input source type"));
   };
-  return new FileInputSource(path, null);
+  return new FileInputSource(path, nullptr);
 };
 
 bool InputSource::isRelative(const String *path){

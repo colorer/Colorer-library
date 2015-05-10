@@ -6,8 +6,8 @@
 // parser's cache structures
 ParseCache::ParseCache()
 {
-  children = next = prev = parent = null;
-  backLine = null;
+  children = next = prev = parent = nullptr;
+  backLine = nullptr;
   vcache = 0;
 }
 
@@ -16,7 +16,7 @@ ParseCache::~ParseCache()
   CLR_TRACE("TPCache", "~ParseCache():%s,%d-%d", scheme->getName()->getChars(), sline, eline);
   delete backLine;
   delete children;
-  prev = null;
+  prev = nullptr;
 
   while (next) {
     ParseCache* tmp;
@@ -27,10 +27,10 @@ ParseCache::~ParseCache()
     while (tmp->prev) {
       tmp = tmp->prev;
       delete tmp->next;
-      tmp->next = null;
+      tmp->next = nullptr;
     }
     delete next;
-    next = null;
+    next = nullptr;
   }
 
   delete[] vcache;
@@ -39,7 +39,7 @@ ParseCache::~ParseCache()
 ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
 {
   ParseCache* r1, *r2, *tmp = this;
-  *cache = null;
+  *cache = nullptr;
   while (tmp) {
     CLR_TRACE("TPCache", "  searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline);
     if (tmp->sline <= ln && tmp->eline >= ln) {
@@ -56,17 +56,17 @@ ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
     }
     tmp = tmp->next;
   }
-  return null;
+  return nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////
 // Virtual tables list
 VTList::VTList()
 {
-  vlist = null;
-  prev = next = null;
+  vlist = nullptr;
+  prev = next = nullptr;
   last = this;
-  shadowlast = null;
+  shadowlast = nullptr;
   nodesnum = 0;
 }
 
@@ -187,7 +187,7 @@ bool VTList::restore(VirtualEntryVector** store)
   }
 //  nodesnum = store[0].shadowlast;
   prevpos = last = 0;
-  for (int i = 0; store[i] != null; i++) {
+  for (int i = 0; store[i] != nullptr; i++) {
     pos->next = new VTList;
     prevpos = pos;
     pos = pos->next;

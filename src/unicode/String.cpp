@@ -49,8 +49,8 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String& m
 
 
 String::String(){
-  ret_char_val = null;
-  ret_wchar_val = null;
+  ret_char_val = nullptr;
+  ret_wchar_val = nullptr;
 }
 String::~String(){
   delete[] ret_char_val;
@@ -96,7 +96,7 @@ bool String::operator<(const String &str) const{
 
 
 bool String::equals(const String *str) const{
-  if (str == null) return false;
+  if (str == nullptr) return false;
   return this->operator==(*str);
 }
 

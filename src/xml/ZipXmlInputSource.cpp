@@ -10,7 +10,7 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base)
 
 void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
 {
-  if (path==null || *path == '\0')
+  if (path==nullptr || *path == '\0')
     throw Exception(StringBuffer("Can't create jar source"));
   int path_idx = xercesc::XMLString::lastIndexOf(path,'!');
   if (path_idx == -1) throw Exception(StringBuffer("Bad jar uri format: ") + DString(path));
@@ -89,7 +89,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 
 
 UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
-  : mSrc(src), mSize(size), path(path), mPos(0), mBoundary(0), stream(null), len(0)
+  : mSrc(src), mSize(size), path(path), mPos(0), mBoundary(0), stream(nullptr), len(0)
 {
   MemoryFile *mf = new MemoryFile;
   mf->stream = mSrc;
@@ -97,7 +97,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
   zlib_filefunc_def zlib_ff;
   fill_mem_filefunc(&zlib_ff, mf);
 
-  unzFile fid = unzOpen2(null, &zlib_ff);
+  unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
   if (fid == 0) {
     delete mf;
@@ -111,7 +111,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
     throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+path+"'");
   }
   unz_file_info file_info;
-  ret = unzGetCurrentFileInfo(fid, &file_info, null, 0, null, 0, null, 0);
+  ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);

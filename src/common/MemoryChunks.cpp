@@ -75,12 +75,12 @@ void operator delete[](void* ptr)
 /**
   List of currently allocated memory chunks with size CHUNK_SIZE
 */
-static std::vector<byte*>* chunks = null;
+static std::vector<byte*>* chunks = nullptr;
 
 /**
   Pointer to the last allocated chunk
 */
-static byte* currentChunk = null;
+static byte* currentChunk = nullptr;
 
 /**
   Currently used size of the last allocated chunk
@@ -103,7 +103,7 @@ void* chunk_alloc(size_t size)
     throw Exception(DString("Too big memory request"));
   }
   /* Init static - cygwin problems workaround */
-  if (chunks == null) {
+  if (chunks == nullptr) {
     chunks = new std::vector<byte*>;
   }
 
@@ -132,7 +132,7 @@ void* chunk_alloc(size_t size)
 */
 void chunk_free(void* ptr)
 {
-  if (ptr == null) {
+  if (ptr == nullptr) {
     return;
   }
   //printf("cfree\t%d\n", clock());

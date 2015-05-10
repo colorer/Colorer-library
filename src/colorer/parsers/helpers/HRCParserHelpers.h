@@ -60,7 +60,7 @@ public:
 
   VirtualEntry(const String* scheme, const String* subst)
   {
-    virtScheme = substScheme = null;
+    virtScheme = substScheme = nullptr;
     virtSchemeName = new SString(scheme);
     substSchemeName = new SString(subst);
   }
@@ -139,7 +139,7 @@ protected:
   SchemeImpl(const String* sn)
   {
     schemeName = new SString(sn);
-    fileType = null;
+    fileType = nullptr;
   }
 
   ~SchemeImpl()

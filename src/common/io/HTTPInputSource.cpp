@@ -13,12 +13,12 @@
 
 HTTPInputSource::HTTPInputSource(const String* basePath, HTTPInputSource* base)
 {
-  if (isRelative(basePath) && base != null) {
+  if (isRelative(basePath) && base != nullptr) {
     baseLocation = getAbsolutePath(base->getLocation(), basePath);
   } else {
     baseLocation = new SString(basePath);
   }
-  stream = null;
+  stream = nullptr;
 }
 
 HTTPInputSource::~HTTPInputSource()
@@ -39,7 +39,7 @@ const String* HTTPInputSource::getLocation() const
 
 const byte* HTTPInputSource::openStream()
 {
-  if (stream != null) {
+  if (stream != nullptr) {
     throw InputSourceException(StringBuffer("openStream(): source stream already opened: '") + baseLocation + "'");
   }
 
@@ -98,16 +98,16 @@ const byte* HTTPInputSource::openStream()
 
 void HTTPInputSource::closeStream()
 {
-  if (stream == null) {
+  if (stream == nullptr) {
     throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
   }
   delete[] stream;
-  stream = null;
+  stream = nullptr;
 }
 
 int HTTPInputSource::length() const
 {
-  if (stream == null) {
+  if (stream == nullptr) {
     throw InputSourceException(DString("length(): stream is not yet opened"));
   }
   return len;

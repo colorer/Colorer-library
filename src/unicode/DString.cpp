@@ -116,7 +116,7 @@ DString::DString(const char *string, int s, int l, int encoding){
   if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1){
     len = 0;
-    if (string != null) for(len = 0; str[len+s]; len++);
+    if (string != nullptr) for(len = 0; str[len+s]; len++);
   };
   encodingIdx = encoding;
   if (encodingIdx == -1) encodingIdx = Encodings::getDefaultEncodingIndex();

@@ -92,7 +92,7 @@ void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region*
     outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
   } else {
     OutlineItem* thisItem = outline.back();
-    if (thisItem->token != null && thisItem->lno == lno) {
+    if (thisItem->token != nullptr && thisItem->lno == lno) {
       thisItem->token->append(itemLabel);
     }
   }

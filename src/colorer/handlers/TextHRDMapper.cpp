@@ -35,7 +35,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
-  if (hbase == null || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
+  if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception(DString("Error loading HRD file"));
   }
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
@@ -56,10 +56,10 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler
         delete rd->eback;
         delete rd;
       }
-      const String* stext = null;
-      const String* etext = null;
-      const String* sback = null;
-      const String* eback = null;
+      const String* stext = nullptr;
+      const String* etext = nullptr;
+      const String* sback = nullptr;
+      const String* eback = nullptr;
       const XMLCh* sval;
       sval = subelem->getAttribute(hrdAssignAttrSText);
       if (*sval != '\0') {
@@ -98,16 +98,16 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
     const TextRegion* rdef = TextRegion::cast(it->second);
     writer->write(StringBuffer("  <define name='") + it->first + "'");
-    if (rdef->stext != null) {
+    if (rdef->stext != nullptr) {
       writer->write(StringBuffer(" stext='") + rdef->stext + "'");
     }
-    if (rdef->etext != null) {
+    if (rdef->etext != nullptr) {
       writer->write(StringBuffer(" etext='") + rdef->etext + "'");
     }
-    if (rdef->sback != null) {
+    if (rdef->sback != nullptr) {
       writer->write(StringBuffer(" sback='") + rdef->sback + "'");
     }
-    if (rdef->eback != null) {
+    if (rdef->eback != nullptr) {
       writer->write(StringBuffer(" eback='") + rdef->eback + "'");
     }
     writer->write(DString("/>\n"));
@@ -119,20 +119,20 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
 {
   const TextRegion* rd_new = TextRegion::cast(rd);
-  const String* stext = null;
-  const String* etext = null;
-  const String* sback = null;
-  const String* eback = null;
-  if (rd_new->stext != null) {
+  const String* stext = nullptr;
+  const String* etext = nullptr;
+  const String* sback = nullptr;
+  const String* eback = nullptr;
+  if (rd_new->stext != nullptr) {
     stext = new SString(rd_new->stext);
   }
-  if (rd_new->etext != null) {
+  if (rd_new->etext != nullptr) {
     etext = new SString(rd_new->etext);
   }
-  if (rd_new->sback != null) {
+  if (rd_new->sback != nullptr) {
     sback = new SString(rd_new->sback);
   }
-  if (rd_new->eback != null) {
+  if (rd_new->eback != nullptr) {
     eback = new SString(rd_new->eback);
   }
 

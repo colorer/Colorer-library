@@ -2,7 +2,7 @@
 #include <xml/SharedXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 
-std::unordered_map<SString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = null;
+std::unordered_map<SString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
 
 int SharedXmlInputSource::addref()
 {
@@ -26,7 +26,7 @@ SharedXmlInputSource::SharedXmlInputSource(XmlInputSource* source)
 {
   is = source;
   ref_count = 1;
-  mSrc = null;
+  mSrc = nullptr;
   mSize = 0;
 }
 
@@ -45,17 +45,17 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
 {
   XmlInputSource* tempis = XmlInputSource::newInstance(path, base);
 
-  if (isHash == null) {
+  if (isHash == nullptr) {
     isHash = new std::unordered_map<SString, SharedXmlInputSource*>();
   }
 
-  SharedXmlInputSource* sis = null;
+  SharedXmlInputSource* sis = nullptr;
   auto s = isHash->find(&DString(tempis->getInputSource()->getSystemId()));
   if (s != isHash->end()) {
     sis = s->second;
   }
 
-  if (sis == null) {
+  if (sis == nullptr) {
     sis = new SharedXmlInputSource(tempis);
     std::pair<SString, SharedXmlInputSource*> pp(DString(tempis->getInputSource()->getSystemId()), sis);
     isHash->emplace(pp);

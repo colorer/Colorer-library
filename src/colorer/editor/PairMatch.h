@@ -40,7 +40,7 @@ public:
    * Clears all fields
    */
   PairMatch(LineRegion *startRef, int lineNo, bool topPosition){
-    start = end = null;
+    start = end = nullptr;
     this->startRef = startRef;
     sline = lineNo;
     pairBalance = -1;
@@ -67,10 +67,10 @@ public:
    * pair match properties consistent between parse stages
    */
   void setStart(LineRegion *pair){
-    if (start != null){
+    if (start != nullptr){
       delete start;
     }
-    if (pair != null){
+    if (pair != nullptr){
       start = new LineRegion(*pair);
     }
   }
@@ -80,10 +80,10 @@ public:
    * pair match properties consistent between parse stages
    */
   void setEnd(LineRegion *pair){
-    if (end != null){
+    if (end != nullptr){
       delete end;
     }
-    if (pair != null){
+    if (pair != nullptr){
       end = new LineRegion(*pair);
     }
   }

@@ -1,12 +1,12 @@
 #include<common/io/SharedInputSource.h>
 #include<common/Logging.h>
 
-std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = null;
+std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = nullptr;
 
 SharedInputSource::SharedInputSource(InputSource* source)
 {
   is = source;
-  stream = null;
+  stream = nullptr;
   ref_count = 1;
 }
 
@@ -25,17 +25,17 @@ SharedInputSource* SharedInputSource::getInputSource(const String* path, InputSo
 {
   InputSource* tempis = InputSource::newInstance(path, base);
 
-  if (isHash == null) {
+  if (isHash == nullptr) {
     isHash = new std::unordered_map<SString, SharedInputSource*>();
   }
 
-  SharedInputSource* sis = null;
+  SharedInputSource* sis = nullptr;
   auto s = isHash->find(tempis->getLocation());
   if (s != isHash->end()) {
     sis = s->second;
   }
 
-  if (sis == null) {
+  if (sis == nullptr) {
     sis = new SharedInputSource(tempis);
     std::pair<SString, SharedInputSource*> pp(tempis->getLocation(), sis);
     isHash->emplace(pp);

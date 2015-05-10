@@ -21,7 +21,7 @@ CharacterClass::~CharacterClass(){
 */
 CharacterClass *CharacterClass::createCharClass(const String &ccs, int pos, int *retPos)
 {
-if (ccs[pos] != '[') return null;
+if (ccs[pos] != '[') return nullptr;
 
 CharacterClass *cc = new CharacterClass();
 CharacterClass cc_temp;
@@ -35,7 +35,7 @@ wchar prev_char = BAD_WCHAR;
   };
   for(; pos < ccs.length(); pos++){
     if(ccs[pos] == ']'){
-      if (retPos != null) *retPos = pos;
+      if (retPos != nullptr) *retPos = pos;
       if (inverse){
         CharacterClass *newcc = new CharacterClass();
         newcc->fill();
@@ -47,7 +47,7 @@ wchar prev_char = BAD_WCHAR;
     };
     if(ccs[pos] == '{'){
       String *categ = UnicodeTools::getCurlyContent(ccs, pos);
-      if (categ == null){
+      if (categ == nullptr){
         delete cc;
         return 0;
       }
@@ -120,11 +120,11 @@ wchar prev_char = BAD_WCHAR;
       CharacterClass *scc = createCharClass(ccs, pos+1, &retEnd);
       if (retEnd == ccs.length()){
         delete cc;
-        return null;
+        return nullptr;
       };
-      if (scc == null){
+      if (scc == nullptr){
         delete cc;
-        return null;
+        return nullptr;
       };
       cc->clearClass(*scc);
       delete scc;
@@ -138,11 +138,11 @@ wchar prev_char = BAD_WCHAR;
       CharacterClass *scc = createCharClass(ccs, pos+2, &retEnd);
       if (retEnd == ccs.length()){
         delete cc;
-        return null;
+        return nullptr;
       };
-      if (scc == null){
+      if (scc == nullptr){
         delete cc;
-        return null;
+        return nullptr;
       };
       cc->intersectClass(*scc);
       delete scc;
@@ -154,9 +154,9 @@ wchar prev_char = BAD_WCHAR;
     if (ccs[pos] == '['){
       int retEnd;
       CharacterClass *scc = createCharClass(ccs, pos, &retEnd);
-      if (scc == null){
+      if (scc == nullptr){
         delete cc;
-        return null;
+        return nullptr;
       };
       cc->addClass(*scc);
       delete scc;
@@ -176,7 +176,7 @@ wchar prev_char = BAD_WCHAR;
     prev_char = ccs[pos];
   };
   delete cc;
-  return null;
+  return nullptr;
 }
 
 void CharacterClass::addChar(wchar c){

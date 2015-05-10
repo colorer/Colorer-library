@@ -36,7 +36,7 @@ void StringBuffer::setLength(int newLength){
 }
 
 StringBuffer &StringBuffer::append(const String *string){
-  if (string == null)
+  if (string == nullptr)
     return append(DString("null"));
   return append(*string);
 }

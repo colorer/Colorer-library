@@ -6,12 +6,12 @@ LineRegionsCompactSupport::~LineRegionsCompactSupport() {}
 void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
 {
   LineRegion* lstart = getLineRegions(lno);
-  ladd->next = null;
+  ladd->next = nullptr;
   ladd->prev = ladd;
 
   if (ladd->special) {
     // adds last and returns
-    if (lstart == null) {
+    if (lstart == nullptr) {
       lineRegions.at(getLineIndex(lno)) = ladd;
     } else {
       ladd->prev = lstart->prev;
@@ -20,7 +20,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
     }
     return;
   }
-  if (lstart == null) {
+  if (lstart == nullptr) {
     lineRegions.at(getLineIndex(lno)) = ladd;
     return;
   }
@@ -46,7 +46,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
     // add last
     if (ln->start < ladd->start && !ln->next) {
       ln->next = ladd;
-      ladd->next = null;
+      ladd->next = nullptr;
       ladd->prev = ln;
       lstart->prev = ladd;
       break;
@@ -70,7 +70,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
       if (ladd->next) {
         ladd->next->prev = ln1;
       }
-      if (ln1->next == null) {
+      if (ln1->next == nullptr) {
         lstart->prev = ln1;
       }
       ladd->next = ln1;

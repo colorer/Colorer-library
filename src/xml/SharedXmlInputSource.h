@@ -19,7 +19,7 @@ public:
   void openStream();
   const XMLByte* getStream()
   {
-    if (mSrc == null) {
+    if (mSrc == nullptr) {
       openStream();
     }
     return mSrc;

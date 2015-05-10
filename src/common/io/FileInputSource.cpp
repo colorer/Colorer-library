@@ -27,7 +27,7 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
   }else if (basePath->startsWith(DString("file:"))){
     baseLocation = new SString(basePath, 5, -1);
   }else{
-    if (isRelative(basePath) && base != null)
+    if (isRelative(basePath) && base != nullptr)
       baseLocation = getAbsolutePath(base->getLocation(), basePath);
     else
       baseLocation = new SString(basePath);
@@ -48,7 +48,7 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
     delete baseLocation;
     baseLocation = n_baseLocation;
   }
-  stream = null;
+  stream = nullptr;
 };
 
 FileInputSource::~FileInputSource(){
@@ -65,7 +65,7 @@ const String *FileInputSource::getLocation() const{
 
 const byte *FileInputSource::openStream()
 {
-  if (stream != null) throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
+  if (stream != nullptr) throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
 #if defined _UNICODE && _WIN32
   int source = _wopen(baseLocation->getWChars(), O_BINARY);
 #else
@@ -85,13 +85,13 @@ const byte *FileInputSource::openStream()
 };
 
 void FileInputSource::closeStream(){
-  if (stream == null) throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
+  if (stream == nullptr) throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
   delete[] stream;
-  stream = null;
+  stream = nullptr;
 };
 
 int FileInputSource::length() const{
-  if (stream == null)
+  if (stream == nullptr)
     throw InputSourceException(DString("length(): stream is not yet opened"));
   return len;
 };

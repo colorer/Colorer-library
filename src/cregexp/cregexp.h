@@ -40,8 +40,8 @@ struct SMatch{
 // you can redefine this class
 typedef class SMatchHash{
 public:
-  SMatch *setItem(const String *name, SMatch &smatch){return null;};
-  SMatch *getItem(const String *name){return null;};
+  SMatch *setItem(const String *name, SMatch &smatch){return nullptr;};
+  SMatch *getItem(const String *name){return nullptr;};
 }*PMatchHash;
 #endif
 
@@ -302,10 +302,10 @@ public:
 #ifdef NAMED_MATCHES_IN_HASH
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, SMatches *mtch, SMatchHash *nmtch = null);
+  bool parse(const String *str, SMatches *mtch, SMatchHash *nmtch = nullptr);
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, int pos, int eol, SMatches *mtch, SMatchHash *nmtch = null, int soscheme = 0, int moves = -1);
+  bool parse(const String *str, int pos, int eol, SMatches *mtch, SMatchHash *nmtch = nullptr, int soscheme = 0, int moves = -1);
 #else
   /** Runs RE parser against input string @c str
   */

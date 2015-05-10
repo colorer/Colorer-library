@@ -5,9 +5,9 @@ FileTypeImpl::FileTypeImpl(HRCParserImpl *hrcParser){
   this->hrcParser = hrcParser;
   protoLoaded = typeLoaded = loadDone = loadBroken = inputSourceLoading = false;
   isPackage = false;
-  name = group = description = null;
-  baseScheme = null;
-  inputSource = null;
+  name = group = description = nullptr;
+  baseScheme = nullptr;
+  inputSource = nullptr;
 }
 
 FileTypeImpl::~FileTypeImpl(){
@@ -127,9 +127,9 @@ double FileTypeImpl::getPriority(const String *fileName, const String *fileConte
   double cur_prior = 0;
   for(size_t idx = 0; idx < chooserVector.size(); idx++){
     FileTypeChooser *ftc = chooserVector.at(idx);
-    if (fileName != null && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
+    if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
       cur_prior += ftc->getPrior();
-    if (fileContent != null && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))
+    if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))
       cur_prior += ftc->getPrior();
   }
   return cur_prior;

@@ -25,7 +25,7 @@
 
 void ParserFactory::loadCatalog(const String* catalogPath_)
 {
-  if (catalogPath_ == null) {
+  if (catalogPath_ == nullptr) {
     catalogPath = searchPath();
   } else {
     catalogPath = new SString(catalogPath_);
@@ -46,7 +46,7 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
-  if (elem == null || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
+  if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
     throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ") + catalogPath);
   }
   parseCatalogBlock(elem);
@@ -155,7 +155,7 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
   hrdClass->emplace(pair_name);
 
   const String* hrd_descr = new SString(DString(elem->getAttribute(catHrdAttrDescription)));
-  if (hrd_descr == null) {
+  if (hrd_descr == nullptr) {
     hrd_descr = new SString(hrd_name);
   }
   std::pair<SString, const String*> pp(&(StringBuffer(hrd_class) + "-" + hrd_name), hrd_descr);
@@ -183,11 +183,11 @@ String* ParserFactory::searchPath()
   searchPathLinux(&paths);
 #endif
 
-  String* right_path = null;
+  String* right_path = nullptr;
   for (size_t i = 0; i < paths.size(); i++) {
     String* path = paths.at(i);
-    if (right_path == null) {
-      colorer::InputSource* is = null;
+    if (right_path == nullptr) {
+      colorer::InputSource* is = nullptr;
       try {
         is = colorer::InputSource::newInstance(path);
         is->openStream();
@@ -199,7 +199,7 @@ String* ParserFactory::searchPath()
     }
     delete path;
   }
-  if (right_path == null) {
+  if (right_path == nullptr) {
     errorHandler->fatalError(DString("Can't find suitable catalog.xml file. Check your program settings."));
     throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
   }
@@ -215,12 +215,12 @@ void ParserFactory::searchPathWindows(std::vector<String*>* paths)
   HMODULE hmod;
   hmod = GetModuleHandle(L"colorer");
 #ifdef _WIN64
-  if (hmod == null) {
+  if (hmod == nullptr) {
     hmod = GetModuleHandle(L"colorer_x64");
   }
 #endif
-  if (hmod == null) {
-    hmod = GetModuleHandle(null);
+  if (hmod == nullptr) {
+    hmod = GetModuleHandle(nullptr);
   }
   int len = GetModuleFileName(hmod, cname, 256) - 1;
   DString module(cname, 0, len);
@@ -235,19 +235,19 @@ void ParserFactory::searchPathWindows(std::vector<String*>* paths)
 
   // %COLORER5CATALOG%
   char* c = getenv("COLORER5CATALOG");
-  if (c != null) {
+  if (c != nullptr) {
     paths->push_back(new SString(c));
   }
   // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
   char* b = getenv("HOMEDRIVE");
   c = getenv("HOMEPATH");
-  if ((c != null) && (b != null)) {
+  if ((c != nullptr) && (b != nullptr)) {
     try {
       StringBuffer* d = new StringBuffer(b);
       d->append(&StringBuffer(c).append(DString("/.colorer5catalog")));
       if (_access(d->getChars(), 0) != -1) {
         TextLinesStore tls;
-        tls.loadFile(d, null, false);
+        tls.loadFile(d, nullptr, false);
         if (tls.getLineCount() > 0) {
           paths->push_back(new SString(tls.getLine(0)));
         }
@@ -257,16 +257,16 @@ void ParserFactory::searchPathWindows(std::vector<String*>* paths)
   }
   // %SYSTEMROOT%/.colorer5catalog
   c = getenv("SYSTEMROOT");
-  if (c == null) {
+  if (c == nullptr) {
     c = getenv("WINDIR");
   }
-  if (c != null) {
+  if (c != nullptr) {
     try {
       StringBuffer* d = new StringBuffer(c);
       d->append(DString("/.colorer5catalog"));
       if (_access(d->getChars(), 0) != -1) {
         TextLinesStore tls;
-        tls.loadFile(d, null, false);
+        tls.loadFile(d, nullptr, false);
         if (tls.getLineCount() > 0) {
           paths->push_back(new SString(tls.getLine(0)));
         }
@@ -281,19 +281,19 @@ void ParserFactory::searchPathLinux(std::vector<String*>* paths)
 #ifdef __unix__
   // %COLORER5CATALOG%
   char* c = getenv("COLORER5CATALOG");
-  if (c != null) {
+  if (c != nullptr) {
     paths->push_back(new SString(c));
   }
 
   // %HOME%/.colorer5catalog or %HOMEPATH%
   c = getenv("HOME");
-  if (c == null) {
+  if (c == nullptr) {
     c = getenv("HOMEPATH");
   }
-  if (c != null) {
+  if (c != nullptr) {
     try {
       TextLinesStore tls;
-      tls.loadFile(&StringBuffer(c).append(DString("/.colorer5catalog")), null, false);
+      tls.loadFile(&StringBuffer(c).append(DString("/.colorer5catalog")), nullptr, false);
       if (tls.getLineCount() > 0) {
         paths->push_back(new SString(tls.getLine(0)));
       }
@@ -317,9 +317,9 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
     errorHandler = new DefaultErrorHandler();
     ownErrorHandler = true;
   }
-  hrcParser = null;
-  catalogPath = null;
-  catalogXIS = null;
+  hrcParser = nullptr;
+  catalogPath = nullptr;
+  catalogXIS = nullptr;
   // инициализация xerces, иначе будут ошибки работы со строками
   xercesc::XMLPlatformUtils::Initialize();
 }
@@ -382,13 +382,13 @@ const String* ParserFactory::getHRDescription(const String& classID, const Strin
 
 HRCParser* ParserFactory::getHRCParser()
 {
-  if (hrcParser != null) {
+  if (hrcParser != nullptr) {
     return hrcParser;
   }
   hrcParser = new HRCParserImpl();
   hrcParser->setErrorHandler(errorHandler);
   for (size_t idx = 0; idx < hrcLocations.size(); idx++) {
-    if (hrcLocations.at(idx) != null) {
+    if (hrcLocations.at(idx) != nullptr) {
 #ifdef _WIN32
       size_t i = ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), nullptr, 0);
       wchar_t* temp = new wchar_t[i];
@@ -479,8 +479,8 @@ void ParserFactory::loadPathLinux(const String* path, const String* relPath)
 #ifdef __unix__
   DIR* dir = opendir(path->getChars());
   dirent* dire;
-  if (dir != null) {
-    while ((dire = readdir(dir)) != null) {
+  if (dir != nullptr) {
+    while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
       stat((StringBuffer(path) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
@@ -543,8 +543,8 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->at(idx) != null) {
-      XmlInputSource* dfis = null;
+    if (hrdLocV->at(idx) != nullptr) {
+      XmlInputSource* dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);
@@ -584,8 +584,8 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 
   TextHRDMapper* mapper = new TextHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->at(idx) != null) {
-      XmlInputSource* dfis = null;
+    if (hrdLocV->at(idx) != nullptr) {
+      XmlInputSource* dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
         mapper->loadRegionMappings(dfis, errorHandler);

@@ -25,7 +25,7 @@ public:
   /** Default constructor */
   OutlineItem(){
     lno = pos = 0;
-    token = null;
+    token = nullptr;
   }
 
   /** Initializing constructor */
@@ -34,8 +34,8 @@ public:
     this->pos = pos;
     this->level = level;
     this->region = region;
-    this->token = null;
-    if (token != null) this->token = new StringBuffer(token);
+    this->token = nullptr;
+    if (token != nullptr) this->token = new StringBuffer(token);
   }
 
   ~OutlineItem(){ delete token; }

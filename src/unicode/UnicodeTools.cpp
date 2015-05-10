@@ -12,7 +12,7 @@ int pos, Type, Num;
 int s, e, i, j, pt, k, ExpS, ExpE;
 bool Exp = false, ExpSign = true, sign = false;
 
-  if (pstr == null || pstr->length() == 0) return false;
+  if (pstr == nullptr || pstr->length() == 0) return false;
 
   const String &str = *pstr;
   pos = str.length();
@@ -142,7 +142,7 @@ bool UnicodeTools::getNumber(const String *pstr, int *res){
 int UnicodeTools::getNumber(const String *pstr)
 {
 int r = 1, num = 0;
-  if (pstr == null) return -1;
+  if (pstr == nullptr) return -1;
   for(int i = pstr->length()-1; i >=0; i--){
     if ((*pstr)[i] > '9' || (*pstr)[i] < '0') return -1;
     num += ((*pstr)[i] - 0x30)*r;
@@ -162,7 +162,7 @@ int UnicodeTools::getHex(wchar c)
 int UnicodeTools::getHexNumber(const String *pstr)
 {
 int r = 0, num = 0;
-  if (pstr == null) return -1;
+  if (pstr == nullptr) return -1;
   for(int i = (*pstr).length()-1; i >= 0; i--){
     int d = getHex((*pstr)[i]);
     if (d == -1) return -1;
@@ -174,7 +174,7 @@ int r = 0, num = 0;
 
 DString *UnicodeTools::getCurlyContent(const String &str, int pos)
 {
-  if (str[pos] != '{') return null;
+  if (str[pos] != '{') return nullptr;
   int lpos;
   for(lpos = pos+1; lpos < str.length(); lpos++){
     if (str[lpos] == '}')
@@ -184,9 +184,9 @@ DString *UnicodeTools::getCurlyContent(const String &str, int pos)
     if (Character::isWhitespace(str[lpos]) ||
         cc == CHAR_CATEGORY_Cn || cc == CHAR_CATEGORY_Cc ||
         cc == CHAR_CATEGORY_Cf || cc == CHAR_CATEGORY_Cs)
-      return null;
+      return nullptr;
   };
-  if (lpos == str.length()) return null;
+  if (lpos == str.length()) return nullptr;
   return new DString(&str, pos+1, lpos-pos-1);
 }
 wchar UnicodeTools::getEscapedChar(const String &str, int pos, int &retPos)
@@ -197,7 +197,7 @@ retPos = pos;
     if (str[pos+1] == 'x'){
       if (str[pos+2] == '{'){
         String *val = getCurlyContent(str, pos+2);
-        if (val == null) return BAD_WCHAR;
+        if (val == nullptr) return BAD_WCHAR;
         int tmp = getHexNumber(val);
         int val_len = val->length();
         delete val;

@@ -81,11 +81,11 @@ void BitArray::addBitArray(BitArray* ba){
     array[i] |= ba->array[i];
 }
 void BitArray::clearBitArray(BitArray* ba){
-  if (array == null) return;
-  if (ba == null || ba->array == null) return;
+  if (array == nullptr) return;
+  if (ba == nullptr || ba->array == nullptr) return;
   if (size_t(array) == 1) createArray(true);
   if (size_t(ba->array) == 1){
-    if (array != null) delete[] array;
+    if (array != nullptr) delete[] array;
     array = 0;
     return;
   };
@@ -93,8 +93,8 @@ void BitArray::clearBitArray(BitArray* ba){
     array[i] &= ~ba->array[i];
 }
 void BitArray::intersectBitArray(BitArray*ba){
-  if (array == null) return;
-  if (ba == null || ba->array == null){
+  if (array == nullptr) return;
+  if (ba == nullptr || ba->array == nullptr){
     delete[] array;
     array = 0;
     return;

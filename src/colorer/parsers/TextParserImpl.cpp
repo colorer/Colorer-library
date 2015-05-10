@@ -6,10 +6,10 @@ TextParserImpl::TextParserImpl()
   CLR_TRACE("TextParserImpl", "constructor");
   cache = new ParseCache();
   clearCache();
-  lineSource = null;
-  regionHandler = null;
-  picked = null;
-  baseScheme = null;
+  lineSource = nullptr;
+  regionHandler = nullptr;
+  picked = nullptr;
+  baseScheme = nullptr;
   memset(&matchend, 0, sizeof(SMatches));
 }
 
@@ -21,8 +21,8 @@ TextParserImpl::~TextParserImpl()
 
 void TextParserImpl::setFileType(FileType* type)
 {
-  baseScheme = null;
-  if (type != null) {
+  baseScheme = nullptr;
+  if (type != nullptr) {
     baseScheme = (SchemeImpl*)(type->getBaseScheme());
   }
   clearCache();
@@ -52,13 +52,13 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
 
   CLR_TRACE("TextParserImpl", "parse from=%d, num=%d", from, num);
   /* Check for initial bad conditions */
-  if (regionHandler == null) {
+  if (regionHandler == nullptr) {
     return from;
   }
-  if (lineSource == null) {
+  if (lineSource == nullptr) {
     return from;
   }
-  if (baseScheme == null) {
+  if (baseScheme == nullptr) {
     return from;
   }
 
@@ -69,12 +69,12 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
 
   /* Init cache */
   parent = cache;
-  forward = null;
+  forward = nullptr;
   cache->scheme = baseScheme;
 
   if (mode == TPM_CACHE_READ || mode == TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
-    if (parent != null) {
+    if (parent != nullptr) {
       CLR_TRACE("TPCache", "searchLine() parent:%s,%d-%d", parent->scheme->getName()->getChars(), parent->sline, parent->eline);
     }
   }
@@ -91,12 +91,12 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
       }
       if (updateCache) {
         delete parent->children;
-        parent->children = null;
+        parent->children = nullptr;
       }
     } else {
       if (updateCache) {
         delete forward->next;
-        forward->next = null;
+        forward->next = nullptr;
       }
     }
     baseScheme = parent->scheme;
@@ -109,7 +109,7 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
       colorize(parent->clender->end, parent->clender->lowContentPriority);
       vtlist->clear();
     } else {
-      colorize(null, false);
+      colorize(nullptr, false);
     }
 
     if (updateCache) {
@@ -142,10 +142,10 @@ void TextParserImpl::clearCache()
   }
   delete cache->children;
   delete cache->backLine;
-  cache->backLine = null;
+  cache->backLine = nullptr;
   cache->sline = 0;
   cache->eline = 0x7FFFFFF;
-  cache->children = cache->parent = cache->next = null;
+  cache->children = cache->parent = cache->next = nullptr;
 }
 
 void TextParserImpl::breakParse()
@@ -155,7 +155,7 @@ void TextParserImpl::breakParse()
 
 void TextParserImpl::addRegion(int lno, int sx, int ex, const Region* region)
 {
-  if (sx == -1 || region == null) {
+  if (sx == -1 || region == nullptr) {
     return;
   }
   regionHandler->addRegion(lno, str, sx, ex, region);
@@ -167,7 +167,7 @@ void TextParserImpl::enterScheme(int lno, int sx, int ex, const Region* region)
 void TextParserImpl::leaveScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->leaveScheme(lno, str, sx, ex, region, baseScheme);
-  if (region != null) {
+  if (region != nullptr) {
     picked = region;
   }
 }
@@ -303,12 +303,12 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
 int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 {
   int i, re_result;
-  SchemeImpl* ssubst = null;
+  SchemeImpl* ssubst = nullptr;
   SMatches match;
-  ParseCache* OldCacheF = null;
-  ParseCache* OldCacheP = null;
-  ParseCache* ResF = null;
-  ParseCache* ResP = null;
+  ParseCache* OldCacheF = nullptr;
+  ParseCache* OldCacheP = nullptr;
+  ParseCache* ResF = nullptr;
+  ParseCache* ResP = nullptr;
 
   CLR_TRACE("TextParserImpl", "searchRE: entered scheme \"%s\"", cscheme->getName()->getChars());
 
@@ -391,14 +391,14 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
             OldCacheF = forward->next;
             OldCacheP = parent ? parent : forward->parent;
             parent = forward->next;
-            forward = null;
+            forward = nullptr;
           } else {
             forward = new ParseCache;
             parent->children = forward;
             OldCacheF = forward;
             OldCacheP = parent;
             parent = forward;
-            forward = null;
+            forward = nullptr;
           }
           OldCacheF->parent = OldCacheP;
           OldCacheF->sline = gy + 1;
@@ -443,9 +443,9 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           if (ogy == gy) {
             delete OldCacheF;
             if (ResF) {
-              ResF->next = null;
+              ResF->next = nullptr;
             } else {
-              ResP->children = null;
+              ResP->children = nullptr;
             }
             forward = ResF;
             parent = ResP;
@@ -490,7 +490,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
     if (clearLine != gy) {
       clearLine = gy;
       str = lineSource->getLine(gy);
-      if (str == null) {
+      if (str == nullptr) {
         throw Exception(StringBuffer("null String passed into the parser: ") + SString(gy));
         //!!unreachable code
         //gy = gy2;
@@ -534,7 +534,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
         gy = gy2;
         break;
       }
-      if (picked != null && gx + 11 <= matchend.s[0] && (*str)[gx] == 'C') {
+      if (picked != nullptr && gx + 11 <= matchend.s[0] && (*str)[gx] == 'C') {
         int ci;
         static char id[] = "fnq%Qtrjhg";
         for (ci = 0; ci < 10; ci++) if ((*str)[gx + 1 + ci] != id[ci] - 5) {

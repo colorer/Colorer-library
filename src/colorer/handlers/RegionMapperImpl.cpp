@@ -12,14 +12,14 @@ std::vector<const RegionDefine*> RegionMapperImpl::enumerateRegionDefines() cons
 
 const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) const
 {
-  if (region == null) {
-    return null;
+  if (region == nullptr) {
+    return nullptr;
   }
-  const RegionDefine* rd = null;
+  const RegionDefine* rd = nullptr;
   if (region->getID() < regionDefinesVector.size()) {
     rd = regionDefinesVector.at(region->getID());
   }
-  if (rd != null) {
+  if (rd != nullptr) {
     return rd;
   }
 
@@ -48,7 +48,7 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const String& name) const
   if (tp != regionDefines.end()) {
     return tp->second;
   }
-  return null;
+  return nullptr;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

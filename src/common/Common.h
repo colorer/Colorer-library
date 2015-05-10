@@ -5,8 +5,7 @@
 typedef unsigned char byte;
 /// macro - number of elements in array
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))
-/// null pointer
-#define null (0)
+
 #define TRUE  1
 #define FALSE 0
 

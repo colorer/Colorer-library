@@ -22,7 +22,7 @@ public:
 
   /** Loads region defines from @c is InputSource
   */
-  void loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = null);
+  void loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = nullptr);
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input

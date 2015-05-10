@@ -10,7 +10,7 @@ colorer::ErrorHandler* eh;
 
 BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 {
-  if (parserFactory == null || lineSource == null) {
+  if (parserFactory == nullptr || lineSource == nullptr) {
     throw Exception(DString("Bad BaseEditor constructor parameters"));
   }
   this->parserFactory = parserFactory;
@@ -22,7 +22,7 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   textParser->setRegionHandler(this);
   textParser->setLineSource(lineSource);
 
-  lrSupport = null;
+  lrSupport = nullptr;
 
   invalidLine = 0;
   changedLine = 0;
@@ -32,9 +32,9 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   wSize = 20;
   lrSize = wSize * 3;
   internalRM = false;
-  regionMapper = null;
+  regionMapper = nullptr;
   regionCompact = false;
-  currentFileType = null;
+  currentFileType = nullptr;
 
   breakParse = false;
   validationProcess = false;
@@ -47,7 +47,7 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 
   setRegionCompact(regionCompact);
 
-  rd_def_Text = rd_def_HorzCross = rd_def_VertCross = null;
+  rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
   eh = parserFactory->getErrorHandler();
 }
 
@@ -93,7 +93,7 @@ void BaseEditor::setRegionMapper(const String* hrdClass, const String* hrdName)
 
 void BaseEditor::remapLRS(bool recreate)
 {
-  if (recreate || lrSupport == null) {
+  if (recreate || lrSupport == nullptr) {
     delete lrSupport;
     if (regionCompact) {
       lrSupport = new LineRegionsCompactSupport();
@@ -106,8 +106,8 @@ void BaseEditor::remapLRS(bool recreate)
   lrSupport->setRegionMapper(regionMapper);
   lrSupport->setSpecialRegion(def_Special);
   invalidLine = 0;
-  rd_def_Text = rd_def_HorzCross = rd_def_VertCross = null;
-  if (regionMapper != null) {
+  rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
+  if (regionMapper != nullptr) {
     rd_def_Text = regionMapper->getRegionDefine(DString("def:Text"));
     rd_def_HorzCross = regionMapper->getRegionDefine(DString("def:HorzCross"));
     rd_def_VertCross = regionMapper->getRegionDefine(DString("def:VertCross"));
@@ -136,7 +136,7 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
   int totalLength = 0;
   for (int i = 0; i < chooseStr; i++) {
     String* iLine = lineSource->getLine(i);
-    if (iLine == null) {
+    if (iLine == nullptr) {
       break;
     }
     textStart.append(iLine);
@@ -159,8 +159,8 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
 
 FileType* BaseEditor::chooseFileType(const String* fileName)
 {
-  if (lineSource == null) {
-    currentFileType = hrcParser->chooseFileType(fileName, null);
+  if (lineSource == nullptr) {
+    currentFileType = hrcParser->chooseFileType(fileName, nullptr);
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
@@ -221,10 +221,10 @@ void BaseEditor::removeEditorListener(EditorListener* el)
 PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
 {
   LineRegion* lrStart = getLineRegions(lineNo);
-  if (lrStart == null) {
-    return null;
+  if (lrStart == nullptr) {
+    return nullptr;
   }
-  LineRegion* pair = null;
+  LineRegion* pair = nullptr;
   for (LineRegion* l1 = lrStart; l1; l1 = l1->next) {
     if ((l1->region->hasParent(def_PairStart) ||
          l1->region->hasParent(def_PairEnd)) &&
@@ -232,17 +232,17 @@ PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
       pair = l1;
     }
   }
-  if (pair != null) {
+  if (pair != nullptr) {
     PairMatch* pm = new PairMatch(pair, lineNo, pair->region->hasParent(def_PairStart));
     pm->setStart(pair);
     return pm;
   }
-  return null;
+  return nullptr;
 }
 
 PairMatch* BaseEditor::getEnwrappedPairMatch(int lineNo, int pos)
 {
-  return null;
+  return nullptr;
 }
 
 void BaseEditor::releasePairMatch(PairMatch* pm)
@@ -255,8 +255,8 @@ PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
   int lno;
   int end_line = getLastVisibleLine();
   PairMatch* pm = getPairMatch(lineNo, pos);
-  if (pm == null) {
-    return null;
+  if (pm == nullptr) {
+    return nullptr;
   }
 
   lno = pm->sline;
@@ -266,7 +266,7 @@ PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
   while (true) {
     if (pm->pairBalance > 0) {
       pair = pair->next;
-      while (pair == null) {
+      while (pair == nullptr) {
         lno++;
         if (lno > end_line) {
           break;
@@ -312,8 +312,8 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
   int lno;
   int end_line = lineCount;
   PairMatch* pm = getPairMatch(lineNo, pos);
-  if (pm == null) {
-    return null;
+  if (pm == nullptr) {
+    return nullptr;
   }
 
   lno = pm->sline;
@@ -323,7 +323,7 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
   while (true) {
     if (pm->pairBalance > 0) {
       pair = pair->next;
-      while (pair == null) {
+      while (pair == nullptr) {
         lno++;
         if (lno > end_line) {
           break;
@@ -371,7 +371,7 @@ LineRegion* BaseEditor::getLineRegions(int lno)
    * Backparse value check
    */
   if (backParse > 0 && lno - invalidLine > backParse) {
-    return null;
+    return nullptr;
   }
   validate(lno, true);
   return lrSupport->getLineRegions(lno);

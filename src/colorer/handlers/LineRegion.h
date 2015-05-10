@@ -61,8 +61,8 @@ public:
     scheme = lr.scheme;
     region = lr.region;
     special = lr.special;
-    rdef = null;
-    if (lr.rdef != null) {
+    rdef = nullptr;
+    if (lr.rdef != nullptr) {
       rdef = lr.rdef->clone();
     }
     return *this;
@@ -70,11 +70,11 @@ public:
   /** Clears all fields */
   LineRegion()
   {
-    next = prev = null;
+    next = prev = nullptr;
     start = end = 0;
-    scheme = null;
-    region = null;
-    rdef = null;
+    scheme = nullptr;
+    region = nullptr;
+    rdef = nullptr;
     special = false;
   }
   /** Copy constructor.
