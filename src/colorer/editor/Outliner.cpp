@@ -49,14 +49,12 @@ bool Outliner::isOutlined(const Region* region)
 
 void Outliner::modifyEvent(size_t topLine)
 {
-  auto it = outline.end();
-  for (; it != outline.begin(); --it) {
-    if ((*it)->lno < topLine) {
-      ++it;
+  for (auto i = 0; i <outline.size(); ++i) {
+    if (outline[i]->lno > topLine) {
+      outline.resize(i);
       break;
     }
   }
-  outline.erase(it, outline.end());
 
   modifiedLine = topLine;
 }

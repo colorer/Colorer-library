@@ -382,8 +382,8 @@ void BaseEditor::modifyEvent(int topLine)
   CLR_TRACE("BaseEditor", "modifyEvent:%d", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
-    for (size_t idx = editorListeners.size() - 1; idx >= 0; idx--) {
-      editorListeners.at(idx)->modifyEvent(topLine);
+    for (auto it = editorListeners.begin(); it != editorListeners.end(); ++it) {
+      (*it)->modifyEvent(topLine);
     }
   }
 }
