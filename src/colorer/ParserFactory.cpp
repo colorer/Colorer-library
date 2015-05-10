@@ -396,7 +396,7 @@ HRCParser* ParserFactory::getHRCParser()
       const String* relPath = new SString(temp);
       delete[] temp;
 #else
-      const String* relPath = new SString(hrcLocations.elementAt(idx));
+      const String* relPath = new SString(hrcLocations.at(idx));
 #endif
       const String* path;
       if (colorer::InputSource::isRelative(relPath)) {
