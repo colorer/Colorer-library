@@ -104,6 +104,12 @@ wchar prev_char = BAD_WCHAR;
           cc_temp.clearChar(0x0D);
           cc->addClass(cc_temp);
           break;
+        case 'l':
+          cc->addCategory(CHAR_CATEGORY_Ll);
+          break;
+        case 'u':
+          cc->addCategory(CHAR_CATEGORY_Lu);
+          break;
         default:
           prev_char = UnicodeTools::getEscapedChar(ccs, pos, retEnd);
           if (prev_char == BAD_WCHAR) break;
