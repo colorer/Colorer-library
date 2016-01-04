@@ -377,7 +377,14 @@ std::vector<SString> ParserFactory::enumHRDInstances(const String& classID)
 
 const String* ParserFactory::getHRDescription(const String& classID, const String& nameID)
 {
-  return hrdDescriptions.find(&(StringBuffer(classID) + "-" + nameID))->second;
+  auto it = hrdDescriptions.find(&(StringBuffer(classID) + "-" + nameID));
+  if (it != hrdDescriptions.end())
+  {
+    return it->second;
+  } else
+  {
+    return nullptr;
+  }
 }
 
 HRCParser* ParserFactory::getHRCParser()
@@ -525,7 +532,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
   DString name_env;
   if (nameID == nullptr) {
     char* hrd = getenv("COLORER5HRD");
-    if (hrd == nullptr) {
+    if (hrd != nullptr) {
       name_env = DString(hrd);
       name_id = &name_env;
     } else {
