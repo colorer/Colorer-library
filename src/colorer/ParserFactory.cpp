@@ -214,7 +214,7 @@ void ParserFactory::searchPathWindows(std::vector<String*>* paths)
   wchar_t cname[256];
   HMODULE hmod;
   hmod = GetModuleHandle(L"colorer");
-#ifdef _WIN64
+#ifdef WIN64
   if (hmod == nullptr) {
     hmod = GetModuleHandle(L"colorer_x64");
   }

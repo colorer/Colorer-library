@@ -14,10 +14,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
 endif()
 message("Consoletools build type: ${CMAKE_BUILD_TYPE}")
-
-if(NOT DEFINED CONF)
-  set(CONF "x86")
-endif()
    
 #====================================================
 # colorer_lib
@@ -37,16 +33,15 @@ endif()
 
 if(WIN32)
   add_definitions(-D_WINDOWS)
-  add_definitions(-DWIN32)
-  if(CONF STREQUAL "x64")
-    add_definitions(-DWIN64)
+  add_definitions(-D_WIN32)
+  if(${CMAKE_CL_64})
+    add_definitions(-D_WIN64)
   endif()
 endif(WIN32)
 
 add_definitions(-D_UNICODE -DUNICODE)
 
-set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
-set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
+set(FLAGS_DEBUG "-D_DEBUG")
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -60,11 +55,6 @@ if(MSVC)
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
   set(LINK_FLAGS_RELEASE "/LTCG")
 
-  if(CONF STREQUAL "x64")
-    set(LINK_FLAGS "/MACHINE:X64")
-  else()
-    set(LINK_FLAGS "/MACHINE:X86")
-  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)

@@ -139,14 +139,14 @@ add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX)
 #====================================================
 if(WIN32)
   add_definitions(-D_WINDOWS)
-  add_definitions(-DWIN32)
-  if(CONF STREQUAL "x64")
-    add_definitions(-DWIN64)
+  add_definitions(-D_WIN32)
+  if(${CMAKE_CL_64})
+    add_definitions(-D_WIN64)
   endif()
 endif(WIN32)
 
-set(FLAGS_RELEASE "-U_DEBUG -DNDEBUG -DCOLORER_FEATURE_LOGLEVEL=COLORER_FEATURE_LOGLEVEL_QUIET")
-set(FLAGS_DEBUG "-D_DEBUG -DDEBUG")
+set(FLAGS_RELEASE "-DCOLORER_FEATURE_LOGLEVEL=COLORER_FEATURE_LOGLEVEL_QUIET")
+set(FLAGS_DEBUG "-D_DEBUG")
 
 add_definitions(-D_UNICODE -DUNICODE)
 
