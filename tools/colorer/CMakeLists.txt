@@ -10,9 +10,10 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 # init variables
 #====================================================
 
-IF(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE Release)
-ENDIF()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
+endif()
+message("Consoletools build type: ${CMAKE_BUILD_TYPE}")
 
 if(NOT DEFINED CONF)
   set(CONF "x86")

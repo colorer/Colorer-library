@@ -5,18 +5,14 @@ project (colorer_lib)
 # init variables
 #====================================================
 
-IF(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE Release)
-ENDIF()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
+endif()
+message("Colorer_lib build type: ${CMAKE_BUILD_TYPE}")
 
 #====================================================
 # xercesc_lib
 #====================================================
-if(CONF STREQUAL "x86")
-  set(LIBRARY_BITS "32")
-else()
-  set(LIBRARY_BITS "64")
-endif()
 add_subdirectory(../libs/xercesc ./build)
 include_directories(../libs/xercesc/src)
 add_definitions(-DXERCES_STATIC_LIBRARY)
@@ -165,12 +161,6 @@ if(MSVC)
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
   set(STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
-  if(CONF STREQUAL "x64")
-    add_definitions(-DWIN64)
-    set(STATIC_LIBRARY_FLAGS "/MACHINE:X64")
-  else()
-    set(STATIC_LIBRARY_FLAGS "/MACHINE:X86")
-  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
