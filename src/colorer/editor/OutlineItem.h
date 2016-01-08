@@ -1,6 +1,7 @@
 #ifndef _COLORER_OUTLINEITEM_H_
 #define _COLORER_OUTLINEITEM_H_
 
+#include <memory>
 #include <colorer/Region.h>
 
 /**
@@ -19,33 +20,26 @@ public:
   /** Level of enclosure */
   int level;
   /** Item text */
-  StringBuffer* token;
+  std::unique_ptr<StringBuffer> token;
   /** This item's region */
   const Region* region;
 
   /** Default constructor */
-  OutlineItem()
+  OutlineItem() : lno(0), pos(0), level(0), token(nullptr), region(nullptr)
   {
-    lno = pos = 0;
-    token = nullptr;
   }
 
   /** Initializing constructor */
-  OutlineItem(size_t lno, int pos, int level, String* token, const Region* region)
+  OutlineItem(size_t lno_, int pos_, int level_, String* token_, const Region* region_):
+    lno(lno_), pos(pos_), level(level_), token(nullptr), region(region_)
   {
-    this->lno = lno;
-    this->pos = pos;
-    this->level = level;
-    this->region = region;
-    this->token = nullptr;
-    if (token != nullptr) {
-      this->token = new StringBuffer(token);
+    if (token_ != nullptr) {
+      token.reset(new StringBuffer(token_));
     }
   }
 
   ~OutlineItem()
   {
-    delete token;
   }
 };
 
