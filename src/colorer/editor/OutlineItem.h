@@ -1,7 +1,7 @@
 #ifndef _COLORER_OUTLINEITEM_H_
 #define _COLORER_OUTLINEITEM_H_
 
-#include<colorer/Region.h>
+#include <colorer/Region.h>
 
 /**
  * Item in outliner's list.
@@ -9,7 +9,8 @@
  * structured token with specified type (region reference).
  * @ingroup colorer_editor
  */
-class OutlineItem {
+class OutlineItem
+{
 public:
   /** Line number */
   size_t lno;
@@ -18,27 +19,34 @@ public:
   /** Level of enclosure */
   int level;
   /** Item text */
-  StringBuffer *token;
+  StringBuffer* token;
   /** This item's region */
-  const Region *region;
+  const Region* region;
 
   /** Default constructor */
-  OutlineItem(){
+  OutlineItem()
+  {
     lno = pos = 0;
     token = nullptr;
   }
 
   /** Initializing constructor */
-  OutlineItem(size_t lno, int pos, int level, String *token, const Region *region){
+  OutlineItem(size_t lno, int pos, int level, String* token, const Region* region)
+  {
     this->lno = lno;
     this->pos = pos;
     this->level = level;
     this->region = region;
     this->token = nullptr;
-    if (token != nullptr) this->token = new StringBuffer(token);
+    if (token != nullptr) {
+      this->token = new StringBuffer(token);
+    }
   }
 
-  ~OutlineItem(){ delete token; }
+  ~OutlineItem()
+  {
+    delete token;
+  }
 };
 
 #endif
