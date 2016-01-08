@@ -201,11 +201,13 @@ void ConsoleTools::RETest(){
     printf("\nregexp:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    if (!re->setRE(&DString(text))) continue;
+    DString dtext = DString(text);
+    if (!re->setRE(&dtext)) continue;
     printf("exprn:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    res = re->parse(&DString(text), &match);
+    dtext = DString(text);
+    res = re->parse(&dtext, &match);
     printf("%s\nmatch:  ",res?"ok":"error");
     for(int i = 0; i < match.cMatch; i++){
       printf("%d:(%d,%d), ",i,match.s[i],match.e[i]);
@@ -295,7 +297,8 @@ void ConsoleTools::profile(int loopCount){
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
-  baseEditor.setRegionMapper(&DString("console"), hrdName);
+  DString dcons = DString("console");
+  baseEditor.setRegionMapper(&dcons, hrdName);
   FileType *type = selectType(pf.getHRCParser(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
@@ -325,7 +328,8 @@ void ConsoleTools::viewFile(){
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
-    baseEditor.setRegionMapper(&DString("console"), hrdName);
+    DString dcons = DString("console");
+    baseEditor.setRegionMapper(&dcons, hrdName);
     FileType *type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
@@ -384,7 +388,8 @@ void ConsoleTools::genOutput(bool useTokens){
     RegionMapper *mapper = nullptr;
     if (!useTokens){
       try{
-        mapper = pf.createStyledMapper(&DString("rgb"), hrdName);
+        DString drgb = DString("rgb");
+        mapper = pf.createStyledMapper(&drgb, hrdName);
       }catch(ParserFactoryException &){
         useMarkup = true;
         mapper = pf.createTextMapper(hrdName);

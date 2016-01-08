@@ -104,7 +104,7 @@ void KeywordList::substrIndex()
 };
 
 
-char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
+const char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
 
 
 SchemeNode::SchemeNode()

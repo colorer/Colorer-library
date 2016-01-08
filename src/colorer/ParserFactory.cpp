@@ -569,7 +569,8 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 {
   // fixed class 'text'
-  auto it_hrdClass = hrdLocations.find(&DString("text"));
+  DString d_text = DString("text");
+  auto it_hrdClass = hrdLocations.find(&d_text);
   if (it_hrdClass == hrdLocations.end()) {
     throw ParserFactoryException(StringBuffer("can't find hrdClass 'text'"));
   }

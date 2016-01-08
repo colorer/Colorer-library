@@ -50,12 +50,15 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandl
       }
 
       int val = 0;
-      bool bfore = UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrFore)), &val);
+      DString dhrdAssignAttrFore = DString(subelem->getAttribute(hrdAssignAttrFore));
+      bool bfore = UnicodeTools::getNumber(&dhrdAssignAttrFore, &val);
       int fore = val;
-      bool bback = UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrBack)), &val);
+      DString dhrdAssignAttrBack = DString(subelem->getAttribute(hrdAssignAttrBack));
+      bool bback = UnicodeTools::getNumber(&dhrdAssignAttrBack, &val);
       int back = val;
       int style = 0;
-      if (UnicodeTools::getNumber(&DString(subelem->getAttribute(hrdAssignAttrStyle)), &val)) {
+      DString dhrdAssignAttrStyle = DString(subelem->getAttribute(hrdAssignAttrStyle));
+      if (UnicodeTools::getNumber(&dhrdAssignAttrStyle, &val)) {
         style = val;
       }
       RegionDefine* rdef = new StyledRegion(bfore, bback, fore, back, style);

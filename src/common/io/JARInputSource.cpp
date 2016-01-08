@@ -11,8 +11,9 @@ JARInputSource::JARInputSource(const String *basePath, InputSource *base){
   if (ex_idx == -1) throw InputSourceException(StringBuffer("Bad jar uri format: ") + basePath);
 
   inJarLocation = new SString(basePath, ex_idx+1, -1);
-
-  sharedIS = SharedInputSource::getInputSource(&DString(basePath, 4, ex_idx-4), base);
+  
+  DString bpath = DString(basePath, 4, ex_idx-4);
+  sharedIS = SharedInputSource::getInputSource(&bpath, base);
 
   StringBuffer str("jar:");
   str.append(sharedIS->getLocation());

@@ -48,12 +48,14 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base, bool 
   XMLCh *bpath= new XMLCh [base_idx-4+1];
   xercesc::XMLString::subString(bpath,base,4,base_idx);
 
-  jarIS = SharedXmlInputSource::getShared(&DString(bpath));
+  DString d_bpath = DString(bpath);
+  jarIS = SharedXmlInputSource::getShared(&d_bpath);
   delete[] bpath;
   jarIS->addref();
 
   String * in_base = new SString(DString(base), base_idx+1, -1);
-  inJarLocation = XmlInputSource::getAbsolutePath(in_base, &DString(path));
+  DString d_path = DString(path);
+  inJarLocation = XmlInputSource::getAbsolutePath(in_base, &d_path);
   delete in_base;
   StringBuffer str("jar:");
   str.append(DString(jarIS->getInputSource()->getSystemId()));

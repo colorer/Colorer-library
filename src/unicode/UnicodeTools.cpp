@@ -205,7 +205,8 @@ retPos = pos;
         retPos += val_len+2;
         return tmp;
       }else{
-        int tmp = getHexNumber(&DString(&str, pos+2, 2));
+        DString dtmp = DString(&str, pos+2, 2);
+        int tmp = getHexNumber(&dtmp);
         if (str.length() <=pos+2 || tmp == -1) return BAD_WCHAR;
         retPos += 2;
         return tmp;

@@ -39,11 +39,16 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   breakParse = false;
   validationProcess = false;
 
-  def_Text = hrcParser->getRegion(&DString("def:Text"));
-  def_Syntax = hrcParser->getRegion(&DString("def:Syntax"));
-  def_Special = hrcParser->getRegion(&DString("def:Special"));
-  def_PairStart = hrcParser->getRegion(&DString("def:PairStart"));
-  def_PairEnd = hrcParser->getRegion(&DString("def:PairEnd"));
+  DString def_text = DString("def:Text");
+  DString def_syntax = DString("def:Syntax");
+  DString def_special = DString("def:Special");
+  DString def_pstart = DString("def:PairStart");
+  DString def_pend = DString("def:PairEnd");
+  def_Text = hrcParser->getRegion(&def_text);
+  def_Syntax = hrcParser->getRegion(&def_syntax);
+  def_Special = hrcParser->getRegion(&def_special);
+  def_PairStart = hrcParser->getRegion(&def_pstart);
+  def_PairEnd = hrcParser->getRegion(&def_pend);
 
   setRegionCompact(regionCompact);
 
@@ -164,7 +169,8 @@ FileType* BaseEditor::chooseFileType(const String* fileName)
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
-    FileType* def = hrcParser->getFileType(&DString("default"));
+    DString ds_def = DString("default");
+    FileType* def = hrcParser->getFileType(&ds_def);
     if (def) {
       chooseStr = def->getParamValueInt(DString("firstlines"), chooseStr);
       chooseLen = def->getParamValueInt(DString("firstlinebytes"), chooseLen);

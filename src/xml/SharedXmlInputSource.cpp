@@ -32,7 +32,8 @@ SharedXmlInputSource::SharedXmlInputSource(XmlInputSource* source)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  isHash->erase(&DString(is->getInputSource()->getSystemId()));
+  DString d_id = DString(is->getInputSource()->getSystemId());
+  isHash->erase(&d_id);
   if (isHash->size() == 0) {
     delete isHash;
     isHash = NULL;
@@ -50,7 +51,8 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
   }
 
   SharedXmlInputSource* sis = nullptr;
-  auto s = isHash->find(&DString(tempis->getInputSource()->getSystemId()));
+  DString d_id = DString(tempis->getInputSource()->getSystemId());
+  auto s = isHash->find(&d_id);
   if (s != isHash->end()) {
     sis = s->second;
   }

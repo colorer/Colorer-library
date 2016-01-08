@@ -30,7 +30,8 @@ SString::SString(wchar *str){
 SString::SString(int no){
   char text[40];
   sprintf(text, "%d", no);
-  construct(&DString(text), 0, -1);
+  DString dtext = DString(text);
+  construct(&dtext, 0, -1);
 }
 SString::SString(){
   wstr = nullptr;
