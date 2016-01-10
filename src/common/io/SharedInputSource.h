@@ -27,7 +27,7 @@ public:
   int delref()
   {
     if (ref_count == 0) {
-      CLR_ERROR("SharedInputSource", "delref: already zeroed references");
+      LOGF(ERROR, "[SharedInputSource] delref: already zeroed references");
     }
     ref_count--;
     if (ref_count <= 0) {

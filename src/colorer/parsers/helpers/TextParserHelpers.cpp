@@ -13,7 +13,7 @@ ParseCache::ParseCache()
 
 ParseCache::~ParseCache()
 {
-  CLR_TRACE("TPCache", "~ParseCache():%s,%d-%d", scheme->getName()->getChars(), sline, eline);
+  LOGF(DEBUG, "[TPCache] ~ParseCache():%s,%d-%d", scheme->getName()->getChars(), sline, eline);
   delete backLine;
   delete children;
   prev = nullptr;
@@ -41,7 +41,7 @@ ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
   ParseCache* r1, *r2, *tmp = this;
   *cache = nullptr;
   while (tmp) {
-    CLR_TRACE("TPCache", "  searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline);
+    LOGF(DEBUG, "[TPCache] searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline);
     if (tmp->sline <= ln && tmp->eline >= ln) {
       r1 = tmp->children->searchLine(ln, &r2);
       if (r1) {

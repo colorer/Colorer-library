@@ -12,7 +12,7 @@ int SharedXmlInputSource::addref()
 int SharedXmlInputSource::delref()
 {
   if (ref_count == 0) {
-    CLR_ERROR("SharedXmlInputSource", "delref: already zeroed references");
+    LOGF(ERROR, "[SharedXmlInputSource] delref: already zeroed references");
   }
   ref_count--;
   if (ref_count <= 0) {

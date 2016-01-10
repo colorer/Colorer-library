@@ -80,7 +80,7 @@ void LineRegionsSupport::setRegionMapper(const RegionMapper* rs)
 bool LineRegionsSupport::checkLine(size_t lno) const
 {
   if (lno < firstLineNo || lno >= firstLineNo + lineCount) {
-    CLR_WARN("LineRegionsSupport", "checkLine: line %d out of range", lno);
+    LOGF(WARNING, "[LineRegionsSupport] checkLine: line %d out of range", lno);
     return false;
   }
   return true;
