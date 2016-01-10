@@ -27,14 +27,15 @@ IF (NOT COLORER_FEATURE_HTTPINPUTSOURCE)
 ENDIF()
 
 set(COLORER ./colorer)
-set(EDITOR ${COLORER}/editor)
-set(HANDLERS ${COLORER}/handlers)
-set(PARSERS ${COLORER}/parsers)
-set(VIEWER ${COLORER}/viewer)
+set(EDITOR ./colorer/editor)
+set(HANDLERS ./colorer/handlers)
+set(PARSERS ./colorer/parsers)
+set(VIEWER ./colorer/viewer)
 set(COMMON ./common)
 set(REGEXP ./cregexp)
 set(XML ./xml)
 set(UNICODE ./unicode)
+set(UTILS ./utils)
 
 set(SRC_COLORER
    ${EDITOR}/BaseEditor.cpp ${EDITOR}/BaseEditor.h
@@ -106,6 +107,8 @@ set(SRC_COLORER
    ${UNICODE}/x_charcategory.h ${UNICODE}/x_defines.h
    ${UNICODE}/x_charcategory2.h ${UNICODE}/x_encodings.h
    ${UNICODE}/x_charcategory_names.h ${UNICODE}/x_tables.h
+
+   ${UTILS}/LogFileSink.cpp ${UTILS}/LogFileSink.h
 )
 
 # add ${XML} to fix build on farmanager server

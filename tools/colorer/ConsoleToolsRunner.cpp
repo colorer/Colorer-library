@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <g3log/logworker.hpp>
+#include <utils/LogFileSink.h>
 #include <colorer/viewer/ConsoleTools.h>
 
 /** Internal run action type */
@@ -165,8 +166,10 @@ void printError(){
 int main(int argc, char *argv[])
 {
   auto worker = g3::LogWorker::createLogWorker();
-  auto defaultHandler = worker->addDefaultLogger(log_prefix, path_to_log_file);
+  auto handle = worker->addSink(std2::make_unique<LogFileSink>(log_prefix, path_to_log_file, false), &LogFileSink::fileWrite);
+
   g3::initializeLogging(worker.get());
+
 
   ConsoleTools ct;  
   try{
