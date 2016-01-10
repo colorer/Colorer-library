@@ -1,5 +1,4 @@
 #include <colorer/parsers/helpers/TextParserHelpers.h>
-#include <common/Logging.h>
 
 
 /////////////////////////////////////////////////////////////////////////

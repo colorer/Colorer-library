@@ -1,5 +1,4 @@
 #include<common/io/SharedInputSource.h>
-#include<common/Logging.h>
 
 std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = nullptr;
 

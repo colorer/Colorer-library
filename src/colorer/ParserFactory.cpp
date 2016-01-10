@@ -9,7 +9,6 @@
 #include <windows.h>
 #endif
 
-#include <common/Logging.h>
 
 #include <colorer/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>
@@ -74,19 +73,7 @@ void ParserFactory::parseCatalogBlock(const xercesc::DOMElement* elem)
 
 void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement* elem)
 {
-  if (COLORER_FEATURE_LOGLEVEL > COLORER_FEATURE_LOGLEVEL_QUIET) {
-    //TODO: change debug loging
-    const XMLCh* logLocation = elem->getAttribute(catHrcSetsAttrLoglocation);
-
-    if (*logLocation != '\0') {
-      XmlInputSource* dfis = XmlInputSource::newInstance(logLocation, catalogXIS);
-      try {
-        colorer_logger_set_target(DString(dfis->getInputSource()->getSystemId()).getChars());
-      } catch (Exception&) {
-      }
-      delete dfis;
-    }
-  }
+  // TODO: break catHrcSetsAttrLoglocation
   addHrcSetsLocation(elem);
 }
 

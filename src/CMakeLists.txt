@@ -75,7 +75,6 @@ set(SRC_COLORER
    ${COLORER}/Scheme.h
    ${COMMON}/Common.h
    ${COMMON}/Exception.h ${COMMON}/Exception.cpp
-   ${COMMON}/Logging.cpp ${COMMON}/Logging.h
    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
    ${COMMON}/Features.h
    ${COMMON}/io/FileInputSource.cpp ${COMMON}/io/FileInputSource.h
@@ -150,7 +149,6 @@ if(WIN32)
   endif()
 endif(WIN32)
 
-set(FLAGS_RELEASE "-DCOLORER_FEATURE_LOGLEVEL=COLORER_FEATURE_LOGLEVEL_QUIET")
 set(FLAGS_DEBUG "-D_DEBUG")
 
 add_definitions(-D_UNICODE -DUNICODE)

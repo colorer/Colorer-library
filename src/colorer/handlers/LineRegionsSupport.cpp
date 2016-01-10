@@ -1,5 +1,4 @@
 #include <colorer/handlers/LineRegionsSupport.h>
-#include <common/Logging.h>
 
 LineRegionsSupport::LineRegionsSupport()
 {

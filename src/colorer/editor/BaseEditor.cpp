@@ -1,4 +1,3 @@
-#include <common/Logging.h>
 #include <colorer/editor/BaseEditor.h>
 
 #define IDLE_PARSE(time) (100+time*4)

@@ -1,4 +1,3 @@
-#include<common/Logging.h>
 #include <xml/SharedXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 

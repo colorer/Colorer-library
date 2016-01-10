@@ -2,7 +2,6 @@
 #define _COLORER_SHAREDINPUTSOURCE_H_
 
 #include<common/Common.h>
-#include<common/Logging.h>
 #include<common/io/InputSource.h>
 
 /**

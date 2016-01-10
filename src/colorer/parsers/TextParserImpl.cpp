@@ -1,5 +1,4 @@
 #include <colorer/parsers/TextParserImpl.h>
-#include <common/Logging.h>
 
 TextParserImpl::TextParserImpl()
 {

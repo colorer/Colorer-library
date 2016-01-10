@@ -2,13 +2,6 @@
 #define _COLORER_FEATURES_H_
 
 /**
-  Default log-level
-*/
-#ifndef COLORER_FEATURE_LOGLEVEL
-  #define COLORER_FEATURE_LOGLEVEL COLORER_FEATURE_LOGLEVEL_ERROR
-#endif
-
-/**
   If defined, use dlmalloc memory management implementation
 */
 #ifndef COLORER_FEATURE_USE_DL_MALLOC
