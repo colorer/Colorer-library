@@ -5,17 +5,19 @@ project (colorer_lib)
 # init variables
 #====================================================
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif()
-message("Colorer_lib build type: ${CMAKE_BUILD_TYPE}")
 
 #====================================================
 # xercesc_lib
 #====================================================
-add_subdirectory(../libs/xercesc ./build)
 include_directories(../libs/xercesc/src)
 add_definitions(-DXERCES_STATIC_LIBRARY)
+
+#====================================================
+# g3log
+#====================================================
+include_directories(../libs/g3log/src)
+# ERROR level conflicts with windows.h
+add_definitions(-DNOGDI)
 
 #====================================================
 # colorer

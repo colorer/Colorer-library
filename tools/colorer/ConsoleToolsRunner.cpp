@@ -1,13 +1,16 @@
-
-#include<stdio.h>
-#include<stdlib.h>
-#include<colorer/viewer/ConsoleTools.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <g3log/logworker.hpp>
+#include <colorer/viewer/ConsoleTools.h>
 
 /** Internal run action type */
 enum { JT_NOTHING, JT_REGTEST, JT_PROFILE,
        JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES,
        JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD } jobType;
 int profileLoops = 1;
+
+const std::string path_to_log_file = "./";
+const std::string log_prefix = "consoletools";
 
 /** Reads and parse command line */
 void init(ConsoleTools &ct, int argc, char*argv[]){
@@ -161,10 +164,15 @@ void printError(){
 */
 int main(int argc, char *argv[])
 {
+  auto worker = g3::LogWorker::createLogWorker();
+  auto defaultHandler = worker->addDefaultLogger(log_prefix, path_to_log_file);
+  g3::initializeLogging(worker.get());
+
   ConsoleTools ct;  
   try{
     init(ct, argc, argv);
   }catch(Exception e){
+    LOG(ERROR) << e.getMessage()->getChars();
     fprintf(stderr, e.getMessage()->getChars());
     return -1;
   };
@@ -203,6 +211,7 @@ int main(int argc, char *argv[])
         break;
     };
   }catch(Exception e){
+    LOG(ERROR) << e.getMessage()->getChars();
     fprintf(stderr, e.getMessage()->getChars());
     return -1;
   };

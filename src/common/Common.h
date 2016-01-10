@@ -9,9 +9,10 @@ typedef unsigned char byte;
 #define TRUE  1
 #define FALSE 0
 
-#include<common/Features.h>
-#include<unicode/String.h>
-#include<common/MemoryChunks.h>
+#include <g3log/g3log.hpp>
+#include <common/Features.h>
+#include <unicode/String.h>
+#include <common/MemoryChunks.h>
 
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

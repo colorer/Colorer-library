@@ -9,16 +9,10 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 #====================================================
 # init variables
 #====================================================
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif()
-message("Consoletools build type: ${CMAKE_BUILD_TYPE}")
-   
+  
 #====================================================
 # colorer_lib
 #====================================================
-add_subdirectory(../../src ./build)
 include_directories (../../src/)
 include_directories (../../libs/xercesc/src)
 set(SRC_CPP ConsoleToolsRunner.cpp)
@@ -83,7 +77,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c_3_1 )
+set(LIBRARIES colorer_lib xerces-c_3_1 g3logger)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})
