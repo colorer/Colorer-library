@@ -60,7 +60,6 @@ set(SRC_COLORER
    ${PARSERS}/helpers/FileTypeImpl.h ${PARSERS}/helpers/FileTypeImpl.cpp
    ${PARSERS}/helpers/HRCParserHelpers.cpp ${PARSERS}/helpers/HRCParserHelpers.h
    ${PARSERS}/helpers/TextParserHelpers.cpp ${PARSERS}/helpers/TextParserHelpers.h
-   ${VIEWER}/ConsoleTools.cpp ${VIEWER}/ConsoleTools.h
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <g3log/logworker.hpp>
 #include <utils/LogFileSink.h>
-#include <colorer/viewer/ConsoleTools.h>
+#include "ConsoleTools.h"
 
 /** Internal run action type */
 enum { JT_NOTHING, JT_REGTEST, JT_PROFILE,

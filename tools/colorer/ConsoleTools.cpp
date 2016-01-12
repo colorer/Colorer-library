@@ -5,12 +5,12 @@
 #include<colorer/viewer/ParsedLineWriter.h>
 #include<colorer/viewer/TextConsoleViewer.h>
 #include<colorer/handlers/DefaultErrorHandler.h>
-#include<colorer/viewer/ConsoleTools.h>
 #include<colorer/ParserFactoryException.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/XmlInputSource.h>
+#include "ConsoleTools.h"
 
 using namespace xercesc;
 
