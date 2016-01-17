@@ -307,8 +307,6 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
   hrcParser = nullptr;
   catalogPath = nullptr;
   catalogXIS = nullptr;
-  // инициализация xerces, иначе будут ошибки работы со строками
-  xercesc::XMLPlatformUtils::Initialize();
 }
 
 ParserFactory::~ParserFactory()
@@ -323,8 +321,6 @@ ParserFactory::~ParserFactory()
     delete errorHandler;
   }
   delete[] RegExpStack;
-  // закрываем xerces, подчищая память
-  xercesc::XMLPlatformUtils::Terminate();
 }
 
 const char* ParserFactory::getVersion()

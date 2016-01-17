@@ -1,7 +1,10 @@
+#include <xercesc/dom/DOM.hpp>
 #include <common/Colorer.h>
 
 Colorer::~Colorer()
 {
+  // закрываем xerces, подчищая память
+  xercesc::XMLPlatformUtils::Terminate();
 }
 
 std::unique_ptr<Colorer> Colorer::createColorer()
@@ -19,4 +22,6 @@ void Colorer::initColorer(g3::LogWorker* _log_worker)
     g3::initializeLogging(log_worker.get());
   }
 
+  // инициализация xerces, иначе будут ошибки работы со строками
+  xercesc::XMLPlatformUtils::Initialize();
 }
