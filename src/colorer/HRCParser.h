@@ -3,7 +3,6 @@
 
 #include<common/io/InputSource.h>
 
-#include<colorer/ErrorHandler.h>
 #include<colorer/FileType.h>
 #include<colorer/Region.h>
 #include <xml/XmlInputSource.h>

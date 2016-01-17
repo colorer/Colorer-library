@@ -6,7 +6,6 @@
 #include <colorer/handlers/RegionMapper.h>
 #include <colorer/handlers/RegionDefine.h>
 #include <xercesc/sax/InputSource.hpp>
-#include <colorer/ErrorHandler.h>
 #include <xml/XmlInputSource.h>
 
 /** Abstract RegionMapper.

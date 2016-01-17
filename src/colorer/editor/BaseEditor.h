@@ -2,7 +2,6 @@
 #define _COLORER_BASEEDITOR_H_
 
 #include <colorer/ParserFactory.h>
-#include <colorer/handlers/FileErrorHandler.h>
 #include <colorer/handlers/LineRegionsSupport.h>
 #include <colorer/handlers/LineRegionsCompactSupport.h>
 #include <colorer/editor/EditorListener.h>
@@ -281,8 +280,6 @@ private:
    * object with valid initial properties filled.
    */
   PairMatch* getPairMatch(int lineNo, int pos);
-protected:
-  colorer::ErrorHandler* feh;
 };
 
 #endif

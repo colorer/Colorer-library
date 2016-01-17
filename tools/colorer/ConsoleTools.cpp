@@ -4,7 +4,6 @@
 #include<colorer/viewer/TextLinesStore.h>
 #include<colorer/viewer/ParsedLineWriter.h>
 #include<colorer/viewer/TextConsoleViewer.h>
-#include<colorer/handlers/DefaultErrorHandler.h>
 #include<colorer/ParserFactoryException.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -56,23 +55,6 @@ void ConsoleTools::setBomOutput(bool use) { bomOutput = use; }
 void ConsoleTools::setHtmlWrapping(bool use) { htmlWrapping = use; }
 
 void ConsoleTools::addLineNumbers(bool add){ lineNumbers = add; }
-
-colorer::ErrorHandler *ConsoleTools::createErrorHandler() {
-  colorer::ErrorHandler *resultHandler = nullptr;
-  if (logFileName && logFileName->length()!=0) {
-    colorer::InputSource *dfis = colorer::InputSource::newInstance(logFileName);
-    try{
-      resultHandler = new FileErrorHandler(dfis->getLocation(), Encodings::ENC_UTF8, false);
-    }catch(Exception &){
-      resultHandler = nullptr;
-    }
-    delete dfis;
-  }
-  if (!resultHandler) {
-    resultHandler = new DefaultErrorHandler();
-  }
-  return resultHandler;
-}
 
 void ConsoleTools::setTypeDescription(const String &str) {
   delete typeDescription;
@@ -218,11 +200,9 @@ void ConsoleTools::RETest(){
 
 void ConsoleTools::listTypes(bool load, bool useNames){
   Writer *writer = nullptr;
-  colorer::ErrorHandler *err = nullptr;
   try{
     writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
-    err = createErrorHandler();
-    ParserFactory pf(err);
+    ParserFactory pf;
     pf.loadCatalog(catalogPath);
     HRCParser *hrcParser = pf.getHRCParser();
     fprintf(stderr, "\nloading file types...\n");
@@ -246,7 +226,6 @@ void ConsoleTools::listTypes(bool load, bool useNames){
     delete writer;
     fprintf(stderr, "%s\n", e.getMessage()->getChars());
   }
-  delete err;
 }
 
 FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource){
@@ -286,10 +265,9 @@ FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource)
 
 void ConsoleTools::profile(int loopCount){
   clock_t msecs;
-  colorer::ErrorHandler *err = createErrorHandler();
 
   // parsers factory
-  ParserFactory pf(err);
+  ParserFactory pf;
   pf.loadCatalog(catalogPath);
   // Source file text lines store.
   TextLinesStore textLinesStore;
@@ -312,18 +290,15 @@ void ConsoleTools::profile(int loopCount){
   msecs = clock() - msecs;
 
   printf("%ld\n", (msecs*1000)/CLOCKS_PER_SEC );
-  delete err;
 }
 
 void ConsoleTools::viewFile(){
-  colorer::ErrorHandler *err = nullptr;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
-    err = createErrorHandler();
     // parsers factory
-    ParserFactory pf(err);
+    ParserFactory pf;
     pf.loadCatalog(catalogPath);
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
@@ -347,7 +322,6 @@ void ConsoleTools::viewFile(){
   }catch(...){
     fprintf(stderr, "unknown exception ...\n");
   }
-  delete err;
 }
 
 void ConsoleTools::forward(){
@@ -372,14 +346,12 @@ void ConsoleTools::forward(){
 }
 
 void ConsoleTools::genOutput(bool useTokens){
-  colorer::ErrorHandler *err = nullptr;
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
     textLinesStore.loadFile(inputFileName, inputEncoding, true);
-    err = createErrorHandler();
     // parsers factory
-    ParserFactory pf(err);
+    ParserFactory pf;
     pf.loadCatalog(catalogPath);
     // HRC loading
     HRCParser *hrcParser = pf.getHRCParser();
@@ -419,7 +391,6 @@ void ConsoleTools::genOutput(bool useTokens){
     }catch(Exception &e){
       fprintf(stderr, "can't open file '%s' for writing:\n", outputFileName->getChars());
       fprintf(stderr, e.getMessage()->getChars());
-      delete err;
       return;
     }
 
@@ -483,7 +454,6 @@ void ConsoleTools::genOutput(bool useTokens){
   }catch(...){
     fprintf(stderr, "unknown exception ...\n");
   }
-  delete err;
 }
 
 void ConsoleTools::genTokenOutput(){

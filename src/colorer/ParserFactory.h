@@ -46,7 +46,7 @@ public:
    * Searches for catalog.xml in the set of predefined locations
    * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
-  ParserFactory(colorer::ErrorHandler* errorHandler);
+  ParserFactory();
 
   virtual ~ParserFactory();
 
@@ -124,7 +124,6 @@ private:
 
   String* catalogPath;
   XmlInputSource* catalogXIS;
-  bool ownErrorHandler;
   std::vector<const String*> hrcLocations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;
   std::unordered_map<SString, const String*> hrdDescriptions;

@@ -114,7 +114,6 @@ public:
    *  No HRD input is used, but direct tokenized output is produced with region names, as names of tokens.
    */
   void genTokenOutput();
-  colorer::ErrorHandler *createErrorHandler();
 private:
   bool copyrightHeader;
   bool htmlEscaping;

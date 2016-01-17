@@ -12,7 +12,6 @@
 
 #include <colorer/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>
-#include <colorer/handlers/DefaultErrorHandler.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/TextParserImpl.h>
 #include <colorer/ParserFactoryException.h>
@@ -294,7 +293,7 @@ void ParserFactory::searchPathLinux(std::vector<String*>* paths)
 #endif
 }
 
-ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
+ParserFactory::ParserFactory()
 {
   RegExpStack = nullptr;
   RegExpStack_Size = 0;
