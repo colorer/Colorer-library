@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <common/Colorer.h>
 #include <g3log/logworker.hpp>
+#include <g3log/loglevels.hpp>
 #include <utils/LogFileSink.h>
 #include "ConsoleTools.h"
 
@@ -9,9 +11,6 @@ enum { JT_NOTHING, JT_REGTEST, JT_PROFILE,
        JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES,
        JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD } jobType;
 int profileLoops = 1;
-
-const std::string path_to_log_file = "./";
-const std::string log_prefix = "consoletools";
 
 /** Reads and parse command line */
 void init(ConsoleTools &ct, int argc, char*argv[]){
@@ -165,11 +164,16 @@ void printError(){
 */
 int main(int argc, char *argv[])
 {
+  const std::string path_to_log_file = "./";
+  const std::string log_prefix = "consoletools";
+
   auto worker = g3::LogWorker::createLogWorker();
   auto handle = worker->addSink(std2::make_unique<LogFileSink>(log_prefix, path_to_log_file, false), &LogFileSink::fileWrite);
-
+  g3::only_change_at_initialization::setLogLevel(DEBUG, false);
   g3::initializeLogging(worker.get());
 
+  auto colorer_lib = Colorer::createColorer();
+  colorer_lib->initColorer(worker.get());
 
   ConsoleTools ct;  
   try{

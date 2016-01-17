@@ -73,6 +73,7 @@ set(SRC_COLORER
    ${COLORER}/Region.h
    ${COLORER}/Scheme.h
    ${COMMON}/Common.h
+   ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
    ${COMMON}/Exception.h ${COMMON}/Exception.cpp
    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
    ${COMMON}/Features.h
