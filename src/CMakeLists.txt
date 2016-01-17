@@ -42,9 +42,6 @@ set(SRC_COLORER
    ${EDITOR}/EditorListener.h ${EDITOR}/OutlineItem.h 
    ${EDITOR}/Outliner.cpp ${EDITOR}/Outliner.h
    ${EDITOR}/PairMatch.h
-   ${HANDLERS}/DefaultErrorHandler.h
-   ${HANDLERS}/ErrorHandlerWriter.cpp ${HANDLERS}/ErrorHandlerWriter.h
-   ${HANDLERS}/FileErrorHandler.cpp ${HANDLERS}/FileErrorHandler.h
    ${HANDLERS}/LineRegionsSupport.cpp ${HANDLERS}/LineRegionsSupport.h
    ${HANDLERS}/LineRegionsCompactSupport.cpp ${HANDLERS}/LineRegionsCompactSupport.h
    ${HANDLERS}/RegionMapperImpl.cpp ${HANDLERS}/RegionMapperImpl.h
