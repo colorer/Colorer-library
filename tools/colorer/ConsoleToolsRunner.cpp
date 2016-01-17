@@ -5,126 +5,149 @@
 #include <g3log/loglevels.hpp>
 #include <utils/LogFileSink.h>
 #include "ConsoleTools.h"
+#include <common/MemoryChunks.h>
 
 /** Internal run action type */
-enum { JT_NOTHING, JT_REGTEST, JT_PROFILE,
+enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
        JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES,
-       JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD } jobType;
-int profileLoops = 1;
+       JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
+
+struct setting {
+  JobType job = JT_NOTHING;
+  std::unique_ptr<SString> catalog;
+  std::unique_ptr<SString> input_file;
+  std::unique_ptr<SString> output_file;
+  std::unique_ptr<SString> link_sources;
+  std::unique_ptr<SString> input_encoding;
+  std::unique_ptr<SString> output_encoding;
+  std::unique_ptr<SString> type_desc;
+  std::unique_ptr<SString> hrd_name;
+  std::string log_file_prefix = "consoletools";
+  std::string log_file_dir = "./";
+  bool debug = false;
+  int profile_loops = 1;
+  bool line_numbers = false;
+  bool copyright = true;
+  bool bom_output = true;
+  bool html_esc = true;
+  bool html_wrap = true;
+} settings;
 
 /** Reads and parse command line */
-void init(ConsoleTools &ct, int argc, char*argv[]){
-
-  bool showBanner = true;
+void readArgs(int argc, char*argv[]){
 
   for(int i = 1; i < argc; i++){
     if (argv[i][0] != '-'){
-      ct.setInputFileName(DString(argv[i]));
+      settings.input_file.reset(new SString(DString(argv[i])));
       continue;
     }
 
     if (argv[i][1] == 'p'){
-      jobType = JT_PROFILE;
+      settings.job = JT_PROFILE;
       if (argv[i][2]){
-        profileLoops = atoi(argv[i]+2);
+        settings.profile_loops = atoi(argv[i]+2);
       }
       continue;
     }
-    if (argv[i][1] == 'r') { jobType = JT_REGTEST; continue; }
-    if (argv[i][1] == 'f') { jobType = JT_FORWARD; continue; }
-    if (argv[i][1] == 'v') { jobType = JT_VIEW; continue; }
-    if (argv[i][1] == 'h' && argv[i][2] == 't') { jobType = JT_GEN_TOKENS; continue; }
-    if (argv[i][1] == 'h') { jobType = JT_GEN; continue; }
+    if (argv[i][1] == 'r') { settings.job = JT_REGTEST; continue; }
+    if (argv[i][1] == 'f') { settings.job = JT_FORWARD; continue; }
+    if (argv[i][1] == 'v') { settings.job = JT_VIEW; continue; }
+    if (argv[i][1] == 'h' && argv[i][2] == 't') { settings.job = JT_GEN_TOKENS; continue; }
+    if (argv[i][1] == 'h') { settings.job = JT_GEN; continue; }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i+1 < argc || argv[i][3])){
       if (argv[i][3]){
-        ct.setLinkSource(DString(argv[i]+3));
+        settings.link_sources.reset(new SString(DString(argv[i] + 3)));
       }else{
-        ct.setLinkSource(DString(argv[i+1]));
+        settings.link_sources.reset(new SString(DString(argv[i+1])));
         i++;
       }
       continue;
     }
-    if (argv[i][1] == 'l' && argv[i][2] == 'n') { ct.addLineNumbers(true); continue; }
-    if (argv[i][1] == 'l' && argv[i][2] == 'l') { jobType = JT_LIST_LOAD; continue; }
-    if (argv[i][1] == 'l' && argv[i][2] == 't') { jobType = JT_LIST_TYPE_NAMES; continue; }
-    if (argv[i][1] == 'l') { jobType = JT_LIST_TYPES; continue; }
+    if (argv[i][1] == 'l' && argv[i][2] == 'n') { settings.line_numbers = true; continue; }
+    if (argv[i][1] == 'l' && argv[i][2] == 'l') { settings.job = JT_LIST_LOAD; continue; }
+    if (argv[i][1] == 'l' && argv[i][2] == 't') { settings.job = JT_LIST_TYPE_NAMES; continue; }
+    if (argv[i][1] == 'l') { settings.job = JT_LIST_TYPES; continue; }
 
-    if (argv[i][1] == 'd' && argv[i][2] == 'c') { ct.setCopyrightHeader(false); showBanner = false; continue; }
-    if (argv[i][1] == 'd' && argv[i][2] == 'b') { ct.setBomOutput(false); continue; }
-    if (argv[i][1] == 'd' && argv[i][2] == 's') { ct.setHtmlEscaping(false); continue; }
-    if (argv[i][1] == 'd' && argv[i][2] == 'h') { ct.setHtmlWrapping(false); continue; }
+    if (argv[i][1] == 'd' && argv[i][2] == 'c') { settings.copyright = false; continue; }
+    if (argv[i][1] == 'd' && argv[i][2] == 'b') { settings.bom_output = false; continue; }
+    if (argv[i][1] == 'd' && argv[i][2] == 's') { settings.html_esc = false; continue; }
+    if (argv[i][1] == 'd' && argv[i][2] == 'h') { settings.html_wrap = false; continue; }
 
     if (argv[i][1] == 't' && (i+1 < argc || argv[i][2])){
       if (argv[i][2]){
-        ct.setTypeDescription(DString(argv[i]+2));
+        settings.type_desc.reset(new SString(DString(argv[i] + 2)));
       }else{
-        ct.setTypeDescription(DString(argv[i+1]));
+        settings.type_desc.reset(new SString(DString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'o' && (i+1 < argc || argv[i][2])){
       if (argv[i][2]){
-        ct.setOutputFileName(DString(argv[i]+2));
+        settings.output_file.reset(new SString(DString(argv[i] + 2)));
       }else{
-        ct.setOutputFileName(DString(argv[i+1]));
+        settings.output_file.reset(new SString(DString(argv[i+1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'i' && (i+1 < argc || argv[i][2])){
       if (argv[i][2]){
-        ct.setHRDName(DString(argv[i]+2));
+        settings.hrd_name.reset(new SString(DString(argv[i] + 2)));
       }else{
-        ct.setHRDName(DString(argv[i+1]));
+        settings.hrd_name.reset(new SString(DString(argv[i+1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'c' && (i+1 < argc || argv[i][2])){
       if (argv[i][2]){
-        ct.setCatalogPath(DString(argv[i]+2));
+        settings.catalog.reset(new SString(DString(argv[i] + 2)));
       }else{
-        ct.setCatalogPath(DString(argv[i+1]));
+        settings.catalog.reset(new SString(DString(argv[i+1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i+1 < argc || argv[i][3])){
       if (argv[i][3]){
-        ct.setInputEncoding(DString(argv[i]+3));
+        settings.input_encoding.reset(new SString(DString(argv[i] + 3)));
       }else{
-        ct.setInputEncoding(DString(argv[i+1]));
+        settings.input_encoding.reset(new SString(DString(argv[i+1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i+1 < argc || argv[i][3])){
       if (argv[i][3]){
-        ct.setOutputEncoding(DString(argv[i]+3));
+        settings.output_encoding.reset(new SString(DString(argv[i] + 3)));
       }else{
-        ct.setOutputEncoding(DString(argv[i+1]));
+        settings.output_encoding.reset(new SString(DString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'h' && (i+1 < argc || argv[i][3])){
       if (argv[i][3]){
-        ct.setLogFileName(DString(argv[i]+3));
+        settings.log_file_prefix = std::string(argv[i] + 3);
       }else{
-        ct.setLogFileName(DString(argv[i+1]));
+        settings.log_file_prefix = std::string(argv[i + 1]);
+        i++;
+      }
+      continue;
+    }
+    if (argv[i][1] == 'e' && argv[i][2] == 'd' && (i + 1 < argc || argv[i][3])) {
+      if (argv[i][3]) {
+        settings.log_file_dir = std::string(argv[i] + 3);
+      }
+      else {
+        settings.log_file_dir = std::string(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1]) fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i]+1);
   }
-
-  if (showBanner){
-    fprintf(stderr, "\n%s\n", ParserFactory::getVersion());
-    fprintf(stderr, "Copyright (c) 1999-2006 Igor Russkih <irusskih at gmail.com>\n\n");
-  }
-
 }
 
 /** Prints usage. */
@@ -154,43 +177,53 @@ void printError(){
        "  -dc        Disable information header in generator's output\n"
        "  -ds        Disable HTML symbol substitutions in generator's output\n"
        "  -dh        Disable HTML header and footer output\n"
-       "  -eh<name>  Use file <name> as log file\n"
+       "  -eh<name>  Log file name prefix\n"
+       "  -ed<name>  Log file directory\n"
   );
 };
-
-#include<common/MemoryChunks.h>
 
 /** Creates ConsoleTools class instance and runs it.
 */
 int main(int argc, char *argv[])
 {
-  const std::string path_to_log_file = "./";
-  const std::string log_prefix = "consoletools";
+  readArgs(argc, argv);
 
   auto worker = g3::LogWorker::createLogWorker();
-  auto handle = worker->addSink(std2::make_unique<LogFileSink>(log_prefix, path_to_log_file, false), &LogFileSink::fileWrite);
+  auto handle = worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false), &LogFileSink::fileWrite);
   g3::only_change_at_initialization::setLogLevel(DEBUG, false);
   g3::initializeLogging(worker.get());
 
   auto colorer_lib = Colorer::createColorer();
   colorer_lib->initColorer(worker.get());
 
-  ConsoleTools ct;  
-  try{
-    init(ct, argc, argv);
-  }catch(Exception e){
-    LOG(ERROR) << e.getMessage()->getChars();
-    fprintf(stderr, e.getMessage()->getChars());
-    return -1;
-  };
+  ConsoleTools ct;
 
+  if (settings.input_file) ct.setInputFileName(*settings.input_file.get());
+  if (settings.catalog) ct.setCatalogPath(*settings.catalog.get());
+  if (settings.link_sources) ct.setLinkSource(*settings.link_sources.get());
+  if (settings.output_file) ct.setOutputFileName(*settings.output_file.get());
+  if (settings.input_encoding) ct.setInputEncoding(*settings.input_encoding.get());
+  if (settings.output_encoding) ct.setOutputEncoding(*settings.output_encoding.get());
+  if (settings.type_desc) ct.setTypeDescription(*settings.type_desc.get());
+  if (settings.hrd_name) ct.setHRDName(*settings.hrd_name.get());
+  ct.addLineNumbers(settings.line_numbers);
+  ct.setCopyrightHeader(settings.copyright);
+  ct.setHtmlEscaping(settings.html_esc);
+  ct.setHtmlWrapping(settings.html_wrap);
+  ct.setBomOutput(settings.bom_output);
+
+  if (settings.copyright) {
+    fprintf(stdout, "\n%s\n", ParserFactory::getVersion());
+    fprintf(stdout, "Copyright (c) 1999-2006 Igor Russkih <irusskih at gmail.com>\n\n");
+  }
+  
   try{
-    switch(jobType){
+    switch(settings.job){
       case JT_REGTEST:
         ct.RETest();
         break;
       case JT_PROFILE:
-        ct.profile(profileLoops);
+        ct.profile(settings.profile_loops);
         break;
       case JT_LIST_LOAD:
         ct.listTypes(true, false);
