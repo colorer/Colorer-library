@@ -21,6 +21,7 @@
 #include <xml/XmlParserErrorHandler.h>
 #include <xml/BaseEntityResolver.h>
 #include <xml/XmlTagDefs.h>
+#include <xml/XStr.h>
 
 void ParserFactory::loadCatalog(const String* catalogPath_)
 {
@@ -425,8 +426,8 @@ HRCParser* ParserFactory::getHRCParser()
           hrcParser->loadSource(dfis);
           delete dfis;
         } catch (Exception& e) {
-          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
-          errorHandler->fatalError(*e.getMessage());
+          LOG(ERRORF) << "Can't load hrc : " << XStr(dfis->getInputSource()->getSystemId());
+          LOG(ERRORF) << e.getMessage()->getChars();
           delete dfis;
         }
       }

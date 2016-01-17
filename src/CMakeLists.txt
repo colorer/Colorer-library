@@ -94,6 +94,7 @@ set(SRC_COLORER
    ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
    ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
    ${XML}/XmlTagDefs.h
+   ${XML}/XStr.cpp ${XML}/XStr.h
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h

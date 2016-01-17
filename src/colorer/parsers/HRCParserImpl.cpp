@@ -6,6 +6,7 @@
 #include <xml/XmlInputSource.h>
 #include <xml/BaseEntityResolver.h>
 #include <xml/XmlTagDefs.h>
+#include <xml/XStr.h>
 
 #define CURRENT_FILE DString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
 
@@ -44,9 +45,7 @@ void HRCParserImpl::loadSource(XmlInputSource* is)
   XmlInputSource* istemp = curInputSource;
   curInputSource = is;
   if (is == nullptr) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("Can't open stream for type without location attribute"));
-    }
+    LOGF(ERROR, "Can't open stream for type without location attribute.");
     return;
   }
   try {
@@ -99,24 +98,16 @@ void HRCParserImpl::loadFileType(FileType* filetype)
     loadSource(thisType->inputSource);
 
   } catch (InputSourceException& e) {
-    if (errorHandler != nullptr) {
-      errorHandler->fatalError(StringBuffer("Can't open source stream: ") + e.getMessage());
-    }
+    LOGF(ERRORF, "Can't open source stream: %s", e.getMessage()->getChars());
     thisType->loadBroken = true;
   } catch (HRCParserException& e) {
-    if (errorHandler != nullptr) {
-      errorHandler->fatalError(StringBuffer(e.getMessage()) + " [" + DString(thisType->inputSource->getInputSource()->getSystemId()) + "]");
-    }
+    LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->loadBroken = true;
   } catch (Exception& e) {
-    if (errorHandler != nullptr) {
-      errorHandler->fatalError(StringBuffer(e.getMessage()) + " [" + DString(thisType->inputSource->getInputSource()->getSystemId()) + "]");
-    }
+    LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->loadBroken = true;
   } catch (...) {
-    if (errorHandler != nullptr) {
-      errorHandler->fatalError(StringBuffer("Unknown exception while loading ") + DString(thisType->inputSource->getInputSource()->getSystemId()));
-    }
+    LOGF(ERRORF, "Unknown exception while loading %s", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->loadBroken = true;
   }
 }
@@ -270,7 +261,8 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
       // not read anotation
       return;
     }
-    errorHandler->warning(StringBuffer("Unused element '") + DString(elem->getNodeName()) + DString("'.") + CURRENT_FILE);
+    LOG(WARNING) << "Unused element '" << XStr(elem->getNodeName()) << "'." << " Current file " <<
+      XStr(curInputSource->getInputSource()->getSystemId()) << ".";
   }
 }
 
@@ -280,9 +272,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   const XMLCh* typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
   const XMLCh* typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
   if (*typeName == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(DString("unnamed prototype "));
-    }
+    LOG(ERROR) << "unnamed prototype";
     return;
   }
   if (typeDescription == nullptr) {
@@ -296,9 +286,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   }
   if (f != nullptr) {
     unloadFileType(f);
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("Duplicate prototype '") + tname + "'");
-    }
+    LOGF(WARNING, "Duplicate prototype '%s'", tname.getChars());
     //  return;
   }
   FileTypeImpl* type = new FileTypeImpl(this);
@@ -347,10 +335,8 @@ void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement* elem)
 {
   const XMLCh* locationLink = elem->getAttribute(hrcLocationAttrLink);
   if (*locationLink == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("Bad 'location' link attribute in prototype '") + parseProtoType->name + "'");
-      return;
-    }
+    LOGF(ERROR, "Bad 'location' link attribute in prototype '%s'", parseProtoType->name->getChars());
+    return;
   }
   parseProtoType->inputSource = XmlInputSource::newInstance(locationLink, curInputSource);
 }
@@ -358,9 +344,7 @@ void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement* elem)
 void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
 {
   if (elem->getFirstChild() == nullptr || elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE) {
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("Bad '") + DString(elem->getNodeName()) + "' element in prototype '" + parseProtoType->name + "'");
-    }
+    LOGF(WARNING, "Bad '%s' element in prototype '%s'", XStr(elem->getNodeName()).get_char(), parseProtoType->name->getChars());
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
@@ -368,9 +352,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   CRegExp* matchRE = new CRegExp(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("Fault compiling chooser RE '") + dmatch + "' in prototype '" + parseProtoType->name + "'");
-    }
+    LOGF(WARNING, "Fault compiling chooser RE '%s' in prototype '%s'", dmatch.getChars(), parseProtoType->name->getChars());
     delete matchRE;
     return;
   }
@@ -392,9 +374,7 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
         const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
         const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
         if (*name == '\0' || *value == '\0') {
-          if (errorHandler != nullptr) {
-            errorHandler->warning(StringBuffer("Bad parameter in prototype '") + parseProtoType->name + "'");
-          }
+          LOGF(WARNING, "Bad parameter in prototype '%s'", parseProtoType->name->getChars());
           continue;
         }
         DString d_name = DString(name);
@@ -417,24 +397,18 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   const XMLCh* typeName = elem->getAttribute(hrcTypeAttrName);
 
   if (*typeName == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(DString("Unnamed type found"));
-    }
+    LOG(ERROR) << "Unnamed type found";
     return;
   }
   DString d_name = DString(typeName);
   auto type_ref = fileTypeHash.find(&d_name);
   if (type_ref == fileTypeHash.end()) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("type '") + d_name + "' without prototype");
-    }
+    LOGF(ERROR,"type '%s' without prototype", d_name.getChars());
     return;
   }
   FileTypeImpl* type = type_ref->second;
   if (type->typeLoaded) {
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("type '") + DString(typeName) + "' is already loaded");
-    }
+    LOGF(WARNING, "type '%s' is already loaded", XStr(typeName).get_char());
     return;
   }
   type->typeLoaded = true;
@@ -451,9 +425,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   }
   delete baseSchemeName;
   if (type->baseScheme == nullptr && !type->isPackage) {
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("type '") + DString(typeName) + "' has no default scheme");
-    }
+    LOGF(WARNING, "type '%s' has no default scheme", XStr(typeName).get_char());
   }
   type->loadDone = true;
   parseType = o_parseType;
@@ -498,9 +470,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   const XMLCh* regionParent = elem->getAttribute(hrcRegionAttrParent);
   const XMLCh* regionDescr = elem->getAttribute(hrcRegionAttrDescription);
   if (*regionName == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(DString("No 'name' attribute in <region> element"));
-    }
+    LOG(ERROR) << "No 'name' attribute in <region> element";
     return;
   }
   DString d_region = DString(regionName);
@@ -511,9 +481,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   DString d_regionparent = DString(regionParent);
   String* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QNT_DEFINE, true);
   if (regionNamesHash.find(qname1) != regionNamesHash.end()) {
-    if (errorHandler != nullptr) {
-      errorHandler->warning(StringBuffer("Duplicate region '") + qname1 + "' definition in type '" + parseType->getName() + "'");
-    }
+    LOGF(WARNING, "Duplicate region '%s' definition in type '%s'", qname1->getChars(), parseType->getName()->getChars());
     delete qname1;
     delete qname2;
     return;
@@ -534,9 +502,7 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
   const XMLCh* entityName  = elem->getAttribute(hrcEntityAttrName);
   const XMLCh* entityValue = elem->getAttribute(hrcEntityAttrValue);
   if (*entityName == '\0' || elem->getAttributeNode(hrcEntityAttrValue) == nullptr) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(DString("Bad entity attributes"));
-    }
+    LOG(ERROR) << "Bad entity attributes";
     return;
   }
   DString dentityName= DString(entityName);
@@ -555,9 +521,7 @@ void HRCParserImpl::addTypeImport(const xercesc::DOMElement* elem)
   const XMLCh* typeParam = elem->getAttribute(hrcImportAttrType);
   DString typeparam = DString(typeParam);
   if (*typeParam == '\0' || fileTypeHash.find(&typeparam) == fileTypeHash.end()) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("Import with bad '") + typeparam + "' attribute in type '" + parseType->name + "'");
-    }
+    LOGF(ERROR, "Import with bad '%s' attribute in type '%s'", typeparam.getChars(), parseType->name->getChars());
     return;
   }
   parseType->importVector.push_back(new SString(DString(typeParam)));
@@ -569,16 +533,12 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
   DString dschemeName = DString(schemeName);
   String* qSchemeName = qualifyOwnName(*schemeName != '\0' ? &dschemeName : nullptr);
   if (qSchemeName == nullptr) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("bad scheme name in type '") + parseType->getName() + "'");
-    }
+    LOGF(ERROR, "bad scheme name in type '%s'", parseType->getName()->getChars());
     return;
   }
   if (schemeHash.find(qSchemeName) != schemeHash.end() ||
       disabledSchemes.find(qSchemeName) != disabledSchemes.end()) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("duplicate scheme name '") + qSchemeName + "'");
-    }
+    LOGF(ERROR, "duplicate scheme name '%s'", qSchemeName->getChars());
     delete qSchemeName;
     return;
   }
@@ -637,9 +597,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
 {
   const XMLCh* nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
   if (*nqSchemeName == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("empty scheme name in inheritance operator in scheme '") + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "empty scheme name in inheritance operator in scheme '%s'", scheme->schemeName->getChars());
     return;
   }
   SchemeNode* scheme_node = new SchemeNode();
@@ -666,9 +624,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
         const XMLCh* x_schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
         const XMLCh* x_substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
         if (*x_schemeName == '\0' || *x_substName == '\0') {
-          if (errorHandler != nullptr) {
-            errorHandler->error(StringBuffer("bad virtualize attributes in scheme '") + scheme->schemeName + "'");
-          }
+          LOGF(ERROR, "bad virtualize attributes in scheme '%s'", scheme->schemeName->getChars());
           continue;
         }
         DString d_schemeName = DString(x_schemeName);
@@ -701,9 +657,7 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
     }
   }
   if (matchParam == nullptr) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("no 'match' in regexp in scheme ") + scheme->schemeName);
-    }
+    LOGF(ERROR, "no 'match' in regexp in scheme '%s'", scheme->schemeName->getChars());
     return;
   }
   DString dmatchParam = DString(matchParam);
@@ -714,9 +668,7 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
   scheme_node->type = SNT_RE;
   scheme_node->start = new CRegExp(entMatchParam);
   if (!scheme_node->start || !scheme_node->start->isOk())
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("fault compiling regexp '") + entMatchParam + "' in scheme '" + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", entMatchParam->getChars(), scheme->schemeName->getChars());
   delete entMatchParam;
   scheme_node->start->setPositionMoves(false);
   scheme_node->end = 0;
@@ -779,26 +731,20 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   String* endParam;
   DString dsParam = DString(sParam);
   if (!(startParam = useEntities(&dsParam))) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("'start' block attribute not found in scheme '") + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "'start' block attribute not found in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
     return;
   }
     DString deParam = DString(eParam);
   if (!(endParam = useEntities(&deParam))) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("'end' block attribute not found in scheme '") + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "'end' block attribute not found in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
     delete endParam;
     return;
   }
   const XMLCh* schemeName = elem->getAttribute(hrcBlockAttrScheme);
   if (*schemeName == '\0') {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("block with bad scheme attribute in scheme '") + scheme->getName() + "'");
-    }
+    LOGF(ERROR, "block with bad scheme attribute in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
     delete endParam;
     return;
@@ -815,18 +761,14 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme_node->start = new CRegExp(startParam);
   scheme_node->start->setPositionMoves(false);
   if (!scheme_node->start->isOk()) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("fault compiling regexp '") + startParam + "' in scheme '" + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", startParam->getChars(), scheme->schemeName->getChars());
   }
   scheme_node->end = new CRegExp();
   scheme_node->end->setPositionMoves(true);
   scheme_node->end->setBackRE(scheme_node->start);
   scheme_node->end->setRE(endParam);
   if (!scheme_node->end->isOk()) {
-    if (errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("fault compiling regexp '") + endParam + "' in scheme '" + scheme->schemeName + "'");
-    }
+    LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", endParam->getChars(), scheme->schemeName->getChars());
   }
   delete startParam;
   delete endParam;
@@ -857,9 +799,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
     String* entWordDiv = useEntities(&dworddiv);
     scheme_node->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, nullptr);
     if (scheme_node->worddiv == nullptr) {
-      if (errorHandler != nullptr) {
-        errorHandler->warning(StringBuffer("fault compiling worddiv regexp '") + entWordDiv + "' in scheme '" + scheme->schemeName + "'");
-      }
+      LOGF(ERROR, "fault compiling worddiv regexp '%s' in scheme '%s'", entWordDiv->getChars(), scheme->schemeName->getChars());
     }
     delete entWordDiv;
   }
@@ -1011,9 +951,7 @@ void HRCParserImpl::updateLinks()
           if (schemeName != nullptr) {
             snode->scheme = schemeHash.find(schemeName)->second;
           } else {
-            if (errorHandler != nullptr) {
-              errorHandler->error(StringBuffer("cannot resolve scheme name '") + snode->schemeName + "' in scheme '" + scheme->schemeName + "'");
-            }
+            LOGF(ERROR, "cannot resolve scheme name '%s' in scheme '%s'", snode->schemeName->getChars(), scheme->schemeName->getChars());
           }
           delete schemeName;
           delete snode->schemeName;
@@ -1026,10 +964,9 @@ void HRCParserImpl::updateLinks()
               String* vsn = qualifyForeignName(vt->virtSchemeName, QNT_SCHEME, true);
               if (vsn) {
                 vt->virtScheme = schemeHash.find(vsn)->second;
+              } else {
+                LOGF(ERROR, "cannot virtualize scheme '%s' in scheme '%s'", vt->virtSchemeName->getChars(), scheme->schemeName->getChars());
               }
-              if (!vsn) if (errorHandler != nullptr) {
-                  errorHandler->error(StringBuffer("cannot virtualize scheme '") + vt->virtSchemeName + "' in scheme '" + scheme->schemeName + "'");
-                }
               delete vsn;
               delete vt->virtSchemeName;
               vt->virtSchemeName = nullptr;
@@ -1038,8 +975,9 @@ void HRCParserImpl::updateLinks()
               String* vsn = qualifyForeignName(vt->substSchemeName, QNT_SCHEME, true);
               if (vsn) {
                 vt->substScheme = schemeHash.find(vsn)->second;
-              } else if (errorHandler != nullptr) {
-                errorHandler->error(StringBuffer("cannot virtualize using subst-scheme scheme '") + vt->substSchemeName + "' in scheme '" + scheme->schemeName + "'");
+              }
+              else {
+                LOGF(ERROR, "cannot virtualize using subst-scheme scheme '%s' in scheme '%s'", vt->substSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
               delete vt->substSchemeName;
@@ -1064,9 +1002,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
   int colon = name->indexOf(':');
   if (colon != -1) {
     if (parseType && DString(name, 0, colon) != *parseType->name) {
-      if (errorHandler != nullptr) {
-        errorHandler->error(StringBuffer("type name qualifer in '") + name + "' doesn't match type '" + parseType->name + "'");
-      }
+      LOGF(ERROR, "type name qualifer in '%s' doesn't match type '%s'", name->getChars(), parseType->name->getChars());
       return nullptr;
     } else {
       return new SString(name);
@@ -1085,21 +1021,15 @@ bool HRCParserImpl::checkNameExist(const String* name, FileTypeImpl* parseType, 
 {
   if (qntype == QNT_DEFINE && regionNamesHash.find(name) == regionNamesHash.end()) {
     if (logErrors)
-      if (errorHandler != nullptr) {
-        errorHandler->error(StringBuffer("region '") + name + "', referenced in type '" + parseType->name + "', is not defined");
-      }
+      LOGF(ERROR, "region '%s', referenced in type '%s', is not defined", name->getChars(), parseType->name->getChars());
     return false;
   } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(name) == schemeEntitiesHash.end()) {
     if (logErrors)
-      if (errorHandler != nullptr) {
-        errorHandler->error(StringBuffer("entity '") + name + "', referenced in type '" + parseType->name + "', is not defined");
-      }
+      LOGF(ERROR, "entity '%s', referenced in type '%s', is not defined", name->getChars(), parseType->name->getChars());
     return false;
   } else if (qntype == QNT_SCHEME && schemeHash.find(name) == schemeHash.end()) {
     if (logErrors)
-      if (errorHandler != nullptr) {
-        errorHandler->error(StringBuffer("scheme '") + name + "', referenced in type '" + parseType->name + "', is not defined");
-      }
+      LOGF(ERROR, "scheme '%s', referenced in type '%s', is not defined", name->getChars(), parseType->name->getChars());
     return false;
   }
   return true;
@@ -1120,8 +1050,8 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
     }
 
     if (prefType == nullptr) {
-      if (logErrors && errorHandler != nullptr) {
-        errorHandler->error(StringBuffer("type name qualifer in '") + name + "' doesn't match any type");
+      if (logErrors) {
+        LOGF(ERROR, "type name qualifer in '%s' doesn't match any type", name->getChars());
       }
       return nullptr;
     } else if (!prefType->typeLoaded) {
@@ -1148,8 +1078,8 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
       }
       delete qname;
     }
-    if (logErrors && errorHandler != nullptr) {
-      errorHandler->error(StringBuffer("unqualified name '") + name + "' doesn't belong to any imported type [" + DString(curInputSource->getInputSource()->getSystemId()) + "]");
+    if (logErrors) {
+      LOGF(ERROR, "unqualified name '%s' doesn't belong to any imported type [%s]", name->getChars(), XStr(curInputSource->getInputSource()->getSystemId()).get_char());
     }
   }
   return nullptr;

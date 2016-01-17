@@ -44,10 +44,9 @@ std::string LogFileSink::formatMessage(LogMessageMover message)
                            level_value == DEBUG.value ? "DEBUG  "
                            : level_value == ERROR.value ? "ERROR  "
                            : level_value == INFO.value ? "INFO   "
-                           : level_value == WARNING.value
-                           ? "WARNING"
-                           : level_value == FATAL.value
-                           ? "FATAL  "
+                           : level_value == WARNING.value ? "WARNING"
+                           : level_value == ERRORF.value ? "ERRORF "
+                           : level_value == FATAL.value ? "FATAL  "
                            : ""
                          );
   std::ostringstream oss;
