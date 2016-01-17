@@ -29,10 +29,6 @@ public:
 class HRCParser
 {
 public:
-  /** Error Handler, used to inform application about different error conditions
-      @param eh ErrorHandler instance, or null to drop error handling.
-  */
-  virtual void setErrorHandler(colorer::ErrorHandler *eh) = 0;
   /** Loads HRC from specified InputSource stream.
       Referred HRC file can contain prototypes and
       real types definitions. If it contains just prototype definition,

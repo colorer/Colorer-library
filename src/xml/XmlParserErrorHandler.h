@@ -1,15 +1,15 @@
 #ifndef _COLORER_XML_PARSER_ERROR_HANDLER_H_
 #define _COLORER_XML_PARSER_ERROR_HANDLER_H_
 
-#include <colorer/ErrorHandler.h>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
+#include <common/Common.h>
 
 /* XmlParserErrorHandler - class to catch errors and warnings from the XML Parser*/
 class XmlParserErrorHandler : public xercesc::ErrorHandler {
 public:
 
-  XmlParserErrorHandler(colorer::ErrorHandler *errorHandler): fSawErrors(false), error_handler(errorHandler) {
+  XmlParserErrorHandler(): fSawErrors(false) {
   }
 
   ~XmlParserErrorHandler() {
@@ -27,14 +27,11 @@ private:
   method. Its used by the main code to suppress output if there are
   errors. */
   bool fSawErrors;
-  colorer::ErrorHandler *error_handler;
 };
 
 inline bool XmlParserErrorHandler::getSawErrors() const
 {
   return fSawErrors;
-  
-
 }
 
 inline void XmlParserErrorHandler::resetErrors()

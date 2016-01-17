@@ -23,7 +23,7 @@ public:
   /**
    * Loads region defines from @c is InputSource
    */
-  void  loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = nullptr);
+  void  loadRegionMappings(XmlInputSource* is);
 
   /**
    * Saves all loaded region defines into @c writer.

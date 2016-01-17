@@ -52,7 +52,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   setRegionCompact(regionCompact);
 
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
-  eh = parserFactory->getErrorHandler();
 }
 
 BaseEditor::~BaseEditor()

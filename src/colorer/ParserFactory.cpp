@@ -32,7 +32,7 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   }
 
   xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler(errorHandler);
+  XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setXMLEntityResolver(&resolver);
@@ -132,7 +132,7 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
 
   auto it_hrdName = hrdClass->find(hrd_name);
   if (it_hrdName != hrdClass->end()) {
-    errorHandler->error(StringBuffer("Duplicate hrd name '") + hrd_name + "'");
+    LOGF(ERROR, "Duplicate hrd name '%s'", hrd_name->getChars());
     delete hrd_class;
     delete hrd_name;
     return;
@@ -188,7 +188,7 @@ String* ParserFactory::searchPath()
     delete path;
   }
   if (right_path == nullptr) {
-    errorHandler->fatalError(DString("Can't find suitable catalog.xml file. Check your program settings."));
+    LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
     throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
   }
   return right_path;
@@ -298,13 +298,6 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
 {
   RegExpStack = nullptr;
   RegExpStack_Size = 0;
-  if (_errorHandler) {
-    errorHandler = _errorHandler;
-    ownErrorHandler = false;
-  } else {
-    errorHandler = new DefaultErrorHandler();
-    ownErrorHandler = true;
-  }
   hrcParser = nullptr;
   catalogPath = nullptr;
   catalogXIS = nullptr;
@@ -318,9 +311,6 @@ ParserFactory::~ParserFactory()
   delete hrcParser;
   delete catalogPath;
   delete catalogXIS;
-  if (ownErrorHandler) {
-    delete errorHandler;
-  }
   delete[] RegExpStack;
 }
 
@@ -377,7 +367,6 @@ HRCParser* ParserFactory::getHRCParser()
     return hrcParser;
   }
   hrcParser = new HRCParserImpl();
-  hrcParser->setErrorHandler(errorHandler);
   for (size_t idx = 0; idx < hrcLocations.size(); idx++) {
     if (hrcLocations.at(idx) != nullptr) {
 #ifdef _WIN32
@@ -451,8 +440,8 @@ void ParserFactory::loadPathWindows(const String* path, const String* relPath)
           hrcParser->loadSource(dfis);
           delete dfis;
         } catch (Exception& e) {
-          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
-          errorHandler->fatalError(*e.getMessage());
+          LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
+          LOG(ERRORF) << e.getMessage()->getChars();
           delete dfis;
         }
       }
@@ -480,8 +469,8 @@ void ParserFactory::loadPathLinux(const String* path, const String* relPath)
           hrcParser->loadSource(dfis);
           delete dfis;
         } catch (Exception& e) {
-          errorHandler->fatalError(StringBuffer("Can't load hrc: ") + DString(dfis->getInputSource()->getSystemId()));
-          errorHandler->fatalError(*e.getMessage());
+          LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
+          LOG(ERRORF) << e.getMessage()->getChars();
           delete dfis;
         }
       }
@@ -538,11 +527,11 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
       XmlInputSource* dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
-        mapper->loadRegionMappings(dfis, errorHandler);
+        mapper->loadRegionMappings(dfis);
         delete dfis;
       } catch (Exception& e) {
-        errorHandler->error(DString("Can't load hrd: "));
-        errorHandler->error(*e.getMessage());
+        LOGF(ERROR, "Can't load hrd:");
+        LOG(ERROR) << e.getMessage()->getChars();
         delete dfis;
         throw ParserFactoryException(DString("Error load hrd"));
       }
@@ -580,11 +569,11 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
       XmlInputSource* dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
-        mapper->loadRegionMappings(dfis, errorHandler);
+        mapper->loadRegionMappings(dfis);
         delete dfis;
       } catch (Exception& e) {
-        errorHandler->error(DString("Can't load hrd: "));
-        errorHandler->error(*e.getMessage());
+        LOG(ERROR) << "Can't load hrd: ";
+        LOG(ERROR) << e.getMessage()->getChars();
         delete dfis;
       }
     }

@@ -140,7 +140,7 @@ void ConsoleTools::setLinkSource(const String &str){
 
   XmlInputSource *linkSource = XmlInputSource::newInstance(str.getWChars(), static_cast<XMLCh*>(nullptr));
   xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler(nullptr);
+  XmlParserErrorHandler error_handler;
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);

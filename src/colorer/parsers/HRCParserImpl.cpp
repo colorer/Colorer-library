@@ -15,7 +15,6 @@ HRCParserImpl::HRCParserImpl()
   parseType = nullptr;
   parseProtoType = nullptr;
   versionName = nullptr;
-  errorHandler = nullptr;
   curInputSource = nullptr;
   updateStarted = false;
   fileTypeVector.reserve(150);
@@ -33,11 +32,6 @@ HRCParserImpl::~HRCParserImpl()
   regionNamesVector.clear();
   schemeEntitiesHash.clear();
   delete versionName;
-}
-
-void HRCParserImpl::setErrorHandler(colorer::ErrorHandler* eh)
-{
-  errorHandler = eh;
 }
 
 void HRCParserImpl::loadSource(XmlInputSource* is)
@@ -190,7 +184,7 @@ const String* HRCParserImpl::getVersion()
 void HRCParserImpl::parseHRC(XmlInputSource* is)
 {
   xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler(errorHandler);
+  XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setXMLEntityResolver(&resolver);

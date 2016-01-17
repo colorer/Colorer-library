@@ -100,14 +100,6 @@ public:
   TextHRDMapper* createTextMapper(const String* nameID);
 
   /**
-   * Returns currently used global error handler.
-   * If no error handler were installed, returns null.
-   */
-  colorer::ErrorHandler* getErrorHandler()
-  {
-    return errorHandler;
-  };
-  /**
    * load one hrd node from hrd-sets
    */
   void parseHRDSetsChild(const xercesc::DOMElement* elem);
@@ -132,7 +124,6 @@ private:
 
   String* catalogPath;
   XmlInputSource* catalogXIS;
-  colorer::ErrorHandler* errorHandler;
   bool ownErrorHandler;
   std::vector<const String*> hrcLocations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;

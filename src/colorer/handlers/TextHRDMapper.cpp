@@ -21,10 +21,10 @@ TextHRDMapper::~TextHRDMapper()
 /** Loads region definitions from HRD file.
     Multiple files could be loaded.
 */
-void TextHRDMapper::loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh)
+void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 {
   xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler(eh);
+  XmlParserErrorHandler error_handler;
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);

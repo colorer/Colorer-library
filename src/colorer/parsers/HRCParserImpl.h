@@ -25,7 +25,6 @@ public:
   HRCParserImpl();
   ~HRCParserImpl();
 
-  void setErrorHandler(colorer::ErrorHandler* eh);
 
   void loadSource(XmlInputSource* is);
   FileType* getFileType(const String* name);
@@ -63,8 +62,6 @@ protected:
   XmlInputSource* curInputSource;
   bool structureChanged;
   bool updateStarted;
-
-  colorer::ErrorHandler* errorHandler;
 
   void loadFileType(FileType* filetype);
   void unloadFileType(FileTypeImpl* filetype);
