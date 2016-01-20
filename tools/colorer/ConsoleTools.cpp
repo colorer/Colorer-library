@@ -1,10 +1,12 @@
-#include<time.h>
-#include<colorer/ParserFactory.h>
-#include<colorer/editor/BaseEditor.h>
-#include<colorer/viewer/TextLinesStore.h>
-#include<colorer/viewer/ParsedLineWriter.h>
-#include<colorer/viewer/TextConsoleViewer.h>
-#include<colorer/ParserFactoryException.h>
+#include <time.h>
+#include <colorer/ParserFactory.h>
+#include <colorer/editor/BaseEditor.h>
+#include <colorer/viewer/TextLinesStore.h>
+#include <colorer/viewer/ParsedLineWriter.h>
+#include <colorer/viewer/TextConsoleViewer.h>
+#include <colorer/ParserFactoryException.h>
+#include <common/io/FileWriter.h>
+#include <cregexp/cregexp.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlParserErrorHandler.h>
@@ -13,34 +15,20 @@
 
 using namespace xercesc;
 
-ConsoleTools::ConsoleTools(){
+ConsoleTools::ConsoleTools(): inputEncoding(nullptr), outputEncoding(nullptr), typeDescription(nullptr), catalogPath(nullptr), hrdName(nullptr), outputFileName(nullptr), inputFileName(nullptr)
+{
   copyrightHeader = true;
   htmlEscaping = true;
   bomOutput = true;
   htmlWrapping = true;
   lineNumbers = false;
 
-  typeDescription = nullptr;
-  inputFileName = outputFileName = nullptr;
-  inputEncoding = outputEncoding = nullptr;
   inputEncodingIndex = outputEncodingIndex = -1;
-  catalogPath = nullptr;
-  hrdName = nullptr;
-  logFileName = nullptr;
 
   docLinkHash = new std::unordered_map<SString, String*>;
 }
 
 ConsoleTools::~ConsoleTools(){
-  delete typeDescription;
-  delete catalogPath;
-  delete hrdName;
-  delete inputEncoding;
-  delete outputEncoding;
-  delete outputFileName;
-  delete inputFileName;
-  delete logFileName;
-
   docLinkHash->clear();
   delete docLinkHash;
 }
@@ -57,57 +45,45 @@ void ConsoleTools::setHtmlWrapping(bool use) { htmlWrapping = use; }
 void ConsoleTools::addLineNumbers(bool add){ lineNumbers = add; }
 
 void ConsoleTools::setTypeDescription(const String &str) {
-  delete typeDescription;
-  typeDescription = new SString(str);
+  typeDescription.reset(new SString(str));
 }
 
 void ConsoleTools::setInputFileName(const String &str) {
-  delete inputFileName;
-  inputFileName = new SString(str);
+  inputFileName.reset(new SString(str));
 }
 
 void ConsoleTools::setOutputFileName(const String &str) {
-  delete outputFileName;
-  outputFileName = new SString(str);
-}
-
-void ConsoleTools::setLogFileName(const String &str) {
-  delete logFileName;
-  logFileName = new SString(str);
+  outputFileName.reset(new SString(str));
 }
 
 void ConsoleTools::setInputEncoding(const String &str) {
-  delete inputEncoding;
-  inputEncoding = new SString(str);
+  inputEncoding.reset(new SString(str));
   inputEncodingIndex = Encodings::getEncodingIndex(inputEncoding->getChars());
-  if (inputEncodingIndex == -1) throw Exception(StringBuffer("Unknown input encoding: ")+inputEncoding);
+  if (inputEncodingIndex == -1) throw Exception(StringBuffer("Unknown input encoding: ")+inputEncoding.get());
   if (outputEncoding == nullptr) outputEncodingIndex = inputEncodingIndex;
 }
 
 void ConsoleTools::setOutputEncoding(const String &str) {
-  delete outputEncoding;
-  outputEncoding = new SString(str);
+  outputEncoding.reset(new SString(str));
   outputEncodingIndex = Encodings::getEncodingIndex(outputEncoding->getChars());
-  if (outputEncodingIndex == -1) throw Exception(StringBuffer("Unknown output encoding: ")+outputEncoding);
+  if (outputEncodingIndex == -1) throw Exception(StringBuffer("Unknown output encoding: ")+outputEncoding.get());
 }
 
 void ConsoleTools::setCatalogPath(const String &str) {
-  delete catalogPath;
 #if defined _WIN32
    // replace the environment variables to their values
   size_t i=ExpandEnvironmentStrings(str.getWChars(),nullptr,0);
   wchar_t *temp = new wchar_t[i];
   ExpandEnvironmentStrings(str.getWChars(),temp,static_cast<DWORD>(i));
-  catalogPath = new SString(temp);
+  catalogPath.reset(new SString(temp));
   delete[] temp;
 #else
-  catalogPath = new SString(str);
+  catalogPath.reset(new SString(str));
 #endif
 }
 
 void ConsoleTools::setHRDName(const String &str) {
-  delete hrdName;
-  hrdName = new SString(str);
+  hrdName.reset(new SString(str));
 }
 
 void ConsoleTools::setLinkSource(const String &str){
@@ -203,7 +179,7 @@ void ConsoleTools::listTypes(bool load, bool useNames){
   try{
     writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
     ParserFactory pf;
-    pf.loadCatalog(catalogPath);
+    pf.loadCatalog(catalogPath.get());
     HRCParser *hrcParser = pf.getHRCParser();
     fprintf(stderr, "\nloading file types...\n");
     for(int idx = 0;; idx++){
@@ -231,17 +207,17 @@ void ConsoleTools::listTypes(bool load, bool useNames){
 FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource){
   FileType *type = nullptr;
   if (typeDescription != nullptr){
-    type = hrcParser->getFileType(typeDescription);
+    type = hrcParser->getFileType(typeDescription.get());
     if (type == nullptr){
       for(int idx = 0;; idx++){
         type = hrcParser->enumerateFileTypes(idx);
         if (type == nullptr) break;
         if (type->getDescription() != nullptr &&
             type->getDescription()->length() >= typeDescription->length() &&
-            DString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription))
+            DString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get()))
           break;
         if (type->getName()->length() >= typeDescription->length() &&
-            DString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription))
+            DString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get()))
           break;
         type = nullptr;
       }
@@ -258,7 +234,7 @@ FileType *ConsoleTools::selectType(HRCParser *hrcParser, LineSource *lineSource)
       totalLength += iLine->length();
       if (totalLength > 500) break;
     }
-    type = hrcParser->chooseFileType(inputFileName, &textStart, 0);
+    type = hrcParser->chooseFileType(inputFileName.get(), &textStart, 0);
   }
   return type;
 }
@@ -268,15 +244,15 @@ void ConsoleTools::profile(int loopCount){
 
   // parsers factory
   ParserFactory pf;
-  pf.loadCatalog(catalogPath);
+  pf.loadCatalog(catalogPath.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
-  textLinesStore.loadFile(inputFileName, inputEncoding, true);
+  textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
   DString dcons = DString("console");
-  baseEditor.setRegionMapper(&dcons, hrdName);
+  baseEditor.setRegionMapper(&dcons, hrdName.get());
   FileType *type = selectType(pf.getHRCParser(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
@@ -296,15 +272,15 @@ void ConsoleTools::viewFile(){
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName, inputEncoding, true);
+    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
     // parsers factory
     ParserFactory pf;
-    pf.loadCatalog(catalogPath);
+    pf.loadCatalog(catalogPath.get());
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
     DString dcons = DString("console");
-    baseEditor.setRegionMapper(&dcons, hrdName);
+    baseEditor.setRegionMapper(&dcons, hrdName.get());
     FileType *type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
@@ -325,17 +301,17 @@ void ConsoleTools::viewFile(){
 }
 
 void ConsoleTools::forward(){
-  colorer::InputSource *fis = colorer::InputSource::newInstance(inputFileName);
+  colorer::InputSource *fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte *stream = fis->openStream();
   DString eStream(stream, fis->length(), inputEncodingIndex);
 
   Writer *outputFile;
   try{
-    if (outputFileName != nullptr) outputFile = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
+    if (outputFileName != nullptr) outputFile = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
     else outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
   }catch(Exception &e){
     fprintf(stderr, "can't open file '%s' for writing:", outputFileName->getChars());
-    fprintf(stderr, e.getMessage()->getChars());
+    fprintf(stderr, "%s", e.getMessage()->getChars());
     return;
   }
 
@@ -349,10 +325,10 @@ void ConsoleTools::genOutput(bool useTokens){
   try{
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName, inputEncoding, true);
+    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
     // parsers factory
     ParserFactory pf;
-    pf.loadCatalog(catalogPath);
+    pf.loadCatalog(catalogPath.get());
     // HRC loading
     HRCParser *hrcParser = pf.getHRCParser();
     // HRD RegionMapper creation
@@ -361,10 +337,10 @@ void ConsoleTools::genOutput(bool useTokens){
     if (!useTokens){
       try{
         DString drgb = DString("rgb");
-        mapper = pf.createStyledMapper(&drgb, hrdName);
+        mapper = pf.createStyledMapper(&drgb, hrdName.get());
       }catch(ParserFactoryException &){
         useMarkup = true;
-        mapper = pf.createTextMapper(hrdName);
+        mapper = pf.createTextMapper(hrdName.get());
       }
     }
     // Base editor to make primary parse
@@ -384,13 +360,13 @@ void ConsoleTools::genOutput(bool useTokens){
     Writer *escapedWriter;
     Writer *commonWriter;
     try{
-      if (outputFileName != nullptr) commonWriter = new FileWriter(outputFileName, outputEncodingIndex, bomOutput);
+      if (outputFileName != nullptr) commonWriter = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
       else commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
       if (htmlEscaping) escapedWriter = new HtmlEscapesWriter(commonWriter);
       else escapedWriter = commonWriter;
     }catch(Exception &e){
       fprintf(stderr, "can't open file '%s' for writing:\n", outputFileName->getChars());
-      fprintf(stderr, e.getMessage()->getChars());
+      fprintf(stderr, "%s", e.getMessage()->getChars());
       return;
     }
 

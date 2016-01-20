@@ -1,9 +1,6 @@
 #ifndef _COLORER_CONSOLETOOLS_H_
 #define _COLORER_CONSOLETOOLS_H_
 
-#include<stdio.h>
-#include<cregexp/cregexp.h>
-#include<common/io/FileWriter.h>
 #include<colorer/ParserFactory.h>
 
 /** Writer interface wrapper, which
@@ -67,8 +64,6 @@ public:
   void setLinkSource(const String &str);
   /// If true, result file will have line numbers before each line
   void addLineNumbers(bool add);
-  /// File name, used as log.
-  void setLogFileName(const String &str);
 
   /** Regular Expressions tests.
       Reads RE and expression from stdin,
@@ -123,15 +118,14 @@ private:
 
   int inputEncodingIndex;
   int outputEncodingIndex;
-  String *inputEncoding;
-  String *outputEncoding;
+  std::unique_ptr<String> inputEncoding;
+  std::unique_ptr<String> outputEncoding;
 
-  String *typeDescription;
-  String *catalogPath;
-  String *hrdName;
-  String *outputFileName;
-  String *inputFileName;
-  String *logFileName;
+  std::unique_ptr<String> typeDescription;
+  std::unique_ptr<String> catalogPath;
+  std::unique_ptr<String> hrdName;
+  std::unique_ptr<String> outputFileName;
+  std::unique_ptr<String> inputFileName;
 
   std::unordered_map<SString, String*> *docLinkHash;
 };
