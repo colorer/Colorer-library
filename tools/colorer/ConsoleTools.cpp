@@ -15,22 +15,13 @@
 
 using namespace xercesc;
 
-ConsoleTools::ConsoleTools(): inputEncoding(nullptr), outputEncoding(nullptr), typeDescription(nullptr), catalogPath(nullptr), hrdName(nullptr), outputFileName(nullptr), inputFileName(nullptr)
+ConsoleTools::ConsoleTools(): copyrightHeader(true), htmlEscaping(true), bomOutput(true), htmlWrapping(true), lineNumbers(false), 
+  inputEncodingIndex(-1), outputEncodingIndex(-1), inputEncoding(nullptr), outputEncoding(nullptr), typeDescription(nullptr), catalogPath(nullptr), hrdName(nullptr),
+  outputFileName(nullptr), inputFileName(nullptr)
 {
-  copyrightHeader = true;
-  htmlEscaping = true;
-  bomOutput = true;
-  htmlWrapping = true;
-  lineNumbers = false;
-
-  inputEncodingIndex = outputEncodingIndex = -1;
-
-  docLinkHash = new std::unordered_map<SString, String*>;
 }
 
 ConsoleTools::~ConsoleTools(){
-  docLinkHash->clear();
-  delete docLinkHash;
 }
 
 
@@ -138,7 +129,7 @@ void ConsoleTools::setLinkSource(const String &str){
             hkey.append(DString("--")).append(DString(l_scheme));
           }
           std::pair<SString, String*> pair_url(&hkey, new SString(&fullURL));
-          docLinkHash->emplace(pair_url);
+          docLinkHash.emplace(pair_url);
           delete tok;
         }
       }
@@ -402,11 +393,11 @@ void ConsoleTools::genOutput(bool useTokens){
         commonWriter->write(DString(": "));
       }
       if (useTokens){
-        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }else if (useMarkup){
-        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }else{
-        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }
       commonWriter->write(DString("\n"));
     }

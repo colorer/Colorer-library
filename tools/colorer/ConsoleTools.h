@@ -127,7 +127,7 @@ private:
   std::unique_ptr<String> outputFileName;
   std::unique_ptr<String> inputFileName;
 
-  std::unordered_map<SString, String*> *docLinkHash;
+  std::unordered_map<SString, String*> docLinkHash;
 };
 
 #endif
