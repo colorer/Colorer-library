@@ -1,27 +1,31 @@
 #ifndef _COLORER_CONSOLETOOLS_H_
 #define _COLORER_CONSOLETOOLS_H_
 
-#include<colorer/ParserFactory.h>
+#include <colorer/ParserFactory.h>
 
 /** Writer interface wrapper, which
     allows escaping of XML markup characters (& and <)
     @ingroup colorer_exe
 */
-class HtmlEscapesWriter : public Writer{
+class HtmlEscapesWriter : public Writer
+{
 public:
-  HtmlEscapesWriter(Writer *writer){
+  HtmlEscapesWriter(Writer* writer)
+  {
     this->writer = writer;
   };
-  void write(wchar c){
-    if (c == '&'){
+  void write(wchar c)
+  {
+    if (c == '&') {
       writer->write(DString("&amp;"));
-    }else if (c == '<'){
+    } else if (c == '<') {
       writer->write(DString("&lt;"));
-    }else
+    } else {
       writer->write(c);
+    }
   };
 protected:
-  Writer *writer;
+  Writer* writer;
 };
 
 /**
@@ -31,7 +35,8 @@ protected:
     and to check HRC database integrity.
     @ingroup colorer_viewer
 */
-class ConsoleTools{
+class ConsoleTools
+{
 public:
 
   ConsoleTools();
@@ -86,8 +91,7 @@ public:
   void listTypes(bool load, bool useNames);
 
 
-  FileType *selectType(HRCParser *hrcParser, LineSource *lineSource);
-
+  FileType* selectType(HRCParser* hrcParser, LineSource* lineSource);
 
 
   /** Views file in console window, using TextConsoleViewer class
