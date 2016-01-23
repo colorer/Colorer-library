@@ -3,7 +3,7 @@
 
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
-#ifdef WIN64
+#ifdef _WIN64
   #define CONF " (x64)"
 #else
   #define CONF ""
