@@ -15,10 +15,17 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 #====================================================
 include_directories (../../src/)
 include_directories (../../libs/xercesc/src)
-set(SRC_CPP ConsoleToolsRunner.cpp
-   ConsoleTools.cpp ConsoleTools.h)
-
 add_definitions(-DXERCES_STATIC_LIBRARY)
+
+
+set(SRC_CPP ConsoleToolsRunner.cpp
+   ConsoleTools.cpp ConsoleTools.h
+   version.h)
+
+if(WIN32)
+  set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
+endif(WIN32)
+
 #====================================================
 # common flags
 #====================================================
