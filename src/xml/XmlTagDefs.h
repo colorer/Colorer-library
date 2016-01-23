@@ -6,7 +6,7 @@ using namespace xercesc;
 /* catalog.xml
 
 <catalog>
-  <hrc-sets log-location="">
+  <hrc-sets>
     <location link=""/>
   </hrc-sets>
   <hrd-sets>
@@ -19,7 +19,6 @@ using namespace xercesc;
 
 const XMLCh catTagCatalog[] = {chLatin_c, chLatin_a, chLatin_t, chLatin_a, chLatin_l, chLatin_o, chLatin_g, chNull};
 const XMLCh catTagHrcSets[] = {chLatin_h, chLatin_r, chLatin_c, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
-const XMLCh catHrcSetsAttrLoglocation[] = {chLatin_l, chLatin_o, chLatin_g, chDash, chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
 const XMLCh catTagLocation[] = {chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
 const XMLCh catLocationAttrLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
 const XMLCh catTagHrdSets[] = {chLatin_h, chLatin_r, chLatin_d, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
