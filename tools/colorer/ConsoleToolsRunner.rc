@@ -22,7 +22,7 @@ BEGIN
             VALUE "FileDescription", FILE_DESCRIPTION
             VALUE "FileVersion", VER_FILEVERSION_STR
             VALUE "InternalName", "Colorer"
-            VALUE "LegalCopyright", "Copyright (C) 1999-2016"
+            VALUE "LegalCopyright", "© 1999-2009 Igor Russkih, © 2009-2016 Aleksey Dobrunov"
             VALUE "OriginalFilename", "colorer.exe"
             VALUE "ProductName", "Colorer console tools"
             VALUE "ProductVersion", VER_PRODUCTVERSION_STR

@@ -5,6 +5,7 @@
 #include <g3log/loglevels.hpp>
 #include <utils/LogFileSink.h>
 #include "ConsoleTools.h"
+#include "version.h"
 
 /** Internal run action type */
 enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
@@ -264,8 +265,8 @@ int workIt()
   initConsoleTools(ct);
 
   if (settings.copyright) {
-    fprintf(stdout, "\n%s\n", ParserFactory::getVersion());
-    fprintf(stdout, "Copyright (c) 1999-2006 Igor Russkih <irusskih at gmail.com>\n\n");
+    fprintf(stdout, "\nColorer console tools, version %s %s\n", VER_FILEVERSION_STR, CONF);
+    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2016 Aleksey Dobrunov \n\n");
   }
 
   try {
