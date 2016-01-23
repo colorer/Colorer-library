@@ -186,6 +186,10 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
+    if (argv[i][1] == 'e' && argv[i][2] == 'l') {
+      settings.debug = true;
+      continue;
+    }
     if (argv[i][1]) {
       fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i] + 1);
     }
@@ -222,6 +226,7 @@ void printError()
           "  -dh        Disable HTML header and footer output\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
+          "  -el        Enable DEBUG log level\n"
          );
 };
 
@@ -318,7 +323,7 @@ int main(int argc, char* argv[])
 
   auto worker = g3::LogWorker::createLogWorker();
   auto handle = worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false), &LogFileSink::fileWrite);
-  g3::only_change_at_initialization::setLogLevel(DEBUG, false);
+  g3::only_change_at_initialization::setLogLevel(DEBUG, settings.debug);
   g3::initializeLogging(worker.get());
 
   auto colorer_lib = Colorer::createColorer();
