@@ -80,13 +80,13 @@ protected:
   /// is prototype component loaded
   bool protoLoaded;
   /// is type component loaded
-  bool typeLoaded;
+  bool type_loaded;
   /// is type references fully resolved
   bool loadDone;
   /// is initial type load failed
-  bool loadBroken;
+  bool load_broken;
   /// is this IS loading was started
-  bool inputSourceLoading;
+  bool input_source_loading;
 
   String *name, *group, *description;
   bool isPackage;

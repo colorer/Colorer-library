@@ -3,13 +3,19 @@
 
 #include <cregexp/cregexp.h>
 #include <colorer/HRCParser.h>
-#include <unicode/UnicodeTools.h>
 #include <colorer/parsers/helpers/HRCParserHelpers.h>
 
-#include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlInputSource.h>
+
+class HrcParserException : public Exception
+{
+public:
+  HrcParserException(const String &msg)
+  {
+    message->append(DString("[HrcParserException] ")).append(msg);
+  }
+};
 
 class FileTypeImpl;
 
@@ -59,7 +65,7 @@ protected:
 
   FileTypeImpl* parseProtoType;
   FileTypeImpl* parseType;
-  XmlInputSource* curInputSource;
+  XmlInputSource* current_input_source;
   bool structureChanged;
   bool updateStarted;
 

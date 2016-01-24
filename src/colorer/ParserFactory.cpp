@@ -9,6 +9,7 @@
 #include <windows.h>
 #endif
 
+#include <xercesc/parsers/XercesDOMParser.hpp>
 
 #include <colorer/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>

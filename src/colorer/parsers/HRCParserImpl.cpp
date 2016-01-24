@@ -1,3 +1,4 @@
+#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <math.h>
 #include <stdio.h>
 #include <colorer/parsers/helpers/HRCParserHelpers.h>
@@ -7,22 +8,19 @@
 #include <xml/BaseEntityResolver.h>
 #include <xml/XmlTagDefs.h>
 #include <xml/XStr.h>
+#include <unicode/UnicodeTools.h>
 
-#define CURRENT_FILE DString(" Current file ")+ DString(curInputSource->getInputSource()->getSystemId()) +DString(".")
+#define CURRENT_FILE DString(" Current file ")+ DString(current_input_source->getInputSource()->getSystemId()) +DString(".")
 
-HRCParserImpl::HRCParserImpl()
+HRCParserImpl::HRCParserImpl():
+  versionName(nullptr), parseProtoType(nullptr), parseType(nullptr), current_input_source(nullptr),
+  structureChanged(false), updateStarted(false)
 {
-  parseType = nullptr;
-  parseProtoType = nullptr;
-  versionName = nullptr;
-  curInputSource = nullptr;
-  updateStarted = false;
+  fileTypeHash.reserve(200);
   fileTypeVector.reserve(150);
+  regionNamesHash.reserve(1000);
   regionNamesVector.reserve(1000);
-  // need reserve, but in vc2010 not implemented
-  schemeHash.rehash(static_cast<size_t>(ceil(4000 / schemeHash.max_load_factor())));
-  regionNamesHash.rehash(static_cast<size_t>(ceil(1000 / regionNamesHash.max_load_factor())));
-  fileTypeHash.rehash(static_cast<size_t>(ceil(200 / fileTypeHash.max_load_factor())));
+  schemeHash.reserve(4000);
 }
 
 HRCParserImpl::~HRCParserImpl()
@@ -30,41 +28,37 @@ HRCParserImpl::~HRCParserImpl()
   for (auto it : fileTypeHash) {
     delete it.second;
   }
-  fileTypeHash.clear();
 
   for (auto it : schemeHash) {
     delete it.second;
   }
-  schemeHash.clear();
 
   for (auto it : regionNamesVector) {
     delete it;
   }
-  regionNamesVector.clear();
 
   for (auto it : schemeEntitiesHash) {
     delete it.second;
   }
-  schemeEntitiesHash.clear();
 
   delete versionName;
 }
 
 void HRCParserImpl::loadSource(XmlInputSource* is)
 {
-  XmlInputSource* istemp = curInputSource;
-  curInputSource = is;
-  if (is == nullptr) {
-    LOGF(ERROR, "Can't open stream for type without location attribute.");
-    return;
+  if (!is) {
+    throw HrcParserException(DString("Can't open stream - 'null' is bad stream."));
   }
+
+  XmlInputSource* istemp = current_input_source;
+  current_input_source = is;
   try {
     parseHRC(is);
-  } catch (Exception&) {
-    curInputSource = istemp;
+  } catch (Exception &) {
+    current_input_source = istemp;
     throw;
   }
-  curInputSource = istemp;
+  current_input_source = istemp;
 }
 
 void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
@@ -92,34 +86,30 @@ void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
 
 void HRCParserImpl::loadFileType(FileType* filetype)
 {
-  if (filetype == nullptr) {
+  FileTypeImpl* thisType = static_cast<FileTypeImpl*>(filetype);
+  if (thisType == nullptr || thisType->type_loaded || thisType->input_source_loading || thisType->load_broken) {
     return;
   }
 
-  FileTypeImpl* thisType = (FileTypeImpl*)filetype;
-
-  if (thisType->typeLoaded || thisType->inputSourceLoading || thisType->loadBroken) {
-    return;
-  }
-  thisType->inputSourceLoading = true;
+  thisType->input_source_loading = true;
 
   try {
-
     loadSource(thisType->inputSource);
-
-  } catch (InputSourceException& e) {
+  } catch (InputSourceException &e) {
     LOGF(ERRORF, "Can't open source stream: %s", e.getMessage()->getChars());
-    thisType->loadBroken = true;
-  } catch (HRCParserException& e) {
+    thisType->load_broken = true;
+  } catch (HRCParserException &e) {
     LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
-    thisType->loadBroken = true;
-  } catch (Exception& e) {
+    thisType->load_broken = true;
+  } catch (Exception &e) {
     LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
-    thisType->loadBroken = true;
+    thisType->load_broken = true;
   } catch (...) {
     LOGF(ERRORF, "Unknown exception while loading %s", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
-    thisType->loadBroken = true;
+    thisType->load_broken = true;
   }
+
+  thisType->input_source_loading = false;
 }
 
 FileType* HRCParserImpl::chooseFileType(const String* fileName, const String* firstLine, int typeNo)
@@ -272,7 +262,7 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
       return;
     }
     LOG(WARNING) << "Unused element '" << XStr(elem->getNodeName()) << "'." << " Current file " <<
-      XStr(curInputSource->getInputSource()->getSystemId()) << ".";
+      XStr(current_input_source->getInputSource()->getSystemId()) << ".";
   }
 }
 
@@ -348,7 +338,7 @@ void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement* elem)
     LOGF(ERROR, "Bad 'location' link attribute in prototype '%s'", parseProtoType->name->getChars());
     return;
   }
-  parseProtoType->inputSource = XmlInputSource::newInstance(locationLink, curInputSource);
+  parseProtoType->inputSource = XmlInputSource::newInstance(locationLink, current_input_source);
 }
 
 void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
@@ -417,11 +407,11 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
     return;
   }
   FileTypeImpl* type = type_ref->second;
-  if (type->typeLoaded) {
+  if (type->type_loaded) {
     LOGF(WARNING, "type '%s' is already loaded", XStr(typeName).get_char());
     return;
   }
-  type->typeLoaded = true;
+  type->type_loaded = true;
 
   FileTypeImpl* o_parseType = parseType;
   parseType = type;
@@ -1064,10 +1054,10 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
         LOGF(ERROR, "type name qualifer in '%s' doesn't match any type", name->getChars());
       }
       return nullptr;
-    } else if (!prefType->typeLoaded) {
+    } else if (!prefType->type_loaded) {
       loadFileType(prefType);
     }
-    if (prefType == parseType || prefType->typeLoaded) {
+    if (prefType == parseType || prefType->type_loaded) {
       return checkNameExist(name, prefType, qntype, logErrors) ? (new SString(name)) : nullptr;
     }
   } else { // unqualified name
@@ -1077,7 +1067,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
         tname = parseType->importVector.at(idx);
       }
       FileTypeImpl* importer = fileTypeHash.find(tname)->second;
-      if (!importer->typeLoaded) {
+      if (!importer->type_loaded) {
         loadFileType(importer);
       }
 
@@ -1089,7 +1079,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
       delete qname;
     }
     if (logErrors) {
-      LOGF(ERROR, "unqualified name '%s' doesn't belong to any imported type [%s]", name->getChars(), XStr(curInputSource->getInputSource()->getSystemId()).get_char());
+      LOGF(ERROR, "unqualified name '%s' doesn't belong to any imported type [%s]", name->getChars(), XStr(current_input_source->getInputSource()->getSystemId()).get_char());
     }
   }
   return nullptr;

@@ -1,31 +1,49 @@
-#include<common/Exception.h>
+#include <common/Exception.h>
+#include <unicode/String.h>
 
-Exception::Exception(const Exception &e){
+Exception::Exception(const Exception &e)
+{
   message = new StringBuffer(e.message);
-};
-Exception::Exception(){
+}
+
+Exception::Exception()
+{
   message = new StringBuffer();
-};
-Exception::Exception(const String &msg){
+}
+
+Exception::Exception(const String &msg)
+{
   message = new StringBuffer(DString("Exception: "));
   message->append(msg);
-};
-Exception::~Exception(){
+}
+
+Exception& Exception::operator=(const Exception& e)
+{
+  message = new StringBuffer(e.message);
+  return *this;
+}
+
+Exception::~Exception()
+{
   delete message;
-};
-const String *Exception::getMessage() const{
+}
+
+const String* Exception::getMessage() const
+{
   return message;
-};
+}
 
-InputSourceException::InputSourceException(){};
-InputSourceException::InputSourceException(const String& msg){
-  message->append(DString("InputSourceException: ")).append(msg);
-};
+InputSourceException::InputSourceException() {};
+InputSourceException::InputSourceException(const String &msg)
+{
+  message->append(DString("[InputSourceException] ")).append(msg);
+}
 
-OutOfBoundException::OutOfBoundException(){};
-OutOfBoundException::OutOfBoundException(const String &msg){
-  message->append(DString("OutOfBoundException: ")).append(msg);
-};
+OutOfBoundException::OutOfBoundException() {};
+OutOfBoundException::OutOfBoundException(const String &msg)
+{
+  message->append(DString("[OutOfBoundException] ")).append(msg);
+}
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

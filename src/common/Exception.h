@@ -21,6 +21,7 @@ public:
   /** Creates exception with included exception information
   */
   Exception(const Exception &e);
+  Exception &operator =(const Exception &e);
   /** Default destructor
   */
   virtual ~Exception();
@@ -53,8 +54,6 @@ public:
   InputSourceException();
   InputSourceException(const String& msg);
 };
-
-#include<unicode/String.h>
 
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

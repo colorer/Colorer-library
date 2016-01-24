@@ -3,7 +3,7 @@
 
 FileTypeImpl::FileTypeImpl(HRCParserImpl *hrcParser){
   this->hrcParser = hrcParser;
-  protoLoaded = typeLoaded = loadDone = loadBroken = inputSourceLoading = false;
+  protoLoaded = type_loaded = loadDone = load_broken = input_source_loading = false;
   isPackage = false;
   name = group = description = nullptr;
   baseScheme = nullptr;
@@ -32,7 +32,7 @@ FileTypeImpl::~FileTypeImpl(){
 }
 
 Scheme* FileTypeImpl::getBaseScheme() {
-  if (!typeLoaded) hrcParser->loadFileType(this);
+  if (!type_loaded) hrcParser->loadFileType(this);
   return baseScheme;
 }
 
