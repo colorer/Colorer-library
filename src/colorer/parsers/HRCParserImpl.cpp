@@ -27,10 +27,26 @@ HRCParserImpl::HRCParserImpl()
 
 HRCParserImpl::~HRCParserImpl()
 {
+  for (auto it : fileTypeHash) {
+    delete it.second;
+  }
   fileTypeHash.clear();
+
+  for (auto it : schemeHash) {
+    delete it.second;
+  }
   schemeHash.clear();
+
+  for (auto it : regionNamesVector) {
+    delete it;
+  }
   regionNamesVector.clear();
+
+  for (auto it : schemeEntitiesHash) {
+    delete it.second;
+  }
   schemeEntitiesHash.clear();
+
   delete versionName;
 }
 

@@ -23,6 +23,9 @@ void TextLinesStore::freeFile()
 {
   delete fileName;
   fileName = nullptr;
+  for(auto it:lines){
+    delete it;
+  }
   lines.clear();
 }
 

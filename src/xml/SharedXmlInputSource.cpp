@@ -36,7 +36,7 @@ SharedXmlInputSource::~SharedXmlInputSource()
   if (isHash->size() == 0) {
     delete isHash;
     isHash = NULL;
-    delete mSrc;
+    delete[] mSrc;
   }
   delete is;
 }

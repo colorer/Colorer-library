@@ -304,7 +304,25 @@ ParserFactory::ParserFactory()
 
 ParserFactory::~ParserFactory()
 {
+  for (auto it : hrcLocations) {
+    delete it;
+  }
   hrcLocations.clear();
+
+  // Ohhh!
+  for (auto it : hrdLocations) {
+    for(auto it2: *it.second) {
+      for(auto it3: *it2.second) {
+        delete it3;
+      }
+      delete it2.second;
+    }
+    delete it.second;
+  }
+
+  for(auto it: hrdDescriptions){
+    delete it.second;
+  }
   hrdDescriptions.clear();
 
   delete hrcParser;
