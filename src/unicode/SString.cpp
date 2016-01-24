@@ -38,7 +38,7 @@ SString::SString(){
   len = 0;
 }
 SString::~SString(){
-  if(wstr) delete[] wstr;
+  delete[] wstr;
 }
 
 wchar SString::operator[](int i) const{

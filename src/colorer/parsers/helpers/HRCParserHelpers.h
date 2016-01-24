@@ -144,7 +144,11 @@ protected:
 
   ~SchemeImpl()
   {
+    for (auto it = nodes.begin(); it!=nodes.end(); ++it) {
+      delete *it;
+    }
     nodes.clear();
+    delete schemeName;
   }
 };
 

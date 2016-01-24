@@ -14,6 +14,9 @@ const int StyledRegion::RD_STRIKEOUT = 8;
 StyledHRDMapper::StyledHRDMapper() {}
 StyledHRDMapper::~StyledHRDMapper()
 {
+  for (auto it = regionDefines.begin(); it!=regionDefines.end(); ++it) {
+    delete it->second;
+  }
   regionDefines.clear();
 }
 

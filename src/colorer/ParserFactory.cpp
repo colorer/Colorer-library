@@ -326,8 +326,25 @@ ParserFactory::ParserFactory(colorer::ErrorHandler* _errorHandler)
 
 ParserFactory::~ParserFactory()
 {
+  for (auto it = hrcLocations.begin(); it!=hrcLocations.end(); ++it) {
+    delete *it;
+  }
   hrcLocations.clear();
-  hrdDescriptions.clear();
+
+  // Ohhh!
+  for (auto it = hrdLocations.begin(); it!=hrdLocations.end(); ++it) {
+    for (auto it2 = it->second->begin(); it2!=it->second->end(); ++it2) {
+      for (auto it3 = it2->second->begin(); it3!=it2->second->end();++it3) {
+        delete *it3;
+      }
+      delete it2->second;
+    }
+    delete it->second;
+  }
+
+  for (auto it = hrdDescriptions.begin(); it!=hrdDescriptions.end(); ++it) {
+    delete it->second;
+  }
 
   delete hrcParser;
   delete catalogPath;

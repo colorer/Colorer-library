@@ -15,7 +15,20 @@ FileTypeImpl::~FileTypeImpl(){
   delete group;
   delete description;
   delete inputSource;
+  for (auto it = chooserVector.begin(); it!=chooserVector.end(); ++it) {
+    delete *it;
+  }
   chooserVector.clear();
+
+  for (auto it = paramsHash.begin(); it!=paramsHash.end(); ++it) {
+    delete it->second;
+  }
+  paramsHash.clear();
+
+  for (auto it = importVector.begin(); it!=importVector.end(); ++it) {
+    delete *it;
+  }
+  importVector.clear();
 }
 
 Scheme* FileTypeImpl::getBaseScheme() {

@@ -14,6 +14,9 @@ Outliner::~Outliner()
   baseEditor->removeRegionHandler(this);
   baseEditor->removeEditorListener(this);
 
+  for(auto it=outline.begin(); it!=outline.end(); it++){
+    delete *it;
+  }
   outline.clear();
 }
 

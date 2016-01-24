@@ -137,7 +137,10 @@ SchemeNode::~SchemeNode()
     delete worddiv;
   }
   if (type == SNT_INHERIT) {
-    virtualEntryVector.clear();
+  for(auto it = virtualEntryVector.begin(); it!=virtualEntryVector.end(); ++it){
+    delete *it;
+  }
+  virtualEntryVector.clear();
   }
   delete schemeName;
 }
