@@ -11,6 +11,9 @@ LineRegionsSupport::LineRegionsSupport()
 LineRegionsSupport::~LineRegionsSupport()
 {
   clear();
+  for (auto i = 1; i < schemeStack.size();i++){
+    delete schemeStack[i];
+  }
   schemeStack.clear();
 }
 
@@ -87,6 +90,9 @@ bool LineRegionsSupport::checkLine(size_t lno) const
 
 void LineRegionsSupport::startParsing(size_t lno)
 {
+  for (auto i = 1; i < schemeStack.size(); i++) {
+    delete schemeStack[i];
+  }
   schemeStack.clear();
   schemeStack.push_back(&background);
 }
@@ -173,6 +179,7 @@ void LineRegionsSupport::enterScheme(size_t lno, String* line, int sx, int ex, c
 void LineRegionsSupport::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   const Region* scheme_region = schemeStack.back()->region;
+  delete schemeStack.back();
   schemeStack.pop_back();
   // ignoring out of cached interval lines
   if (!checkLine(lno)) {
