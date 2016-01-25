@@ -3,22 +3,24 @@
 
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
-#include <common/Common.h>
 
 /* XmlParserErrorHandler - class to catch errors and warnings from the XML Parser*/
-class XmlParserErrorHandler : public xercesc::ErrorHandler {
+class XmlParserErrorHandler : public xercesc::ErrorHandler
+{
 public:
 
-  XmlParserErrorHandler(): fSawErrors(false) {
+  XmlParserErrorHandler(): fSawErrors(false)
+  {
   }
 
-  ~XmlParserErrorHandler() {
+  ~XmlParserErrorHandler()
+  {
   }
 
-  void warning(const xercesc::SAXParseException& toCatch);
-  void error(const xercesc::SAXParseException& toCatch);
-  void fatalError(const xercesc::SAXParseException& toCatch);
-  void resetErrors();
+  void warning(const xercesc::SAXParseException &toCatch) override;
+  void error(const xercesc::SAXParseException &toCatch) override;
+  void fatalError(const xercesc::SAXParseException &toCatch) override;
+  void resetErrors() override;
   bool getSawErrors() const;
 
 private:
