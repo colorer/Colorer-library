@@ -434,7 +434,7 @@ HRCParser* ParserFactory::getHRCParser()
           delete dfis;
         } catch (Exception& e) {
           LOG(ERRORF) << "Can't load hrc : " << XStr(dfis->getInputSource()->getSystemId());
-          LOG(ERRORF) << e.getMessage()->getChars();
+          LOG(ERRORF) << e.what();
           delete dfis;
         }
       }
@@ -459,7 +459,7 @@ void ParserFactory::loadPathWindows(const String* path, const String* relPath)
           delete dfis;
         } catch (Exception& e) {
           LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
-          LOG(ERRORF) << e.getMessage()->getChars();
+          LOG(ERRORF) << e.what();
           delete dfis;
         }
       }
@@ -549,7 +549,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
         delete dfis;
       } catch (Exception& e) {
         LOGF(ERROR, "Can't load hrd:");
-        LOG(ERROR) << e.getMessage()->getChars();
+        LOG(ERROR) << e.what();
         delete dfis;
         throw ParserFactoryException(DString("Error load hrd"));
       }
@@ -591,7 +591,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
         delete dfis;
       } catch (Exception& e) {
         LOG(ERROR) << "Can't load hrd: ";
-        LOG(ERROR) << e.getMessage()->getChars();
+        LOG(ERROR) << e.what();
         delete dfis;
       }
     }

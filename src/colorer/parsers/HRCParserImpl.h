@@ -11,9 +11,10 @@
 class HrcParserException : public Exception
 {
 public:
-  HrcParserException(const String &msg)
+  HrcParserException() noexcept : Exception("[HrcParserException] ") {};
+  HrcParserException(const String &msg) noexcept : HrcParserException()
   {
-    message->append(DString("[HrcParserException] ")).append(msg);
+    what_str.append(msg.getChars());
   }
 };
 

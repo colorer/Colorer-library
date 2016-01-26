@@ -40,12 +40,14 @@ unsigned int i1, i2;
 #endif
 
 
-StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(){};
-StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String& msg){
-  message = new StringBuffer("StringIndexOutOfBoundsException: ");
-  message->append(msg);
-}
+StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
+  Exception("[StringIndexOutOfBoundsException] ")
+{}
 
+  StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &msg) noexcept : StringIndexOutOfBoundsException()
+{
+  what_str.append(msg.getChars());
+}
 
 
 String::String(){

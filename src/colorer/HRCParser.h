@@ -11,12 +11,14 @@
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
 */
-class HRCParserException : public Exception{
+class HRCParserException : public Exception
+{
 public:
-  HRCParserException(){};
-  HRCParserException(const String& msg){
-    message->append(DString("HRCParserException: ")).append(msg);
-  };
+  HRCParserException() noexcept : Exception("[HRCParserException] ") {};
+  HRCParserException(const String &msg) noexcept : HRCParserException()
+  {
+    what_str.append(msg.getChars());
+  }
 };
 
 

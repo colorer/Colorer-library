@@ -1,6 +1,9 @@
 #ifndef _COLORER_EXCEPTION_H__
 #define _COLORER_EXCEPTION_H__
 
+#include <exception>
+#include <string>
+
 class String;
 class StringBuffer;
 
@@ -8,31 +11,32 @@ class StringBuffer;
     Defines throwable exception.
     @ingroup common
 */
-class Exception
+class Exception: public std::exception
 {
 public:
   /** Default constructor
       Creates exception with empty message
   */
-  Exception();
+  Exception() noexcept;
+  Exception(const std::string &msg) noexcept;
   /** Creates exception with string message
   */
-  Exception(const String &msg);
+  Exception(const String &msg) noexcept;
   /** Creates exception with included exception information
   */
-  Exception(const Exception &e);
-  Exception &operator =(const Exception &e);
+  Exception(const Exception &e) noexcept;
+  Exception &operator =(const Exception &e) noexcept;
   /** Default destructor
   */
-  virtual ~Exception();
+  virtual ~Exception() noexcept;
 
   /** Returns exception message
   */
-  virtual const String *getMessage() const;
+  virtual const char* what() const noexcept override;
 protected:
   /** Internal message container
   */
-  StringBuffer *message;
+  std::string what_str;
 };
 
 /**
@@ -41,8 +45,9 @@ protected:
 */
 class OutOfBoundException : public Exception{
 public:
-  OutOfBoundException();
-  OutOfBoundException(const String &msg);
+  OutOfBoundException() noexcept;
+  OutOfBoundException(const String &msg) noexcept;
+  OutOfBoundException(const std::string &msg) noexcept;
 };
 
 /**
@@ -51,8 +56,9 @@ public:
 */
 class InputSourceException : public Exception{
 public:
-  InputSourceException();
-  InputSourceException(const String& msg);
+  InputSourceException() noexcept;
+  InputSourceException(const std::string& msg) noexcept;
+  InputSourceException(const String& msg) noexcept;
 };
 
 #endif

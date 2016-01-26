@@ -3,10 +3,13 @@
 #include<unicode/x_encodings.h>
 #include<string.h>
 
-UnsupportedEncodingException::UnsupportedEncodingException(){};
-UnsupportedEncodingException::UnsupportedEncodingException(const String& msg){
-  message = new StringBuffer("UnsupportedEncodingException: ");
-  message->append(msg);
+UnsupportedEncodingException::UnsupportedEncodingException() noexcept :
+  Exception("[UnsupportedEncodingException] ")
+{}
+
+UnsupportedEncodingException::UnsupportedEncodingException(const String &msg) noexcept : UnsupportedEncodingException()
+{
+  what_str.append(msg.getChars());
 }
 
 const int Encodings::ENC_UTF8_BOM    = 0xBFBBEF;

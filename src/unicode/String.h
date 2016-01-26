@@ -15,8 +15,8 @@ extern "C" int strnicmp(const char*c1, const char*c2, unsigned int n);
 */
 class UnsupportedEncodingException : public Exception{
 public:
-  UnsupportedEncodingException();
-  UnsupportedEncodingException(const String& msg);
+  UnsupportedEncodingException() noexcept;
+  UnsupportedEncodingException(const String& msg) noexcept;
 };
 
 /** Index of requested character is out of bounds.
@@ -24,8 +24,8 @@ public:
 */
 class StringIndexOutOfBoundsException : public Exception{
 public:
-  StringIndexOutOfBoundsException();
-  StringIndexOutOfBoundsException(const String& msg);
+  StringIndexOutOfBoundsException() noexcept;
+  StringIndexOutOfBoundsException(const String& msg) noexcept;
 };
 
 /** Abstract unicode string class.

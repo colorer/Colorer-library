@@ -236,7 +236,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     delete writer;
   } catch (Exception &e) {
     delete writer;
-    fprintf(stderr, "%s\n", e.getMessage()->getChars());
+    fprintf(stderr, "%s\n", e.what());
   }
 }
 
@@ -344,7 +344,7 @@ void ConsoleTools::viewFile()
     TextConsoleViewer viewer(&baseEditor, &textLinesStore, background, outputEncodingIndex);
     viewer.view();
   } catch (Exception &e) {
-    fprintf(stderr, "%s\n", e.getMessage()->getChars());
+    fprintf(stderr, "%s\n", e.what());
   } catch (...) {
     fprintf(stderr, "unknown exception ...\n");
   }
@@ -365,7 +365,7 @@ void ConsoleTools::forward()
     }
   } catch (Exception &e) {
     fprintf(stderr, "can't open file '%s' for writing:", outputFileName->getChars());
-    fprintf(stderr, "%s", e.getMessage()->getChars());
+    fprintf(stderr, "%s", e.what());
     return;
   }
 
@@ -429,7 +429,7 @@ void ConsoleTools::genOutput(bool useTokens)
       }
     } catch (Exception &e) {
       fprintf(stderr, "can't open file '%s' for writing:\n", outputFileName->getChars());
-      fprintf(stderr, "%s", e.getMessage()->getChars());
+      fprintf(stderr, "%s", e.what());
       return;
     }
 
@@ -493,7 +493,7 @@ void ConsoleTools::genOutput(bool useTokens)
 
     delete mapper;
   } catch (Exception &e) {
-    fprintf(stderr, "%s\n", e.getMessage()->getChars());
+    fprintf(stderr, "%s\n", e.what());
   } catch (...) {
     fprintf(stderr, "unknown exception ...\n");
   }

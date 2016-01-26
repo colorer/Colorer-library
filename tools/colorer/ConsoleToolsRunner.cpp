@@ -308,8 +308,8 @@ int workIt()
         break;
     }
   } catch (Exception e) {
-    LOG(ERROR) << e.getMessage()->getChars();
-    fprintf(stderr, "%s", e.getMessage()->getChars());
+    LOG(ERROR) << e.what();
+    fprintf(stderr, "%s", e.what());
     return -1;
   }
   return 0;

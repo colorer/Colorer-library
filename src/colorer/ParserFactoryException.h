@@ -9,12 +9,14 @@
     parsers objects.
     @ingroup colorer
 */
-class ParserFactoryException : public Exception{
+class ParserFactoryException : public Exception
+{
 public:
-  ParserFactoryException(){};
-  ParserFactoryException(const String& msg){
-    message->append(DString("ParserFactoryException: ")).append(msg);
-  };
+  ParserFactoryException() noexcept : Exception("[ParserFactoryException] ") {};
+  ParserFactoryException(const String &msg) noexcept : ParserFactoryException()
+  {
+    what_str.append(msg.getChars());
+  }
 };
 
 #endif

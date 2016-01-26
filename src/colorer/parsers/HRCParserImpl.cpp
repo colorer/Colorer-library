@@ -96,13 +96,13 @@ void HRCParserImpl::loadFileType(FileType* filetype)
   try {
     loadSource(thisType->inputSource);
   } catch (InputSourceException &e) {
-    LOGF(ERRORF, "Can't open source stream: %s", e.getMessage()->getChars());
+    LOGF(ERRORF, "Can't open source stream: %s", e.what());
     thisType->load_broken = true;
   } catch (HRCParserException &e) {
-    LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    LOGF(ERRORF, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->load_broken = true;
   } catch (Exception &e) {
-    LOGF(ERRORF, "%s [%s]", e.getMessage()->getChars(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    LOGF(ERRORF, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->load_broken = true;
   } catch (...) {
     LOGF(ERRORF, "Unknown exception while loading %s", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());

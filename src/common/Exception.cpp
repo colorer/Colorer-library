@@ -1,48 +1,72 @@
 #include <common/Exception.h>
 #include <unicode/String.h>
 
-Exception::Exception(const Exception &e)
+Exception::Exception(const Exception &e) noexcept:
+  what_str(e.what_str)
 {
-  message = new StringBuffer(e.message);
 }
 
-Exception::Exception()
+Exception::Exception() noexcept
 {
-  message = new StringBuffer();
 }
 
-Exception::Exception(const String &msg)
+Exception::Exception(const std::string& msg) noexcept:
+  what_str(msg)
 {
-  message = new StringBuffer(DString("Exception: "));
-  message->append(msg);
 }
 
-Exception& Exception::operator=(const Exception& e)
+Exception::Exception(const String &msg) noexcept:
+  what_str(msg.getChars())
 {
-  message = new StringBuffer(e.message);
+}
+
+Exception &Exception::operator=(const Exception &e) noexcept
+{
+  what_str = e.what_str;
   return *this;
 }
 
 Exception::~Exception()
 {
-  delete message;
 }
 
-const String* Exception::getMessage() const
+const char* Exception::what() const noexcept
 {
-  return message;
+  return what_str.c_str();
 }
 
-InputSourceException::InputSourceException() {};
-InputSourceException::InputSourceException(const String &msg)
+InputSourceException::InputSourceException(const String &msg) noexcept:
+  InputSourceException()
 {
-  message->append(DString("[InputSourceException] ")).append(msg);
+  what_str.append(msg.getChars());
 }
 
-OutOfBoundException::OutOfBoundException() {};
-OutOfBoundException::OutOfBoundException(const String &msg)
+InputSourceException::InputSourceException() noexcept:
+  Exception("[InputSourceException] ")
 {
-  message->append(DString("[OutOfBoundException] ")).append(msg);
+}
+
+InputSourceException::InputSourceException(const std::string &msg) noexcept:
+  InputSourceException()
+{
+  what_str.append(msg);
+}
+
+OutOfBoundException::OutOfBoundException() noexcept:
+  Exception("[OutOfBoundException] ")
+{
+}
+
+OutOfBoundException::OutOfBoundException(const String &msg) noexcept:
+  OutOfBoundException()
+{
+  what_str.append(msg.getChars());
+}
+
+OutOfBoundException::OutOfBoundException(const std::string &msg) noexcept:
+  OutOfBoundException()
+{
+  what_str.append(msg);
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

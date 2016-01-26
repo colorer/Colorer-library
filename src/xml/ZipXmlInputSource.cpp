@@ -2,6 +2,7 @@
 #include<contrib/minizip/unzip.h>
 #include <xercesc/util/XMLString.hpp>
 #include<common/io/MemoryFile.h>
+#include "XStr.h"
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base)
 {
@@ -85,7 +86,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
     UnZip* un = new UnZip(mSrc,mSize,inJarLocation);
     return un;
   }catch(InputSourceException &e){
-    throw InputSourceException(StringBuffer(DString(this->getSystemId())).append(DString(": ")).append(e.getMessage()));
+    throw InputSourceException(XStr(this->getSystemId()).get_stdstr() + ": " + e.what());
   }
 }
 
