@@ -10,7 +10,7 @@
 #include <xml/XStr.h>
 #include <unicode/UnicodeTools.h>
 
-#define CURRENT_FILE DString(" Current file ")+ DString(current_input_source->getInputSource()->getSystemId()) +DString(".")
+#define CURRENT_FILE " Current file " << XStr(current_input_source->getInputSource()->getSystemId()) << "."
 
 HRCParserImpl::HRCParserImpl():
   versionName(nullptr), parseProtoType(nullptr), parseType(nullptr), current_input_source(nullptr),
@@ -47,7 +47,7 @@ HRCParserImpl::~HRCParserImpl()
 void HRCParserImpl::loadSource(XmlInputSource* is)
 {
   if (!is) {
-    throw HrcParserException(DString("Can't open stream - 'null' is bad stream."));
+    throw HRCParserException("Can't open stream - 'null' is bad stream.");
   }
 
   XmlInputSource* istemp = current_input_source;
@@ -189,6 +189,7 @@ const String* HRCParserImpl::getVersion()
 
 void HRCParserImpl::parseHRC(XmlInputSource* is)
 {
+  LOG(DEBUG) << "begin parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
@@ -198,13 +199,14 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException(DString("Bad structure of hrc file."));
+    throw HRCParserException("Error reading hrc file '" + XStr(is->getInputSource()->getSystemId()).get_stdstr() + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
-    throw HRCParserException(StringBuffer("Bad hrc structure. Main '<hrc>' block not found.") + CURRENT_FILE);
+    throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + \
+                             XStr(is->getInputSource()->getSystemId()).get_stdstr());
   }
   if (versionName == nullptr) {
     versionName = new DString(root->getAttribute(hrcHrcAttrVersion));
@@ -223,6 +225,8 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
     updateLinks();
     updateStarted = false;
   }
+
+  LOG(DEBUG) << "end parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
 }
 
 void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
@@ -261,8 +265,7 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
       // not read anotation
       return;
     }
-    LOG(WARNING) << "Unused element '" << XStr(elem->getNodeName()) << "'." << " Current file " <<
-      XStr(current_input_source->getInputSource()->getSystemId()) << ".";
+    LOG(WARNING) << "Unused element '" << XStr(elem->getNodeName()) << "'." << CURRENT_FILE;
   }
 }
 

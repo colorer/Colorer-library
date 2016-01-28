@@ -8,16 +8,6 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xml/XmlInputSource.h>
 
-class HrcParserException : public Exception
-{
-public:
-  HrcParserException() noexcept : Exception("[HrcParserException] ") {};
-  HrcParserException(const String &msg) noexcept : HrcParserException()
-  {
-    what_str.append(msg.getChars());
-  }
-};
-
 class FileTypeImpl;
 
 /** Implementation of HRCParser.
