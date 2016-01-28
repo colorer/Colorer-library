@@ -3,16 +3,14 @@
 
 /// system dependent byte
 typedef unsigned char byte;
-/// macro - number of elements in array
-#define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))
 
-#define TRUE  1
-#define FALSE 0
-
+#include <memory>
 #include <g3log/g3log.hpp>
 #include <common/Features.h>
 #include <unicode/String.h>
 #include <common/MemoryChunks.h>
+
+typedef std::unique_ptr<String> UString;
 
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

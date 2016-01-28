@@ -88,7 +88,9 @@ protected:
   /// is this IS loading was started
   bool input_source_loading;
 
-  String *name, *group, *description;
+  UString name;
+  UString group;
+  UString description;
   bool isPackage;
   HRCParserImpl *hrcParser;
   SchemeImpl *baseScheme;
@@ -103,27 +105,27 @@ protected:
 };
 
 inline const String* FileTypeImpl::getName() const{
-  return name;
+  return name.get();
 }
 
 inline const String* FileTypeImpl::getGroup() const{
-  return group;
+  return group.get();
 }
 
 inline const String* FileTypeImpl::getDescription() const{
-  return description;
+  return description.get();
 }
 
 inline void FileTypeImpl::setName(const String *name_) {
-  name = new SString(name_);
+  name.reset(new SString(name_));
 }
 
 inline void FileTypeImpl::setGroup(const String *group_) {
-  group = new SString(group_);
+  group.reset(new SString(group_));
 }
 
 inline void FileTypeImpl::setDescription(const String *description_) {
-  description = new SString(description_);
+  description.reset(new SString(description_));
 }
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

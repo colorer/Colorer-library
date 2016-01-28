@@ -1,19 +1,16 @@
 #include <colorer/parsers/helpers/FileTypeImpl.h>
 #include <unicode/UnicodeTools.h>
 
-FileTypeImpl::FileTypeImpl(HRCParserImpl *hrcParser){
+FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser): name(nullptr), group(nullptr), description(nullptr)
+{
   this->hrcParser = hrcParser;
   protoLoaded = type_loaded = loadDone = load_broken = input_source_loading = false;
   isPackage = false;
-  name = group = description = nullptr;
   baseScheme = nullptr;
   inputSource = nullptr;
 }
 
 FileTypeImpl::~FileTypeImpl(){
-  delete name;
-  delete group;
-  delete description;
   delete inputSource;
   for(auto it : chooserVector){
     delete it;

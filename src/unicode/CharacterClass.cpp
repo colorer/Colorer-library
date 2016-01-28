@@ -6,6 +6,9 @@
 #include<unicode/x_charcategory_names.h>
 #include<unicode/x_charcategory2.h>
 
+/// macro - number of elements in array
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))
+
 CharacterClass::CharacterClass(){
   infoIndex = new BitArray*[256];
   memset(infoIndex, 0, 256*sizeof(*infoIndex));

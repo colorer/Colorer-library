@@ -293,10 +293,10 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
     //  return;
   }
   FileTypeImpl* type = new FileTypeImpl(this);
-  type->name = new SString(DString(typeName));
-  type->description = new SString(DString(typeDescription));
+  type->name.reset(new SString(DString(typeName)));
+  type->description.reset(new SString(DString(typeDescription)));
   if (typeGroup != nullptr) {
-    type->group = new SString(DString(typeGroup));
+    type->group.reset(new SString(DString(typeGroup)));
   }
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
     type->isPackage = true;
@@ -305,7 +305,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   parsePrototypeBlock(elem);
 
   type->protoLoaded = true;
-  std::pair<SString, FileTypeImpl*> pp(type->name, type);
+  std::pair<SString, FileTypeImpl*> pp(type->getName(), type);
   fileTypeHash.emplace(pp);
 
   if (!type->isPackage) {
@@ -421,7 +421,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
 
   parseTypeBlock(elem);
 
-  String* baseSchemeName = qualifyOwnName(type->name);
+  String* baseSchemeName = qualifyOwnName(type->getName());
   if (baseSchemeName != nullptr) {
     auto sh = schemeHash.find(baseSchemeName);
     type->baseScheme = sh == schemeHash.end() ? nullptr : sh->second;
@@ -1014,7 +1014,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
     if (parseType == nullptr) {
       return nullptr;
     }
-    StringBuffer* sbuf = new StringBuffer(parseType->name);
+    StringBuffer* sbuf = new StringBuffer(parseType->getName());
     sbuf->append(DString(":")).append(name);
     return sbuf;
   }
@@ -1065,7 +1065,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
     }
   } else { // unqualified name
     for (int idx = -1; parseType != nullptr && idx < static_cast<int>(parseType->importVector.size()); idx++) {
-      const String* tname = parseType->name;
+      const String* tname = parseType->getName();
       if (idx > -1) {
         tname = parseType->importVector.at(idx);
       }
