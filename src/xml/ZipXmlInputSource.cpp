@@ -25,7 +25,7 @@ void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
     throw Exception(StringBuffer("Can't create jar source"));
   int path_idx = xercesc::XMLString::lastIndexOf(path,'!');
   if (path_idx == -1) throw Exception(StringBuffer("Bad jar uri format: ") + DString(path));
-  inJarLocation = new SString(DString(path), path_idx+1, -1);
+  inJarLocation.reset(new SString(DString(path), path_idx+1, -1));
   XMLCh *bpath=new XMLCh [path_idx-4+1];
   xercesc::XMLString::subString(bpath,path,4,path_idx);
   jarIS = SharedXmlInputSource::getSharedInputSource( bpath, base);
@@ -33,7 +33,7 @@ void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
   StringBuffer str("jar:");
   str.append(DString(jarIS->getInputSource()->getSystemId()));
   str.append(DString("!"));
-  str.append(inJarLocation);
+  str.append(inJarLocation.get());
   setSystemId(str.getWChars());
 }
 
@@ -55,14 +55,13 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base, bool 
   StringBuffer str("jar:");
   str.append(DString(jarIS->getInputSource()->getSystemId()));
   str.append(DString("!"));
-  str.append(inJarLocation);
+  str.append(inJarLocation.get());
   setSystemId(str.getWChars());
 }
 
 ZipXmlInputSource::~ZipXmlInputSource()
 {
   jarIS->delref();
-  delete inJarLocation;
 }
 
 uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh *relPath) const
@@ -77,7 +76,7 @@ xercesc::InputSource *ZipXmlInputSource::getInputSource()
 
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const   
 {
-  return new UnZip(jarIS->getSrc(), jarIS->getSize(), inJarLocation);
+  return new UnZip(jarIS->getSrc(), jarIS->getSize(), inJarLocation.get());
 }
 
 

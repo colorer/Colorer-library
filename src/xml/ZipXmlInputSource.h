@@ -18,7 +18,7 @@ public:
   xercesc::InputSource* getInputSource() override;
 private:
   void create(const XMLCh* path, const XMLCh* base);
-  String* inJarLocation;
+  std::unique_ptr<String> inJarLocation;
   SharedXmlInputSource* jarIS;
 };
 

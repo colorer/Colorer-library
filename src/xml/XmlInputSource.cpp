@@ -29,7 +29,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-String* XmlInputSource::getAbsolutePath(const String* basePath, const String* relPath)
+std::unique_ptr<String> XmlInputSource::getAbsolutePath(const String* basePath, const String* relPath)
 {
   int root_pos = basePath->lastIndexOf('/');
   int root_pos2 = basePath->lastIndexOf('\\');
@@ -41,7 +41,7 @@ String* XmlInputSource::getAbsolutePath(const String* basePath, const String* re
   } else {
     root_pos++;
   }
-  StringBuffer* newPath = new StringBuffer();
+  std::unique_ptr<StringBuffer> newPath(new StringBuffer());
   newPath->append(DString(basePath, 0, root_pos)).append(relPath);
-  return newPath;
+  return std::move(newPath);
 }

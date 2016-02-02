@@ -22,13 +22,11 @@ LocalFileXmlInputSource::~LocalFileXmlInputSource()
 
 xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
 {
-  //TODO unique_ptr
-  xercesc::BinFileInputStream* stream = new xercesc::BinFileInputStream(input_source->getSystemId());
+  std::unique_ptr<xercesc::BinFileInputStream> stream (new xercesc::BinFileInputStream(input_source->getSystemId()));
   if (!stream->getIsOpen()) {
-    delete stream;
     throw InputSourceException("Can't open file '" + *XStr(input_source->getSystemId()).get_stdstr() + "'");
   }
-  return stream;
+  return stream.release();
 }
 
 uXmlInputSource LocalFileXmlInputSource::createRelative(const XMLCh* relPath) const
