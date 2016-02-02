@@ -10,9 +10,6 @@ int SharedXmlInputSource::addref()
 
 int SharedXmlInputSource::delref()
 {
-  if (ref_count == 0) {
-    LOGF(ERROR, "[SharedXmlInputSource] delref: already zeroed references");
-  }
   ref_count--;
   if (ref_count <= 0) {
     delete this;
@@ -21,12 +18,14 @@ int SharedXmlInputSource::delref()
   return ref_count;
 }
 
-SharedXmlInputSource::SharedXmlInputSource(XmlInputSource* source)
+SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 {
-  is = source;
   ref_count = 1;
-  mSrc = nullptr;
-  mSize = 0;
+  is = std::move(source);
+  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(is->getInputSource()->makeStream()));
+  mSize = static_cast<XMLSize_t>(bfis->getSize());
+  mSrc.reset(new XMLByte[mSize]);
+  bfis->readBytes(mSrc.get(), mSize);
 }
 
 SharedXmlInputSource::~SharedXmlInputSource()
@@ -35,15 +34,13 @@ SharedXmlInputSource::~SharedXmlInputSource()
   isHash->erase(&d_id);
   if (isHash->size() == 0) {
     delete isHash;
-    isHash = NULL;
-    delete[] mSrc;
+    isHash = nullptr;
   }
-  delete is;
 }
 
 SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* path, const XMLCh* base)
 {
-  XmlInputSource* tempis = XmlInputSource::newInstance(path, base);
+  uXmlInputSource tempis = XmlInputSource::newInstance(path, base);
 
   if (isHash == nullptr) {
     isHash = new std::unordered_map<SString, SharedXmlInputSource*>();
@@ -58,31 +55,15 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
 
   if (sis == nullptr) {
     sis = new SharedXmlInputSource(tempis);
-    std::pair<SString, SharedXmlInputSource*> pp(DString(tempis->getInputSource()->getSystemId()), sis);
+    std::pair<SString, SharedXmlInputSource*> pp(DString(sis->getInputSource()->getSystemId()), sis);
     isHash->emplace(pp);
     return sis;
-  } else {
-    delete tempis;
   }
-
   sis->addref();
   return sis;
 }
 
-xercesc::InputSource* SharedXmlInputSource::getInputSource()
+xercesc::InputSource* SharedXmlInputSource::getInputSource() const
 {
   return is->getInputSource();
-}
-
-void SharedXmlInputSource::openStream()
-{
-  if (mSrc) {
-    return;
-  }
-  xercesc::BinFileInputStream* bfis;
-  bfis = (xercesc::BinFileInputStream*)is->getInputSource()->makeStream();
-  mSize = (XMLSize_t)bfis->getSize();
-  mSrc = new XMLByte[mSize];
-  bfis->readBytes(mSrc, mSize);
-  delete bfis;
 }

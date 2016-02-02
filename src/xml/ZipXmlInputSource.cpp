@@ -1,12 +1,22 @@
 #include <xml/ZipXmlInputSource.h>
-#include<contrib/minizip/unzip.h>
+#include <contrib/minizip/unzip.h>
 #include <xercesc/util/XMLString.hpp>
-#include<common/io/MemoryFile.h>
+#include <common/io/MemoryFile.h>
 #include "XStr.h"
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base)
 {
   create(path,base);
+}
+
+ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, XmlInputSource *base)
+{
+  const XMLCh *base_path = nullptr;
+  if (base)
+  {
+    base_path = base->getInputSource()->getSystemId();
+  }
+  create(path, base_path);
 }
 
 void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
@@ -25,22 +35,6 @@ void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
   str.append(DString("!"));
   str.append(inJarLocation);
   setSystemId(str.getWChars());
-}
-
-ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, XmlInputSource *base)
-{
-  const XMLCh *base_path = nullptr;
-  if (base)
-  {
-    base_path = base->getInputSource()->getSystemId();
-  }
-  create(path,base_path);
-}
-
-ZipXmlInputSource::~ZipXmlInputSource()
-{
-  jarIS->delref();
-  delete inJarLocation;
 }
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base, bool faked)
@@ -65,9 +59,15 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base, bool 
   setSystemId(str.getWChars());
 }
 
-ZipXmlInputSource* ZipXmlInputSource::createRelative(const XMLCh *relPath) const
+ZipXmlInputSource::~ZipXmlInputSource()
 {
-  return new ZipXmlInputSource(relPath,this->getSystemId(),true);
+  jarIS->delref();
+  delete inJarLocation;
+}
+
+uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh *relPath) const
+{
+  return std::make_unique<ZipXmlInputSource>(relPath, this->getSystemId(), true);
 }
 
 xercesc::InputSource *ZipXmlInputSource::getInputSource()
@@ -77,26 +77,16 @@ xercesc::InputSource *ZipXmlInputSource::getInputSource()
 
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const   
 {
-  const XMLByte* mSrc;
-  XMLSize_t mSize;
-  jarIS->openStream();
-  mSize = jarIS->length();
-  mSrc = jarIS->getStream();
-  try {
-    UnZip* un = new UnZip(mSrc,mSize,inJarLocation);
-    return un;
-  }catch(InputSourceException &e){
-    throw InputSourceException(XStr(this->getSystemId()).get_stdstr() + ": " + e.what());
-  }
+  return new UnZip(jarIS->getSrc(), jarIS->getSize(), inJarLocation);
 }
 
 
-UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
-  : mSrc(src), mSize(size), path(path), mPos(0), mBoundary(0), stream(nullptr), len(0)
+UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
+  : path(path), mPos(0), mBoundary(0), stream(nullptr), len(0)
 {
-  MemoryFile *mf = new MemoryFile;
-  mf->stream = mSrc;
-  mf->length = mSize;
+  MemoryFile* mf = new MemoryFile;
+  mf->stream = src;
+  mf->length = size;
   zlib_filefunc_def zlib_ff;
   fill_mem_filefunc(&zlib_ff, mf);
 
@@ -105,20 +95,20 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
   if (fid == 0) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+path+"'");
+    throw InputSourceException(StringBuffer("Can't locate file in JAR content: '") + path + "'");
   }
   int ret = unzLocateFile(fid, path->getChars(), 0);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+path+"'");
+    throw InputSourceException(StringBuffer("Can't locate file in JAR content: '") + path + "'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(StringBuffer("Can't retrieve current file in JAR content: '")+path+"'");
+    throw InputSourceException(StringBuffer("Can't retrieve current file in JAR content: '") + path + "'");
   }
 
   len = file_info.uncompressed_size;
@@ -127,13 +117,13 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String *path)
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(StringBuffer("Can't open current file in JAR content: '")+path+"'");
+    throw InputSourceException(StringBuffer("Can't open current file in JAR content: '") + path + "'");
   }
   ret = unzReadCurrentFile(fid, stream, len);
   if (ret <= 0) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(StringBuffer("Can't read current file in JAR content: '")+path+"' ("+SString(ret)+")");
+    throw InputSourceException(StringBuffer("Can't read current file in JAR content: '") + path + "' (" + SString(ret) + ")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
@@ -154,7 +144,7 @@ XMLSize_t UnZip::readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
 {
   mBoundary = len;
   XMLSize_t remain = mBoundary - mPos;
-  XMLSize_t toRead = (maxToRead<remain)?maxToRead:remain;
+  XMLSize_t toRead = (maxToRead < remain) ? maxToRead : remain;
   memcpy(toFill, stream + mPos, toRead);
   mPos += toRead;
   return toRead;
@@ -162,7 +152,7 @@ XMLSize_t UnZip::readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
 
 const XMLCh* UnZip::getContentType() const
 {
-  return 0;
+  return nullptr;
 }
 
 UnZip::~UnZip()

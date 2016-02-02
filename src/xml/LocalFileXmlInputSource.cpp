@@ -1,16 +1,17 @@
 #include <xml/LocalFileXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include "XStr.h"
 #ifdef _WIN32
 #include<windows.h>
 #endif
 
-LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh *path, const XMLCh *base):
-  xercesc::LocalFileInputSource(base,path)
+LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
-  if (xercesc::XMLString::findAny(path, kPercent)!=0){
+  input_source.reset(new xercesc::LocalFileInputSource(base, path));
+  if (xercesc::XMLString::findAny(path, kPercent) != nullptr) {
     XMLCh* e_path = ExpandEnvironment(path);
-    this->setSystemId(e_path);
+    input_source->setSystemId(e_path);
     delete e_path;
   }
 }
@@ -19,38 +20,39 @@ LocalFileXmlInputSource::~LocalFileXmlInputSource()
 {
 }
 
-xercesc::BinInputStream *LocalFileXmlInputSource::makeStream() const
+xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
 {
-  xercesc::BinFileInputStream *stream = new xercesc::BinFileInputStream(this->getSystemId());
-  if (!stream->getIsOpen())
-  {
+  //TODO unique_ptr
+  xercesc::BinFileInputStream* stream = new xercesc::BinFileInputStream(input_source->getSystemId());
+  if (!stream->getIsOpen()) {
     delete stream;
-    throw InputSourceException(StringBuffer("Can't open file '")+DString(this->getSystemId())+"'");
+    throw InputSourceException("Can't open file '" + *XStr(input_source->getSystemId()).get_stdstr() + "'");
   }
   return stream;
 }
 
-XmlInputSource *LocalFileXmlInputSource::createRelative(const XMLCh *relPath) const
+uXmlInputSource LocalFileXmlInputSource::createRelative(const XMLCh* relPath) const
 {
-  return new LocalFileXmlInputSource(relPath, this->getSystemId());
-};
-
-xercesc::InputSource *LocalFileXmlInputSource::getInputSource()
-{
-  return this;
+  return std::make_unique<LocalFileXmlInputSource>(relPath, input_source->getSystemId());
 }
 
-XMLCh *LocalFileXmlInputSource::ExpandEnvironment(const XMLCh *path)
+xercesc::InputSource* LocalFileXmlInputSource::getInputSource()
+{
+  return input_source.get();
+}
+
+XMLCh* LocalFileXmlInputSource::ExpandEnvironment(const XMLCh* path)
 {
 #ifdef _WIN32
-  size_t i=ExpandEnvironmentStrings(path,NULL,0);
-  XMLCh *temp = new XMLCh[i];
-  ExpandEnvironmentStrings(path,temp,static_cast<DWORD>(i));
+  size_t i = ExpandEnvironmentStrings(path, nullptr, 0);
+  XMLCh* temp = new XMLCh[i];
+  ExpandEnvironmentStrings(path, temp, static_cast<DWORD>(i));
   return temp;
 #else
-  XMLSize_t i=xercesc::XMLString::stringLen(path);
-  XMLCh *temp = new XMLCh[i];
-  xercesc::XMLString::copyString(temp,path);
+  //TODO реализовать под nix
+  XMLSize_t i = xercesc::XMLString::stringLen(path);
+  XMLCh* temp = new XMLCh[i];
+  xercesc::XMLString::copyString(temp, path);
   return temp;
 #endif
 }

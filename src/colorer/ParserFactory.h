@@ -123,7 +123,7 @@ private:
   void loadPathLinux(const String* path, const String* relPath);
 
   String* catalogPath;
-  XmlInputSource* catalogXIS;
+  uXmlInputSource catalogXIS;
   std::vector<const String*> hrcLocations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;
   std::unordered_map<SString, const String*> hrdDescriptions;

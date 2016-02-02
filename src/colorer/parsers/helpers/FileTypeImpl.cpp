@@ -11,7 +11,6 @@ FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser): name(nullptr), group(nullp
 }
 
 FileTypeImpl::~FileTypeImpl(){
-  delete inputSource;
   for(auto it : chooserVector){
     delete it;
   }

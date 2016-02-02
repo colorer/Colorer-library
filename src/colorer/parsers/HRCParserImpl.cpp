@@ -94,7 +94,7 @@ void HRCParserImpl::loadFileType(FileType* filetype)
   thisType->input_source_loading = true;
 
   try {
-    loadSource(thisType->inputSource);
+    loadSource(thisType->inputSource.get());
   } catch (InputSourceException &e) {
     LOGF(ERRORF, "Can't open source stream: %s", e.what());
     thisType->load_broken = true;
@@ -199,14 +199,14 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException("Error reading hrc file '" + XStr(is->getInputSource()->getSystemId()).get_stdstr() + "'");
+    throw HRCParserException("Error reading hrc file '" + *XStr(is->getInputSource()->getSystemId()).get_stdstr() + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
     throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + \
-                             XStr(is->getInputSource()->getSystemId()).get_stdstr());
+                             *XStr(is->getInputSource()->getSystemId()).get_stdstr());
   }
   if (versionName == nullptr) {
     versionName = new DString(root->getAttribute(hrcHrcAttrVersion));

@@ -116,7 +116,7 @@ void ConsoleTools::setLinkSource(const String &str)
   const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
   const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
 
-  XmlInputSource* linkSource = XmlInputSource::newInstance(str.getWChars(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource linkSource = XmlInputSource::newInstance(str.getWChars(), static_cast<XMLCh*>(nullptr));
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   xml_parser.setErrorHandler(&error_handler);
@@ -172,7 +172,6 @@ void ConsoleTools::setLinkSource(const String &str)
       }
     }
   }
-  delete linkSource;
 }
 
 

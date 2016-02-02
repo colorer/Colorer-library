@@ -328,7 +328,6 @@ ParserFactory::~ParserFactory()
 
   delete hrcParser;
   delete catalogPath;
-  delete catalogXIS;
   delete[] RegExpStack;
 }
 
@@ -427,15 +426,13 @@ HRCParser* ParserFactory::getHRCParser()
         loadPathLinux(path, relPath);
 #endif
       } else {
-        XmlInputSource* dfis = nullptr;
+        uXmlInputSource dfis = nullptr;
         try {
-          dfis = XmlInputSource::newInstance(hrcLocations.at(idx)->getWChars(), catalogXIS);
-          hrcParser->loadSource(dfis);
-          delete dfis;
+          dfis = XmlInputSource::newInstance(hrcLocations.at(idx)->getWChars(), catalogXIS.get());
+          hrcParser->loadSource(dfis.get());
         } catch (Exception& e) {
           LOG(ERRORF) << "Can't load hrc : " << XStr(dfis->getInputSource()->getSystemId());
           LOG(ERRORF) << e.what();
-          delete dfis;
         }
       }
       delete path;
@@ -453,14 +450,12 @@ void ParserFactory::loadPathWindows(const String* path, const String* relPath)
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        XmlInputSource* dfis = XmlInputSource::newInstance((StringBuffer(relPath) + "\\" + SString(ffd.cFileName)).getWChars(), catalogXIS);
+        uXmlInputSource dfis = XmlInputSource::newInstance((StringBuffer(relPath) + "\\" + SString(ffd.cFileName)).getWChars(), catalogXIS.get());
         try {
-          hrcParser->loadSource(dfis);
-          delete dfis;
+          hrcParser->loadSource(dfis.get());
         } catch (Exception& e) {
           LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
           LOG(ERRORF) << e.what();
-          delete dfis;
         }
       }
       if (FindNextFile(dir, &ffd) == FALSE) {
@@ -542,15 +537,13 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
   StyledHRDMapper* mapper = new StyledHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->at(idx) != nullptr) {
-      XmlInputSource* dfis = nullptr;
+      uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
-        mapper->loadRegionMappings(dfis);
-        delete dfis;
+        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
+        mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         LOGF(ERROR, "Can't load hrd:");
         LOG(ERROR) << e.what();
-        delete dfis;
         throw ParserFactoryException(DString("Error load hrd"));
       }
     }
@@ -584,15 +577,13 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
   TextHRDMapper* mapper = new TextHRDMapper();
   for (size_t idx = 0; idx < hrdLocV->size(); idx++)
     if (hrdLocV->at(idx) != nullptr) {
-      XmlInputSource* dfis = nullptr;
+      uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS);
-        mapper->loadRegionMappings(dfis);
-        delete dfis;
+        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
+        mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         LOG(ERROR) << "Can't load hrd: ";
         LOG(ERROR) << e.what();
-        delete dfis;
       }
     }
   return mapper;

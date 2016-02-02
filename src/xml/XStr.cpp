@@ -3,8 +3,10 @@
 
 XStr::XStr(const XMLCh* const toTranscode)
 {
-  _xmlch = xercesc::XMLString::replicate(toTranscode);
-  _string = xercesc::XMLString::transcode(toTranscode);
+  _xmlch.reset(xercesc::XMLString::replicate(toTranscode));
+  std::unique_ptr<char> tmp_str(xercesc::XMLString::transcode(toTranscode));
+  _string = std::string(tmp_str.get());
+
 }
 
 XStr::XStr(const std::string &toTranscode)
@@ -13,7 +15,7 @@ XStr::XStr(const std::string &toTranscode)
     _xmlch = nullptr;
   } else {
     _string = toTranscode;
-    _xmlch = xercesc::XMLString::transcode(toTranscode.c_str());
+    _xmlch.reset(xercesc::XMLString::transcode(toTranscode.c_str()));
   }
 }
 
@@ -23,13 +25,12 @@ XStr::XStr(const std::string* toTranscode)
     _xmlch = nullptr;
   } else {
     _string = *toTranscode;
-    _xmlch = xercesc::XMLString::transcode(toTranscode->c_str());
+    _xmlch.reset(xercesc::XMLString::transcode(toTranscode->c_str()));
   }
 }
 
 XStr::~XStr()
 {
-  xercesc::XMLString::release(&_xmlch);
 }
 
 std::ostream &operator<<(std::ostream &stream, const XStr &x)
@@ -51,12 +52,12 @@ const char* XStr::get_char() const
   }
 }
 
-const std::string XStr::get_stdstr() const
+const std::string* XStr::get_stdstr() const
 {
-  return _string;
+  return &_string;
 }
 
-const XMLCh* XStr::get_xmlchar()
+const XMLCh* XStr::get_xmlchar() const
 {
-  return _xmlch;
+  return _xmlch.get();
 }

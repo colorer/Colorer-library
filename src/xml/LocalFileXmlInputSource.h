@@ -2,18 +2,23 @@
 #define _COLORER_LOCALFILEINPUTSOURCE_H_
 
 #include <xml/XmlInputSource.h>
+#include <xercesc/framework/LocalFileInputSource.hpp>
 
-class LocalFileXmlInputSource : public xercesc::LocalFileInputSource, public XmlInputSource 
+/**
+* LocalFileXmlInputSource класс для работы с InputSource - локальными файлами
+*/
+class LocalFileXmlInputSource : public XmlInputSource
 {
 public:
-  LocalFileXmlInputSource (const XMLCh *path, const XMLCh *base);
+  LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base);
   ~LocalFileXmlInputSource();
-  xercesc::BinInputStream* makeStream() const;
-  XmlInputSource *createRelative(const XMLCh *relPath) const;
-  xercesc::InputSource *getInputSource();
+  xercesc::BinInputStream* makeStream() const override;
+  uXmlInputSource createRelative(const XMLCh* relPath) const override;
+  xercesc::InputSource* getInputSource() override;
 private:
-  XMLCh *ExpandEnvironment(const XMLCh *path);
+  static XMLCh* ExpandEnvironment(const XMLCh* path);
+  std::unique_ptr<xercesc::LocalFileInputSource> input_source;
 };
 
 
-#endif
+#endif //_COLORER_LOCALFILEINPUTSOURCE_H_
