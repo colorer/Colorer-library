@@ -24,7 +24,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
     return std::make_unique<ZipXmlInputSource>(path, base);
   }
   if (base != nullptr && xercesc::XMLString::startsWith(base, kJar)) {
-    return std::make_unique<ZipXmlInputSource>(path, base);
+    return std::make_unique<ZipXmlInputSource>(path, base, true);
   }
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
