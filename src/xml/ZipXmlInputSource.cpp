@@ -2,7 +2,6 @@
 #include <contrib/minizip/unzip.h>
 #include <xercesc/util/XMLString.hpp>
 #include <common/io/MemoryFile.h>
-#include "XStr.h"
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base)
 {
@@ -21,7 +20,7 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, XmlInputSource *base)
 
 void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
 {
-  if (path==nullptr || *path == '\0')
+  if (!path || *path == '\0')
     throw Exception(StringBuffer("Can't create jar source"));
   int path_idx = xercesc::XMLString::lastIndexOf(path,'!');
   if (path_idx == -1) throw Exception(StringBuffer("Bad jar uri format: ") + DString(path));
@@ -81,7 +80,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 
 
 UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
-  : path(path), mPos(0), mBoundary(0), stream(nullptr), len(0)
+  : mPos(0), mBoundary(0), stream(nullptr), len(0)
 {
   MemoryFile* mf = new MemoryFile;
   mf->stream = src;
@@ -91,7 +90,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
 
   unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
-  if (fid == 0) {
+  if (!fid) {
     delete mf;
     unzClose(fid);
     throw InputSourceException(StringBuffer("Can't locate file in JAR content: '") + path + "'");
@@ -111,14 +110,14 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
   }
 
   len = file_info.uncompressed_size;
-  stream = new byte[len];
+  stream.reset(new byte[len]);
   ret = unzOpenCurrentFile(fid);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
     throw InputSourceException(StringBuffer("Can't open current file in JAR content: '") + path + "'");
   }
-  ret = unzReadCurrentFile(fid, stream, len);
+  ret = unzReadCurrentFile(fid, stream.get(), len);
   if (ret <= 0) {
     delete mf;
     unzClose(fid);
@@ -144,7 +143,7 @@ XMLSize_t UnZip::readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)
   mBoundary = len;
   XMLSize_t remain = mBoundary - mPos;
   XMLSize_t toRead = (maxToRead < remain) ? maxToRead : remain;
-  memcpy(toFill, stream + mPos, toRead);
+  memcpy(toFill, stream.get() + mPos, toRead);
   mPos += toRead;
   return toRead;
 }
@@ -156,5 +155,4 @@ const XMLCh* UnZip::getContentType() const
 
 UnZip::~UnZip()
 {
-  delete[] stream;
 }

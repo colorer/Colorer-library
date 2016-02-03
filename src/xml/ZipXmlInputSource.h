@@ -20,6 +20,11 @@ private:
   void create(const XMLCh* path, const XMLCh* base);
   std::unique_ptr<String> inJarLocation;
   SharedXmlInputSource* jarIS;
+
+  ZipXmlInputSource(ZipXmlInputSource const &) = delete;
+  ZipXmlInputSource &operator=(ZipXmlInputSource const &) = delete;
+  ZipXmlInputSource(ZipXmlInputSource &&) = delete;
+  ZipXmlInputSource &operator=(ZipXmlInputSource &&) = delete;
 };
 
 
@@ -35,11 +40,15 @@ public:
 
 private:
 
-  const String* path;
   XMLSize_t mPos;
   XMLSize_t mBoundary;
-  byte* stream;
+  std::unique_ptr<byte[]> stream;
   int len;
+
+  UnZip(UnZip const &) = delete;
+  UnZip &operator=(UnZip const &) = delete;
+  UnZip(UnZip &&) = delete;
+  UnZip &operator=(UnZip &&) = delete;
 };
 
 #endif //_COLORER_ZIPINPUTSOURCE_H_

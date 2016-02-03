@@ -50,6 +50,12 @@ public:
   virtual ~XmlInputSource() {};
 protected:
   XmlInputSource() {};
+
+private:
+  XmlInputSource(XmlInputSource const &) = delete;
+  XmlInputSource &operator=(XmlInputSource const &) = delete;
+  XmlInputSource(XmlInputSource &&) = delete;
+  XmlInputSource &operator=(XmlInputSource &&) = delete;
 };
 
 

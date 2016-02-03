@@ -31,6 +31,7 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 SharedXmlInputSource::~SharedXmlInputSource()
 {
   DString d_id = DString(is->getInputSource()->getSystemId());
+  //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
   isHash->erase(&d_id);
   if (isHash->size() == 0) {
     delete isHash;
@@ -46,21 +47,17 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     isHash = new std::unordered_map<SString, SharedXmlInputSource*>();
   }
 
-  SharedXmlInputSource* sis = nullptr;
   DString d_id = DString(tempis->getInputSource()->getSystemId());
-  auto s = isHash->find(&d_id);
+  auto s = isHash->find(d_id);
   if (s != isHash->end()) {
-    sis = s->second;
-  }
-
-  if (sis == nullptr) {
-    sis = new SharedXmlInputSource(tempis);
-    std::pair<SString, SharedXmlInputSource*> pp(DString(sis->getInputSource()->getSystemId()), sis);
-    isHash->emplace(pp);
+    SharedXmlInputSource* sis = s->second;
+    sis->addref();
+    return sis;
+  } else {
+    SharedXmlInputSource* sis = new SharedXmlInputSource(tempis);
+    isHash->insert(std::make_pair(DString(sis->getInputSource()->getSystemId()), sis));
     return sis;
   }
-  sis->addref();
-  return sis;
 }
 
 xercesc::InputSource* SharedXmlInputSource::getInputSource() const

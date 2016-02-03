@@ -24,7 +24,7 @@ public:
   const XMLCh* get_xmlchar() const;
 
 private:
-  XStr(XStr const &);
+  XStr(XStr const &) = delete;
   XStr &operator=(XStr const &) = delete;
   XStr(XStr &&) = delete;
   XStr &operator=(XStr &&) = delete;

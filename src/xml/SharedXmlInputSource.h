@@ -34,6 +34,11 @@ private:
   int ref_count;
   std::unique_ptr<XMLByte[]> mSrc;
   XMLSize_t mSize;
+
+  SharedXmlInputSource(SharedXmlInputSource const &) = delete;
+  SharedXmlInputSource &operator=(SharedXmlInputSource const &) = delete;
+  SharedXmlInputSource(SharedXmlInputSource &&) = delete;
+  SharedXmlInputSource &operator=(SharedXmlInputSource &&) = delete;
 };
 
 inline XMLSize_t SharedXmlInputSource::getSize() const

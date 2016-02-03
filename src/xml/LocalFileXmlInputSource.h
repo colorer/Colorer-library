@@ -18,6 +18,11 @@ public:
 private:
   static XMLCh* ExpandEnvironment(const XMLCh* path);
   std::unique_ptr<xercesc::LocalFileInputSource> input_source;
+
+  LocalFileXmlInputSource(LocalFileXmlInputSource const &) = delete;
+  LocalFileXmlInputSource &operator=(LocalFileXmlInputSource const &) = delete;
+  LocalFileXmlInputSource(LocalFileXmlInputSource &&) = delete;
+  LocalFileXmlInputSource &operator=(LocalFileXmlInputSource &&) = delete;
 };
 
 
