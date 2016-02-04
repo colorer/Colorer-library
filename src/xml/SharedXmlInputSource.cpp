@@ -21,8 +21,8 @@ int SharedXmlInputSource::delref()
 SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 {
   ref_count = 1;
-  is = std::move(source);
-  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(is->getInputSource()->makeStream()));
+  input_source = std::move(source);
+  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(input_source->getInputSource()->makeStream()));
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
   bfis->readBytes(mSrc.get(), mSize);
@@ -30,7 +30,7 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  DString d_id = DString(is->getInputSource()->getSystemId());
+  DString d_id = DString(input_source->getInputSource()->getSystemId());
   //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
   isHash->erase(&d_id);
   if (isHash->size() == 0) {
@@ -62,5 +62,5 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
 
 xercesc::InputSource* SharedXmlInputSource::getInputSource() const
 {
-  return is->getInputSource();
+  return input_source->getInputSource();
 }

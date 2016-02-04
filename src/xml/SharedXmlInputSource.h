@@ -25,7 +25,7 @@ private:
 
   static std::unordered_map<SString, SharedXmlInputSource*>* isHash;
 
-  uXmlInputSource is;
+  uXmlInputSource input_source;
   int ref_count;
   std::unique_ptr<XMLByte[]> mSrc;
   XMLSize_t mSize;

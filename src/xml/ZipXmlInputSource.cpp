@@ -30,9 +30,9 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 
     std::unique_ptr<XMLCh[]> bpath( new XMLCh[path_idx - 4 + 1]);
     xercesc::XMLString::subString(bpath.get(), path, 4, path_idx);
-    jarIS = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
+    jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
 
-    inJarLocation.reset(new SString(DString(path), path_idx + 1, -1));
+    in_jar_location.reset(new SString(DString(path), path_idx + 1, -1));
 
   } else if (base != nullptr && xercesc::XMLString::startsWith(base, kJar)) {
 
@@ -43,26 +43,26 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 
     std::unique_ptr<XMLCh[]> bpath(new XMLCh[base_idx - 4 + 1]);
     xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
-    jarIS = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
+    jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
 
     std::unique_ptr<String> in_base(new SString(DString(base), base_idx + 1, -1));
     DString d_path = DString(path);
-    inJarLocation = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
+    in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 
   } else {
     throw InputSourceException("Can't create jar source");
   }
 
   StringBuffer str("jar:");
-  str.append(DString(jarIS->getInputSource()->getSystemId()));
+  str.append(DString(jar_input_source->getInputSource()->getSystemId()));
   str.append(DString("!"));
-  str.append(inJarLocation.get());
+  str.append(in_jar_location.get());
   setSystemId(str.getWChars());
 }
 
 ZipXmlInputSource::~ZipXmlInputSource()
 {
-  jarIS->delref();
+  jar_input_source->delref();
 }
 
 uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh* relPath) const
@@ -77,7 +77,7 @@ xercesc::InputSource* ZipXmlInputSource::getInputSource()
 
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 {
-  return new UnZip(jarIS->getSrc(), jarIS->getSize(), inJarLocation.get());
+  return new UnZip(jar_input_source->getSrc(), jar_input_source->getSize(), in_jar_location.get());
 }
 
 
