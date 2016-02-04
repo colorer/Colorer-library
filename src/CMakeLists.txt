@@ -166,7 +166,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(COLORER_WARNING_FLAGS "")
-  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++11")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++14")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} -g3")
