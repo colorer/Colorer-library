@@ -10,7 +10,6 @@ class ZipXmlInputSource : public XmlInputSource
 {
 public:
   ZipXmlInputSource(const XMLCh* path, const XMLCh* base);
-  ZipXmlInputSource(const XMLCh* path, const XMLCh* base, bool faked);
   ZipXmlInputSource(const XMLCh* path, XmlInputSource* base);
   ~ZipXmlInputSource();
   xercesc::BinInputStream* makeStream() const override;

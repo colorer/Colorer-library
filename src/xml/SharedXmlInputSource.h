@@ -17,11 +17,6 @@ public:
   /** Decrements reference counter */
   int delref();
 
-  static SharedXmlInputSource* getShared(String* name)
-  {
-    return isHash->find(name)->second;
-  }
-
   XMLSize_t getSize() const;
   XMLByte* getSrc() const;
 private:

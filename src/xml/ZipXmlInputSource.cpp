@@ -3,54 +3,56 @@
 #include <xercesc/util/XMLString.hpp>
 #include <common/io/MemoryFile.h>
 
-ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base)
+ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
-  create(path,base);
+  create(path, base);
 }
 
-ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, XmlInputSource *base)
+ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, XmlInputSource* base)
 {
-  const XMLCh *base_path = nullptr;
-  if (base)
-  {
+  const XMLCh* base_path = nullptr;
+  if (base) {
     base_path = base->getInputSource()->getSystemId();
   }
   create(path, base_path);
 }
 
-void ZipXmlInputSource::create(const XMLCh *path, const XMLCh *base)
+void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
-  if (!path || *path == '\0')
-    throw Exception(StringBuffer("Can't create jar source"));
-  int path_idx = xercesc::XMLString::lastIndexOf(path,'!');
-  if (path_idx == -1) throw Exception(StringBuffer("Bad jar uri format: ") + DString(path));
-  inJarLocation.reset(new SString(DString(path), path_idx+1, -1));
-  XMLCh *bpath=new XMLCh [path_idx-4+1];
-  xercesc::XMLString::subString(bpath,path,4,path_idx);
-  jarIS = SharedXmlInputSource::getSharedInputSource( bpath, base);
-  delete[] bpath;
-  StringBuffer str("jar:");
-  str.append(DString(jarIS->getInputSource()->getSystemId()));
-  str.append(DString("!"));
-  str.append(inJarLocation.get());
-  setSystemId(str.getWChars());
-}
+  if (!path || *path == '\0') {
+    throw InputSourceException("Can't create jar source");
+  }
+  if (xercesc::XMLString::startsWith(path, kJar)) {
+    int path_idx = xercesc::XMLString::lastIndexOf(path, '!');
+    if (path_idx == -1) {
+      throw InputSourceException(StringBuffer("Bad jar uri format: ") + DString(path));
+    }
 
-ZipXmlInputSource::ZipXmlInputSource(const XMLCh *path, const XMLCh *base, bool faked)
-{
-  int base_idx = xercesc::XMLString::lastIndexOf(base,'!');
-  XMLCh *bpath= new XMLCh [base_idx-4+1];
-  xercesc::XMLString::subString(bpath,base,4,base_idx);
+    std::unique_ptr<XMLCh[]> bpath( new XMLCh[path_idx - 4 + 1]);
+    xercesc::XMLString::subString(bpath.get(), path, 4, path_idx);
+    jarIS = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
 
-  DString d_bpath = DString(bpath);
-  jarIS = SharedXmlInputSource::getShared(&d_bpath);
-  delete[] bpath;
-  jarIS->addref();
+    inJarLocation.reset(new SString(DString(path), path_idx + 1, -1));
 
-  String * in_base = new SString(DString(base), base_idx+1, -1);
-  DString d_path = DString(path);
-  inJarLocation = XmlInputSource::getAbsolutePath(in_base, &d_path);
-  delete in_base;
+  } else if (base != nullptr && xercesc::XMLString::startsWith(base, kJar)) {
+
+    int base_idx = xercesc::XMLString::lastIndexOf(base, '!');
+    if (base_idx == -1) {
+      throw InputSourceException(StringBuffer("Bad jar uri format: ") + DString(path));
+    }
+
+    std::unique_ptr<XMLCh[]> bpath(new XMLCh[base_idx - 4 + 1]);
+    xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
+    jarIS = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
+
+    std::unique_ptr<String> in_base(new SString(DString(base), base_idx + 1, -1));
+    DString d_path = DString(path);
+    inJarLocation = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
+
+  } else {
+    throw InputSourceException("Can't create jar source");
+  }
+
   StringBuffer str("jar:");
   str.append(DString(jarIS->getInputSource()->getSystemId()));
   str.append(DString("!"));
@@ -63,17 +65,17 @@ ZipXmlInputSource::~ZipXmlInputSource()
   jarIS->delref();
 }
 
-uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh *relPath) const
+uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh* relPath) const
 {
-  return std::make_unique<ZipXmlInputSource>(relPath, this->getSystemId(), true);
+  return std::make_unique<ZipXmlInputSource>(relPath, this->getSystemId());
 }
 
-xercesc::InputSource *ZipXmlInputSource::getInputSource()
+xercesc::InputSource* ZipXmlInputSource::getInputSource()
 {
   return this;
 }
 
-xercesc::BinInputStream* ZipXmlInputSource::makeStream() const   
+xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 {
   return new UnZip(jarIS->getSrc(), jarIS->getSize(), inJarLocation.get());
 }
