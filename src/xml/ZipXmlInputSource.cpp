@@ -45,7 +45,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
     xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
 
-    std::unique_ptr<String> in_base(new SString(DString(base), base_idx + 1, -1));
+    UString in_base(new SString(DString(base), base_idx + 1, -1));
     DString d_path = DString(path);
     in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 

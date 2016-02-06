@@ -17,7 +17,7 @@ public:
   xercesc::InputSource* getInputSource() override;
 private:
   void create(const XMLCh* path, const XMLCh* base);
-  std::unique_ptr<String> in_jar_location;
+  UString in_jar_location;
   SharedXmlInputSource* jar_input_source;
 
   ZipXmlInputSource(ZipXmlInputSource const &) = delete;

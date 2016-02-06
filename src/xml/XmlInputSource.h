@@ -45,7 +45,7 @@ public:
     return nullptr;
   }
 
-  static std::unique_ptr<String> getAbsolutePath(const String* basePath, const String* relPath);
+  static UString getAbsolutePath(const String* basePath, const String* relPath);
 
   virtual ~XmlInputSource() {};
 protected:

@@ -26,7 +26,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-std::unique_ptr<String> XmlInputSource::getAbsolutePath(const String* basePath, const String* relPath)
+UString XmlInputSource::getAbsolutePath(const String* basePath, const String* relPath)
 {
   int root_pos = basePath->lastIndexOf('/');
   int root_pos2 = basePath->lastIndexOf('\\');
