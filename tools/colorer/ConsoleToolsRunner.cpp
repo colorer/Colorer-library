@@ -25,7 +25,8 @@ struct setting {
   std::unique_ptr<SString> hrd_name;
   std::string log_file_prefix = "consoletools";
   std::string log_file_dir = "./";
-  bool debug = false;
+  std::string log_level = "INFO";
+  bool enable_logging = false;
   int profile_loops = 1;
   bool line_numbers = false;
   bool copyright = true;
@@ -186,8 +187,17 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
-    if (argv[i][1] == 'e' && argv[i][2] == 'l') {
-      settings.debug = true;
+    if (argv[i][1] == 'e' && argv[i][2] == 'l' && (i + 1 < argc || argv[i][3])) {
+      if (argv[i][3]) {
+        settings.log_level = std::string(argv[i] + 3);
+      } else {
+        settings.log_level = std::string(argv[i + 1]);
+        i++;
+      }
+      continue;
+    }
+    if (argv[i][1] == 'e' && argv[i][2] == 'n') {
+      settings.enable_logging = true;
       continue;
     }
     if (argv[i][1]) {
@@ -200,7 +210,7 @@ void readArgs(int argc, char* argv[])
 void printError()
 {
   fprintf(stderr,
-          "Usage: colorer -(command) (parameters)  [<filename>]\n"
+    "Usage: colorer (command) (parameters) (logging parameters) [<filename>]\n"
           " Commands:\n"
           "  -l         Lists all available languages\n"
           "  -lt        Lists all available languages (HRC types)\n"
@@ -224,9 +234,11 @@ void printError()
           "  -dc        Disable information header in generator's output\n"
           "  -ds        Disable HTML symbol substitutions in generator's output\n"
           "  -dh        Disable HTML header and footer output\n"
+          " Logging parameters (default logging off):\n"
+          "  -en        Enable logging"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el        Enable DEBUG log level\n"
+          "  -el<name>  Log level (DEBUG, INFO, WARNING, ERROR, ERROR_F, FATAL)\n"
          );
 };
 
@@ -321,12 +333,15 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-  auto worker = g3::LogWorker::createLogWorker();
-  auto handle = worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false), &LogFileSink::fileWrite);
-  g3::only_change_at_initialization::setLogLevel(DEBUG, settings.debug);
-  g3::initializeLogging(worker.get());
-
-  auto colorer_lib = Colorer::createColorer(worker.get());
+  std::unique_ptr<LogWorker> log_worker;
+  if (settings.enable_logging) {
+    log_worker = std::move(g3::LogWorker::createLogWorker());
+    auto handle = log_worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false), &LogFileSink::fileWrite);
+    g3::only_change_at_initialization::setLogLevel(settings.log_level);
+    g3::initializeLogging(log_worker.get());
+  }
+  
+  auto colorer_lib = Colorer::createColorer(log_worker.get());
 
   return workIt();
 }
