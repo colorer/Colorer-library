@@ -377,14 +377,14 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
         const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
         const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
         if (*name == '\0' || *value == '\0') {
-          LOGF(WARNING, "Bad parameter in prototype '%s'", parseProtoType->name->getChars());
+          LOGF(WARNING, "Bad parameter in prototype '%s'", parseProtoType->getName()->getChars());
           continue;
         }
         DString d_name = DString(name);
         TypeParameter* tp = parseProtoType->addParam(&d_name);
-        tp->default_value = new SString(DString(value));
+        tp->default_value.reset(new SString(DString(value)));
         if (*descr != '\0') {
-          tp->description = new SString(DString(descr));
+          tp->description.reset(new SString(DString(descr)));
         }
       }
       continue;

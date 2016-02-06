@@ -9,21 +9,16 @@
 class TypeParameter {
 public:
   TypeParameter(): name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
-  ~TypeParameter() {
-    delete name;
-    delete description;
-    delete default_value;
-    delete user_value;
-  }
+  ~TypeParameter() {}
 
   /* parameter name*/
-  String* name;
+  UString name;
   /* parameter description*/
-  String* description;
+  UString description;
   /* default value*/
-  String* default_value;
+  UString default_value;
   /* user value*/
-  String* user_value;
+  UString user_value;
 };
 
 /**

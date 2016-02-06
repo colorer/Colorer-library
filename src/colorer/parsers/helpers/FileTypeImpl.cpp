@@ -44,15 +44,15 @@ std::vector<SString> FileTypeImpl::enumParams() const {
 
 const String* FileTypeImpl::getParamDescription(const String &name) const{
   auto tp = paramsHash.find(name);
-  if (tp != paramsHash.end()) return tp->second->description;
+  if (tp != paramsHash.end()) return tp->second->description.get();
   return nullptr;
 }
 
 const String *FileTypeImpl::getParamValue(const String &name) const{
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()){
-    if(tp->second->user_value) return tp->second->user_value;
-    return tp->second->default_value;
+    if(tp->second->user_value) return tp->second->user_value.get();
+    return tp->second->default_value.get();
   }
   return nullptr;
 }
@@ -66,7 +66,7 @@ int FileTypeImpl::getParamValueInt(const String &name, int def) const{
 const String* FileTypeImpl::getParamDefaultValue(const String &name) const{
   auto tp = paramsHash.find(name);
   if (tp !=paramsHash.end()) {
-    return tp->second->default_value;
+    return tp->second->default_value.get();
   }
   return nullptr;
 }
@@ -74,14 +74,14 @@ const String* FileTypeImpl::getParamDefaultValue(const String &name) const{
 const String* FileTypeImpl::getParamUserValue(const String &name) const{
   auto tp = paramsHash.find(name);
   if (tp !=paramsHash.end()) {
-    return tp->second->user_value;
+    return tp->second->user_value.get();
   }
   return nullptr;
 }
 
 TypeParameter* FileTypeImpl::addParam(const String *name){
   TypeParameter* tp = new TypeParameter;
-  tp->name = new SString(name);
+  tp->name.reset(new SString(name));
   std::pair<SString, TypeParameter*> pp(name, tp);
   paramsHash.emplace(pp);
   return tp;
@@ -90,16 +90,14 @@ TypeParameter* FileTypeImpl::addParam(const String *name){
 void FileTypeImpl::setParamValue(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    delete tp->second->user_value;
-    tp->second->user_value = new SString(value);
+    tp->second->user_value.reset(new SString(value));
   }
 }
 
 void FileTypeImpl::setParamDefaultValue(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    delete tp->second->default_value;
-    tp->second->default_value = new SString(value);
+    tp->second->default_value.reset(new SString(value));
   }
 }
 
@@ -110,8 +108,7 @@ void FileTypeImpl::setParamUserValue(const String &name, const String *value){
 void FileTypeImpl::setParamDescription(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    delete tp->second->description;
-    tp->second->description = new SString(value);
+    tp->second->description.reset(new SString(value));
   }
 }
 
