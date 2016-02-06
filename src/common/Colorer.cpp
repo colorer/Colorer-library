@@ -1,15 +1,20 @@
 #include <xercesc/dom/DOM.hpp>
 #include <common/Colorer.h>
 
+Colorer::Colorer(g3::LogWorker* log_worker)
+{
+  initColorer(log_worker);
+}
+
 Colorer::~Colorer()
 {
   // закрываем xerces, подчищая память
   xercesc::XMLPlatformUtils::Terminate();
 }
 
-std::unique_ptr<Colorer> Colorer::createColorer()
+std::unique_ptr<Colorer> Colorer::createColorer(g3::LogWorker* log_worker)
 {
-  return std::unique_ptr<Colorer>(new Colorer);
+  return std::unique_ptr<Colorer>(new Colorer(log_worker));
 }
 
 void Colorer::initColorer(g3::LogWorker* _log_worker)

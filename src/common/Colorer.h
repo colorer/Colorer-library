@@ -6,12 +6,12 @@
 
 class Colorer
 {
-  Colorer() = default;
+  Colorer(g3::LogWorker* log_worker);
+  void initColorer(g3::LogWorker* _log_worker);
 
 public:
   ~Colorer();
-  static std::unique_ptr<Colorer> createColorer();
-  void initColorer(g3::LogWorker* _log_worker = nullptr);
+  static std::unique_ptr<Colorer> createColorer(g3::LogWorker* log_worker = nullptr);
 
 private:
   std::unique_ptr<g3::LogWorker> log_worker;

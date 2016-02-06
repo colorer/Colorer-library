@@ -326,8 +326,7 @@ int main(int argc, char* argv[])
   g3::only_change_at_initialization::setLogLevel(DEBUG, settings.debug);
   g3::initializeLogging(worker.get());
 
-  auto colorer_lib = Colorer::createColorer();
-  colorer_lib->initColorer(worker.get());
+  auto colorer_lib = Colorer::createColorer(worker.get());
 
   return workIt();
 }
