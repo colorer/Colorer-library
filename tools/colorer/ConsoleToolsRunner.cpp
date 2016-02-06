@@ -27,6 +27,7 @@ struct setting {
   std::string log_file_dir = "./";
   std::string log_level = "INFO";
   bool enable_logging = false;
+  bool standing_logfile = false;
   int profile_loops = 1;
   bool line_numbers = false;
   bool copyright = true;
@@ -200,6 +201,10 @@ void readArgs(int argc, char* argv[])
       settings.enable_logging = true;
       continue;
     }
+    if (argv[i][1] == 'e' && argv[i][2] == 's') {
+      settings.standing_logfile = true;
+      continue;
+    }
     if (argv[i][1]) {
       fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i] + 1);
     }
@@ -239,6 +244,7 @@ void printError()
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
           "  -el<name>  Log level (DEBUG, INFO, WARNING, ERROR, ERROR_F, FATAL)\n"
+          "  -es        Standing log file name, without date"
          );
 };
 
@@ -319,7 +325,7 @@ int workIt()
         printError();
         break;
     }
-  } catch (Exception e) {
+  } catch (Exception &e) {
     LOG(ERROR) << e.what();
     fprintf(stderr, "%s", e.what());
     return -1;
@@ -336,7 +342,7 @@ int main(int argc, char* argv[])
   std::unique_ptr<LogWorker> log_worker;
   if (settings.enable_logging) {
     log_worker = std::move(g3::LogWorker::createLogWorker());
-    auto handle = log_worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false), &LogFileSink::fileWrite);
+    auto handle = log_worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false, settings.standing_logfile), &LogFileSink::fileWrite);
     g3::only_change_at_initialization::setLogLevel(settings.log_level);
     g3::initializeLogging(log_worker.get());
   }

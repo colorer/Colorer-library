@@ -6,8 +6,10 @@
 
 static const std::string file_name_time_formatted = "%Y%m%d-%H%M%S";
 
-LogFileSink::LogFileSink(const std::string &log_prefix, const std::string &log_directory, const bool show_microseconds_)
-  : _log_file_with_path(log_directory), _log_prefix_backup(log_prefix), _outptr(new std::ofstream), show_microseconds(show_microseconds_)
+LogFileSink::LogFileSink(const std::string &log_prefix, const std::string &log_directory, const bool show_microseconds_,
+                          const bool standing_name_)
+  : _log_file_with_path(log_directory), _log_prefix_backup(log_prefix), _outptr(new std::ofstream), 
+    show_microseconds(show_microseconds_), standing_name(standing_name_)
 {
   _log_prefix_backup = prefixSanityFix(log_prefix);
   if (!isValidFilename(_log_prefix_backup)) {
@@ -15,7 +17,12 @@ LogFileSink::LogFileSink(const std::string &log_prefix, const std::string &log_d
     abort();
   }
 
-  std::string file_name = createLogFileName(_log_prefix_backup);
+  std::string file_name;
+  if (standing_name_) {
+    file_name = _log_prefix_backup + ".log";
+  } else {
+    file_name = createLogFileName(_log_prefix_backup);
+  }
   _log_file_with_path = pathSanityFix(_log_file_with_path, file_name);
   _outptr = createLogFile(_log_file_with_path);
 
@@ -165,7 +172,11 @@ std::string LogFileSink::createLogFileName(const std::string &verified_prefix)
 bool LogFileSink::openLogFile(const std::string &complete_file_with_path, std::ofstream &outstream)
 {
   std::ios_base::openmode mode = std::ios_base::out; // for clarity: it's really overkill since it's an ofstream
-  mode |= std::ios_base::trunc;
+  if (standing_name){
+    mode |= std::ios_base::app;
+  } else {
+    mode |= std::ios_base::trunc;
+  }
   outstream.open(complete_file_with_path, mode);
   if (!outstream.is_open()) {
     std::ostringstream ss_error;

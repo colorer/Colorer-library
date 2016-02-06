@@ -11,7 +11,8 @@ using namespace g3;
 class LogFileSink
 {
 public:
-  LogFileSink(const std::string &log_prefix, const std::string &log_directory, const bool show_microseconds);
+  LogFileSink(const std::string &log_prefix, const std::string &log_directory, 
+               const bool show_microseconds = false, const bool standing_name = false);
   virtual ~LogFileSink();
 
   void fileWrite(const LogMessageMover message);
@@ -21,6 +22,7 @@ private:
   std::string _log_prefix_backup; // needed in case of future log file changes of directory
   std::unique_ptr <std::ofstream> _outptr;
   bool show_microseconds;
+  bool standing_name;
 
   std::ofstream &filestream()
   {
