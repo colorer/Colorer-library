@@ -92,7 +92,7 @@ protected:
 
   std::vector<FileTypeChooser*> chooserVector;
   std::unordered_map<SString, TypeParameter*> paramsHash;
-  std::vector<String*> importVector;
+  std::vector<UString> importVector;
   uXmlInputSource inputSource;
 
   FileTypeImpl(HRCParserImpl *hrcParser);

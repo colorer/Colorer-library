@@ -88,7 +88,7 @@ class SchemeNode
 public:
   SchemeNodeType type;
 
-  String* schemeName;
+  UString schemeName;
   SchemeImpl* scheme;
 
   VirtualEntryVector virtualEntryVector;

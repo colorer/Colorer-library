@@ -142,7 +142,6 @@ SchemeNode::~SchemeNode()
     }
     virtualEntryVector.clear();
   }
-  delete schemeName;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

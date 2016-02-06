@@ -527,7 +527,7 @@ void HRCParserImpl::addTypeImport(const xercesc::DOMElement* elem)
     LOGF(ERROR, "Import with bad '%s' attribute in type '%s'", typeparam.getChars(), parseType->name->getChars());
     return;
   }
-  parseType->importVector.push_back(new SString(DString(typeParam)));
+  parseType->importVector.emplace_back(new SString(DString(typeParam)));
 }
 
 void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
@@ -605,7 +605,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
   }
   SchemeNode* scheme_node = new SchemeNode();
   scheme_node->type = SNT_INHERIT;
-  scheme_node->schemeName = new SString(DString(nqSchemeName));
+  scheme_node->schemeName.reset(new SString(DString(nqSchemeName)));
   DString dnqSchemeName = DString(nqSchemeName);
   String* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
   if (schemeName == nullptr) {
@@ -616,8 +616,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
     scheme_node->scheme = schemeHash.find(schemeName)->second;
   }
   if (schemeName != nullptr) {
-    delete scheme_node->schemeName;
-    scheme_node->schemeName = schemeName;
+    scheme_node->schemeName.reset(schemeName);
   }
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
@@ -753,7 +752,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
     return;
   }
   SchemeNode* scheme_node = new SchemeNode();
-  scheme_node->schemeName = new SString(DString(schemeName));
+  scheme_node->schemeName.reset(new SString(DString(schemeName)));
   DString attr_pr= DString(elem->getAttribute(hrcBlockAttrPriority));
   DString attr_cpr= DString(elem->getAttribute(hrcBlockAttrContentPriority));
   DString attr_ireg= DString(elem->getAttribute(hrcBlockAttrInnerRegion));
@@ -950,15 +949,14 @@ void HRCParserImpl::updateLinks()
       for (int sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes.at(sni);
         if (snode->schemeName != nullptr && (snode->type == SNT_SCHEME || snode->type == SNT_INHERIT) && snode->scheme == nullptr) {
-          String* schemeName = qualifyForeignName(snode->schemeName, QNT_SCHEME, true);
+          String* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
           if (schemeName != nullptr) {
             snode->scheme = schemeHash.find(schemeName)->second;
           } else {
             LOGF(ERROR, "cannot resolve scheme name '%s' in scheme '%s'", snode->schemeName->getChars(), scheme->schemeName->getChars());
           }
           delete schemeName;
-          delete snode->schemeName;
-          snode->schemeName = nullptr;
+          snode->schemeName.release();
         }
         if (snode->type == SNT_INHERIT) {
           for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
@@ -1067,7 +1065,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
     for (int idx = -1; parseType != nullptr && idx < static_cast<int>(parseType->importVector.size()); idx++) {
       const String* tname = parseType->getName();
       if (idx > -1) {
-        tname = parseType->importVector.at(idx);
+        tname = parseType->importVector.at(idx).get();
       }
       FileTypeImpl* importer = fileTypeHash.find(tname)->second;
       if (!importer->type_loaded) {

@@ -21,9 +21,6 @@ FileTypeImpl::~FileTypeImpl(){
   }
   paramsHash.clear();
 
-  for (auto it : importVector) {
-    delete it;
-  }
   importVector.clear();
 }
 
