@@ -10,6 +10,7 @@
 #endif
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/util/BinFileInputStream.hpp>
 
 #include <colorer/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>
@@ -23,12 +24,150 @@
 #include <xml/XmlTagDefs.h>
 #include <xml/XStr.h>
 
+ParserFactory::ParserFactory(): catalogPath(nullptr), catalogXIS(nullptr), hrcParser(nullptr)
+{
+  RegExpStack = nullptr;
+  RegExpStack_Size = 0;
+}
+
+ParserFactory::~ParserFactory()
+{
+  for (auto it : hrcLocations) {
+    delete it;
+  }
+  hrcLocations.clear();
+
+  // Ohhh!
+  for (auto it : hrdLocations) {
+    for (auto it2 : *it.second) {
+      for (auto it3 : *it2.second) {
+        delete it3;
+      }
+      delete it2.second;
+    }
+    delete it.second;
+  }
+
+  for (auto it : hrdDescriptions) {
+    delete it.second;
+  }
+  hrdDescriptions.clear();
+
+  delete hrcParser;
+  delete[] RegExpStack;
+}
+
+UString ParserFactory::searchCatalog() const
+{
+  LOG(DEBUG) << "begin search catalog.xml";
+
+  std::vector<SString> paths;
+#ifdef _WIN32
+  getPossibleCatalogPathsWindows(paths);
+#else
+  getPossibleCatalogPathsLinux(paths);
+#endif
+
+  UString right_path(nullptr);
+  for (auto path : paths) {
+    try {
+      LOG(DEBUG) << "test path '" << path.getChars() << "'";
+
+      uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
+ 
+      std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
+      right_path.reset(new SString(path));
+
+      LOG(DEBUG) << "found valid path '" << path.getChars() << "'";
+      break;
+    } catch (const Exception &e) {
+      LOG(ERROR) << e.what();
+    }
+  }
+  LOG(DEBUG) << "end search catalog.xml";
+  if (!right_path) {
+    LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
+    throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
+  }
+  return right_path;
+}
+
+void ParserFactory::getPossibleCatalogPathsWindows(std::vector<SString> &paths) const
+{
+  // image_path/  image_path/..
+  HMODULE hmod = GetModuleHandle(nullptr);
+  if (hmod) {
+    wchar_t cname[MAX_PATH];
+    int len = GetModuleFileName(hmod, cname, MAX_PATH);
+    if (len > 0) {
+      DString module(cname, 0, len - 1);
+      int pos[2];
+      pos[0] = module.lastIndexOf('\\');
+      pos[1] = module.lastIndexOf('\\', pos[0]);
+      for (int idx = 0; idx < 2; idx++)
+        if (pos[idx] >= 0) {
+          paths.emplace_back(StringBuffer(DString(module, 0, pos[idx])).append(DString("\\catalog.xml")));
+        }
+    }
+  }
+
+  // %COLORER5CATALOG%
+  char* colorer5_catalog = getenv("COLORER5CATALOG");
+  if (colorer5_catalog) {
+    paths.emplace_back(SString(colorer5_catalog));
+  }
+
+  // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
+  char* home_drive = getenv("HOMEDRIVE");
+  char* home_path = getenv("HOMEPATH");
+  if (home_drive && home_path) {
+    try {
+      StringBuffer d = StringBuffer(home_drive).append(DString(home_path)).append(DString("/.colorer5catalog"));
+      if (_access(d.getChars(), 0) != -1) {
+        TextLinesStore tls;
+        tls.loadFile(&d, nullptr, false);
+        if (tls.getLineCount() > 0) {
+          paths.emplace_back(SString(tls.getLine(0)));
+        }
+      }
+    } catch (InputSourceException &) {}
+  }
+}
+
+void ParserFactory::getPossibleCatalogPathsLinux(std::vector<SString> &paths) const
+{
+  // %COLORER5CATALOG%
+  char* colorer5_catalog = getenv("COLORER5CATALOG");
+  if (colorer5_catalog) {
+    paths.emplace_back(SString(colorer5_catalog));
+  }
+
+  // %HOME%/.colorer5catalog or %HOMEPATH%
+  char* home_path = getenv("HOME");
+  if (home_path == nullptr) {
+    home_path = getenv("HOMEPATH");
+  }
+  if (home_path != nullptr) {
+    try {
+      TextLinesStore tls;
+      tls.loadFile(&StringBuffer(home_path).append(DString("/.colorer5catalog")), nullptr, false);
+      if (tls.getLineCount() > 0) {
+        paths.emplace_back(SString(tls.getLine(0)));
+      }
+    } catch (InputSourceException &) {}
+  }
+
+  // /usr/share/colorer/catalog.xml
+  paths.emplace_back(SString("/usr/share/colorer/catalog.xml"));
+  paths.emplace_back(SString("/usr/local/share/colorer/catalog.xml"));
+}
+
 void ParserFactory::loadCatalog(const String* catalogPath_)
 {
   if (catalogPath_ == nullptr) {
-    catalogPath = searchPath();
+    catalogPath = searchCatalog();
   } else {
-    catalogPath = new SString(catalogPath_);
+    catalogPath.reset(new SString(catalogPath_));
   }
 
   xercesc::XercesDOMParser xml_parser;
@@ -47,7 +186,7 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
   if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ") + catalogPath);
+    throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ") + catalogPath.get());
   }
   parseCatalogBlock(elem);
 }
@@ -161,182 +300,12 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
   delete hrd_name;
 }
 
-String* ParserFactory::searchPath()
-{
-  std::vector<String*> paths;
-
-#ifdef _WIN32
-  searchPathWindows(&paths);
-#else
-  searchPathLinux(&paths);
-#endif
-
-  String* right_path = nullptr;
-  for (size_t i = 0; i < paths.size(); i++) {
-    String* path = paths.at(i);
-    if (right_path == nullptr) {
-      colorer::InputSource* is = nullptr;
-      try {
-        is = colorer::InputSource::newInstance(path);
-        is->openStream();
-        right_path = new SString(path);
-        delete is;
-      } catch (InputSourceException&) {
-        delete is;
-      }
-    }
-    delete path;
-  }
-  if (right_path == nullptr) {
-    LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
-    throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
-  }
-  return right_path;
-
-}
-
-void ParserFactory::searchPathWindows(std::vector<String*>* paths)
-{
-#ifdef _WIN32
-  // image_path/  image_path/..  image_path/../..
-  wchar_t cname[256];
-  HMODULE hmod;
-  hmod = GetModuleHandle(L"colorer");
-#ifdef WIN64
-  if (hmod == nullptr) {
-    hmod = GetModuleHandle(L"colorer_x64");
-  }
-#endif
-  if (hmod == nullptr) {
-    hmod = GetModuleHandle(nullptr);
-  }
-  int len = GetModuleFileName(hmod, cname, 256) - 1;
-  DString module(cname, 0, len);
-  int pos[3];
-  pos[0] = module.lastIndexOf('\\');
-  pos[1] = module.lastIndexOf('\\', pos[0]);
-  pos[2] = module.lastIndexOf('\\', pos[1]);
-  for (int idx = 0; idx < 3; idx++)
-    if (pos[idx] >= 0) {
-      paths->push_back(&(new StringBuffer(DString(module, 0, pos[idx])))->append(DString("\\catalog.xml")));
-    }
-
-  // %COLORER5CATALOG%
-  char* c = getenv("COLORER5CATALOG");
-  if (c != nullptr) {
-    paths->push_back(new SString(c));
-  }
-  // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
-  char* b = getenv("HOMEDRIVE");
-  c = getenv("HOMEPATH");
-  if ((c != nullptr) && (b != nullptr)) {
-    try {
-      StringBuffer* d = new StringBuffer(b);
-      d->append(&StringBuffer(c).append(DString("/.colorer5catalog")));
-      if (_access(d->getChars(), 0) != -1) {
-        TextLinesStore tls;
-        tls.loadFile(d, nullptr, false);
-        if (tls.getLineCount() > 0) {
-          paths->push_back(new SString(tls.getLine(0)));
-        }
-      }
-      delete d;
-    } catch (InputSourceException&) {}
-  }
-  // %SYSTEMROOT%/.colorer5catalog
-  c = getenv("SYSTEMROOT");
-  if (c == nullptr) {
-    c = getenv("WINDIR");
-  }
-  if (c != nullptr) {
-    try {
-      StringBuffer* d = new StringBuffer(c);
-      d->append(DString("/.colorer5catalog"));
-      if (_access(d->getChars(), 0) != -1) {
-        TextLinesStore tls;
-        tls.loadFile(d, nullptr, false);
-        if (tls.getLineCount() > 0) {
-          paths->push_back(new SString(tls.getLine(0)));
-        }
-      }
-    } catch (InputSourceException&) {}
-  }
-#endif
-}
-
-void ParserFactory::searchPathLinux(std::vector<String*>* paths)
-{
-#ifdef __unix__
-  // %COLORER5CATALOG%
-  char* c = getenv("COLORER5CATALOG");
-  if (c != nullptr) {
-    paths->push_back(new SString(c));
-  }
-
-  // %HOME%/.colorer5catalog or %HOMEPATH%
-  c = getenv("HOME");
-  if (c == nullptr) {
-    c = getenv("HOMEPATH");
-  }
-  if (c != nullptr) {
-    try {
-      TextLinesStore tls;
-      tls.loadFile(&StringBuffer(c).append(DString("/.colorer5catalog")), nullptr, false);
-      if (tls.getLineCount() > 0) {
-        paths->push_back(new SString(tls.getLine(0)));
-      }
-    } catch (InputSourceException&) {}
-  }
-
-  // /usr/share/colorer/catalog.xml
-  paths->push_back(new SString("/usr/share/colorer/catalog.xml"));
-  paths->push_back(new SString("/usr/local/share/colorer/catalog.xml"));
-#endif
-}
-
-ParserFactory::ParserFactory()
-{
-  RegExpStack = nullptr;
-  RegExpStack_Size = 0;
-  hrcParser = nullptr;
-  catalogPath = nullptr;
-  catalogXIS = nullptr;
-}
-
-ParserFactory::~ParserFactory()
-{
-  for (auto it : hrcLocations) {
-    delete it;
-  }
-  hrcLocations.clear();
-
-  // Ohhh!
-  for (auto it : hrdLocations) {
-    for(auto it2: *it.second) {
-      for(auto it3: *it2.second) {
-        delete it3;
-      }
-      delete it2.second;
-    }
-    delete it.second;
-  }
-
-  for(auto it: hrdDescriptions){
-    delete it.second;
-  }
-  hrdDescriptions.clear();
-
-  delete hrcParser;
-  delete catalogPath;
-  delete[] RegExpStack;
-}
-
 const char* ParserFactory::getVersion()
 {
   return "Colorer-take5 Library be5 28 May 2006";
 }
 
-size_t ParserFactory::countHRD(const String& classID)
+size_t ParserFactory::countHRD(const String &classID)
 {
   auto hash = hrdLocations.find(classID);
   if (hash == hrdLocations.end()) {
@@ -355,7 +324,7 @@ std::vector<SString> ParserFactory::enumHRDClasses()
   return r;
 }
 
-std::vector<SString> ParserFactory::enumHRDInstances(const String& classID)
+std::vector<SString> ParserFactory::enumHRDInstances(const String &classID)
 {
   auto hash = hrdLocations.find(classID);
   std::vector<SString> r;
@@ -366,14 +335,12 @@ std::vector<SString> ParserFactory::enumHRDInstances(const String& classID)
   return r;
 }
 
-const String* ParserFactory::getHRDescription(const String& classID, const String& nameID)
+const String* ParserFactory::getHRDescription(const String &classID, const String &nameID)
 {
   auto it = hrdDescriptions.find(&(StringBuffer(classID) + "-" + nameID));
-  if (it != hrdDescriptions.end())
-  {
+  if (it != hrdDescriptions.end()) {
     return it->second;
-  } else
-  {
+  } else {
     return nullptr;
   }
 }
@@ -397,7 +364,7 @@ HRCParser* ParserFactory::getHRCParser()
 #endif
       const String* path;
       if (colorer::InputSource::isRelative(relPath)) {
-        path = colorer::InputSource::getAbsolutePath(catalogPath, relPath);
+        path = colorer::InputSource::getAbsolutePath(catalogPath.get(), relPath);
         const String* path2del = path;
         if (path->startsWith(DString("file://"))) {
           path = new SString(path, 7, -1);
@@ -430,7 +397,7 @@ HRCParser* ParserFactory::getHRCParser()
         try {
           dfis = XmlInputSource::newInstance(hrcLocations.at(idx)->getWChars(), catalogXIS.get());
           hrcParser->loadSource(dfis.get());
-        } catch (Exception& e) {
+        } catch (Exception &e) {
           LOG(ERRORF) << "Can't load hrc : " << XStr(dfis->getInputSource()->getSystemId());
           LOG(ERRORF) << e.what();
         }
@@ -453,7 +420,7 @@ void ParserFactory::loadPathWindows(const String* path, const String* relPath)
         uXmlInputSource dfis = XmlInputSource::newInstance((StringBuffer(relPath) + "\\" + SString(ffd.cFileName)).getWChars(), catalogXIS.get());
         try {
           hrcParser->loadSource(dfis.get());
-        } catch (Exception& e) {
+        } catch (Exception &e) {
           LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
           LOG(ERRORF) << e.what();
         }
@@ -481,7 +448,7 @@ void ParserFactory::loadPathLinux(const String* path, const String* relPath)
         try {
           hrcParser->loadSource(dfis);
           delete dfis;
-        } catch (Exception& e) {
+        } catch (Exception &e) {
           LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
           LOG(ERRORF) << e.getMessage()->getChars();
           delete dfis;
@@ -541,7 +508,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
         mapper->loadRegionMappings(dfis.get());
-      } catch (Exception& e) {
+      } catch (Exception &e) {
         LOGF(ERROR, "Can't load hrd:");
         LOG(ERROR) << e.what();
         throw ParserFactoryException(DString("Error load hrd"));
@@ -581,7 +548,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
       try {
         dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
         mapper->loadRegionMappings(dfis.get());
-      } catch (Exception& e) {
+      } catch (Exception &e) {
         LOG(ERROR) << "Can't load hrd: ";
         LOG(ERROR) << e.what();
       }

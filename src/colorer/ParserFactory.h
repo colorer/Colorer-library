@@ -19,15 +19,14 @@
  * it uses the next search order to find 'catalog.xml' file:
  *
  * - win32 systems:
- *   - image_start_dir, image_start_dir/../, image_start_dir/../../
- *   - \%COLORER5CATALOG%
- *   - \%HOMEDRIVE%%HOMEPATH%/.colorer5catalog
- *   - \%SYSTEMROOT%/.colorer5catalog (or \%WINDIR% in w9x)
+ *   - image_start_dir, image_start_dir\..\
+ *   - %COLORER5CATALOG%
+ *   - %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
  *
  * - unix/macos systems:
- *   - \$COLORER5CATALOG
- *   - \$HOME/.colorer5catalog
- *   - \$HOMEPATH/.colorer5catalog
+ *   - $COLORER5CATALOG
+ *   - $HOME/.colorer5catalog
+ *   - $HOMEPATH/.colorer5catalog
  *   - /usr/share/colorer/catalog.xml
  *   - /usr/local/share/colorer/catalog.xml
  *
@@ -112,17 +111,20 @@ public:
   */
   void loadCatalog(const String* catalogPath_);
 private:
+
+  UString searchCatalog() const;
+  void getPossibleCatalogPathsWindows(std::vector<SString> &paths) const;
+  void getPossibleCatalogPathsLinux(std::vector<SString> &paths) const;
+
   void parseCatalogBlock(const xercesc::DOMElement* elem);
   void parseHrcSetsBlock(const xercesc::DOMElement* elem);
   void addHrcSetsLocation(const xercesc::DOMElement* elem);
   void parseHrdSetsBlock(const xercesc::DOMElement* elem);
-  String* searchPath();
-  void searchPathWindows(std::vector<String*>* paths);
-  void searchPathLinux(std::vector<String*>* paths);
+
   void loadPathWindows(const String* path, const String* relPath);
   void loadPathLinux(const String* path, const String* relPath);
 
-  String* catalogPath;
+  UString catalogPath;
   uXmlInputSource catalogXIS;
   std::vector<const String*> hrcLocations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;
