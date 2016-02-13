@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #ifdef __unix__
 #include <dirent.h>
+#include <sys/stat.h>
 #endif
 #ifdef _WIN32
 #include <io.h>
@@ -436,6 +436,7 @@ bool ParserFactory::isDirectory(const String* path)
 {
   bool is_dir = false;
 #ifdef _WIN32
+  // stat on win_xp and vc2015 have bug.
   DWORD dwAttrs = GetFileAttributes(path->getWChars());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
     throw Exception(StringBuffer("Can't get info for file/path:") + path);
