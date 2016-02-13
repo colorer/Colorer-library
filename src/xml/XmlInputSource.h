@@ -45,9 +45,12 @@ public:
     return nullptr;
   }
 
-  static UString getAbsolutePath(const String* basePath, const String* relPath);
-
   virtual ~XmlInputSource() {};
+
+  static UString getAbsolutePath(const String* basePath, const String* relPath);
+  static XMLCh* ExpandEnvironment(const XMLCh* path);
+  static bool isRelative(const String* path);
+  static UString getClearPath(const String* basePath, const String* relPath);
 protected:
   XmlInputSource() {};
 

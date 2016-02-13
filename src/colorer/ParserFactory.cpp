@@ -24,7 +24,7 @@
 #include <xml/XmlTagDefs.h>
 #include <xml/XStr.h>
 
-ParserFactory::ParserFactory(): catalogPath(nullptr), catalogXIS(nullptr), hrcParser(nullptr)
+ParserFactory::ParserFactory(): catalogXIS(nullptr), hrc_parser(new HRCParserImpl())
 {
   RegExpStack = nullptr;
   RegExpStack_Size = 0;
@@ -32,11 +32,6 @@ ParserFactory::ParserFactory(): catalogPath(nullptr), catalogXIS(nullptr), hrcPa
 
 ParserFactory::~ParserFactory()
 {
-  for (auto it : hrcLocations) {
-    delete it;
-  }
-  hrcLocations.clear();
-
   // Ohhh!
   for (auto it : hrdLocations) {
     for (auto it2 : *it.second) {
@@ -53,7 +48,7 @@ ParserFactory::~ParserFactory()
   }
   hrdDescriptions.clear();
 
-  delete hrcParser;
+  delete hrc_parser;
   delete[] RegExpStack;
 }
 
@@ -74,7 +69,7 @@ UString ParserFactory::searchCatalog() const
       LOG(DEBUG) << "test path '" << path.getChars() << "'";
 
       uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
- 
+
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
       right_path.reset(new SString(path));
 
@@ -130,7 +125,9 @@ void ParserFactory::getPossibleCatalogPathsWindows(std::vector<SString> &paths) 
           paths.emplace_back(SString(tls.getLine(0)));
         }
       }
-    } catch (InputSourceException &) {}
+    } catch (InputSourceException &) { //-V565
+      // it`s ok. the error is not interesting
+    }
   }
 }
 
@@ -154,7 +151,9 @@ void ParserFactory::getPossibleCatalogPathsLinux(std::vector<SString> &paths) co
       if (tls.getLineCount() > 0) {
         paths.emplace_back(SString(tls.getLine(0)));
       }
-    } catch (InputSourceException &) {}
+    } catch (InputSourceException &) { //-V565
+      // it`s ok. the error is not interesting
+    }
   }
 
   // /usr/share/colorer/catalog.xml
@@ -162,13 +161,58 @@ void ParserFactory::getPossibleCatalogPathsLinux(std::vector<SString> &paths) co
   paths.emplace_back(SString("/usr/local/share/colorer/catalog.xml"));
 }
 
-void ParserFactory::loadCatalog(const String* catalogPath_)
+void ParserFactory::loadCatalog(const String* catalog_path)
 {
-  if (catalogPath_ == nullptr) {
-    catalogPath = searchCatalog();
+  hrc_locations.clear();
+
+  UString catalog;
+  if (!catalog_path) {
+    catalog = std::move(searchCatalog());
+    if (!catalog) {
+      throw ParserFactoryException(DString("Can't find suitable catalog.xml file."));
+    }
   } else {
-    catalogPath.reset(new SString(catalogPath_));
+    catalog.reset(new SString(catalog_path));
   }
+
+  parseCatalog(catalog.get());
+  LOG(DEBUG) << "begin load hrc files";
+  for (auto location : hrc_locations) {
+    try {
+      LOG(DEBUG) << "try load '" << location.getChars() << "'";
+      auto clear_path = XmlInputSource::getClearPath(catalog.get(), &location);
+      if (isDirectory(clear_path.get())) {
+        std::vector<SString> paths;
+        getFileFromDir(clear_path.get(), paths);
+        for (auto files : paths) {
+          loadHrc(&files, catalog.get());
+        }
+      } else {
+        loadHrc(clear_path.get(), catalog.get());
+      }
+    } catch (const Exception &e) {
+      LOG(ERROR) << e.what();
+    }
+  }
+
+  LOG(DEBUG) << "end load hrc files";
+  hrc_locations.clear();
+}
+
+void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) const
+{
+  uXmlInputSource dfis = XmlInputSource::newInstance(hrc_path->getWChars(), base_path->getWChars());
+  try {
+    hrc_parser->loadSource(dfis.get());
+  } catch (Exception &e) {
+    LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
+    LOG(ERRORF) << e.what();
+  }
+}
+
+void ParserFactory::parseCatalog(const SString catalog_path)
+{
+  LOG(DEBUG) << "begin parse catalog.xml";
 
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
@@ -177,7 +221,7 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  catalogXIS = XmlInputSource::newInstance(catalogPath->getWChars(), static_cast<XMLCh*>(nullptr));
+  catalogXIS = XmlInputSource::newInstance(catalog_path.getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
     throw ParserFactoryException(DString("Error reading catalog.xml."));
@@ -185,10 +229,12 @@ void ParserFactory::loadCatalog(const String* catalogPath_)
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
-  if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw ParserFactoryException(StringBuffer("Bad catalog structure. Main '<catalog>' block not found at file ") + catalogPath.get());
+  if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
+    throw ParserFactoryException(StringBuffer("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file ") + catalog_path);
   }
   parseCatalogBlock(elem);
+
+  LOG(DEBUG) << "end parse catalog.xml";
 }
 
 void ParserFactory::parseCatalogBlock(const xercesc::DOMElement* elem)
@@ -213,7 +259,6 @@ void ParserFactory::parseCatalogBlock(const xercesc::DOMElement* elem)
 
 void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement* elem)
 {
-  // TODO: break catHrcSetsAttrLoglocation
   addHrcSetsLocation(elem);
 }
 
@@ -223,7 +268,8 @@ void ParserFactory::addHrcSetsLocation(const xercesc::DOMElement* elem)
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
       if (xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
-        hrcLocations.push_back(new SString(DString(subelem->getAttribute(catLocationAttrLink))));
+        hrc_locations.push_back(SString(DString(subelem->getAttribute(catLocationAttrLink))));
+        LOG(DEBUG) << "add hrc location: '" << hrc_locations.back().getChars() << "'";
       }
       continue;
     }
@@ -345,85 +391,20 @@ const String* ParserFactory::getHRDescription(const String &classID, const Strin
   }
 }
 
-HRCParser* ParserFactory::getHRCParser()
+HRCParser* ParserFactory::getHRCParser() const
 {
-  if (hrcParser != nullptr) {
-    return hrcParser;
-  }
-  hrcParser = new HRCParserImpl();
-  for (size_t idx = 0; idx < hrcLocations.size(); idx++) {
-    if (hrcLocations.at(idx) != nullptr) {
-#ifdef _WIN32
-      size_t i = ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), nullptr, 0);
-      wchar_t* temp = new wchar_t[i];
-      ExpandEnvironmentStrings(hrcLocations.at(idx)->getWChars(), temp, static_cast<DWORD>(i));
-      const String* relPath = new SString(temp);
-      delete[] temp;
-#else
-      const String* relPath = new SString(hrcLocations.at(idx));
-#endif
-      const String* path;
-      if (colorer::InputSource::isRelative(relPath)) {
-        path = colorer::InputSource::getAbsolutePath(catalogPath.get(), relPath);
-        const String* path2del = path;
-        if (path->startsWith(DString("file://"))) {
-          path = new SString(path, 7, -1);
-        }
-        if (path->startsWith(DString("file:/"))) {
-          path = new SString(path, 6, -1);
-        }
-        if (path->startsWith(DString("file:"))) {
-          path = new SString(path, 5, -1);
-        }
-        if (path != path2del) {
-          delete path2del;
-        }
-      } else {
-        path = new SString(relPath);
-      }
-
-      struct stat st;
-      int ret = stat(path->getChars(), &st);
-
-      if (ret != -1 && (st.st_mode & S_IFDIR)) {
-#ifdef _WIN32
-        loadPathWindows(path, relPath);
-#endif
-#ifdef __unix__
-        loadPathLinux(path, relPath);
-#endif
-      } else {
-        uXmlInputSource dfis = nullptr;
-        try {
-          dfis = XmlInputSource::newInstance(hrcLocations.at(idx)->getWChars(), catalogXIS.get());
-          hrcParser->loadSource(dfis.get());
-        } catch (Exception &e) {
-          LOG(ERRORF) << "Can't load hrc : " << XStr(dfis->getInputSource()->getSystemId());
-          LOG(ERRORF) << e.what();
-        }
-      }
-      delete path;
-      delete relPath;
-    }
-  }
-  return hrcParser;
+  return hrc_parser;
 }
 
-void ParserFactory::loadPathWindows(const String* path, const String* relPath)
-{
 #ifdef _WIN32
+void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
+{
   WIN32_FIND_DATA ffd;
-  HANDLE dir = FindFirstFile((StringBuffer(path) + "\\*.*").getTChars(), &ffd);
+  HANDLE dir = FindFirstFile((StringBuffer(relPath) + "\\*.*").getTChars(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        uXmlInputSource dfis = XmlInputSource::newInstance((StringBuffer(relPath) + "\\" + SString(ffd.cFileName)).getWChars(), catalogXIS.get());
-        try {
-          hrcParser->loadSource(dfis.get());
-        } catch (Exception &e) {
-          LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
-          LOG(ERRORF) << e.what();
-        }
+        files.push_back(StringBuffer(relPath) + "\\" + SString(ffd.cFileName));
       }
       if (FindNextFile(dir, &ffd) == FALSE) {
         break;
@@ -431,12 +412,12 @@ void ParserFactory::loadPathWindows(const String* path, const String* relPath)
     }
     FindClose(dir);
   }
-#endif
 }
+#endif
 
-void ParserFactory::loadPathLinux(const String* path, const String* relPath)
-{
 #ifdef __unix__
+void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
+{
   DIR* dir = opendir(path->getChars());
   dirent* dire;
   if (dir != nullptr) {
@@ -444,19 +425,36 @@ void ParserFactory::loadPathLinux(const String* path, const String* relPath)
       struct stat st;
       stat((StringBuffer(path) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
-        XmlInputSource* dfis = XmlInputSource::newInstance((StringBuffer(relPath) + "/" + dire->d_name).getWChars(), catalogXIS);
-        try {
-          hrcParser->loadSource(dfis);
-          delete dfis;
-        } catch (Exception &e) {
-          LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
-          LOG(ERRORF) << e.getMessage()->getChars();
-          delete dfis;
-        }
+        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);      
       }
     }
   }
+}
 #endif
+
+bool ParserFactory::isDirectory(const String* path)
+{
+  bool is_dir = false;
+#ifdef _WIN32
+  DWORD dwAttrs = GetFileAttributes(path->getWChars());
+  if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
+    throw Exception(StringBuffer("Can't get info for file/path:") + path);
+  } else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
+    is_dir = true;
+  }
+#else
+
+  struct stat st;
+  int ret = stat(path->getChars(), &st);
+
+  if (ret == -1) {
+    throw Exception(StringBuffer("Can't get info for file/path:") + path);
+  } else if ((st.st_mode & S_IFDIR)) {
+    is_dir = true;
+  }
+#endif
+
+  return is_dir;
 }
 
 TextParser* ParserFactory::createTextParser()

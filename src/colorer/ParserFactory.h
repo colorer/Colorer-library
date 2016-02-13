@@ -59,12 +59,12 @@ public:
   /**
    * Enumerates all declared hrd instances of specified class
    */
-  std::vector<SString> enumHRDInstances(const String& classID);
+  std::vector<SString> enumHRDInstances(const String &classID);
 
   /**
    * Returns description of HRD instance, pointed by classID and nameID parameters.
    */
-  const String* getHRDescription(const String& classID, const String& nameID);
+  const String* getHRDescription(const String &classID, const String &nameID);
 
   /**
    * Creates and loads HRCParser instance from catalog.xml file.
@@ -74,7 +74,7 @@ public:
    * create input data stream.
    * Only one HRCParser instance is created for each ParserFactory instance.
    */
-  HRCParser*  getHRCParser();
+  HRCParser*  getHRCParser() const;
 
   /**
    * Creates TextParser instance
@@ -102,37 +102,38 @@ public:
    * load one hrd node from hrd-sets
    */
   void parseHRDSetsChild(const xercesc::DOMElement* elem);
-  size_t countHRD(const String& classID);
+  size_t countHRD(const String &classID);
 
   /**
   * @param catalogPath Path to catalog.xml file. If null,
   *        standard search method is used.
   * @throw ParserFactoryException If can't load specified catalog.
   */
-  void loadCatalog(const String* catalogPath_);
+  void loadCatalog(const String* catalog_path);
 private:
 
   UString searchCatalog() const;
   void getPossibleCatalogPathsWindows(std::vector<SString> &paths) const;
   void getPossibleCatalogPathsLinux(std::vector<SString> &paths) const;
 
+  void parseCatalog(const SString catalog_path);
   void parseCatalogBlock(const xercesc::DOMElement* elem);
   void parseHrcSetsBlock(const xercesc::DOMElement* elem);
   void addHrcSetsLocation(const xercesc::DOMElement* elem);
   void parseHrdSetsBlock(const xercesc::DOMElement* elem);
 
-  void loadPathWindows(const String* path, const String* relPath);
-  void loadPathLinux(const String* path, const String* relPath);
+  void loadHrc(const String* hrc_path, const String* base_path) const;
+  void getFileFromDir(const String* relPath, std::vector<SString> &files);
 
-  UString catalogPath;
+  bool isDirectory(const String* path);
   uXmlInputSource catalogXIS;
-  std::vector<const String*> hrcLocations;
+  std::vector<SString> hrc_locations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;
   std::unordered_map<SString, const String*> hrdDescriptions;
-  HRCParser*  hrcParser;
+  HRCParser* hrc_parser;
 
-  ParserFactory(const ParserFactory&);
-  void operator=(const ParserFactory&);
+  ParserFactory(const ParserFactory &);
+  void operator=(const ParserFactory &);
 };
 
 #endif

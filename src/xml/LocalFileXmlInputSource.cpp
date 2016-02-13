@@ -2,9 +2,6 @@
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include "XStr.h"
-#ifdef _WIN32
-#include<windows.h>
-#endif
 
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
@@ -39,18 +36,3 @@ xercesc::InputSource* LocalFileXmlInputSource::getInputSource()
   return input_source.get();
 }
 
-XMLCh* LocalFileXmlInputSource::ExpandEnvironment(const XMLCh* path)
-{
-#ifdef _WIN32
-  size_t i = ExpandEnvironmentStrings(path, nullptr, 0);
-  XMLCh* temp = new XMLCh[i];
-  ExpandEnvironmentStrings(path, temp, static_cast<DWORD>(i));
-  return temp;
-#else
-  //TODO реализовать под nix
-  XMLSize_t i = xercesc::XMLString::stringLen(path);
-  XMLCh* temp = new XMLCh[i];
-  xercesc::XMLString::copyString(temp, path);
-  return temp;
-#endif
-}

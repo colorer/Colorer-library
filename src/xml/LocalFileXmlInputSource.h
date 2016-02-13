@@ -16,7 +16,6 @@ public:
   uXmlInputSource createRelative(const XMLCh* relPath) const override;
   xercesc::InputSource* getInputSource() override;
 private:
-  static XMLCh* ExpandEnvironment(const XMLCh* path);
   std::unique_ptr<xercesc::LocalFileInputSource> input_source;
 
   LocalFileXmlInputSource(LocalFileXmlInputSource const &) = delete;
