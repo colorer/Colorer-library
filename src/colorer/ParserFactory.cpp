@@ -57,12 +57,8 @@ UString ParserFactory::searchCatalog() const
   LOG(DEBUG) << "begin search catalog.xml";
 
   std::vector<SString> paths;
-#ifdef _WIN32
-  getPossibleCatalogPathsWindows(paths);
-#else
-  getPossibleCatalogPathsLinux(paths);
-#endif
-
+  getPossibleCatalogPaths(paths);
+  
   UString right_path(nullptr);
   for (auto path : paths) {
     try {
@@ -87,7 +83,8 @@ UString ParserFactory::searchCatalog() const
   return right_path;
 }
 
-void ParserFactory::getPossibleCatalogPathsWindows(std::vector<SString> &paths) const
+#ifdef _WIN32
+void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
 {
   // image_path/  image_path/..
   HMODULE hmod = GetModuleHandle(nullptr);
@@ -130,8 +127,10 @@ void ParserFactory::getPossibleCatalogPathsWindows(std::vector<SString> &paths) 
     }
   }
 }
+#endif
 
-void ParserFactory::getPossibleCatalogPathsLinux(std::vector<SString> &paths) const
+#ifdef __unix__
+void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
 {
   // %COLORER5CATALOG%
   char* colorer5_catalog = getenv("COLORER5CATALOG");
@@ -160,6 +159,7 @@ void ParserFactory::getPossibleCatalogPathsLinux(std::vector<SString> &paths) co
   paths.emplace_back(SString("/usr/share/colorer/catalog.xml"));
   paths.emplace_back(SString("/usr/local/share/colorer/catalog.xml"));
 }
+#endif
 
 void ParserFactory::loadCatalog(const String* catalog_path)
 {

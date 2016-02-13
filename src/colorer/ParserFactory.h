@@ -113,8 +113,7 @@ public:
 private:
 
   UString searchCatalog() const;
-  void getPossibleCatalogPathsWindows(std::vector<SString> &paths) const;
-  void getPossibleCatalogPathsLinux(std::vector<SString> &paths) const;
+  void getPossibleCatalogPaths(std::vector<SString> &paths) const;
 
   void parseCatalog(const SString catalog_path);
   void parseCatalogBlock(const xercesc::DOMElement* elem);
