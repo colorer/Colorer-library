@@ -115,7 +115,7 @@ private:
   UString searchCatalog() const;
   void getPossibleCatalogPaths(std::vector<SString> &paths) const;
 
-  void parseCatalog(const SString catalog_path);
+  void parseCatalog(const SString &catalog_path);
   void parseCatalogBlock(const xercesc::DOMElement* elem);
   void parseHrcSetsBlock(const xercesc::DOMElement* elem);
   void addHrcSetsLocation(const xercesc::DOMElement* elem);
@@ -124,7 +124,8 @@ private:
   void loadHrc(const String* hrc_path, const String* base_path) const;
   void getFileFromDir(const String* relPath, std::vector<SString> &files);
 
-  bool isDirectory(const String* path);
+  static bool isDirectory(const String* path);
+
   uXmlInputSource catalogXIS;
   std::vector<SString> hrc_locations;
   std::unordered_map<SString, std::unordered_map<SString, std::vector<const String*>*>*> hrdLocations;

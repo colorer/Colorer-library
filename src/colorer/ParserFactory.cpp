@@ -58,7 +58,7 @@ UString ParserFactory::searchCatalog() const
 
   std::vector<SString> paths;
   getPossibleCatalogPaths(paths);
-  
+
   UString right_path(nullptr);
   for (auto path : paths) {
     try {
@@ -67,9 +67,9 @@ UString ParserFactory::searchCatalog() const
       uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
 
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
-      right_path.reset(new SString(path));
+      right_path.reset(new SString(DString(catalog->getInputSource()->getSystemId())));
 
-      LOG(DEBUG) << "found valid path '" << path.getChars() << "'";
+      LOG(DEBUG) << "found valid path '" << path.getChars() << "' = '" << right_path->getChars() << "'";
       break;
     } catch (const Exception &e) {
       LOG(ERROR) << e.what();
@@ -138,11 +138,8 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
     paths.emplace_back(SString(colorer5_catalog));
   }
 
-  // %HOME%/.colorer5catalog or %HOMEPATH%
+  // %HOME%/.colorer5catalog
   char* home_path = getenv("HOME");
-  if (home_path == nullptr) {
-    home_path = getenv("HOMEPATH");
-  }
   if (home_path != nullptr) {
     try {
       TextLinesStore tls;
@@ -210,7 +207,7 @@ void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) con
   }
 }
 
-void ParserFactory::parseCatalog(const SString catalog_path)
+void ParserFactory::parseCatalog(const SString &catalog_path)
 {
   LOG(DEBUG) << "begin parse catalog.xml";
 
@@ -419,13 +416,13 @@ void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &
 void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
 {
   DIR* dir = opendir(relPath->getChars());
-  dirent* dire;
   if (dir != nullptr) {
+    dirent* dire;
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
       stat((StringBuffer(relPath) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
-        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);      
+        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);
       }
     }
   }
@@ -439,7 +436,7 @@ bool ParserFactory::isDirectory(const String* path)
   // stat on win_xp and vc2015 have bug.
   DWORD dwAttrs = GetFileAttributes(path->getWChars());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
-    throw Exception(StringBuffer("Can't get info for file/path:") + path);
+    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
   } else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
     is_dir = true;
   }
@@ -449,7 +446,7 @@ bool ParserFactory::isDirectory(const String* path)
   int ret = stat(path->getChars(), &st);
 
   if (ret == -1) {
-    throw Exception(StringBuffer("Can't get info for file/path:") + path);
+    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
   } else if ((st.st_mode & S_IFDIR)) {
     is_dir = true;
   }
