@@ -156,8 +156,8 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   }
 
   // /usr/share/colorer/catalog.xml
-  paths.emplace_back(SString("/usr/share/colorer/catalog.xml"));
-  paths.emplace_back(SString("/usr/local/share/colorer/catalog.xml"));
+  paths.emplace_back(SString(DString("/usr/share/colorer/catalog.xml")));
+  paths.emplace_back(SString(DString("/usr/local/share/colorer/catalog.xml")));
 }
 #endif
 
@@ -418,12 +418,12 @@ void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &
 #ifdef __unix__
 void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
 {
-  DIR* dir = opendir(path->getChars());
+  DIR* dir = opendir(relPath->getChars());
   dirent* dire;
   if (dir != nullptr) {
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
-      stat((StringBuffer(path) + "/" + dire->d_name).getChars(), &st);
+      stat((StringBuffer(relPath) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
         files.push_back(StringBuffer(relPath) + "/" + dire->d_name);      
       }
