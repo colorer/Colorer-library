@@ -442,10 +442,35 @@ HRCParser* ParserFactory::getHRCParser()
         path = new SString(relPath);
       }
 
+      bool is_dir=false;
+#ifdef _WIN32
+      DWORD dwAttrs;
+      dwAttrs = GetFileAttributes(path->getWChars());
+      if (dwAttrs == INVALID_FILE_ATTRIBUTES){
+        errorHandler->fatalError(StringBuffer("Can't get info for file/path:") + path);
+        delete path;
+        delete relPath;
+        continue;
+      }
+
+      if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
+        is_dir = true;
+      }
+#else
       struct stat st;
       int ret = stat(path->getChars(), &st);
 
-      if (ret != -1 && (st.st_mode & S_IFDIR)) {
+      if (ret == -1) {
+        errorHandler->fatalError(StringBuffer("Can't get info for file/path:") + path);
+        delete path;
+        delete relPath;
+        continue;
+      }
+      if ((st.st_mode & S_IFDIR)) {
+        is_dir = true;
+      }
+#endif
+      if (is_dir) {
 #ifdef _WIN32
         loadPathWindows(path, relPath);
 #endif
