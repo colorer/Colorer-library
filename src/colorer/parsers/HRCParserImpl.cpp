@@ -361,7 +361,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   }
   int ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? 0 : 1;
   double prior = ctype ? 1 : 2;
-  DString weight= DString(elem->getAttribute(hrcFilenameAttrWeight));
+  DString weight = DString(elem->getAttribute(hrcFilenameAttrWeight));
   UnicodeTools::getNumber(&weight, &prior);
   FileTypeChooser* ftc = new FileTypeChooser(ctype, prior, matchRE);
   parseProtoType->chooserVector.push_back(ftc);
@@ -406,7 +406,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   DString d_name = DString(typeName);
   auto type_ref = fileTypeHash.find(&d_name);
   if (type_ref == fileTypeHash.end()) {
-    LOGF(ERROR,"type '%s' without prototype", d_name.getChars());
+    LOGF(ERROR, "type '%s' without prototype", d_name.getChars());
     return;
   }
   FileTypeImpl* type = type_ref->second;
@@ -508,8 +508,8 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
     LOG(ERROR) << "Bad entity attributes";
     return;
   }
-  DString dentityName= DString(entityName);
-  DString dentityValue= DString(entityValue);
+  DString dentityName = DString(entityName);
+  DString dentityValue = DString(entityValue);
   String* qname1 = qualifyOwnName(&dentityName);
   String* qname2 = useEntities(&dentityValue);
   if (qname1 != nullptr && qname2 != nullptr) {
@@ -737,7 +737,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
     delete startParam;
     return;
   }
-    DString deParam = DString(eParam);
+  DString deParam = DString(eParam);
   if (!(endParam = useEntities(&deParam))) {
     LOGF(ERROR, "'end' block attribute not found in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
@@ -753,9 +753,9 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   }
   SchemeNode* scheme_node = new SchemeNode();
   scheme_node->schemeName.reset(new SString(DString(schemeName)));
-  DString attr_pr= DString(elem->getAttribute(hrcBlockAttrPriority));
-  DString attr_cpr= DString(elem->getAttribute(hrcBlockAttrContentPriority));
-  DString attr_ireg= DString(elem->getAttribute(hrcBlockAttrInnerRegion));
+  DString attr_pr = DString(elem->getAttribute(hrcBlockAttrPriority));
+  DString attr_cpr = DString(elem->getAttribute(hrcBlockAttrContentPriority));
+  DString attr_ireg = DString(elem->getAttribute(hrcBlockAttrInnerRegion));
   scheme_node->lowPriority = DString("low").equals(&attr_pr);
   scheme_node->lowContentPriority = DString("low").equals(&attr_cpr);
   scheme_node->innerRegion = DString("yes").equals(&attr_ireg);
@@ -785,8 +785,8 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
 void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   SchemeNode* scheme_node = new SchemeNode();
-  DString dhrcKeywordsAttrIgnorecase= DString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
-  DString dhrcKeywordsAttrPriority= DString(elem->getAttribute(hrcKeywordsAttrPriority));
+  DString dhrcKeywordsAttrIgnorecase = DString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
+  DString dhrcKeywordsAttrPriority = DString(elem->getAttribute(hrcKeywordsAttrPriority));
   bool isCase = !DString("yes").equals(&dhrcKeywordsAttrIgnorecase);
   scheme_node->lowPriority = !DString("normal").equals(&dhrcKeywordsAttrPriority);
   const Region* brgn = getNCRegion(elem, DString("region"));
@@ -797,7 +797,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
 
   scheme_node->worddiv = nullptr;
   if (*worddiv != '\0') {
-    DString dworddiv= DString(worddiv);
+    DString dworddiv = DString(worddiv);
     String* entWordDiv = useEntities(&dworddiv);
     scheme_node->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, nullptr);
     if (scheme_node->worddiv == nullptr) {
@@ -976,8 +976,7 @@ void HRCParserImpl::updateLinks()
               String* vsn = qualifyForeignName(vt->substSchemeName, QNT_SCHEME, true);
               if (vsn) {
                 vt->substScheme = schemeHash.find(vsn)->second;
-              }
-              else {
+              } else {
                 LOGF(ERROR, "cannot virtualize using subst-scheme scheme '%s' in scheme '%s'", vt->substSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
@@ -1165,7 +1164,7 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   return reg;
 }
 
-const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const String& tag)
+const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const String &tag)
 {
   const XMLCh* par = el->getAttribute(tag.getWChars());
   if (*par == '\0') {
