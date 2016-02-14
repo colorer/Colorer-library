@@ -312,6 +312,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
     fileTypeVector.push_back(type);
   }
 }
+
 void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
