@@ -122,9 +122,6 @@ private:
   void parseHrdSetsBlock(const xercesc::DOMElement* elem);
 
   void loadHrc(const String* hrc_path, const String* base_path) const;
-  void getFileFromDir(const String* relPath, std::vector<SString> &files);
-
-  static bool isDirectory(const String* path);
 
   uXmlInputSource catalogXIS;
   std::vector<SString> hrc_locations;

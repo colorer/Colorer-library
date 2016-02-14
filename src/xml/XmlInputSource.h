@@ -51,6 +51,8 @@ public:
   static XMLCh* ExpandEnvironment(const XMLCh* path);
   static bool isRelative(const String* path);
   static UString getClearPath(const String* basePath, const String* relPath);
+  static bool isDirectory(const String* path);
+  static void getFileFromDir(const String* relPath, std::vector<SString>& files);
 protected:
   XmlInputSource() {};
 

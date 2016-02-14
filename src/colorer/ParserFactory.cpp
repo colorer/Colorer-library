@@ -178,9 +178,9 @@ void ParserFactory::loadCatalog(const String* catalog_path)
     try {
       LOG(DEBUG) << "try load '" << location.getChars() << "'";
       auto clear_path = XmlInputSource::getClearPath(catalog.get(), &location);
-      if (isDirectory(clear_path.get())) {
+      if (XmlInputSource::isDirectory(clear_path.get())) {
         std::vector<SString> paths;
-        getFileFromDir(clear_path.get(), paths);
+        XmlInputSource::getFileFromDir(clear_path.get(), paths);
         for (auto files : paths) {
           loadHrc(&files, catalog.get());
         }
@@ -391,68 +391,6 @@ const String* ParserFactory::getHRDescription(const String &classID, const Strin
 HRCParser* ParserFactory::getHRCParser() const
 {
   return hrc_parser;
-}
-
-#ifdef _WIN32
-void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
-{
-  WIN32_FIND_DATA ffd;
-  HANDLE dir = FindFirstFile((StringBuffer(relPath) + "\\*.*").getTChars(), &ffd);
-  if (dir != INVALID_HANDLE_VALUE) {
-    while (true) {
-      if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        files.push_back(StringBuffer(relPath) + "\\" + SString(ffd.cFileName));
-      }
-      if (FindNextFile(dir, &ffd) == FALSE) {
-        break;
-      }
-    }
-    FindClose(dir);
-  }
-}
-#endif
-
-#ifdef __unix__
-void ParserFactory::getFileFromDir(const String* relPath, std::vector<SString> &files)
-{
-  DIR* dir = opendir(relPath->getChars());
-  if (dir != nullptr) {
-    dirent* dire;
-    while ((dire = readdir(dir)) != nullptr) {
-      struct stat st;
-      stat((StringBuffer(relPath) + "/" + dire->d_name).getChars(), &st);
-      if (!(st.st_mode & S_IFDIR)) {
-        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);
-      }
-    }
-  }
-}
-#endif
-
-bool ParserFactory::isDirectory(const String* path)
-{
-  bool is_dir = false;
-#ifdef _WIN32
-  // stat on win_xp and vc2015 have bug.
-  DWORD dwAttrs = GetFileAttributes(path->getWChars());
-  if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
-    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
-  } else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
-    is_dir = true;
-  }
-#else
-
-  struct stat st;
-  int ret = stat(path->getChars(), &st);
-
-  if (ret == -1) {
-    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
-  } else if ((st.st_mode & S_IFDIR)) {
-    is_dir = true;
-  }
-#endif
-
-  return is_dir;
 }
 
 TextParser* ParserFactory::createTextParser()
