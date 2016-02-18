@@ -35,11 +35,11 @@ static wchar wchar_bidi_names[][4] = { L"AL", L"AN", L"B", L"BN", L"CS", L"EN", 
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -54,4 +54,3 @@ static wchar wchar_bidi_names[][4] = { L"AL", L"AN", L"B", L"BN", L"CS", L"EN", 
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
