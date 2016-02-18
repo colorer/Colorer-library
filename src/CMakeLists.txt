@@ -60,7 +60,6 @@ set(SRC_COLORER
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
-   ${COLORER}/ErrorHandler.h
    ${COLORER}/HRCParser.h 
    ${COLORER}/ParserFactory.cpp ${COLORER}/ParserFactory.h ${COLORER}/ParserFactoryException.h
    ${COLORER}/RegionHandler.h
