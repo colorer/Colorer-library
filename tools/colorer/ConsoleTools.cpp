@@ -6,6 +6,7 @@
 #include <colorer/viewer/TextConsoleViewer.h>
 #include <colorer/ParserFactoryException.h>
 #include <colorer/io/FileWriter.h>
+#include <colorer/io/InputSource.h>
 #include <colorer/cregexp/cregexp.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>

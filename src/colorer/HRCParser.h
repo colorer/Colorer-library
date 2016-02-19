@@ -1,10 +1,8 @@
 #ifndef _COLORER_HRCPARSER_H_
 #define _COLORER_HRCPARSER_H_
 
-#include<colorer/io/InputSource.h>
-
-#include<colorer/FileType.h>
-#include<colorer/Region.h>
+#include <colorer/FileType.h>
+#include <colorer/Region.h>
 #include <colorer/xml/XmlInputSource.h>
 
 

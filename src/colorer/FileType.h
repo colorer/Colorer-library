@@ -2,40 +2,40 @@
 #define _COLORER_FILETYPE_H_
 
 #include <vector>
-class Scheme;
-class String;
-class SString;
+#include <colorer/Common.h>
+#include <colorer/Scheme.h>
 
 /**
  * HRC FileType (or prototype) instance.
  * @ingroup colorer
  */
-class FileType{
+class FileType
+{
 public:
 
   /**
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  virtual const String *getName() const = 0;
+  virtual const String* getName() const = 0;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  virtual const String *getGroup() const = 0;
+  virtual const String* getGroup() const = 0;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  virtual const String *getDescription() const = 0;
+  virtual const String* getDescription() const = 0;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.
       If this FileType object is not yet loaded, it is loaded with this call.
       @return File type base scheme, to be used as root scheme of text parsing.
   */
-  virtual Scheme *getBaseScheme() = 0;
+  virtual Scheme* getBaseScheme() = 0;
 
   /** Enumerates all available parameters, defined in this file type.
       @return Parameter name with index <code>idx</code> or <code>null</code>
@@ -43,7 +43,7 @@ public:
   */
   virtual std::vector<SString> enumParams() const = 0;
 
-  virtual const String *getParamDescription(const String &name) const = 0;
+  virtual const String* getParamDescription(const String &name) const = 0;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -60,7 +60,7 @@ public:
       @param name Parameter's name
       @return Value (changed or default) of this parameter
   */
-  virtual const String *getParamValue(const String &name) const = 0;
+  virtual const String* getParamValue(const String &name) const = 0;
   virtual int getParamValueInt(const String &name, int def) const = 0;
 
   /** Returns parameter's default value of this file type.
@@ -69,7 +69,7 @@ public:
       @param name Parameter's name
       @return Default value of this parameter
   */
-  virtual const String *getParamDefaultValue(const String &name) const = 0;
+  virtual const String* getParamDefaultValue(const String &name) const = 0;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC
@@ -79,11 +79,11 @@ public:
       @param name Parameter's name
       @param value New value of this parameter.
   */
-  virtual void setParamValue(const String &name, const String *value) = 0;
+  virtual void setParamValue(const String &name, const String* value) = 0;
 
 protected:
-  FileType(){};
-  virtual ~FileType(){};
+  FileType() {};
+  virtual ~FileType() {};
 };
 
 #endif
