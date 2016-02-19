@@ -1,7 +1,7 @@
 #ifndef _COLORER_REGION_H_
 #define _COLORER_REGION_H_
 
-#include <common/Common.h>
+#include <colorer/Common.h>
 
 /**
   HRC Region implementation.

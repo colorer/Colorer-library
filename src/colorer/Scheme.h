@@ -1,8 +1,7 @@
 #ifndef _COLORER_SCHEME_H_
 #define _COLORER_SCHEME_H_
 
-#include<colorer/FileType.h>
-
+#include <colorer/Common.h>
 class FileType;
 
 /** HRC Scheme instance information.
@@ -14,13 +13,13 @@ class Scheme
 public:
   /** Full qualified schema name.
   */
-  virtual const String *getName() const = 0;
+  virtual const String* getName() const = 0;
   /** Returns reference to FileType, this scheme belongs to.
   */
-  virtual FileType *getFileType() const = 0;
+  virtual FileType* getFileType() const = 0;
 protected:
-  Scheme(){};
-  virtual ~Scheme(){};
+  Scheme() {};
+  virtual ~Scheme() {};
 };
 
 #endif

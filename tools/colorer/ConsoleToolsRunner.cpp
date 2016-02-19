@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <common/Colorer.h>
+#include <colorer/common/Colorer.h>
 #include <g3log/logworker.hpp>
 #include <g3log/loglevels.hpp>
-#include <utils/LogFileSink.h>
+#include <colorer/utils/LogFileSink.h>
 #include "ConsoleTools.h"
 #include "version.h"
 

@@ -1,7 +1,7 @@
 #ifndef _COLORER_PARSERFACTORY_EXCEPTION_H_
 #define _COLORER_PARSERFACTORY_EXCEPTION_H_
 
-#include<common/Common.h>
+#include<colorer/Common.h>
 
 /** Exception, thrown by ParserFactory class methods.
     Indicates some (mostly fatal) errors in loading

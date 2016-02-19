@@ -1,7 +1,7 @@
 #ifndef _COLORER_PARSEDLINEWRITER_H_
 #define _COLORER_PARSEDLINEWRITER_H_
 
-#include<common/io/Writer.h>
+#include<colorer/io/Writer.h>
 #include<colorer/handlers/LineRegion.h>
 /**
     Static service methods of LineRegion output.

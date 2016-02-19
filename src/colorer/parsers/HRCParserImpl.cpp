@@ -1,14 +1,14 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <math.h>
 #include <stdio.h>
-#include <colorer/parsers/helpers/HRCParserHelpers.h>
+#include <colorer/parsers/HRCParserHelpers.h>
 #include <colorer/parsers/HRCParserImpl.h>
-#include <xml/XmlParserErrorHandler.h>
-#include <xml/XmlInputSource.h>
-#include <xml/BaseEntityResolver.h>
-#include <xml/XmlTagDefs.h>
-#include <xml/XStr.h>
-#include <unicode/UnicodeTools.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
+#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/BaseEntityResolver.h>
+#include <colorer/xml/XmlTagDefs.h>
+#include <colorer/xml/XStr.h>
+#include <colorer/unicode/UnicodeTools.h>
 
 #define CURRENT_FILE " Current file " << XStr(current_input_source->getInputSource()->getSystemId()) << "."
 

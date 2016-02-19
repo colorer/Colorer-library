@@ -1,7 +1,7 @@
 #ifndef _COLORER_TEXTREGION_H_
 #define _COLORER_TEXTREGION_H_
 
-#include<common/Exception.h>
+#include<colorer/Exception.h>
 #include<colorer/handlers/RegionDefine.h>
 
 /**

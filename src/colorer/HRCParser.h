@@ -1,11 +1,9 @@
 #ifndef _COLORER_HRCPARSER_H_
 #define _COLORER_HRCPARSER_H_
 
-#include<common/io/InputSource.h>
-
-#include<colorer/FileType.h>
-#include<colorer/Region.h>
-#include <xml/XmlInputSource.h>
+#include <colorer/FileType.h>
+#include <colorer/Region.h>
+#include <colorer/xml/XmlInputSource.h>
 
 
 /** Informs application about internal HRC parsing problems.
