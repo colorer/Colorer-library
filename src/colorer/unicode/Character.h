@@ -30,9 +30,9 @@ typedef unsigned short int wchar;
 #endif
 */
 
-#include<common/Common.h>
-#include<unicode/Encodings.h>
-#include<unicode/x_charcategory.h>
+#include<colorer/Common.h>
+#include<colorer/unicode/Encodings.h>
+#include<colorer/unicode/x_charcategory.h>
 
 /** Character information class.
     \par Basic features:

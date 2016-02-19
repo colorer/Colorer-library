@@ -1,6 +1,6 @@
 
 #include<stdio.h>
-#include<common/io/StreamWriter.h>
+#include<colorer/io/StreamWriter.h>
 
 StreamWriter::StreamWriter(){};
 

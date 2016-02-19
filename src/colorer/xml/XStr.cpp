@@ -1,4 +1,4 @@
-#include <xml/XStr.h>
+#include <colorer/xml/XStr.h>
 
 
 XStr::XStr(const XMLCh* const toTranscode)

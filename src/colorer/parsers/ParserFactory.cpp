@@ -18,11 +18,11 @@
 #include <colorer/parsers/TextParserImpl.h>
 #include <colorer/ParserFactoryException.h>
 
-#include <xml/XmlInputSource.h>
-#include <xml/XmlParserErrorHandler.h>
-#include <xml/BaseEntityResolver.h>
-#include <xml/XmlTagDefs.h>
-#include <xml/XStr.h>
+#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
+#include <colorer/xml/BaseEntityResolver.h>
+#include <colorer/xml/XmlTagDefs.h>
+#include <colorer/xml/XStr.h>
 
 ParserFactory::ParserFactory(): catalogXIS(nullptr), hrc_parser(new HRCParserImpl())
 {

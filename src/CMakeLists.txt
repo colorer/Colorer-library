@@ -31,11 +31,12 @@ set(EDITOR ./colorer/editor)
 set(HANDLERS ./colorer/handlers)
 set(PARSERS ./colorer/parsers)
 set(VIEWER ./colorer/viewer)
-set(COMMON ./common)
-set(REGEXP ./cregexp)
-set(XML ./xml)
-set(UNICODE ./unicode)
-set(UTILS ./utils)
+set(COMMON ./colorer/common)
+set(IO ./colorer/io)
+set(REGEXP ./colorer/cregexp)
+set(XML ./colorer/xml)
+set(UNICODE ./colorer/unicode)
+set(UTILS ./colorer/utils)
 
 set(SRC_COLORER
    ${EDITOR}/BaseEditor.cpp ${EDITOR}/BaseEditor.h
@@ -54,34 +55,36 @@ set(SRC_COLORER
    ${HANDLERS}/TextRegion.h
    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
-   ${PARSERS}/helpers/FileTypeImpl.h ${PARSERS}/helpers/FileTypeImpl.cpp
-   ${PARSERS}/helpers/HRCParserHelpers.cpp ${PARSERS}/helpers/HRCParserHelpers.h
-   ${PARSERS}/helpers/TextParserHelpers.cpp ${PARSERS}/helpers/TextParserHelpers.h
+   ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
+   ${PARSERS}/HRCParserHelpers.cpp ${PARSERS}/HRCParserHelpers.h
+   ${PARSERS}/TextParserHelpers.cpp ${PARSERS}/TextParserHelpers.h
+   ${PARSERS}/ParserFactory.cpp 
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
-   ${COLORER}/HRCParser.h 
-   ${COLORER}/ParserFactory.cpp ${COLORER}/ParserFactory.h ${COLORER}/ParserFactoryException.h
-   ${COLORER}/RegionHandler.h
-   ${COLORER}/TextParser.h
+   ${COLORER}/Common.h
+   ${COLORER}/Exception.h
    ${COLORER}/FileType.h
+   ${COLORER}/HRCParser.h
    ${COLORER}/LineSource.h
+   ${COLORER}/ParserFactory.h ${COLORER}/ParserFactoryException.h
    ${COLORER}/Region.h
+   ${COLORER}/RegionHandler.h
    ${COLORER}/Scheme.h
-   ${COMMON}/Common.h
+   ${COLORER}/TextParser.h
    ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
-   ${COMMON}/Exception.h ${COMMON}/Exception.cpp
+   ${COMMON}/Exception.cpp
    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
    ${COMMON}/Features.h
-   ${COMMON}/io/FileInputSource.cpp ${COMMON}/io/FileInputSource.h
-   ${COMMON}/io/FileWriter.h ${COMMON}/io/FileWriter.cpp
-   ${COMMON}/io/InputSource.cpp ${COMMON}/io/InputSource.h
-   ${COMMON}/io/JARInputSource.h ${COMMON}/io/JARInputSource.cpp
-   ${COMMON}/io/SharedInputSource.h ${COMMON}/io/SharedInputSource.cpp
-   ${COMMON}/io/Writer.cpp ${COMMON}/io/Writer.h
-   ${COMMON}/io/HTTPInputSource.cpp ${COMMON}/io/HTTPInputSource.h
-   ${COMMON}/io/MemoryFile.h ${COMMON}/io/MemoryFile.cpp 
-   ${COMMON}/io/StreamWriter.cpp ${COMMON}/io/StreamWriter.h
+   ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
+   ${IO}/FileWriter.h ${IO}/FileWriter.cpp
+   ${IO}/InputSource.cpp ${IO}/InputSource.h
+   ${IO}/JARInputSource.h ${IO}/JARInputSource.cpp
+   ${IO}/SharedInputSource.h ${IO}/SharedInputSource.cpp
+   ${IO}/Writer.cpp ${IO}/Writer.h
+   ${IO}/HTTPInputSource.cpp ${IO}/HTTPInputSource.h
+   ${IO}/MemoryFile.h ${IO}/MemoryFile.cpp 
+   ${IO}/StreamWriter.cpp ${IO}/StreamWriter.h
    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
    ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
    ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h

@@ -1,6 +1,6 @@
 
-#include<common/io/JARInputSource.h>
-#include<common/io/MemoryFile.h>
+#include<colorer/io/JARInputSource.h>
+#include<colorer/io/MemoryFile.h>
 #include<contrib/minizip/unzip.h>
 
 JARInputSource::JARInputSource(const String *basePath, InputSource *base){

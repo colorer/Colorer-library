@@ -1,7 +1,7 @@
-#include <xml/XmlInputSource.h>
-#include <xml/LocalFileXmlInputSource.h>
-#include <xml/ZipXmlInputSource.h>
-#include <common/Exception.h>
+#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/LocalFileXmlInputSource.h>
+#include <colorer/xml/ZipXmlInputSource.h>
+#include <colorer/Exception.h>
 #include <xercesc/util/XMLString.hpp>
 #ifdef __unix__
 #include <dirent.h>

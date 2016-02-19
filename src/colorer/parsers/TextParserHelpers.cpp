@@ -1,4 +1,4 @@
-#include <colorer/parsers/helpers/TextParserHelpers.h>
+#include <colorer/parsers/TextParserHelpers.h>
 
 
 /////////////////////////////////////////////////////////////////////////

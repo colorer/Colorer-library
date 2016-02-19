@@ -1,8 +1,8 @@
 #ifndef _COLORER_HRCPARSERPELPERS_H_
 #define _COLORER_HRCPARSERPELPERS_H_
 
-#include <cregexp/cregexp.h>
-#include <common/io/InputSource.h>
+#include <colorer/cregexp/cregexp.h>
+#include <colorer/io/InputSource.h>
 #include <colorer/Region.h>
 #include <colorer/Scheme.h>
 
@@ -45,7 +45,7 @@ public:
   void sortList();
   void substrIndex();
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
 };
 
@@ -71,7 +71,7 @@ public:
     delete substSchemeName;
   }
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
 };
 
@@ -103,7 +103,7 @@ public:
   CRegExp* start, *end;
   bool innerRegion, lowPriority, lowContentPriority;
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
   SchemeNode();
   ~SchemeNode();
@@ -129,7 +129,7 @@ public:
     return (FileType*)fileType;
   }
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
 protected:
   String* schemeName;

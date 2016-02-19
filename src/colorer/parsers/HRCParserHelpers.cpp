@@ -1,4 +1,4 @@
-#include <colorer/parsers/helpers/HRCParserHelpers.h>
+#include <colorer/parsers/HRCParserHelpers.h>
 #include <stdlib.h>
 
 /*

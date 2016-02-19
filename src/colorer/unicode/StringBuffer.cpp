@@ -1,5 +1,5 @@
 
-#include<unicode/StringBuffer.h>
+#include<colorer/unicode/StringBuffer.h>
 
 StringBuffer::StringBuffer():SString()
 {

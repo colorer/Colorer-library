@@ -1,6 +1,6 @@
-#include <xml/BaseEntityResolver.h>
+#include <colorer/xml/BaseEntityResolver.h>
 #include <xercesc/util/XMLString.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 xercesc::InputSource* BaseEntityResolver::resolveEntity(xercesc::XMLResourceIdentifier* resourceIdentifier)
 {

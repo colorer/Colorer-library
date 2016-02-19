@@ -16,7 +16,7 @@
 #define O_BINARY 0x0
 #endif
 
-#include<common/io/FileInputSource.h>
+#include<colorer/io/FileInputSource.h>
 
 FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
   bool prefix = true;

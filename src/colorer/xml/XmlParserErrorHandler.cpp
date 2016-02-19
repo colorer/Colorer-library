@@ -1,6 +1,6 @@
-#include <common/Common.h>
-#include <xml/XStr.h>
-#include <xml/XmlParserErrorHandler.h>
+#include <colorer/Common.h>
+#include <colorer/xml/XStr.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
 
 
 void XmlParserErrorHandler::warning(const xercesc::SAXParseException &toCatch)

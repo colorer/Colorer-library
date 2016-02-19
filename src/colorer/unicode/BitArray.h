@@ -1,7 +1,7 @@
 #ifndef _COLORER_BITARRAY_H_
 #define _COLORER_BITARRAY_H_
 
-#include<common/Common.h>
+#include<colorer/Common.h>
 
 /** Bit Array field.
     Creates and manages bit array objects.
@@ -39,7 +39,7 @@ public:
   bool getBit(int pos);
 
 #define CNAME "BitArray"
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
 private:
   int *array;

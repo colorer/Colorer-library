@@ -1,5 +1,5 @@
-#include<common/io/MemoryFile.h>
-#include<common/Common.h>
+#include<colorer/io/MemoryFile.h>
+#include<colorer/Common.h>
 
 voidpf ZCALLBACK mem_open_file_func (voidpf opaque, const char *filename, int mode)
 {

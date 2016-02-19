@@ -1,4 +1,4 @@
-#include<common/io/SharedInputSource.h>
+#include<colorer/io/SharedInputSource.h>
 
 std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = nullptr;
 

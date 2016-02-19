@@ -1,10 +1,10 @@
 
 #include<stdio.h>
 #include<string.h>
-#include<unicode/CharacterClass.h>
-#include<unicode/UnicodeTools.h>
-#include<unicode/x_charcategory_names.h>
-#include<unicode/x_charcategory2.h>
+#include<colorer/unicode/CharacterClass.h>
+#include<colorer/unicode/UnicodeTools.h>
+#include<colorer/unicode/x_charcategory_names.h>
+#include<colorer/unicode/x_charcategory2.h>
 
 /// macro - number of elements in array
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))

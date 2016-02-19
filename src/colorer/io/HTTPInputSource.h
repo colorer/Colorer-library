@@ -1,7 +1,7 @@
 #ifndef _COLORER_HTTPINPUTSOURCE_H_
 #define _COLORER_HTTPINPUTSOURCE_H_
 
-#include<common/io/InputSource.h>
+#include<colorer/io/InputSource.h>
 
 /** Implements reading from HTTP URLs.
     Implemented only for win32 systems using

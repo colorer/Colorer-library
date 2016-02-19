@@ -2,7 +2,7 @@
 #define _COLORER_BASE_ENTITY_RESOLVER_H_
 
 #include <xercesc/util/XMLEntityResolver.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 class BaseEntityResolver : public xercesc::XMLEntityResolver
 {

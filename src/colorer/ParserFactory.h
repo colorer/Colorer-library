@@ -7,7 +7,7 @@
 #include <colorer/handlers/TextHRDMapper.h>
 
 #include <xercesc/dom/DOM.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 /**
  * Maintains catalog of HRC and HRD references.

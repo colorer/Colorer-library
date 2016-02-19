@@ -1,14 +1,14 @@
 
-#include<common/io/InputSource.h>
+#include<colorer/io/InputSource.h>
 
-#include<common/io/FileInputSource.h>
+#include<colorer/io/FileInputSource.h>
 
 #if COLORER_FEATURE_JARINPUTSOURCE
-#include<common/io/JARInputSource.h>
+#include<colorer/io/JARInputSource.h>
 #endif
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-#include<common/io/HTTPInputSource.h>
+#include<colorer/io/HTTPInputSource.h>
 #endif
 
 using namespace colorer;

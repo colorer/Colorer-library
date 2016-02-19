@@ -1,10 +1,10 @@
 #ifndef _COLORER_ZIPINPUTSOURCE_H_
 #define _COLORER_ZIPINPUTSOURCE_H_
 
-#include <unicode/String.h>
-#include <xml/XmlInputSource.h>
+#include <colorer/unicode/String.h>
+#include <colorer/xml/XmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
-#include <xml/SharedXmlInputSource.h>
+#include <colorer/xml/SharedXmlInputSource.h>
 
 class ZipXmlInputSource : public XmlInputSource
 {

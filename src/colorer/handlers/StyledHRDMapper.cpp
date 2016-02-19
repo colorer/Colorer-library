@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <colorer/handlers/StyledHRDMapper.h>
-#include <unicode/UnicodeTools.h>
+#include <colorer/unicode/UnicodeTools.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
-#include <xml/XmlParserErrorHandler.h>
-#include <xml/XmlTagDefs.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
+#include <colorer/xml/XmlTagDefs.h>
 
 const int StyledRegion::RD_BOLD = 1;
 const int StyledRegion::RD_ITALIC = 2;

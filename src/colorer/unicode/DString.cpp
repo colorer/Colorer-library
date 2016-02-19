@@ -1,5 +1,5 @@
 
-#include<unicode/DString.h>
+#include<colorer/unicode/DString.h>
 
 DString& DString::operator=(const DString &cstring){
   if (type == ST_UTF8) delete[] stream_wstr;

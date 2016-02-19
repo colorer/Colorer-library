@@ -1,7 +1,7 @@
 #ifndef _COLORER_FILEWRITER_H_
 #define _COLORER_FILEWRITER_H_
 
-#include<common/io/StreamWriter.h>
+#include<colorer/io/StreamWriter.h>
 
 /** Writes data stream into a file.
     @ingroup common_io

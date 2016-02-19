@@ -1,5 +1,5 @@
-#include <common/Exception.h>
-#include <unicode/String.h>
+#include <colorer/Exception.h>
+#include <colorer/unicode/String.h>
 
 Exception::Exception(const Exception &e) noexcept:
   what_str(e.what_str)

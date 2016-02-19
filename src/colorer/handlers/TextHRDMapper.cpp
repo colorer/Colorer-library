@@ -2,8 +2,8 @@
 #include <colorer/handlers/TextHRDMapper.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
-#include <xml/XmlParserErrorHandler.h>
-#include <xml/XmlTagDefs.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
+#include <colorer/xml/XmlTagDefs.h>
 
 TextHRDMapper::TextHRDMapper() {}
 TextHRDMapper::~TextHRDMapper()

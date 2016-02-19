@@ -1,9 +1,9 @@
 #ifndef _COLORER_SHAREDXMLINPUTSOURCE_H_
 #define _COLORER_SHAREDXMLINPUTSOURCE_H_
 
-#include <common/Common.h>
+#include <colorer/Common.h>
 #include <xercesc/sax/InputSource.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 class SharedXmlInputSource
 {

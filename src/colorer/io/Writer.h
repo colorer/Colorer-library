@@ -1,7 +1,7 @@
 #ifndef _COLORER_WRITER_H_
 #define _COLORER_WRITER_H_
 
-#include<unicode/String.h>
+#include<colorer/unicode/String.h>
 
 /** Abstract character writer class.
     Writes specified character sequences into abstract stream.

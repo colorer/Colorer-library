@@ -1,8 +1,8 @@
 
-#include<unicode/Character.h>
-#include<unicode/x_tables.h>
-#include<unicode/x_defines.h>
-#include<unicode/x_charcategory_names.h>
+#include<colorer/unicode/Character.h>
+#include<colorer/unicode/x_tables.h>
+#include<colorer/unicode/x_defines.h>
+#include<colorer/unicode/x_charcategory_names.h>
 
 wchar Character::toLowerCase(wchar c){
   unsigned long c1 = CHAR_PROP(c);

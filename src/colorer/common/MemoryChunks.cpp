@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <common/Common.h>
-#include <common/MemoryChunks.h>
+#include <colorer/Common.h>
+#include <colorer/common/MemoryChunks.h>
 
 size_t total_req = 0;
 int new_calls = 0;

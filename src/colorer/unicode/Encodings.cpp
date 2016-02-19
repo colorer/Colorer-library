@@ -1,6 +1,6 @@
 
-#include<unicode/Encodings.h>
-#include<unicode/x_encodings.h>
+#include<colorer/unicode/Encodings.h>
+#include<colorer/unicode/x_encodings.h>
 #include<string.h>
 
 UnsupportedEncodingException::UnsupportedEncodingException() noexcept :

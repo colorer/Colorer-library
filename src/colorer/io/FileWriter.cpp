@@ -1,6 +1,6 @@
 
 #include<stdio.h>
-#include<common/io/FileWriter.h>
+#include<colorer/io/FileWriter.h>
 
 FileWriter::FileWriter(const String *fileName, int encoding, bool useBOM){
   file = fopen(fileName->getChars(), "wb+");

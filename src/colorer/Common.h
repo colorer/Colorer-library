@@ -6,9 +6,9 @@ typedef unsigned char byte;
 
 #include <memory>
 #include <g3log/g3log.hpp>
-#include <common/Features.h>
-#include <unicode/String.h>
-#include <common/MemoryChunks.h>
+#include <colorer/common/Features.h>
+#include <colorer/unicode/String.h>
+#include <colorer/common/MemoryChunks.h>
 
 typedef std::unique_ptr<String> UString;
 

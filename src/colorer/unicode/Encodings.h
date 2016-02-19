@@ -1,7 +1,7 @@
 #ifndef _COLORER_ENCODINGS_H_
 #define _COLORER_ENCODINGS_H_
 
-#include<unicode/String.h>
+#include<colorer/unicode/String.h>
 
 /** Encodings information.
     - All codepage definitions are read from list of ANSI -> Unicode

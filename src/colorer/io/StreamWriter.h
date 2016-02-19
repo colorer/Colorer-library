@@ -2,7 +2,7 @@
 #define _COLORER_STREAMWRITER_H_
 
 #include<stdio.h>
-#include<common/io/Writer.h>
+#include<colorer/io/Writer.h>
 
 /** Writes data into operating system output stream.
     @ingroup common_io

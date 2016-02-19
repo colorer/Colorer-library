@@ -1,8 +1,8 @@
 #ifndef _COLORER_JARINPUTSOURCE_H_
 #define _COLORER_JARINPUTSOURCE_H_
 
-#include<common/io/InputSource.h>
-#include<common/io/SharedInputSource.h>
+#include<colorer/io/InputSource.h>
+#include<colorer/io/SharedInputSource.h>
 
 /** Reads data from JAR(ZIP) archive.
     @ingroup common_io

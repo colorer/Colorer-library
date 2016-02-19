@@ -2,8 +2,8 @@
 #define _COLORER_STRING_H_
 
 #include<string.h>
-#include<common/Exception.h>
-#include<unicode/Character.h>
+#include<colorer/Exception.h>
+#include<colorer/unicode/Character.h>
 
 #ifdef __unix__
 extern "C" int stricmp(const char*c1, const char*c2);
@@ -119,9 +119,9 @@ private:
 #else
 # define getTChars getChars
 #endif
-#include<unicode/DString.h>
-#include<unicode/SString.h>
-#include<unicode/StringBuffer.h>
+#include<colorer/unicode/DString.h>
+#include<colorer/unicode/SString.h>
+#include<colorer/unicode/StringBuffer.h>
 
 #endif
 

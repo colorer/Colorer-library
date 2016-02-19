@@ -1,4 +1,4 @@
-#include <common/io/HTTPInputSource.h>
+#include <colorer/io/HTTPInputSource.h>
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
 #ifdef _WIN32

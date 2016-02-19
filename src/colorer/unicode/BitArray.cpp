@@ -1,6 +1,6 @@
 
 #include<memory.h>
-#include<unicode/BitArray.h>
+#include<colorer/unicode/BitArray.h>
 
 BitArray::BitArray(int size){
   array = 0;

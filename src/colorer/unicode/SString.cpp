@@ -1,6 +1,6 @@
 
 #include<stdio.h>
-#include<unicode/String.h>
+#include<colorer/unicode/String.h>
 
 void SString::construct(const String *cstring, int s, int l){
   if (s < 0 || s > cstring->length() || l < -1) throw Exception(DString("bad string constructor parameters"));

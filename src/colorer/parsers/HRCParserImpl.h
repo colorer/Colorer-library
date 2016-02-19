@@ -1,12 +1,12 @@
 #ifndef _COLORER_HRCPARSERIMPL_H_
 #define _COLORER_HRCPARSERIMPL_H_
 
-#include <cregexp/cregexp.h>
+#include <colorer/cregexp/cregexp.h>
 #include <colorer/HRCParser.h>
-#include <colorer/parsers/helpers/HRCParserHelpers.h>
+#include <colorer/parsers/HRCParserHelpers.h>
 
 #include <xercesc/dom/DOM.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 class FileTypeImpl;
 
@@ -99,7 +99,7 @@ protected:
   const Region* getNCRegion(const String* name, bool logErrors);
 };
 
-#include<colorer/parsers/helpers/FileTypeImpl.h>
+#include<colorer/parsers/FileTypeImpl.h>
 
 #endif
 

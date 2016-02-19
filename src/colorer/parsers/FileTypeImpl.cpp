@@ -1,5 +1,5 @@
-#include <colorer/parsers/helpers/FileTypeImpl.h>
-#include <unicode/UnicodeTools.h>
+#include <colorer/parsers/FileTypeImpl.h>
+#include <colorer/unicode/UnicodeTools.h>
 
 FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser): name(nullptr), group(nullptr), description(nullptr)
 {

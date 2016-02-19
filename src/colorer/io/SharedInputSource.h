@@ -1,8 +1,8 @@
 #ifndef _COLORER_SHAREDINPUTSOURCE_H_
 #define _COLORER_SHAREDINPUTSOURCE_H_
 
-#include<common/Common.h>
-#include<common/io/InputSource.h>
+#include<colorer/Common.h>
+#include<colorer/io/InputSource.h>
 
 /**
  * InputSource class wrapper,

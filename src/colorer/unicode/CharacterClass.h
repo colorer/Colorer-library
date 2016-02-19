@@ -1,8 +1,8 @@
 #ifndef _COLORER_CHARACTERCLASS_H_
 #define _COLORER_CHARACTERCLASS_H_
 
-#include<unicode/String.h>
-#include<unicode/BitArray.h>
+#include<colorer/unicode/String.h>
+#include<colorer/unicode/BitArray.h>
 
 /** Character classes store implementation.
     - CharacterClass allows to store enumerations of characters in compact
@@ -41,7 +41,7 @@ public:
 
   bool inClass(wchar c) const;
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
 };
 

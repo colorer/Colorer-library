@@ -1,5 +1,5 @@
 #include <xercesc/dom/DOM.hpp>
-#include <common/Colorer.h>
+#include <colorer/common/Colorer.h>
 
 Colorer::Colorer(g3::LogWorker* log_worker)
 {

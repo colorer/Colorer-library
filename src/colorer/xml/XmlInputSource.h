@@ -2,7 +2,7 @@
 #define _COLORER_XMLINPUTSOURCE_H_
 
 #include <xercesc/sax/InputSource.hpp>
-#include <common/Common.h>
+#include <colorer/Common.h>
 #include <xercesc/util/XMLUniDefs.hpp>
 
 const XMLCh kJar[] = {xercesc::chLatin_j, xercesc::chLatin_a, xercesc::chLatin_r, xercesc::chColon, xercesc::chNull};

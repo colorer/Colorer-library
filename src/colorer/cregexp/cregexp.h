@@ -1,8 +1,8 @@
 #ifndef __CREGEXP__
 #define __CREGEXP__
 
-#include<unicode/String.h>
-#include<unicode/CharacterClass.h>
+#include<colorer/unicode/String.h>
+#include<colorer/unicode/CharacterClass.h>
 
 /**
     @addtogroup cregexp Regular Expressions
@@ -140,7 +140,7 @@ public:
   SRegInfo();
   ~SRegInfo();
 
-#include<common/MemoryOperator.h>
+#include<colorer/common/MemoryOperator.h>
 
   union{
     EMetaSymbols metaSymbol;
