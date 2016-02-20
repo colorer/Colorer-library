@@ -1,10 +1,10 @@
 #include <time.h>
-#include <colorer/ParserFactory.h>
+#include <colorer/parsers/ParserFactory.h>
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/ParserFactoryException.h>
+#include <colorer/parsers/ParserFactoryException.h>
 #include <colorer/io/FileWriter.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/cregexp/cregexp.h>

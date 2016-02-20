@@ -58,7 +58,8 @@ set(SRC_COLORER
    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
    ${PARSERS}/HRCParserHelpers.cpp ${PARSERS}/HRCParserHelpers.h
    ${PARSERS}/TextParserHelpers.cpp ${PARSERS}/TextParserHelpers.h
-   ${PARSERS}/ParserFactory.cpp 
+   ${PARSERS}/ParserFactory.cpp
+   ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
@@ -67,7 +68,6 @@ set(SRC_COLORER
    ${COLORER}/FileType.h
    ${COLORER}/HRCParser.h
    ${COLORER}/LineSource.h
-   ${COLORER}/ParserFactory.h ${COLORER}/ParserFactoryException.h
    ${COLORER}/Region.h
    ${COLORER}/RegionHandler.h
    ${COLORER}/Scheme.h

@@ -1,7 +1,7 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
-#include <colorer/ParserFactory.h>
+#include <colorer/parsers/ParserFactory.h>
 #include <colorer/handlers/LineRegionsSupport.h>
 #include <colorer/handlers/LineRegionsCompactSupport.h>
 #include <colorer/editor/EditorListener.h>

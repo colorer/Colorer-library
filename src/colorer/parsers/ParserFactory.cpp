@@ -12,11 +12,11 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
-#include <colorer/ParserFactory.h>
+#include <colorer/parsers/ParserFactory.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/TextParserImpl.h>
-#include <colorer/ParserFactoryException.h>
+#include <colorer/parsers/ParserFactoryException.h>
 
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
