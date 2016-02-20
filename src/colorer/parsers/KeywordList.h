@@ -1,46 +1,46 @@
-#include <colorer/parsers/HRCParserHelpers.h>
-#include <stdlib.h>
+#ifndef _COLORER_KEYWORDLIST_H_
+#define _COLORER_KEYWORDLIST_H_
 
+#include <colorer/Common.h>
+#include <colorer/Region.h>
+#include <colorer/unicode/CharacterClass.h>
 
-const char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
+/** Information about one parsed keyword.
+    Contains keyword, symbol specifier, region reference
+    and internal optimization field.
+    @ingroup colorer_parsers
+*/
+struct KeywordInfo {
+  const SString* keyword;
+  const Region* region;
+  bool isSymbol;
+  int  ssShorter;
 
+//#include<common/MemoryOperator.h>
 
-SchemeNode::SchemeNode()
-{
-  virtualEntryVector.reserve(5);
-  type = SNT_EMPTY;
-  schemeName = nullptr;
-  scheme = nullptr;
-  kwList = nullptr;
-  worddiv = nullptr;
-  start = end = nullptr;
-  lowPriority = 0;
-
-  //!!regions cleanup
-  region = nullptr;
-  memset(regions, 0, sizeof(regions));
-  memset(regionsn, 0, sizeof(regionsn));
-  memset(regione, 0, sizeof(regione));
-  memset(regionen, 0, sizeof(regionen));
 };
 
-SchemeNode::~SchemeNode()
+/** List of keywords.
+    @ingroup colorer_parsers
+*/
+class KeywordList
 {
-  if (type == SNT_RE || type == SNT_SCHEME) {
-    delete start;
-    delete end;
-  }
-  if (type == SNT_KEYWORDS) {
-    delete kwList;
-    delete worddiv;
-  }
-  if (type == SNT_INHERIT) {
-    for (auto it : virtualEntryVector) {
-      delete it;
-    }
-    virtualEntryVector.clear();
-  }
-}
+public:
+  int num;
+  int matchCase;
+  int minKeywordLength;
+  CharacterClass* firstChar;
+  KeywordInfo* kwList;
+  KeywordList();
+  ~KeywordList();
+  void sortList();
+  void substrIndex();
+
+#include<colorer/common/MemoryOperator.h>
+
+};
+
+#endif //_COLORER_KEYWORDLIST_H_
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -77,4 +77,3 @@ SchemeNode::~SchemeNode()
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-

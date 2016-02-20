@@ -6,6 +6,7 @@
 #include <colorer/io/InputSource.h>
 #include <colorer/Region.h>
 #include <colorer/Scheme.h>
+#include <colorer/parsers/KeywordList.h>
 
 // Must be not less than MATCHES_NUM in cregexp.h
 #define REGIONS_NUM MATCHES_NUM
@@ -15,40 +16,7 @@ class SchemeImpl;
 class FileTypeImpl;
 
 
-/** Information about one parsed keyword.
-    Contains keyword, symbol specifier, region reference
-    and internal optimization field.
-    @ingroup colorer_parsers
-*/
-struct KeywordInfo {
-  const SString* keyword;
-  const Region* region;
-  bool isSymbol;
-  int  ssShorter;
 
-//#include<common/MemoryOperator.h>
-
-};
-
-/** List of keywords.
-    @ingroup colorer_parsers
-*/
-class KeywordList
-{
-public:
-  int num;
-  int matchCase;
-  int minKeywordLength;
-  CharacterClass* firstChar;
-  KeywordInfo* kwList;
-  KeywordList();
-  ~KeywordList();
-  void sortList();
-  void substrIndex();
-
-#include<colorer/common/MemoryOperator.h>
-
-};
 
 /** One entry of 'inherit' element virtualization content.
     @ingroup colorer_parsers

@@ -56,6 +56,7 @@ set(SRC_COLORER
    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
+   ${PARSERS}/KeywordList.h ${PARSERS}/KeywordList.cpp
    ${PARSERS}/HRCParserHelpers.cpp ${PARSERS}/HRCParserHelpers.h
    ${PARSERS}/TextParserHelpers.cpp ${PARSERS}/TextParserHelpers.h
    ${PARSERS}/ParserFactory.cpp
