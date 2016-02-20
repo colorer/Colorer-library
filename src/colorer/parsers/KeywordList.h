@@ -11,13 +11,10 @@
     @ingroup colorer_parsers
 */
 struct KeywordInfo {
-  const SString* keyword;
+  std::unique_ptr<const SString> keyword;
   const Region* region;
   bool isSymbol;
   int  ssShorter;
-
-//#include<common/MemoryOperator.h>
-
 };
 
 /** List of keywords.
@@ -27,9 +24,9 @@ class KeywordList
 {
 public:
   int num;
-  int matchCase;
+  bool matchCase;
   int minKeywordLength;
-  CharacterClass* firstChar;
+  std::unique_ptr<CharacterClass> firstChar;
   KeywordInfo* kwList;
   KeywordList();
   ~KeywordList();

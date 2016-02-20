@@ -858,7 +858,7 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, cons
   }
 
   int pos = scheme_node->kwList->num;
-  scheme_node->kwList->kwList[pos].keyword = new SString(DString(param));
+  scheme_node->kwList->kwList[pos].keyword.reset(new SString(DString(param)));
   scheme_node->kwList->kwList[pos].region = rgn;
   scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
   scheme_node->kwList->kwList[pos].ssShorter = -1;

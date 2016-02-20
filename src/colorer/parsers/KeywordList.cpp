@@ -1,49 +1,4 @@
 #include <colorer/parsers/KeywordList.h>
-/*
-KeywordInfo::KeywordInfo()
-{
-  keyword = null;
-  ssShorter = -1;
-  isSymbol = false;
-  region = null;
-};
-void KeywordInfo::swapWith(KeywordInfo* kwi)
-{
-  const SString* _keyword = keyword;
-  bool _isSymbol = isSymbol;
-  const Region* _region = region;
-  int _ssShorter = ssShorter;
-  keyword   = kwi->keyword;
-  isSymbol  = kwi->isSymbol;
-  region    = kwi->region;
-  ssShorter = kwi->ssShorter;
-
-  kwi->keyword   = _keyword;
-  kwi->isSymbol  = _isSymbol;
-  kwi->region    = _region;
-  kwi->ssShorter = _ssShorter;
-};
-KeywordInfo::KeywordInfo(KeywordInfo &ki)
-{
-  keyword = new SString(ki.keyword);
-  region = ki.region;
-  isSymbol = ki.isSymbol;
-  ssShorter = ki.ssShorter;
-};
-KeywordInfo &KeywordInfo::operator=(KeywordInfo &ki)
-{
-  delete keyword;
-  keyword = new SString(ki.keyword);
-  region = ki.region;
-  isSymbol = ki.isSymbol;
-  ssShorter = ki.ssShorter;
-  return *this;
-};
-KeywordInfo::~KeywordInfo()
-{
-  delete keyword;
-};
-*/
 
 KeywordList::KeywordList()
 {
@@ -51,16 +6,12 @@ KeywordList::KeywordList()
   matchCase = false;
   minKeywordLength = 0;
   kwList = nullptr;
-  firstChar = new CharacterClass();
+  firstChar.reset(new CharacterClass());
 }
 
 KeywordList::~KeywordList()
 {
-  for (int idx = 0; idx < num; idx++) {
-    delete kwList[idx].keyword;
-  }
   delete[] kwList;
-  delete   firstChar;
 }
 
 int kwCompare(const void* e1, const void* e2)
@@ -87,7 +38,7 @@ void KeywordList::sortList()
 }
 
 /* Searches previous elements num with same partial name
-   fe:
+   for example:
    3: getParameterName  0
    2: getParameter      0
    1: getParam          0
@@ -101,7 +52,7 @@ void KeywordList::substrIndex()
         break;
       }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          DString(kwList[i].keyword, 0, kwList[ii].keyword->length()) == *kwList[ii].keyword) {
+          DString(kwList[i].keyword.get(), 0, kwList[ii].keyword->length()) == *kwList[ii].keyword.get()) {
         kwList[i].ssShorter = ii;
         break;
       }
