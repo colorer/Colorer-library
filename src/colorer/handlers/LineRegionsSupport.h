@@ -1,6 +1,7 @@
 #ifndef _COLORER_LINEREGIONSSUPPORT_H_
 #define _COLORER_LINEREGIONSSUPPORT_H_
 
+#include <vector>
 #include <colorer/RegionHandler.h>
 #include <colorer/handlers/RegionDefine.h>
 #include <colorer/handlers/RegionMapper.h>

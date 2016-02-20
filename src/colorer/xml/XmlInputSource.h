@@ -1,6 +1,7 @@
 #ifndef _COLORER_XMLINPUTSOURCE_H_
 #define _COLORER_XMLINPUTSOURCE_H_
 
+#include <vector>
 #include <xercesc/sax/InputSource.hpp>
 #include <colorer/Common.h>
 #include <xercesc/util/XMLUniDefs.hpp>

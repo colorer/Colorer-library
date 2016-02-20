@@ -1,6 +1,7 @@
 #ifndef _COLORER_HRCPARSERPELPERS_H_
 #define _COLORER_HRCPARSERPELPERS_H_
 
+#include <vector>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/Region.h>
