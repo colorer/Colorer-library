@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/FileTypeChooser.h>
 
 /* structure for storing data of scheme parameter*/
 class TypeParameter {

@@ -120,55 +120,6 @@ protected:
   }
 };
 
-/** Stores regular expressions of filename and firstline
-    elements and helps to detect file type.
-    @ingroup colorer_parsers
-*/
-class FileTypeChooser
-{
-public:
-  /** Creates choose entry.
-      @param type If 0 - filename RE, if 1 - firstline RE
-      @param prior Priority of this rule
-      @param re Associated regular expression
-  */
-  FileTypeChooser(int type, double prior, CRegExp* re)
-  {
-    this->type = type;
-    this->prior = prior;
-    this->re = re;
-  };
-  /** Default destructor */
-  ~FileTypeChooser()
-  {
-    delete re;
-  };
-  /** Returns type of chooser */
-  bool isFileName() const
-  {
-    return type == 0;
-  };
-  /** Returns type of chooser */
-  bool isFileContent() const
-  {
-    return type == 1;
-  };
-  /** Returns chooser priority */
-  double getPrior() const
-  {
-    return prior;
-  };
-  /** Returns associated regular expression */
-  CRegExp* getRE() const
-  {
-    return re;
-  };
-private:
-  CRegExp* re;
-  int type;
-  double prior;
-};
-
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

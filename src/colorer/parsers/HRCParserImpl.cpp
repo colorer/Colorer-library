@@ -360,7 +360,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
     delete matchRE;
     return;
   }
-  int ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? 0 : 1;
+  FileTypeChooser::ChooserType ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? FileTypeChooser::ChooserType::CT_FILENAME : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype ? 1 : 2;
   DString weight = DString(elem->getAttribute(hrcFilenameAttrWeight));
   UnicodeTools::getNumber(&weight, &prior);

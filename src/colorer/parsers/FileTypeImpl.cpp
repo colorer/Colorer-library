@@ -131,9 +131,9 @@ double FileTypeImpl::getPriority(const String *fileName, const String *fileConte
   for(size_t idx = 0; idx < chooserVector.size(); idx++){
     FileTypeChooser *ftc = chooserVector.at(idx);
     if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
-      cur_prior += ftc->getPrior();
+      cur_prior += ftc->getPriority();
     if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))
-      cur_prior += ftc->getPrior();
+      cur_prior += ftc->getPriority();
   }
   return cur_prior;
 }
