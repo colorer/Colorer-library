@@ -1,98 +1,33 @@
-#ifndef _COLORER_HRCPARSERPELPERS_H_
-#define _COLORER_HRCPARSERPELPERS_H_
-
-#include <vector>
-#include <colorer/cregexp/cregexp.h>
-#include <colorer/io/InputSource.h>
-#include <colorer/Region.h>
-#include <colorer/Scheme.h>
-#include <colorer/parsers/KeywordList.h>
-#include <colorer/parsers/VirtualEntry.h>
-
-// Must be not less than MATCHES_NUM in cregexp.h
-#define REGIONS_NUM MATCHES_NUM
-#define NAMED_REGIONS_NUM NAMED_MATCHES_NUM
+#ifndef _COLORER_VIRTUALENTRY_H_
+#define _COLORER_VIRTUALENTRY_H_
 
 class SchemeImpl;
-class FileTypeImpl;
 
-enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
-extern const char* schemeNodeTypeNames[];
-
-typedef std::vector<VirtualEntry*> VirtualEntryVector;
-
-/** Scheme node.
+/** One entry of 'inherit' element virtualization content.
     @ingroup colorer_parsers
 */
-class SchemeNode
+class VirtualEntry
 {
 public:
-  SchemeNodeType type;
+  SchemeImpl* virtScheme;
+  SchemeImpl* substScheme;
+  UString virtSchemeName;
+  UString substSchemeName;
 
-  UString schemeName;
-  SchemeImpl* scheme;
+  VirtualEntry(const String* scheme, const String* subst)
+  {
+    virtScheme = substScheme = nullptr;
+    virtSchemeName.reset(new SString(scheme));
+    substSchemeName.reset(new SString(subst));
+  }
 
-  VirtualEntryVector virtualEntryVector;
-  KeywordList* kwList;
-  CharacterClass* worddiv;
-
-  const Region* region;
-  const Region* regions[REGIONS_NUM];
-  const Region* regionsn[NAMED_REGIONS_NUM];
-  const Region* regione[REGIONS_NUM];
-  const Region* regionen[NAMED_REGIONS_NUM];
-  CRegExp* start, *end;
-  bool innerRegion, lowPriority, lowContentPriority;
+  ~VirtualEntry() {}
 
 #include<colorer/common/MemoryOperator.h>
 
-  SchemeNode();
-  ~SchemeNode();
 };
 
-
-/** Scheme storage implementation.
-    Manages the vector of SchemeNode's.
-    @ingroup colorer_parsers
-*/
-class SchemeImpl : public Scheme
-{
-  friend class HRCParserImpl;
-  friend class TextParserImpl;
-public:
-  const String* getName() const
-  {
-    return schemeName;
-  }
-
-  FileType* getFileType() const
-  {
-    return (FileType*)fileType;
-  }
-
-#include<colorer/common/MemoryOperator.h>
-
-protected:
-  String* schemeName;
-  std::vector<SchemeNode*> nodes;
-  FileTypeImpl* fileType;
-
-  SchemeImpl(const String* sn)
-  {
-    schemeName = new SString(sn);
-    fileType = nullptr;
-  }
-
-  ~SchemeImpl()
-  {
-    for (auto it : nodes) {
-      delete it;
-    }
-    delete schemeName;
-  }
-};
-
-#endif
+#endif // _COLORER_VIRTUALENTRY_H_
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -128,4 +63,3 @@ protected:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-

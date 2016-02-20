@@ -963,26 +963,24 @@ void HRCParserImpl::updateLinks()
           for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
             VirtualEntry* vt = snode->virtualEntryVector.at(vti);
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
-              String* vsn = qualifyForeignName(vt->virtSchemeName, QNT_SCHEME, true);
+              String* vsn = qualifyForeignName(vt->virtSchemeName.get(), QNT_SCHEME, true);
               if (vsn) {
                 vt->virtScheme = schemeHash.find(vsn)->second;
               } else {
                 LOGF(ERROR, "cannot virtualize scheme '%s' in scheme '%s'", vt->virtSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
-              delete vt->virtSchemeName;
-              vt->virtSchemeName = nullptr;
+              vt->virtSchemeName.release();
             }
             if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
-              String* vsn = qualifyForeignName(vt->substSchemeName, QNT_SCHEME, true);
+              String* vsn = qualifyForeignName(vt->substSchemeName.get(), QNT_SCHEME, true);
               if (vsn) {
                 vt->substScheme = schemeHash.find(vsn)->second;
               } else {
                 LOGF(ERROR, "cannot virtualize using subst-scheme scheme '%s' in scheme '%s'", vt->substSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
-              delete vt->substSchemeName;
-              vt->substSchemeName = nullptr;
+              vt->substSchemeName.release();
             }
           }
         }
