@@ -58,10 +58,11 @@ set(SRC_COLORER
    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
    ${PARSERS}/FileTypeChooser.h
    ${PARSERS}/KeywordList.h ${PARSERS}/KeywordList.cpp
-   ${PARSERS}/HRCParserHelpers.cpp ${PARSERS}/HRCParserHelpers.h
+   ${PARSERS}/SchemeImpl.h
    ${PARSERS}/TextParserHelpers.cpp ${PARSERS}/TextParserHelpers.h
    ${PARSERS}/ParserFactory.cpp
    ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
+   ${PARSERS}/SchemeNode.cpp ${PARSERS}/SchemeNode.h
    ${PARSERS}/VirtualEntry.H
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h

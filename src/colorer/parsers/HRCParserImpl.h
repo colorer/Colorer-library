@@ -3,7 +3,7 @@
 
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/HRCParser.h>
-#include <colorer/parsers/HRCParserHelpers.h>
+#include <colorer/parsers/SchemeImpl.h>
 
 #include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlInputSource.h>

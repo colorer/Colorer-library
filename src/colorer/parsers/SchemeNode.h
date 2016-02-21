@@ -1,46 +1,53 @@
-#include <colorer/parsers/HRCParserHelpers.h>
-#include <stdlib.h>
+#ifndef _COLORER_SCHEMENODE_H_
+#define _COLORER_SCHEMENODE_H_
 
+#include <colorer/Common.h>
+#include <colorer/Region.h>
+#include <colorer/parsers/KeywordList.h>
+#include <colorer/parsers/VirtualEntry.h>
+#include <colorer/cregexp/cregexp.h>
 
-const char* schemeNodeTypeNames[] =  { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
+enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
+extern const char* schemeNodeTypeNames[];
 
+class SchemeImpl;
+typedef std::vector<VirtualEntry*> VirtualEntryVector;
 
-SchemeNode::SchemeNode()
+// Must be not less than MATCHES_NUM in cregexp.h
+#define REGIONS_NUM MATCHES_NUM
+#define NAMED_REGIONS_NUM NAMED_MATCHES_NUM
+
+/** Scheme node.
+    @ingroup colorer_parsers
+*/
+class SchemeNode
 {
-  virtualEntryVector.reserve(5);
-  type = SNT_EMPTY;
-  schemeName = nullptr;
-  scheme = nullptr;
-  kwList = nullptr;
-  worddiv = nullptr;
-  start = end = nullptr;
-  lowPriority = 0;
+public:
+  SchemeNodeType type;
 
-  //!!regions cleanup
-  region = nullptr;
-  memset(regions, 0, sizeof(regions));
-  memset(regionsn, 0, sizeof(regionsn));
-  memset(regione, 0, sizeof(regione));
-  memset(regionen, 0, sizeof(regionen));
+  UString schemeName;
+  SchemeImpl* scheme;
+
+  VirtualEntryVector virtualEntryVector;
+  KeywordList* kwList;
+  CharacterClass* worddiv;
+
+  const Region* region;
+  const Region* regions[REGIONS_NUM];
+  const Region* regionsn[NAMED_REGIONS_NUM];
+  const Region* regione[REGIONS_NUM];
+  const Region* regionen[NAMED_REGIONS_NUM];
+  CRegExp* start, *end;
+  bool innerRegion, lowPriority, lowContentPriority;
+
+#include<colorer/common/MemoryOperator.h>
+
+  SchemeNode();
+  ~SchemeNode();
 };
 
-SchemeNode::~SchemeNode()
-{
-  if (type == SNT_RE || type == SNT_SCHEME) {
-    delete start;
-    delete end;
-  }
-  if (type == SNT_KEYWORDS) {
-    delete kwList;
-    delete worddiv;
-  }
-  if (type == SNT_INHERIT) {
-    for (auto it : virtualEntryVector) {
-      delete it;
-    }
-    virtualEntryVector.clear();
-  }
-}
+
+#endif //_COLORER_SCHEMENODE_H_
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -77,4 +84,3 @@ SchemeNode::~SchemeNode()
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-

@@ -1,7 +1,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <math.h>
 #include <stdio.h>
-#include <colorer/parsers/HRCParserHelpers.h>
+#include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <colorer/xml/XmlInputSource.h>

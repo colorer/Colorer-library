@@ -3,52 +3,11 @@
 
 #include <vector>
 #include <colorer/cregexp/cregexp.h>
-#include <colorer/io/InputSource.h>
-#include <colorer/Region.h>
 #include <colorer/Scheme.h>
-#include <colorer/parsers/KeywordList.h>
-#include <colorer/parsers/VirtualEntry.h>
+#include <colorer/parsers/SchemeNode.h>
 
-// Must be not less than MATCHES_NUM in cregexp.h
-#define REGIONS_NUM MATCHES_NUM
-#define NAMED_REGIONS_NUM NAMED_MATCHES_NUM
 
-class SchemeImpl;
 class FileTypeImpl;
-
-enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
-extern const char* schemeNodeTypeNames[];
-
-typedef std::vector<VirtualEntry*> VirtualEntryVector;
-
-/** Scheme node.
-    @ingroup colorer_parsers
-*/
-class SchemeNode
-{
-public:
-  SchemeNodeType type;
-
-  UString schemeName;
-  SchemeImpl* scheme;
-
-  VirtualEntryVector virtualEntryVector;
-  KeywordList* kwList;
-  CharacterClass* worddiv;
-
-  const Region* region;
-  const Region* regions[REGIONS_NUM];
-  const Region* regionsn[NAMED_REGIONS_NUM];
-  const Region* regione[REGIONS_NUM];
-  const Region* regionen[NAMED_REGIONS_NUM];
-  CRegExp* start, *end;
-  bool innerRegion, lowPriority, lowContentPriority;
-
-#include<colorer/common/MemoryOperator.h>
-
-  SchemeNode();
-  ~SchemeNode();
-};
 
 
 /** Scheme storage implementation.
