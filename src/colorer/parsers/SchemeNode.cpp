@@ -10,7 +10,8 @@ SchemeNode::SchemeNode()
   scheme = nullptr;
   kwList = nullptr;
   worddiv = nullptr;
-  start = end = nullptr;
+  start = nullptr;
+  end = nullptr;
   lowPriority = 0;
 
   //!!regions cleanup
@@ -23,14 +24,6 @@ SchemeNode::SchemeNode()
 
 SchemeNode::~SchemeNode()
 {
-  if (type == SNT_RE || type == SNT_SCHEME) {
-    delete start;
-    delete end;
-  }
-  if (type == SNT_KEYWORDS) {
-    delete kwList;
-    delete worddiv;
-  }
   if (type == SNT_INHERIT) {
     for (auto it : virtualEntryVector) {
       delete it;

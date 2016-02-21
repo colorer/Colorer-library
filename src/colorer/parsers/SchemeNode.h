@@ -7,7 +7,6 @@
 #include <colorer/parsers/VirtualEntry.h>
 #include <colorer/cregexp/cregexp.h>
 
-enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
 extern const char* schemeNodeTypeNames[];
 
 class SchemeImpl;
@@ -23,22 +22,27 @@ typedef std::vector<VirtualEntry*> VirtualEntryVector;
 class SchemeNode
 {
 public:
+  enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
+
   SchemeNodeType type;
 
   UString schemeName;
   SchemeImpl* scheme;
 
   VirtualEntryVector virtualEntryVector;
-  KeywordList* kwList;
-  CharacterClass* worddiv;
+  std::unique_ptr<KeywordList> kwList;
+  std::unique_ptr<CharacterClass> worddiv;
 
   const Region* region;
   const Region* regions[REGIONS_NUM];
   const Region* regionsn[NAMED_REGIONS_NUM];
   const Region* regione[REGIONS_NUM];
   const Region* regionen[NAMED_REGIONS_NUM];
-  CRegExp* start, *end;
-  bool innerRegion, lowPriority, lowContentPriority;
+  std::unique_ptr<CRegExp> start;
+  std::unique_ptr<CRegExp> end;
+  bool innerRegion;
+  bool lowPriority;
+  bool lowContentPriority;
 
 #include<colorer/common/MemoryOperator.h>
 

@@ -105,7 +105,7 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
     if (parent != cache) {
       vtlist->restore(parent->vcache);
       parent->clender->end->setBackTrace(parent->backLine, &parent->matchstart);
-      colorize(parent->clender->end, parent->clender->lowContentPriority);
+      colorize(parent->clender->end.get(), parent->clender->lowContentPriority);
       vtlist->clear();
     } else {
       colorize(nullptr, false);
@@ -318,7 +318,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
     SchemeNode* schemeNode = cscheme->nodes.at(idx);
     LOGF(TRACE, "[TextParserImpl] searchRE: processing node:%d/%d, type:%s", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]);
     switch (schemeNode->type) {
-      case SNT_INHERIT:
+      case SchemeNode::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;
         }
@@ -338,13 +338,13 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         }
         break;
 
-      case SNT_KEYWORDS:
+      case SchemeNode::SNT_KEYWORDS:
         if (searchKW(schemeNode, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
 
-      case SNT_RE:
+      case SchemeNode::SNT_RE:
         if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
@@ -363,7 +363,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         gx = match.e[0];
         return MATCH_RE;
 
-      case SNT_SCHEME: {
+      case SchemeNode::SNT_SCHEME: {
         if (!schemeNode->scheme) {
           break;
         }
@@ -424,7 +424,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 
         enterScheme(no, &match, schemeNode);
 
-        colorize(schemeNode->end, schemeNode->lowContentPriority);
+        colorize(schemeNode->end.get(), schemeNode->lowContentPriority);
 
         if (gy < gy2) {
           leaveScheme(gy, &matchend, schemeNode);

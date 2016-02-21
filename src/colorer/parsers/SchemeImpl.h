@@ -21,7 +21,7 @@ class SchemeImpl : public Scheme
 public:
   const String* getName() const
   {
-    return schemeName;
+    return schemeName.get();
   }
 
   FileType* getFileType() const
@@ -32,13 +32,13 @@ public:
 #include<colorer/common/MemoryOperator.h>
 
 protected:
-  String* schemeName;
+  UString schemeName;
   std::vector<SchemeNode*> nodes;
   FileTypeImpl* fileType;
 
   SchemeImpl(const String* sn)
   {
-    schemeName = new SString(sn);
+    schemeName.reset(new SString(sn));
     fileType = nullptr;
   }
 
@@ -47,7 +47,6 @@ protected:
     for (auto it : nodes) {
       delete it;
     }
-    delete schemeName;
   }
 };
 

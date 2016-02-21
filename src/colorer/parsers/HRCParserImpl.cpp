@@ -551,7 +551,7 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
   delete qSchemeName;
   scheme->fileType = parseType;
 
-  std::pair<SString, SchemeImpl*> pp(scheme->schemeName, scheme);
+  std::pair<SString, SchemeImpl*> pp(scheme->getName(), scheme);
   schemeHash.emplace(pp);
   const XMLCh* condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh* condUnless = elem->getAttribute(hrcSchemeAttrUnless);
@@ -605,7 +605,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
     return;
   }
   SchemeNode* scheme_node = new SchemeNode();
-  scheme_node->type = SNT_INHERIT;
+  scheme_node->type = SchemeNode::SNT_INHERIT;
   scheme_node->schemeName.reset(new SString(DString(nqSchemeName)));
   DString dnqSchemeName = DString(nqSchemeName);
   String* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
@@ -668,8 +668,8 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
   SchemeNode* scheme_node = new SchemeNode();
   DString dhrcRegexpAttrPriority = DString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = DString("low").equals(&dhrcRegexpAttrPriority);
-  scheme_node->type = SNT_RE;
-  scheme_node->start = new CRegExp(entMatchParam);
+  scheme_node->type = SchemeNode::SNT_RE;
+  scheme_node->start.reset(new CRegExp(entMatchParam));
   if (!scheme_node->start || !scheme_node->start->isOk())
     LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", entMatchParam->getChars(), scheme->schemeName->getChars());
   delete entMatchParam;
@@ -760,15 +760,15 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme_node->lowPriority = DString("low").equals(&attr_pr);
   scheme_node->lowContentPriority = DString("low").equals(&attr_cpr);
   scheme_node->innerRegion = DString("yes").equals(&attr_ireg);
-  scheme_node->type = SNT_SCHEME;
-  scheme_node->start = new CRegExp(startParam);
+  scheme_node->type = SchemeNode::SNT_SCHEME;
+  scheme_node->start.reset(new CRegExp(startParam));
   scheme_node->start->setPositionMoves(false);
   if (!scheme_node->start->isOk()) {
     LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", startParam->getChars(), scheme->schemeName->getChars());
   }
-  scheme_node->end = new CRegExp();
+  scheme_node->end.reset(new CRegExp());
   scheme_node->end->setPositionMoves(true);
-  scheme_node->end->setBackRE(scheme_node->start);
+  scheme_node->end->setBackRE(scheme_node->start.get());
   scheme_node->end->setRE(endParam);
   if (!scheme_node->end->isOk()) {
     LOGF(ERROR, "fault compiling regexp '%s' in scheme '%s'", endParam->getChars(), scheme->schemeName->getChars());
@@ -800,21 +800,21 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   if (*worddiv != '\0') {
     DString dworddiv = DString(worddiv);
     String* entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv = CharacterClass::createCharClass(*entWordDiv, 0, nullptr);
+    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr));
     if (scheme_node->worddiv == nullptr) {
       LOGF(ERROR, "fault compiling worddiv regexp '%s' in scheme '%s'", entWordDiv->getChars(), scheme->schemeName->getChars());
     }
     delete entWordDiv;
   }
 
-  scheme_node->kwList = new KeywordList;
+  scheme_node->kwList.reset(new KeywordList);
   scheme_node->kwList->num = getSchemeKeywordsCount(elem);
 
   scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
   memset(scheme_node->kwList->kwList , 0, sizeof(KeywordInfo)*scheme_node->kwList->num);
   scheme_node->kwList->num = 0;
   scheme_node->kwList->matchCase = isCase;
-  scheme_node->type = SNT_KEYWORDS;
+  scheme_node->type = SchemeNode::SNT_KEYWORDS;
 
   for (xercesc::DOMNode* keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
     if (keywrd->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -949,7 +949,7 @@ void HRCParserImpl::updateLinks()
       parseType = scheme->fileType;
       for (int sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes.at(sni);
-        if (snode->schemeName != nullptr && (snode->type == SNT_SCHEME || snode->type == SNT_INHERIT) && snode->scheme == nullptr) {
+        if (snode->schemeName != nullptr && (snode->type == SchemeNode::SNT_SCHEME || snode->type == SchemeNode::SNT_INHERIT) && snode->scheme == nullptr) {
           String* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
           if (schemeName != nullptr) {
             snode->scheme = schemeHash.find(schemeName)->second;
@@ -959,7 +959,7 @@ void HRCParserImpl::updateLinks()
           delete schemeName;
           snode->schemeName.release();
         }
-        if (snode->type == SNT_INHERIT) {
+        if (snode->type == SchemeNode::SNT_INHERIT) {
           for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
             VirtualEntry* vt = snode->virtualEntryVector.at(vti);
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {

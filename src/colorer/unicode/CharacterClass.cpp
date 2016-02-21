@@ -52,7 +52,7 @@ wchar prev_char = BAD_WCHAR;
       String *categ = UnicodeTools::getCurlyContent(ccs, pos);
       if (categ == nullptr){
         delete cc;
-        return 0;
+        return nullptr;
       }
       if (*categ == "ALL") cc->fill();
       else if (*categ == "ASSIGNED") cc->addCategory("");
