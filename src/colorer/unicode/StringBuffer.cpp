@@ -1,7 +1,7 @@
 
 #include<colorer/unicode/StringBuffer.h>
 
-StringBuffer::StringBuffer():SString()
+StringBuffer::StringBuffer(): SString()
 {
   alloc = 20;
   wstr = new wchar[alloc];
@@ -13,19 +13,32 @@ StringBuffer::StringBuffer(int alloc) : SString()
   wstr = new wchar[alloc];
 }
 
-StringBuffer::StringBuffer(const char *string, int s, int l)
-              :SString(DString(string, s, l)){ alloc = length(); };
-StringBuffer::StringBuffer(const String *cstring, int s, int l)
-              :SString(cstring, s, l){ alloc = length(); };
-StringBuffer::StringBuffer(const String &cstring, int s, int l)
-              :SString(cstring, s, l){ alloc = length(); };
-StringBuffer::~StringBuffer(){};
+StringBuffer::StringBuffer(const char* string, int s, int l)
+  : SString(DString(string, s, l))
+{
+  alloc = length();
+}
 
-void StringBuffer::setLength(int newLength){
-  if (newLength > alloc){
-    wchar *wstr_new = new wchar[newLength*2];
-    alloc = newLength*2;
-    for(int i = 0; i < newLength; i++){
+StringBuffer::StringBuffer(const String* cstring, int s, int l)
+  : SString(cstring, s, l)
+{
+  alloc = length();
+}
+
+StringBuffer::StringBuffer(const String &cstring, int s, int l)
+  : SString(cstring, s, l)
+{
+  alloc = length();
+}
+
+StringBuffer::~StringBuffer() {}
+
+void StringBuffer::setLength(int newLength)
+{
+  if (newLength > alloc) {
+    wchar* wstr_new = new wchar[newLength * 2];
+    alloc = newLength * 2;
+    for (int i = 0; i < newLength; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = 0;
     };
@@ -35,23 +48,25 @@ void StringBuffer::setLength(int newLength){
   len = newLength;
 }
 
-StringBuffer &StringBuffer::append(const String *string){
+StringBuffer &StringBuffer::append(const String* string)
+{
   if (string == nullptr)
     return append(DString("null"));
   return append(*string);
 }
 
-StringBuffer &StringBuffer::append(const String &string){
-  int len_new = len+string.length();
-  if (alloc > len_new){
-    for(int i = len; i < len_new; i++)
-      wstr[i] = string[i-len];
-  }else{
-    wchar *wstr_new = new wchar[len_new*2];
-    alloc = len_new*2;
-    for(int i = 0; i < len_new; i++){
+StringBuffer &StringBuffer::append(const String &string)
+{
+  int len_new = len + string.length();
+  if (alloc > len_new) {
+    for (int i = len; i < len_new; i++)
+      wstr[i] = string[i - len];
+  } else {
+    wchar* wstr_new = new wchar[len_new * 2];
+    alloc = len_new * 2;
+    for (int i = 0; i < len_new; i++) {
       if (i < len) wstr_new[i] = wstr[i];
-      else wstr_new[i] = string[i-len];
+      else wstr_new[i] = string[i - len];
     };
     delete[] wstr;
     wstr = wstr_new;
@@ -60,25 +75,35 @@ StringBuffer &StringBuffer::append(const String &string){
   return *this;
 }
 
-StringBuffer &StringBuffer::append(wchar c){
-  setLength(len+1);
-  wstr[len-1] = c;
+StringBuffer &StringBuffer::append(wchar c)
+{
+  setLength(len + 1);
+  wstr[len - 1] = c;
   return *this;
 }
 
-StringBuffer &StringBuffer::operator+(const String &string){
+StringBuffer &StringBuffer::operator+(const String &string)
+{
   return append(string);
 }
-StringBuffer &StringBuffer::operator+(const String *string){
+
+StringBuffer &StringBuffer::operator+(const String* string)
+{
   return append(string);
 }
-StringBuffer &StringBuffer::operator+(const char *string){
+
+StringBuffer &StringBuffer::operator+(const char* string)
+{
   return append(DString(string));
 }
-StringBuffer &StringBuffer::operator+=(const char *string){
+
+StringBuffer &StringBuffer::operator+=(const char* string)
+{
   return operator+(DString(string));
 }
-StringBuffer &StringBuffer::operator+=(const String &string){
+
+StringBuffer &StringBuffer::operator+=(const String &string)
+{
   return operator+(string);
 }
 

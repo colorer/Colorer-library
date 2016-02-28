@@ -6,16 +6,17 @@
 /** Unicode growable StringBuffer.
     @ingroup unicode
 */
-class StringBuffer : public SString{
+class StringBuffer : public SString
+{
 public:
   /** Creates empty string buffer */
   StringBuffer();
   /** Creates empty string buffer */
   StringBuffer(int alloc);
   /** Creates string buffer with @c string */
-  StringBuffer(const char *string, int s = 0, int l = -1);
+  StringBuffer(const char* string, int s = 0, int l = -1);
   /** Creates string buffer with @c string */
-  StringBuffer(const String *cstring, int s = 0, int l = -1);
+  StringBuffer(const String* cstring, int s = 0, int l = -1);
   /** Creates string buffer with @c string */
   StringBuffer(const String &cstring, int s = 0, int l = -1);
   /** Destructor */
@@ -27,7 +28,7 @@ public:
   /** Appends to this string buffer @c string */
   StringBuffer &append(const String &string);
   /** Appends to this string buffer @c string */
-  StringBuffer &append(const String *string);
+  StringBuffer &append(const String* string);
 
   /** Appends to this string buffer @c string */
   StringBuffer &append(wchar c);
@@ -38,13 +39,13 @@ public:
   */
   StringBuffer &operator+(const String &string);
   /** Appends to this string buffer @c string. C++ operator+ form. */
-  StringBuffer &operator+(const String *string);
+  StringBuffer &operator+(const String* string);
   /** Appends to this string buffer @c string. C++ operator+ form. */
-  StringBuffer &operator+(const char *string);
+  StringBuffer &operator+(const char* string);
   /** Appends to this string buffer @c string. C++ operator+= form. */
   StringBuffer &operator+=(const String &string);
   /** Appends to this string buffer @c string. C++ operator+= form. */
-  StringBuffer &operator+=(const char *string);
+  StringBuffer &operator+=(const char* string);
 private:
   int alloc;
 };

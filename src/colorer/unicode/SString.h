@@ -8,13 +8,14 @@
  * Static string, do not depend on called character data.
  * @ingroup unicode
 */
-class SString : public String{
+class SString : public String
+{
 public:
   /**
    * Static string constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String *cstring, int s = 0, int l = -1);
+  SString(const String* cstring, int s = 0, int l = -1);
 
   /**
    * Static string constructor from String source
@@ -27,8 +28,8 @@ public:
    * Static string constructor from char stream
    * @param str source string, can't be null.
    */
-  SString(char *str, int enc = -1);
-  SString(wchar *str);
+  SString(char* str, int enc = -1);
+  SString(wchar* str);
 
   /**
    * Static string constructor from integer number
@@ -37,7 +38,7 @@ public:
 
   ~SString();
 
-  String *substring(int s, int l = -1) const;
+  String* substring(int s, int l = -1) const;
 
   wchar operator[](int i) const;
   int length() const;
@@ -47,9 +48,9 @@ protected:
    * Empty static string constructor
    */
   SString();
-  void construct(const String *cstring, int s, int l);
+  void construct(const String* cstring, int s, int l);
 
-  wchar *wstr;
+  wchar* wstr;
   int len;
 public:
   SString &operator=(SString &cstring);
@@ -60,16 +61,15 @@ namespace std
 {
   // Specializations for unordered containers
 
-  template <> struct hash<SString>
-  {
-    size_t operator()(const SString& value) const
+  template <> struct hash<SString> {
+    size_t operator()(const SString &value) const
     {
       return static_cast<std::size_t>(value.hashCode());
     }
   };
-  template <> struct equal_to<SString>
-  {
-    bool operator()(const SString& u1, const SString& u2) const {
+  template <> struct equal_to<SString> {
+    bool operator()(const SString &u1, const SString &u2) const
+    {
       return u1.compareTo(u2) == 0;
     }
   };

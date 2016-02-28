@@ -2,57 +2,77 @@
 #include<stdio.h>
 #include<colorer/unicode/String.h>
 
-void SString::construct(const String *cstring, int s, int l){
+void SString::construct(const String* cstring, int s, int l)
+{
   if (s < 0 || s > cstring->length() || l < -1) throw Exception(DString("bad string constructor parameters"));
-  if (l == -1) l = cstring->length()-s;
+  if (l == -1) l = cstring->length() - s;
   wstr = new wchar[l];
-  for(len = 0; len < l; len++)
-    wstr[len] = (*cstring)[s+len];
+  for (len = 0; len < l; len++)
+    wstr[len] = (*cstring)[s + len];
 }
 
-SString::SString(const String *cstring, int s, int l){
+SString::SString(const String* cstring, int s, int l)
+{
   construct(cstring, s, l);
 }
-SString::SString(const SString &cstring){
+
+SString::SString(const SString &cstring)
+{
   construct(&cstring, 0, -1);
 }
-SString::SString(const String &cstring, int s, int l){
+
+SString::SString(const String &cstring, int s, int l)
+{
   construct(&cstring, s, l);
 }
-SString::SString(char *str, int enc){
+
+SString::SString(char* str, int enc)
+{
   DString ds(str, 0, -1, enc);
   construct(&ds, 0, ds.length());
 }
-SString::SString(wchar *str){
-   DString ds(str, 0, -1);
-   construct(&ds, 0, ds.length());
+
+SString::SString(wchar* str)
+{
+  DString ds(str, 0, -1);
+  construct(&ds, 0, ds.length());
 }
-SString::SString(int no){
+
+SString::SString(int no)
+{
   char text[40];
   sprintf(text, "%d", no);
   DString dtext = DString(text);
   construct(&dtext, 0, -1);
 }
-SString::SString(){
+
+SString::SString()
+{
   wstr = nullptr;
   len = 0;
 }
-SString::~SString(){
+
+SString::~SString()
+{
   delete[] wstr;
 }
 
-wchar SString::operator[](int i) const{
+wchar SString::operator[](int i) const
+{
   if (i >= len) throw StringIndexOutOfBoundsException(SString(i));
   return wstr[i];
 }
-int SString::length() const{
+
+int SString::length() const
+{
   return len;
 }
 
-SString &SString::operator=(SString &cstring){
-  
-  std::swap(this->wstr,cstring.wstr);
-  std::swap(this->len,cstring.len);
+SString &SString::operator=(SString &cstring)
+{
+
+  std::swap(this->wstr, cstring.wstr);
+  std::swap(this->len, cstring.len);
   return *this;
 }
 
