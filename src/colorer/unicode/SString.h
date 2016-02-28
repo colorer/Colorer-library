@@ -1,35 +1,34 @@
 #ifndef _COLORER_SSTRING_H_
 #define _COLORER_SSTRING_H_
 
-#include<colorer/unicode/String.h>
+#include <colorer/unicode/String.h>
 
 /**
- * Static unicode string.
- * Static string, do not depend on called character data.
+ * Unicode string.
  * @ingroup unicode
 */
 class SString : public String
 {
 public:
   /**
-  * Empty static string constructor
+  * Empty string constructor
   */
   SString();
   /**
-   * Static string constructor from String source
+   * String constructor from String source
    * @param cstring source string, can't be null.
    */
   SString(const String* cstring, int s = 0, int l = -1);
 
   /**
-   * Static string constructor from String source
+   * String constructor from String source
    * @param cstring source string, can't be null.
    */
   SString(const String &cstring, int s = 0, int l = -1);
   SString(const SString &cstring);
 
   /**
-   * Static string constructor from char stream
+   * String constructor from char stream
    * @param str source string, can't be null.
    */
   SString(const char* string, int s = 0, int l = -1);
@@ -37,7 +36,7 @@ public:
   SString(wchar* str);
 
   /**
-   * Static string constructor from integer number
+   * String constructor from integer number
    */
   SString(int no);
 
@@ -58,8 +57,8 @@ public:
   SString &append(wchar c);
 
   /** Appends to this string buffer @c string.
-  C++ operator+ form.
-  You can write: yourcall(StringBuffer("first")+"second"+third);
+      C++ operator+ form.
+      You can write: yourcall(StringBuffer("first")+"second"+third);
   */
   SString &operator+(const String &string);
   /** Appends to this string buffer @c string. C++ operator+ form. */
@@ -71,7 +70,9 @@ public:
   /** Appends to this string buffer @c string. C++ operator+= form. */
   SString &operator+=(const char* string);
 
-  SString &operator=(SString &cstring);
+  SString &operator=(SString const &cstring);
+  SString(SString &&cstring);
+  SString &operator=(SString &&cstring);
 protected:
 
   void construct(const String* cstring, int s, int l);

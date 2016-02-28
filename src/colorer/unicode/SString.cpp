@@ -149,12 +149,33 @@ SString &SString::operator+=(const String &string)
   return operator+(string);
 }
 
-SString &SString::operator=(SString &cstring)
+SString &SString::operator=(SString const &cstring)
 {
+  construct(&cstring, 0, -1);
+  return *this;
+}
 
-  std::swap(this->wstr, cstring.wstr);
-  std::swap(this->len, cstring.len);
-  std::swap(this->alloc, cstring.alloc);
+SString::SString(SString &&cstring)
+{
+  wstr = std::move(cstring.wstr);
+  alloc = std::move(cstring.alloc);
+  len = std::move(cstring.len);
+
+  cstring.wstr = nullptr;
+  cstring.alloc = 0;
+  cstring.len = 0;
+}
+
+SString &SString::operator=(SString &&cstring)
+{
+  wstr = std::move(cstring.wstr);
+  alloc = std::move(cstring.alloc);
+  len = std::move(cstring.len);
+
+  cstring.wstr = nullptr;
+  cstring.alloc = 0;
+  cstring.len = 0;
+
   return *this;
 }
 
