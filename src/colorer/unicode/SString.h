@@ -45,8 +45,8 @@ public:
   /** Changes the length of this StringBuffer */
   void setLength(int newLength);
 
-  wchar operator[](int i) const;
-  int length() const;
+  wchar operator[](int i) const override;
+  int length() const override;
 
   /** Appends to this string buffer @c string */
   SString &append(const String &string);
@@ -77,7 +77,7 @@ protected:
 
   void construct(const String* cstring, int s, int l);
 
-  wchar* wstr;
+  std::unique_ptr<wchar[]> wstr;
   int len;
   int alloc;
 };

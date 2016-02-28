@@ -12,7 +12,7 @@ void SString::construct(const String* cstring, int s, int l)
 {
   if (s < 0 || s > cstring->length() || l < -1) throw Exception(DString("bad string constructor parameters"));
   if (l == -1) l = cstring->length() - s;
-  wstr = new wchar[l];
+  wstr.reset(new wchar[l]);
   for (len = 0; len < l; len++)
     wstr[len] = (*cstring)[s + len];
   alloc = len;
@@ -61,20 +61,19 @@ SString::SString(int no)
 
 SString::~SString()
 {
-  delete[] wstr;
+
 }
 
 void SString::setLength(int newLength)
 {
   if (newLength > alloc) {
-    wchar* wstr_new = new wchar[newLength * 2];
+    std::unique_ptr<wchar[]> wstr_new(new wchar[newLength * 2]);
     alloc = newLength * 2;
     for (int i = 0; i < newLength; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = 0;
     };
-    delete[] wstr;
-    wstr = wstr_new;
+    wstr = std::move(wstr_new);
   }
   len = newLength;
 }
@@ -104,14 +103,13 @@ SString &SString::append(const String &string)
     for (int i = len; i < len_new; i++)
       wstr[i] = string[i - len];
   } else {
-    wchar* wstr_new = new wchar[len_new * 2];
+    std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
     alloc = len_new * 2;
     for (int i = 0; i < len_new; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = string[i - len];
     };
-    delete[] wstr;
-    wstr = wstr_new;
+    wstr = std::move(wstr_new);
   };
   len = len_new;
   return *this;
