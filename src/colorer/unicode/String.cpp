@@ -261,7 +261,7 @@ String *String::replace(const String &pattern, const String &newstring) const{
   int copypos = 0;
   int epos = 0;
 
-  StringBuffer *newname = new StringBuffer();
+  SString *newname = new SString();
   const String &name = *this;
 
   while(true){

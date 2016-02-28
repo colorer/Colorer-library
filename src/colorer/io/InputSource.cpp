@@ -19,7 +19,7 @@ String *InputSource::getAbsolutePath(const String*basePath, const String*relPath
   if (root_pos2 > root_pos) root_pos = root_pos2;
   if (root_pos == -1) root_pos = 0;
   else root_pos++;
-  StringBuffer *newPath = new StringBuffer();
+  SString *newPath = new SString();
   newPath->append(DString(basePath, 0, root_pos)).append(relPath);
   return newPath;
 };

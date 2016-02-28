@@ -57,7 +57,7 @@ DString::DString(const byte *stream, int size, int def_encoding){
           throw UnsupportedEncodingException(dcp);
         if (encodingIdx == Encodings::ENC_UTF8)
           type = ST_UTF8;
-        else if (encodingIdx < 0) throw UnsupportedEncodingException(StringBuffer("encoding conflict - can't use ")+dcp);
+        else if (encodingIdx < 0) throw UnsupportedEncodingException(SString("encoding conflict - can't use ")+dcp);
       }else type = ST_UTF8;
     };
 

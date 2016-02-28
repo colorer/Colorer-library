@@ -1,6 +1,12 @@
-
 #include<stdio.h>
 #include<colorer/unicode/String.h>
+
+SString::SString()
+{
+  alloc = 0;
+  wstr = nullptr;
+  len = 0;
+}
 
 void SString::construct(const String* cstring, int s, int l)
 {
@@ -9,6 +15,7 @@ void SString::construct(const String* cstring, int s, int l)
   wstr = new wchar[l];
   for (len = 0; len < l; len++)
     wstr[len] = (*cstring)[s + len];
+  alloc = len;
 }
 
 SString::SString(const String* cstring, int s, int l)
@@ -19,6 +26,12 @@ SString::SString(const String* cstring, int s, int l)
 SString::SString(const SString &cstring)
 {
   construct(&cstring, 0, -1);
+}
+
+SString::SString(const char* string, int s, int l)
+{
+  DString ds(string, s, l);
+  construct(&ds, 0, ds.length());
 }
 
 SString::SString(const String &cstring, int s, int l)
@@ -46,15 +59,24 @@ SString::SString(int no)
   construct(&dtext, 0, -1);
 }
 
-SString::SString()
-{
-  wstr = nullptr;
-  len = 0;
-}
-
 SString::~SString()
 {
   delete[] wstr;
+}
+
+void SString::setLength(int newLength)
+{
+  if (newLength > alloc) {
+    wchar* wstr_new = new wchar[newLength * 2];
+    alloc = newLength * 2;
+    for (int i = 0; i < newLength; i++) {
+      if (i < len) wstr_new[i] = wstr[i];
+      else wstr_new[i] = 0;
+    };
+    delete[] wstr;
+    wstr = wstr_new;
+  }
+  len = newLength;
 }
 
 wchar SString::operator[](int i) const
@@ -68,11 +90,71 @@ int SString::length() const
   return len;
 }
 
+SString &SString::append(const String* string)
+{
+  if (string == nullptr)
+    return append(DString("null"));
+  return append(*string);
+}
+
+SString &SString::append(const String &string)
+{
+  int len_new = len + string.length();
+  if (alloc > len_new) {
+    for (int i = len; i < len_new; i++)
+      wstr[i] = string[i - len];
+  } else {
+    wchar* wstr_new = new wchar[len_new * 2];
+    alloc = len_new * 2;
+    for (int i = 0; i < len_new; i++) {
+      if (i < len) wstr_new[i] = wstr[i];
+      else wstr_new[i] = string[i - len];
+    };
+    delete[] wstr;
+    wstr = wstr_new;
+  };
+  len = len_new;
+  return *this;
+}
+
+SString &SString::append(wchar c)
+{
+  setLength(len + 1);
+  wstr[len - 1] = c;
+  return *this;
+}
+
+SString &SString::operator+(const String &string)
+{
+  return append(string);
+}
+
+SString &SString::operator+(const String* string)
+{
+  return append(string);
+}
+
+SString &SString::operator+(const char* string)
+{
+  return append(DString(string));
+}
+
+SString &SString::operator+=(const char* string)
+{
+  return operator+(DString(string));
+}
+
+SString &SString::operator+=(const String &string)
+{
+  return operator+(string);
+}
+
 SString &SString::operator=(SString &cstring)
 {
 
   std::swap(this->wstr, cstring.wstr);
   std::swap(this->len, cstring.len);
+  std::swap(this->alloc, cstring.alloc);
   return *this;
 }
 

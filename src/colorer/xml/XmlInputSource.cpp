@@ -46,7 +46,7 @@ UString XmlInputSource::getAbsolutePath(const String* basePath, const String* re
   } else {
     root_pos++;
   }
-  std::unique_ptr<StringBuffer> newPath(new StringBuffer());
+  std::unique_ptr<SString> newPath(new SString());
   newPath->append(DString(basePath, 0, root_pos)).append(relPath);
   return std::move(newPath);
 }
@@ -98,7 +98,7 @@ bool XmlInputSource::isDirectory(const String* path)
   // stat on win_xp and vc2015 have bug.
   DWORD dwAttrs = GetFileAttributes(path->getWChars());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
-    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
+    throw Exception(SString("Can't get info for file/path: ") + path);
   }
   else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
     is_dir = true;
@@ -123,11 +123,11 @@ bool XmlInputSource::isDirectory(const String* path)
 void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> &files)
 {
   WIN32_FIND_DATA ffd;
-  HANDLE dir = FindFirstFile((StringBuffer(relPath) + "\\*.*").getTChars(), &ffd);
+  HANDLE dir = FindFirstFile((SString(relPath) + "\\*.*").getTChars(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        files.push_back(StringBuffer(relPath) + "\\" + SString(ffd.cFileName));
+        files.push_back(SString(relPath) + "\\" + SString(ffd.cFileName));
       }
       if (FindNextFile(dir, &ffd) == FALSE) {
         break;

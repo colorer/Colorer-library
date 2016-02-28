@@ -12,6 +12,10 @@ class SString : public String
 {
 public:
   /**
+  * Empty static string constructor
+  */
+  SString();
+  /**
    * Static string constructor from String source
    * @param cstring source string, can't be null.
    */
@@ -28,6 +32,7 @@ public:
    * Static string constructor from char stream
    * @param str source string, can't be null.
    */
+  SString(const char* string, int s = 0, int l = -1);
   SString(char* str, int enc = -1);
   SString(wchar* str);
 
@@ -38,22 +43,42 @@ public:
 
   ~SString();
 
-  String* substring(int s, int l = -1) const;
+  /** Changes the length of this StringBuffer */
+  void setLength(int newLength);
 
   wchar operator[](int i) const;
   int length() const;
 
+  /** Appends to this string buffer @c string */
+  SString &append(const String &string);
+  /** Appends to this string buffer @c string */
+  SString &append(const String* string);
+
+  /** Appends to this string buffer @c string */
+  SString &append(wchar c);
+
+  /** Appends to this string buffer @c string.
+  C++ operator+ form.
+  You can write: yourcall(StringBuffer("first")+"second"+third);
+  */
+  SString &operator+(const String &string);
+  /** Appends to this string buffer @c string. C++ operator+ form. */
+  SString &operator+(const String* string);
+  /** Appends to this string buffer @c string. C++ operator+ form. */
+  SString &operator+(const char* string);
+  /** Appends to this string buffer @c string. C++ operator+= form. */
+  SString &operator+=(const String &string);
+  /** Appends to this string buffer @c string. C++ operator+= form. */
+  SString &operator+=(const char* string);
+
+  SString &operator=(SString &cstring);
 protected:
-  /**
-   * Empty static string constructor
-   */
-  SString();
+
   void construct(const String* cstring, int s, int l);
 
   wchar* wstr;
   int len;
-public:
-  SString &operator=(SString &cstring);
+  int alloc;
 };
 
 #include <unordered_map>

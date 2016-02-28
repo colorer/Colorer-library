@@ -20,7 +20,7 @@ public:
   /** Level of enclosure */
   int level;
   /** Item text */
-  std::unique_ptr<StringBuffer> token;
+  std::unique_ptr<SString> token;
   /** This item's region */
   const Region* region;
 
@@ -34,7 +34,7 @@ public:
     lno(lno_), pos(pos_), level(level_), token(nullptr), region(region_)
   {
     if (token_ != nullptr) {
-      token.reset(new StringBuffer(token_));
+      token.reset(new SString(token_));
     }
   }
 

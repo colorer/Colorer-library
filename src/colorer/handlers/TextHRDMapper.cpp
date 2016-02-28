@@ -97,18 +97,18 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 <hrd>\n"));
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
     const TextRegion* rdef = TextRegion::cast(it->second);
-    writer->write(StringBuffer("  <define name='") + it->first + "'");
+    writer->write(SString("  <define name='") + it->first + "'");
     if (rdef->stext != nullptr) {
-      writer->write(StringBuffer(" stext='") + rdef->stext + "'");
+      writer->write(SString(" stext='") + rdef->stext + "'");
     }
     if (rdef->etext != nullptr) {
-      writer->write(StringBuffer(" etext='") + rdef->etext + "'");
+      writer->write(SString(" etext='") + rdef->etext + "'");
     }
     if (rdef->sback != nullptr) {
-      writer->write(StringBuffer(" sback='") + rdef->sback + "'");
+      writer->write(SString(" sback='") + rdef->sback + "'");
     }
     if (rdef->eback != nullptr) {
-      writer->write(StringBuffer(" eback='") + rdef->eback + "'");
+      writer->write(SString(" eback='") + rdef->eback + "'");
     }
     writer->write(DString("/>\n"));
   }

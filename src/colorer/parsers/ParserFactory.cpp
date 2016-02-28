@@ -98,7 +98,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
       pos[1] = module.lastIndexOf('\\', pos[0]);
       for (int idx = 0; idx < 2; idx++)
         if (pos[idx] >= 0) {
-          paths.emplace_back(StringBuffer(DString(module, 0, pos[idx])).append(DString("\\catalog.xml")));
+          paths.emplace_back(SString(DString(module, 0, pos[idx])).append(DString("\\catalog.xml")));
         }
     }
   }
@@ -114,7 +114,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   char* home_path = getenv("HOMEPATH");
   if (home_drive && home_path) {
     try {
-      StringBuffer d = StringBuffer(home_drive).append(DString(home_path)).append(DString("/.colorer5catalog"));
+      SString d = SString(home_drive).append(DString(home_path)).append(DString("/.colorer5catalog"));
       if (_access(d.getChars(), 0) != -1) {
         TextLinesStore tls;
         tls.loadFile(&d, nullptr, false);
@@ -227,7 +227,7 @@ void ParserFactory::parseCatalog(const SString &catalog_path)
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
   if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw ParserFactoryException(StringBuffer("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file ") + catalog_path);
+    throw ParserFactoryException(SString("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file ") + catalog_path);
   }
   parseCatalogBlock(elem);
 
@@ -328,7 +328,7 @@ void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
   if (hrd_descr == nullptr) {
     hrd_descr = new SString(hrd_name);
   }
-  std::pair<SString, const String*> pp(&(StringBuffer(hrd_class) + "-" + hrd_name), hrd_descr);
+  std::pair<SString, const String*> pp(&(SString(hrd_class) + "-" + hrd_name), hrd_descr);
   hrdDescriptions.emplace(pp);
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
@@ -380,7 +380,7 @@ std::vector<SString> ParserFactory::enumHRDInstances(const String &classID)
 
 const String* ParserFactory::getHRDescription(const String &classID, const String &nameID)
 {
-  auto it = hrdDescriptions.find(&(StringBuffer(classID) + "-" + nameID));
+  auto it = hrdDescriptions.find(&(SString(classID) + "-" + nameID));
   if (it != hrdDescriptions.end()) {
     return it->second;
   } else {
@@ -410,7 +410,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   auto it_hrdClass = hrdLocations.find(class_id);
   if (it_hrdClass == hrdLocations.end()) {
-    throw ParserFactoryException(StringBuffer("can't find hrdClass '") + classID + "'");
+    throw ParserFactoryException(SString("can't find hrdClass '") + classID + "'");
   }
   std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
 
@@ -431,7 +431,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   auto it_hrdLocV = hrdClass->find(name_id);
   if (it_hrdLocV == hrdClass->end()) {
-    throw ParserFactoryException(StringBuffer("can't find hrdName '") + name_id + "'");
+    throw ParserFactoryException(SString("can't find hrdName '") + name_id + "'");
   }
   std::vector<const String*>* hrdLocV = it_hrdLocV->second;
 
@@ -457,7 +457,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
   DString d_text = DString("text");
   auto it_hrdClass = hrdLocations.find(&d_text);
   if (it_hrdClass == hrdLocations.end()) {
-    throw ParserFactoryException(StringBuffer("can't find hrdClass 'text'"));
+    throw ParserFactoryException(SString("can't find hrdClass 'text'"));
   }
 
   std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
@@ -471,7 +471,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 
   auto it_hrdLocV = hrdClass->find(name_id);
   if (it_hrdLocV == hrdClass->end()) {
-    throw ParserFactoryException(StringBuffer("can't find hrdName '") + name_id + "'");
+    throw ParserFactoryException(SString("can't find hrdName '") + name_id + "'");
   }
   std::vector<const String*>* hrdLocV = it_hrdLocV->second;
 

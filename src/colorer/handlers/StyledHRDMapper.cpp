@@ -85,7 +85,7 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
     const StyledRegion* rdef = StyledRegion::cast(it->second);
     char temporary[256];
-    writer->write(StringBuffer("  <define name='") + it->first + "'");
+    writer->write(SString("  <define name='") + it->first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(DString(temporary));

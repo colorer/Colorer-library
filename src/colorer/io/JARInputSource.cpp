@@ -5,17 +5,17 @@
 
 JARInputSource::JARInputSource(const String *basePath, InputSource *base){
   if (basePath == nullptr)
-    throw InputSourceException(StringBuffer("Can't create jar source"));
+    throw InputSourceException(SString("Can't create jar source"));
   // absolute jar uri
   int ex_idx = basePath->lastIndexOf('!');
-  if (ex_idx == -1) throw InputSourceException(StringBuffer("Bad jar uri format: ") + basePath);
+  if (ex_idx == -1) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
 
   inJarLocation = new SString(basePath, ex_idx+1, -1);
   
   DString bpath = DString(basePath, 4, ex_idx-4);
   sharedIS = SharedInputSource::getInputSource(&bpath, base);
 
-  StringBuffer str("jar:");
+  SString str("jar:");
   str.append(sharedIS->getLocation());
   str.append(DString("!"));
   str.append(inJarLocation);
@@ -35,13 +35,13 @@ JARInputSource::~JARInputSource(){
 JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, bool faked){
   // relative jar uri
   JARInputSource *parent = base;
-  if (parent == nullptr) throw InputSourceException(StringBuffer("Bad jar uri format: ") + basePath);
+  if (parent == nullptr) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
   sharedIS = parent->getShared();
   sharedIS->addref();
 
   inJarLocation = getAbsolutePath(parent->getInJarLocation(), basePath);
 
-  StringBuffer str("jar:");
+  SString str("jar:");
   str.append(sharedIS->getLocation());
   str.append(DString("!"));
   str.append(inJarLocation);
@@ -61,7 +61,7 @@ const String *JARInputSource::getLocation() const{
 const byte *JARInputSource::openStream()
 {
   if (stream != nullptr)
-    throw InputSourceException(StringBuffer("openStream(): source stream already opened: '")+baseLocation+"'");
+    throw InputSourceException(SString("openStream(): source stream already opened: '")+baseLocation+"'");
 
   MemoryFile *mf = new MemoryFile;
   mf->stream = sharedIS->getStream();
@@ -74,20 +74,20 @@ const byte *JARInputSource::openStream()
   if (fid == 0) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
   }
   int ret = unzLocateFile(fid, inJarLocation->getChars(), 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Can't retrieve current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException(SString("Can't retrieve current file in JAR content: '")+inJarLocation+"'");
   }
 
   len = file_info.uncompressed_size;
@@ -96,19 +96,19 @@ const byte *JARInputSource::openStream()
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Can't open current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException(SString("Can't open current file in JAR content: '")+inJarLocation+"'");
   }
   ret = unzReadCurrentFile(fid, stream, len);
   if (ret <= 0) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Can't read current file in JAR content: '")+inJarLocation+"' ("+SString(ret)+")");
+	  throw InputSourceException(SString("Can't read current file in JAR content: '")+inJarLocation+"' ("+SString(ret)+")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(StringBuffer("Bad JAR file CRC"));
+	  throw InputSourceException(SString("Bad JAR file CRC"));
   }
   ret = unzClose(fid);
   delete mf;
@@ -117,7 +117,7 @@ const byte *JARInputSource::openStream()
 
 void JARInputSource::closeStream(){
   if (stream == nullptr)
-    throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
+    throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
   delete stream;
   stream = nullptr;
 }

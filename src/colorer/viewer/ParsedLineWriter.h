@@ -159,7 +159,7 @@ public:
   static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
     String *url = nullptr;
     if (scheme != nullptr){
-      auto it_url = docLinkHash->find(&(StringBuffer(token).append(DString("--")).append(scheme->getName())));
+      auto it_url = docLinkHash->find(&(SString(token).append(DString("--")).append(scheme->getName())));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
@@ -173,7 +173,7 @@ public:
       }
     }
     if (url != nullptr){
-      if (start) writer->write(StringBuffer("<a href='")+url+DString("'>"));
+      if (start) writer->write(SString("<a href='")+url+DString("'>"));
       else writer->write(DString("</a>"));
     }
   }

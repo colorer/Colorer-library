@@ -121,7 +121,6 @@ private:
 #endif
 #include<colorer/unicode/DString.h>
 #include<colorer/unicode/SString.h>
-#include<colorer/unicode/StringBuffer.h>
 
 #endif
 

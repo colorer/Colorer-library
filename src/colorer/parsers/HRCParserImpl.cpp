@@ -1010,7 +1010,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
     if (parseType == nullptr) {
       return nullptr;
     }
-    StringBuffer* sbuf = new StringBuffer(parseType->getName());
+    SString* sbuf = new SString(parseType->getName());
     sbuf->append(DString(":")).append(name);
     return sbuf;
   }
@@ -1070,7 +1070,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
         loadFileType(importer);
       }
 
-      StringBuffer* qname = new StringBuffer(tname);
+      SString* qname = new SString(tname);
       qname->append(DString(":")).append(name);
       if (checkNameExist(qname, importer, qntype, false)) {
         return qname;
@@ -1092,7 +1092,7 @@ String* HRCParserImpl::useEntities(const String* name)
   if (!name) {
     return nullptr;
   }
-  StringBuffer* newname = new StringBuffer();
+  SString* newname = new SString();
 
   while (true) {
     epos = name->indexOf('%', epos);
