@@ -156,8 +156,8 @@ SString &SString::operator=(SString const &cstring)
 SString::SString(SString &&cstring)
 {
   wstr = std::move(cstring.wstr);
-  alloc = std::move(cstring.alloc);
-  len = std::move(cstring.len);
+  alloc = cstring.alloc;
+  len = cstring.len;
 
   cstring.wstr = nullptr;
   cstring.alloc = 0;
@@ -167,8 +167,8 @@ SString::SString(SString &&cstring)
 SString &SString::operator=(SString &&cstring)
 {
   wstr = std::move(cstring.wstr);
-  alloc = std::move(cstring.alloc);
-  len = std::move(cstring.len);
+  alloc = cstring.alloc;
+  len = cstring.len;
 
   cstring.wstr = nullptr;
   cstring.alloc = 0;

@@ -67,6 +67,10 @@ public:
   DString();
   ~DString();
 
+  DString(DString const &) = delete;
+  DString(DString &&cstring);
+  DString &operator=(DString &&cstring);
+
   wchar operator[](int i) const;
   int length() const;
 

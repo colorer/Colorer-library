@@ -43,7 +43,7 @@ DString::DString(const byte* stream, int size, int def_encoding)
           cpe = p;
           break;
         }
-        if (cps || strncmp((char*)stream + p, "encoding=", 9)) continue;
+        if (cps || strncmp((char*)stream + p, "encoding=", 9) == 0) continue;
         p += 9;
         if (!cps && (stream[p] == '\"' || stream[p] == '\'')) {
           p++;
@@ -97,9 +97,9 @@ DString::DString(const byte* stream, int size, int def_encoding)
       } else {
         int nextbytes = 0;
         while (stream[pos] << (nextbytes + 1)  & 0x80) nextbytes++;
-        wc = (stream[pos]  &  0xFF >> (nextbytes + 2)) << nextbytes * 6;
+        wc = (stream[pos]  &  0xFF >> (nextbytes + 2)) << (nextbytes * 6);
         while (nextbytes--) {
-          wc += (stream[++pos]  &  0x3F) << nextbytes * 6;
+          wc += (stream[++pos]  &  0x3F) << (nextbytes * 6);
         }
       }
       stream_wstr[len] = wc;
@@ -130,6 +130,7 @@ DString::DString(const wchar* string, int s, int l)
   wstr = string;
   start = s;
   len = l;
+  encodingIdx = -1;
   if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     for (len = 0; wstr[len + s]; len++);
@@ -141,6 +142,7 @@ DString::DString(const w4char* string, int s, int l)
   w4str = string;
   start = s;
   len = l;
+  encodingIdx = -1;
   if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     for (len = 0; w4str[len + s]; len++);
@@ -152,6 +154,7 @@ DString::DString(const String* cstring, int s, int l)
   cstr = cstring;
   start = s;
   len = l;
+  encodingIdx = -1;
   if (s < 0 || s > cstring->length() || len < -1 || len > cstring->length() - start)
     throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
@@ -164,6 +167,7 @@ DString::DString(const String &cstring, int s, int l)
   cstr = &cstring;
   start = s;
   len = l;
+  encodingIdx = -1;
   if (s < 0 || s > cstring.length() || len < -1 || len > cstring.length() - start)
     throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
@@ -175,11 +179,44 @@ DString::DString()
   type = ST_CHAR;
   len = 0;
   start = 0;
+  encodingIdx = -1;
 }
 
 DString::~DString()
 {
   if (type == ST_UTF8) delete[] stream_wstr;
+}
+
+DString::DString(DString &&cstring)
+{
+  type = cstring.type;
+  len = cstring.len;
+  start = cstring.start;
+  cstr = cstring.cstr;
+  encodingIdx = cstring.encodingIdx;
+
+  cstring.cstr = nullptr;
+  cstring.len = 0;
+  cstring.start = 0;
+  cstring.type = ST_CHAR;
+  cstring.encodingIdx = -1;
+}
+
+DString &DString::operator=(DString &&cstring)
+{
+  type = cstring.type;
+  len = cstring.len;
+  start = cstring.start;
+  cstr = cstring.cstr;
+  encodingIdx = cstring.encodingIdx;
+
+  cstring.cstr = nullptr;
+  cstring.len = 0;
+  cstring.start = 0;
+  cstring.type = ST_CHAR;
+  cstring.encodingIdx = -1;
+
+  return *this;
 }
 
 wchar DString::operator[](int i) const
