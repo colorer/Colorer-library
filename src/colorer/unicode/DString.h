@@ -104,6 +104,39 @@ protected:
 
 };
 
+inline DString::DString(DString &&cstring):
+  type(cstring.type),
+  encodingIdx(cstring.encodingIdx),
+  cstr(cstring.cstr),
+  start(cstring.start),
+  len(cstring.len)
+{
+
+  cstring.cstr = nullptr;
+  cstring.len = 0;
+  cstring.start = 0;
+  cstring.type = ST_CHAR;
+  cstring.encodingIdx = -1;
+}
+
+inline DString &DString::operator=(DString &&cstring)
+{
+  if (this != &cstring) {
+    type = cstring.type;
+    len = cstring.len;
+    start = cstring.start;
+    cstr = cstring.cstr;
+    encodingIdx = cstring.encodingIdx;
+
+    cstring.cstr = nullptr;
+    cstring.len = 0;
+    cstring.start = 0;
+    cstring.type = ST_CHAR;
+    cstring.encodingIdx = -1;
+  }
+  return *this;
+}
+
 #endif
 
 /* ***** BEGIN LICENSE BLOCK *****

@@ -34,6 +34,12 @@ SString::SString(const char* string, int s, int l)
   construct(&ds, 0, ds.length());
 }
 
+SString::SString(const wchar* string, int s, int l)
+{
+  DString ds(string, s, l);
+  construct(&ds, 0, ds.length());
+}
+
 SString::SString(const String &cstring, int s, int l)
 {
   construct(&cstring, s, l);
@@ -82,11 +88,6 @@ wchar SString::operator[](int i) const
 {
   if (i >= len) throw StringIndexOutOfBoundsException(SString(i));
   return wstr[i];
-}
-
-int SString::length() const
-{
-  return len;
 }
 
 SString &SString::append(const String* string)
@@ -150,30 +151,6 @@ SString &SString::operator+=(const String &string)
 SString &SString::operator=(SString const &cstring)
 {
   construct(&cstring, 0, -1);
-  return *this;
-}
-
-SString::SString(SString &&cstring)
-{
-  wstr = std::move(cstring.wstr);
-  alloc = cstring.alloc;
-  len = cstring.len;
-
-  cstring.wstr = nullptr;
-  cstring.alloc = 0;
-  cstring.len = 0;
-}
-
-SString &SString::operator=(SString &&cstring)
-{
-  wstr = std::move(cstring.wstr);
-  alloc = cstring.alloc;
-  len = cstring.len;
-
-  cstring.wstr = nullptr;
-  cstring.alloc = 0;
-  cstring.len = 0;
-
   return *this;
 }
 

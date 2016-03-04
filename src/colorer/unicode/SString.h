@@ -32,6 +32,7 @@ public:
    * @param str source string, can't be null.
    */
   SString(const char* string, int s = 0, int l = -1);
+  SString(const wchar* string, int s = 0, int l = -1);
   SString(char* str, int enc = -1);
   SString(wchar* str);
 
@@ -81,6 +82,33 @@ protected:
   int len;
   int alloc;
 };
+
+inline SString::SString(SString &&cstring): wstr(std::move(cstring.wstr)),
+  len(cstring.len),
+  alloc(cstring.alloc)
+{
+  cstring.wstr = nullptr;
+  cstring.alloc = 0;
+  cstring.len = 0;
+}
+
+inline SString &SString::operator=(SString &&cstring)
+{
+  if (this != &cstring) {
+    wstr = std::move(cstring.wstr);
+    alloc = cstring.alloc;
+    len = cstring.len;
+    cstring.wstr = nullptr;
+    cstring.alloc = 0;
+    cstring.len = 0;
+  }
+  return *this;
+}
+
+inline int SString::length() const
+{
+  return len;
+}
 
 #include <unordered_map>
 namespace std

@@ -187,38 +187,6 @@ DString::~DString()
   if (type == ST_UTF8) delete[] stream_wstr;
 }
 
-DString::DString(DString &&cstring)
-{
-  type = cstring.type;
-  len = cstring.len;
-  start = cstring.start;
-  cstr = cstring.cstr;
-  encodingIdx = cstring.encodingIdx;
-
-  cstring.cstr = nullptr;
-  cstring.len = 0;
-  cstring.start = 0;
-  cstring.type = ST_CHAR;
-  cstring.encodingIdx = -1;
-}
-
-DString &DString::operator=(DString &&cstring)
-{
-  type = cstring.type;
-  len = cstring.len;
-  start = cstring.start;
-  cstr = cstring.cstr;
-  encodingIdx = cstring.encodingIdx;
-
-  cstring.cstr = nullptr;
-  cstring.len = 0;
-  cstring.start = 0;
-  cstring.type = ST_CHAR;
-  cstring.encodingIdx = -1;
-
-  return *this;
-}
-
 wchar DString::operator[](int i) const
 {
   if (start + i >= 0 && i < len) switch (type) {
