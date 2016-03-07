@@ -14,7 +14,7 @@ const int StyledRegion::RD_STRIKEOUT = 8;
 StyledHRDMapper::StyledHRDMapper() {}
 StyledHRDMapper::~StyledHRDMapper()
 {
-  for(auto it: regionDefines){
+  for (auto it : regionDefines) {
     delete it.second;
   }
   regionDefines.clear();
@@ -104,7 +104,7 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 }
 
 /** Adds or replaces region definition */
-void StyledHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
+void StyledHRDMapper::setRegionDefine(const String &name, const RegionDefine* rd)
 {
   auto rd_old = regionDefines.find(&name);
 

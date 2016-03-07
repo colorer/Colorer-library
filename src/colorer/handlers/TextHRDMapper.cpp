@@ -116,7 +116,7 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 }
 
 /** Adds or replaces region definition */
-void TextHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
+void TextHRDMapper::setRegionDefine(const String &name, const RegionDefine* rd)
 {
   const TextRegion* rd_new = TextRegion::cast(rd);
   const String* stext = nullptr;

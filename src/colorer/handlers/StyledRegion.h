@@ -1,8 +1,8 @@
 #ifndef _COLORER_STYLEDREGION_H_
 #define _COLORER_STYLEDREGION_H_
 
-#include<colorer/Exception.h>
-#include<colorer/handlers/RegionDefine.h>
+#include <colorer/Exception.h>
+#include <colorer/handlers/RegionDefine.h>
 
 /**
  * Contains information about region mapping into real colors.
@@ -10,7 +10,8 @@
  * by StyledHRDMapper class.
  * @ingroup colorer_handlers
  */
-class StyledRegion : public RegionDefine{
+class StyledRegion : public RegionDefine
+{
 public:
   static const int RD_BOLD;
   static const int RD_ITALIC;
@@ -29,7 +30,8 @@ public:
   unsigned int style;
 
   /** Common constructor */
-  StyledRegion(bool _bfore, bool _bback, unsigned int _fore, unsigned int _back, unsigned int _style){
+  StyledRegion(bool _bfore, bool _bback, unsigned int _fore, unsigned int _back, unsigned int _style)
+  {
     type = STYLED_REGION;
     bfore = _bfore;
     bback = _bback;
@@ -39,7 +41,8 @@ public:
   }
 
   /** Empty constructor */
-  StyledRegion(){
+  StyledRegion()
+  {
     type = STYLED_REGION;
     bfore = bback = false;
     fore = back = 0;
@@ -48,42 +51,46 @@ public:
 
   /** Copy constructor.
       Clones all values including region reference. */
-  StyledRegion(const StyledRegion &rd){
+  StyledRegion(const StyledRegion &rd)
+  {
     operator=(rd);
   }
 
-  ~StyledRegion(){}
+  ~StyledRegion() {}
 
   /** Static method, used to cast RegionDefine class into
       StyledRegion class.
       @throw Exception If casing is not available.
   */
-  static const StyledRegion *cast(const RegionDefine *rd) {
+  static const StyledRegion* cast(const RegionDefine* rd)
+  {
     if (rd == nullptr) return nullptr;
     if (rd->type != STYLED_REGION) throw Exception(DString("Bad type cast exception into StyledRegion"));
-    const StyledRegion *sr = (const StyledRegion *)(rd);
+    const StyledRegion* sr = (const StyledRegion*)(rd);
     return sr;
   }
   /** Completes region define with it's parent values.
       The values only replaced, are these, which are empty
       in this region define. Style is replaced using OR operation.
   */
-  void assignParent(const RegionDefine *_parent){
-    const StyledRegion *parent = StyledRegion::cast(_parent);
+  void assignParent(const RegionDefine* _parent)
+  {
+    const StyledRegion* parent = StyledRegion::cast(_parent);
     if (parent == nullptr) return;
-    if (!bfore){
+    if (!bfore) {
       fore = parent->fore;
       bfore = parent->bfore;
     }
-    if (!bback){
+    if (!bback) {
       back = parent->back;
       bback = parent->bback;
     }
     style = style | parent->style;
   }
 
-  void setValues(const RegionDefine *_rd){
-    const StyledRegion *rd = StyledRegion::cast(_rd);
+  void setValues(const RegionDefine* _rd)
+  {
+    const StyledRegion* rd = StyledRegion::cast(_rd);
     fore  = rd->fore;
     bfore = rd->bfore;
     back  = rd->back;
@@ -92,8 +99,9 @@ public:
     type  = rd->type;
   }
 
-  RegionDefine *clone() const {
-    RegionDefine *rd = new StyledRegion(*this);
+  RegionDefine* clone() const
+  {
+    RegionDefine* rd = new StyledRegion(*this);
     return rd;
   }
 };

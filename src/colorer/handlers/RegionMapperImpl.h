@@ -31,7 +31,7 @@ public:
       @param region Region full qualified name.
       @param rdnew  New region definition to replace old one
   */
-  virtual void  setRegionDefine(const String& region, const RegionDefine* rdnew) = 0;
+  virtual void  setRegionDefine(const String &region, const RegionDefine* rdnew) = 0;
 
   /** Enumerates all loaded region defines.
       @return RegionDefine with specified internal index, or null if @c idx is too big
@@ -39,14 +39,14 @@ public:
   std::vector<const RegionDefine*> enumerateRegionDefines() const;
 
   const RegionDefine* getRegionDefine(const Region* region) const;
-  const RegionDefine* getRegionDefine(const String& name) const;
+  const RegionDefine* getRegionDefine(const String &name) const;
 
 protected:
   std::unordered_map<SString, RegionDefine*> regionDefines;
   mutable std::vector<const RegionDefine*> regionDefinesVector;
 
-  RegionMapperImpl(const RegionMapperImpl&);
-  void operator=(const RegionMapperImpl&);
+  RegionMapperImpl(const RegionMapperImpl &);
+  void operator=(const RegionMapperImpl &);
 };
 
 #endif
