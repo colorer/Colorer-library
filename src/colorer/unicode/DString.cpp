@@ -43,7 +43,7 @@ DString::DString(const byte* stream, int size, int def_encoding)
           cpe = p;
           break;
         }
-        if (cps || strncmp((char*)stream + p, "encoding=", 9) == 0) continue;
+        if (cps || strncmp((char*)stream + p, "encoding=", 9) !=0) continue;
         p += 9;
         if (!cps && (stream[p] == '\"' || stream[p] == '\'')) {
           p++;
