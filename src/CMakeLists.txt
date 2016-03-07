@@ -53,6 +53,8 @@ set(SRC_COLORER
    ${HANDLERS}/RegionMapper.h
    ${HANDLERS}/StyledRegion.h
    ${HANDLERS}/TextRegion.h
+   ${PARSERS}/CatalogParser.cpp ${PARSERS}/CatalogParser.h
+   ${PARSERS}/HRDNode.h
    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp

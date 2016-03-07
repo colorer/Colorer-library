@@ -13,18 +13,16 @@
 #include <xercesc/util/BinFileInputStream.hpp>
 
 #include <colorer/parsers/ParserFactory.h>
+#include <colorer/parsers/CatalogParser.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/TextParserImpl.h>
 #include <colorer/parsers/ParserFactoryException.h>
 
 #include <colorer/xml/XmlInputSource.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
-#include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XmlTagDefs.h>
 #include <colorer/xml/XStr.h>
 
-ParserFactory::ParserFactory(): catalogXIS(nullptr), hrc_parser(new HRCParserImpl())
+ParserFactory::ParserFactory(): hrc_parser(new HRCParserImpl())
 {
   RegExpStack = nullptr;
   RegExpStack_Size = 0;
@@ -32,34 +30,18 @@ ParserFactory::ParserFactory(): catalogXIS(nullptr), hrc_parser(new HRCParserImp
 
 ParserFactory::~ParserFactory()
 {
-  // Ohhh!
-  for (auto it : hrdLocations) {
-    for (auto it2 : *it.second) {
-      for (auto it3 : *it2.second) {
-        delete it3;
-      }
-      delete it2.second;
-    }
-    delete it.second;
-  }
-
-  for (auto it : hrdDescriptions) {
-    delete it.second;
-  }
-  hrdDescriptions.clear();
-
   delete hrc_parser;
   delete[] RegExpStack;
 }
 
-UString ParserFactory::searchCatalog() const
+SString ParserFactory::searchCatalog() const
 {
   LOG(DEBUG) << "begin search catalog.xml";
 
   std::vector<SString> paths;
   getPossibleCatalogPaths(paths);
 
-  UString right_path(nullptr);
+  SString right_path;
   for (auto path : paths) {
     try {
       LOG(DEBUG) << "test path '" << path.getChars() << "'";
@@ -67,16 +49,16 @@ UString ParserFactory::searchCatalog() const
       uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
 
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
-      right_path.reset(new SString(DString(catalog->getInputSource()->getSystemId())));
+      right_path = SString(catalog->getInputSource()->getSystemId());
 
-      LOG(DEBUG) << "found valid path '" << path.getChars() << "' = '" << right_path->getChars() << "'";
+      LOG(DEBUG) << "found valid path '" << path.getChars() << "' = '" << right_path.getChars() << "'";
       break;
     } catch (const Exception &e) {
       LOG(ERROR) << e.what();
     }
   }
   LOG(DEBUG) << "end search catalog.xml";
-  if (!right_path) {
+  if (right_path.length() == 0) {
     LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
     throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
   }
@@ -160,32 +142,30 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
 
 void ParserFactory::loadCatalog(const String* catalog_path)
 {
-  hrc_locations.clear();
-
-  UString catalog;
   if (!catalog_path) {
-    catalog = std::move(searchCatalog());
-    if (!catalog) {
+    base_catalog_path = searchCatalog();
+    if (base_catalog_path.length() == 0) {
       throw ParserFactoryException(DString("Can't find suitable catalog.xml file."));
     }
   } else {
-    catalog.reset(new SString(catalog_path));
+    base_catalog_path = SString(catalog_path);
   }
 
-  parseCatalog(catalog.get());
+
+  parseCatalog(base_catalog_path);
   LOG(DEBUG) << "begin load hrc files";
   for (auto location : hrc_locations) {
     try {
       LOG(DEBUG) << "try load '" << location.getChars() << "'";
-      auto clear_path = XmlInputSource::getClearPath(catalog.get(), &location);
+      auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
       if (XmlInputSource::isDirectory(clear_path.get())) {
         std::vector<SString> paths;
         XmlInputSource::getFileFromDir(clear_path.get(), paths);
         for (auto files : paths) {
-          loadHrc(&files, catalog.get());
+          loadHrc(&files, &base_catalog_path);
         }
       } else {
-        loadHrc(clear_path.get(), catalog.get());
+        loadHrc(clear_path.get(), &base_catalog_path);
       }
     } catch (const Exception &e) {
       LOG(ERROR) << e.what();
@@ -193,7 +173,6 @@ void ParserFactory::loadCatalog(const String* catalog_path)
   }
 
   LOG(DEBUG) << "end load hrc files";
-  hrc_locations.clear();
 }
 
 void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) const
@@ -209,138 +188,24 @@ void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) con
 
 void ParserFactory::parseCatalog(const SString &catalog_path)
 {
-  LOG(DEBUG) << "begin parse catalog.xml";
+  hrc_locations.clear();
+  hrd_nodes.clear();
 
-  xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler;
-  BaseEntityResolver resolver;
-  xml_parser.setErrorHandler(&error_handler);
-  xml_parser.setXMLEntityResolver(&resolver);
-  xml_parser.setLoadExternalDTD(false);
-  xml_parser.setSkipDTDValidation(true);
-  catalogXIS = XmlInputSource::newInstance(catalog_path.getWChars(), static_cast<XMLCh*>(nullptr));
-  xml_parser.parse(*catalogXIS->getInputSource());
-  if (error_handler.getSawErrors()) {
-    throw ParserFactoryException(DString("Error reading catalog.xml."));
+  CatalogParser catalog_parser;
+  catalog_parser.parse(&catalog_path);
+
+  for (auto hrc_location : catalog_parser.hrc_locations) {
+    hrc_locations.push_back(hrc_location);
   }
-  xercesc::DOMDocument* catalog = xml_parser.getDocument();
-  xercesc::DOMElement* elem = catalog->getDocumentElement();
 
-  if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw ParserFactoryException(SString("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file ") + catalog_path);
-  }
-  parseCatalogBlock(elem);
-
-  LOG(DEBUG) << "end parse catalog.xml";
-}
-
-void ParserFactory::parseCatalogBlock(const xercesc::DOMElement* elem)
-{
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
-    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrcSets)) {
-        parseHrcSetsBlock(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrdSets)) {
-        parseHrdSetsBlock(subelem);
-      }
-      continue;
+  while (!catalog_parser.hrd_nodes.empty()) {
+    auto hrd = std::move(catalog_parser.hrd_nodes.front());
+    catalog_parser.hrd_nodes.pop_front();
+    if (hrd_nodes.find(hrd->hrd_class) == hrd_nodes.end()) {
+      hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HRDNode>>>());
     }
-    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseCatalogBlock(static_cast<xercesc::DOMElement*>(node));
-    }
+    hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
   }
-}
-
-void ParserFactory::parseHrcSetsBlock(const xercesc::DOMElement* elem)
-{
-  addHrcSetsLocation(elem);
-}
-
-void ParserFactory::addHrcSetsLocation(const xercesc::DOMElement* elem)
-{
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
-    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
-        hrc_locations.push_back(SString(DString(subelem->getAttribute(catLocationAttrLink))));
-        LOG(DEBUG) << "add hrc location: '" << hrc_locations.back().getChars() << "'";
-      }
-      continue;
-    }
-    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      addHrcSetsLocation(static_cast<xercesc::DOMElement*>(node));
-    }
-  }
-}
-
-void ParserFactory::parseHrdSetsBlock(const xercesc::DOMElement* elem)
-{
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
-    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
-        parseHRDSetsChild(subelem);
-      }
-      continue;
-    }
-    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseHrdSetsBlock(static_cast<xercesc::DOMElement*>(node));
-    }
-  }
-}
-
-void ParserFactory::parseHRDSetsChild(const xercesc::DOMElement* elem)
-{
-  const XMLCh* xhrd_class = elem->getAttribute(catHrdAttrClass);
-  const XMLCh* xhrd_name = elem->getAttribute(catHrdAttrName);
-  if (*xhrd_class == '\0' || *xhrd_name == '\0') {
-    return;
-  }
-
-  const String* hrd_class = new DString(xhrd_class);
-  const String* hrd_name = new DString(xhrd_name);
-  std::unordered_map<SString, std::vector<const String*>*>* hrdClass;
-  auto it_hrdClass = hrdLocations.find(hrd_class);
-  if (it_hrdClass == hrdLocations.end()) {
-    hrdClass = new std::unordered_map<SString, std::vector<const String*>*>;
-    std::pair<SString, std::unordered_map<SString, std::vector<const String*>*>*> pair_class(hrd_class, hrdClass);
-    hrdLocations.emplace(pair_class);
-  } else {
-    hrdClass = it_hrdClass->second;
-  }
-
-  auto it_hrdName = hrdClass->find(hrd_name);
-  if (it_hrdName != hrdClass->end()) {
-    LOGF(ERROR, "Duplicate hrd name '%s'", hrd_name->getChars());
-    delete hrd_class;
-    delete hrd_name;
-    return;
-  }
-
-  std::vector<const String*>* hrdLocV(new std::vector<const String*>);
-  std::pair<SString, std::vector<const String*>*> pair_name(hrd_name, hrdLocV);
-  hrdClass->emplace(pair_name);
-
-  const String* hrd_descr = new SString(DString(elem->getAttribute(catHrdAttrDescription)));
-  if (hrd_descr == nullptr) {
-    hrd_descr = new SString(hrd_name);
-  }
-  std::pair<SString, const String*> pp(&(SString(hrd_class) + "-" + hrd_name), hrd_descr);
-  hrdDescriptions.emplace(pp);
-
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
-    if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      if (xercesc::XMLString::equals(node->getNodeName(), catTagLocation)) {
-        xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
-        hrdLocV->push_back(new SString(DString(subelem->getAttribute(catLocationAttrLink))));
-      }
-    }
-  }
-  delete hrd_class;
-  delete hrd_name;
 }
 
 const char* ParserFactory::getVersion()
@@ -350,8 +215,8 @@ const char* ParserFactory::getVersion()
 
 size_t ParserFactory::countHRD(const String &classID)
 {
-  auto hash = hrdLocations.find(classID);
-  if (hash == hrdLocations.end()) {
+  auto hash = hrd_nodes.find(classID);
+  if (hash == hrd_nodes.end()) {
     return 0;
   }
   return hash->second->size();
@@ -359,33 +224,37 @@ size_t ParserFactory::countHRD(const String &classID)
 
 std::vector<SString> ParserFactory::enumHRDClasses()
 {
-  std::vector<SString> r;
-  r.reserve(hrdLocations.size());
-  for (auto p = hrdLocations.begin(); p != hrdLocations.end(); ++p) {
-    r.push_back(p->first);
+  std::vector<SString> result;
+  result.reserve(hrd_nodes.size());
+  for (auto p = hrd_nodes.begin(); p != hrd_nodes.end(); ++p) {
+    result.push_back(p->first);
   }
-  return r;
+  return result;
 }
 
-std::vector<SString> ParserFactory::enumHRDInstances(const String &classID)
+std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const String &classID)
 {
-  auto hash = hrdLocations.find(classID);
-  std::vector<SString> r;
-  r.reserve(hash->second->size());
+  auto hash = hrd_nodes.find(classID);
+  std::vector<const HRDNode*> result;
+  result.reserve(hash->second->size());
   for (auto p = hash->second->begin(); p != hash->second->end(); ++p) {
-    r.push_back(p->first);
+    result.push_back(p->get());
   }
-  return r;
+  return result;
 }
 
-const String* ParserFactory::getHRDescription(const String &classID, const String &nameID)
+const HRDNode* ParserFactory::getHRDNode(const String &classID, const String &nameID)
 {
-  auto it = hrdDescriptions.find(&(SString(classID) + "-" + nameID));
-  if (it != hrdDescriptions.end()) {
-    return it->second;
-  } else {
-    return nullptr;
+  auto hash = hrd_nodes.find(classID);
+  if (hash == hrd_nodes.end()) {
+    throw ParserFactoryException(SString("can't find HRDClass '") + classID + "'");
   }
+  for (auto p = hash->second->begin(); p != hash->second->end(); ++p) {
+    if (nameID.compareTo(p->get()->hrd_name) == 0) {
+      return p->get();
+    }
+  }
+  throw ParserFactoryException(SString("can't find HRDName '") + nameID + "'");
 }
 
 HRCParser* ParserFactory::getHRCParser() const
@@ -408,12 +277,6 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
     class_id = classID;
   }
 
-  auto it_hrdClass = hrdLocations.find(class_id);
-  if (it_hrdClass == hrdLocations.end()) {
-    throw ParserFactoryException(SString("can't find hrdClass '") + classID + "'");
-  }
-  std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
-
   const String* name_id;
   const DString name_default("default");
   DString name_env;
@@ -429,18 +292,14 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
     name_id = nameID;
   }
 
-  auto it_hrdLocV = hrdClass->find(name_id);
-  if (it_hrdLocV == hrdClass->end()) {
-    throw ParserFactoryException(SString("can't find hrdName '") + name_id + "'");
-  }
-  std::vector<const String*>* hrdLocV = it_hrdLocV->second;
+  auto hrd_node = getHRDNode(*class_id, *name_id);
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
-  for (size_t idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->at(idx) != nullptr) {
+  for (size_t idx = 0; idx < hrd_node->hrd_location.size(); idx++)
+    if (hrd_node->hrd_location.at(idx) != nullptr) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
+        dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         LOGF(ERROR, "Can't load hrd:");
@@ -455,12 +314,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 {
   // fixed class 'text'
   DString d_text = DString("text");
-  auto it_hrdClass = hrdLocations.find(&d_text);
-  if (it_hrdClass == hrdLocations.end()) {
-    throw ParserFactoryException(SString("can't find hrdClass 'text'"));
-  }
 
-  std::unordered_map<SString, std::vector<const String*>*>* hrdClass = it_hrdClass->second;
   const String* name_id;
   const DString name_default("default");
   if (nameID == nullptr) {
@@ -469,18 +323,14 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
     name_id = nameID;
   }
 
-  auto it_hrdLocV = hrdClass->find(name_id);
-  if (it_hrdLocV == hrdClass->end()) {
-    throw ParserFactoryException(SString("can't find hrdName '") + name_id + "'");
-  }
-  std::vector<const String*>* hrdLocV = it_hrdLocV->second;
+  auto hrd_node = getHRDNode(d_text, *name_id);
 
   TextHRDMapper* mapper = new TextHRDMapper();
-  for (size_t idx = 0; idx < hrdLocV->size(); idx++)
-    if (hrdLocV->at(idx) != nullptr) {
+  for (size_t idx = 0; idx <  hrd_node->hrd_location.size(); idx++)
+    if (hrd_node->hrd_location.at(idx) != nullptr) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrdLocV->at(idx)->getWChars(), catalogXIS.get());
+        dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         LOG(ERROR) << "Can't load hrd: ";
