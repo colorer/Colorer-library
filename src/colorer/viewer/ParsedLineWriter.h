@@ -79,11 +79,11 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       };
-      if (l1->texted()->sback != nullptr) markupWriter->write(l1->texted()->sback);
-      if (l1->texted()->stext != nullptr) markupWriter->write(l1->texted()->stext);
+      if (l1->texted()->start_back != nullptr) markupWriter->write(l1->texted()->start_back);
+      if (l1->texted()->start_text != nullptr) markupWriter->write(l1->texted()->start_text);
       textWriter->write(line, pos, end - l1->start);
-      if (l1->texted()->etext != nullptr) markupWriter->write(l1->texted()->etext);
-      if (l1->texted()->eback != nullptr) markupWriter->write(l1->texted()->eback);
+      if (l1->texted()->end_text != nullptr) markupWriter->write(l1->texted()->end_text);
+      if (l1->texted()->end_back != nullptr) markupWriter->write(l1->texted()->end_back);
       pos += end - l1->start;
     }
     if (pos < line->length()){

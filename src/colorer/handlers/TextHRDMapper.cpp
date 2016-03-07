@@ -10,10 +10,10 @@ TextHRDMapper::~TextHRDMapper()
 {
   for (auto rdef = regionDefines.begin(); rdef != regionDefines.end(); ++rdef) {
     const TextRegion* rd = TextRegion::cast(rdef->second);
-    delete rd->stext;
-    delete rd->etext;
-    delete rd->sback;
-    delete rd->eback;
+    delete rd->start_text;
+    delete rd->end_text;
+    delete rd->start_back;
+    delete rd->end_back;
     delete rd;
   }
 }
@@ -50,10 +50,10 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
       auto tp = regionDefines.find(name);
       if (tp != regionDefines.end()) {
         const TextRegion* rd = TextRegion::cast(tp->second);
-        delete rd->stext;
-        delete rd->etext;
-        delete rd->sback;
-        delete rd->eback;
+        delete rd->start_text;
+        delete rd->end_text;
+        delete rd->start_back;
+        delete rd->end_back;
         delete rd;
       }
       const String* stext = nullptr;
@@ -98,17 +98,17 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
     const TextRegion* rdef = TextRegion::cast(it->second);
     writer->write(SString("  <define name='") + it->first + "'");
-    if (rdef->stext != nullptr) {
-      writer->write(SString(" stext='") + rdef->stext + "'");
+    if (rdef->start_text != nullptr) {
+      writer->write(SString(" start_text='") + rdef->start_text + "'");
     }
-    if (rdef->etext != nullptr) {
-      writer->write(SString(" etext='") + rdef->etext + "'");
+    if (rdef->end_text != nullptr) {
+      writer->write(SString(" end_text='") + rdef->end_text + "'");
     }
-    if (rdef->sback != nullptr) {
-      writer->write(SString(" sback='") + rdef->sback + "'");
+    if (rdef->start_back != nullptr) {
+      writer->write(SString(" start_back='") + rdef->start_back + "'");
     }
-    if (rdef->eback != nullptr) {
-      writer->write(SString(" eback='") + rdef->eback + "'");
+    if (rdef->end_back != nullptr) {
+      writer->write(SString(" end_back='") + rdef->end_back + "'");
     }
     writer->write(DString("/>\n"));
   }
@@ -123,26 +123,26 @@ void TextHRDMapper::setRegionDefine(const String &name, const RegionDefine* rd)
   const String* etext = nullptr;
   const String* sback = nullptr;
   const String* eback = nullptr;
-  if (rd_new->stext != nullptr) {
-    stext = new SString(rd_new->stext);
+  if (rd_new->start_text != nullptr) {
+    stext = new SString(rd_new->start_text);
   }
-  if (rd_new->etext != nullptr) {
-    etext = new SString(rd_new->etext);
+  if (rd_new->end_text != nullptr) {
+    etext = new SString(rd_new->end_text);
   }
-  if (rd_new->sback != nullptr) {
-    sback = new SString(rd_new->sback);
+  if (rd_new->start_back != nullptr) {
+    sback = new SString(rd_new->start_back);
   }
-  if (rd_new->eback != nullptr) {
-    eback = new SString(rd_new->eback);
+  if (rd_new->end_back != nullptr) {
+    eback = new SString(rd_new->end_back);
   }
 
   auto rd_old = regionDefines.find(name);
   if (rd_old != regionDefines.end()) {
     const TextRegion* rdef = TextRegion::cast(rd_old->second);
-    delete rdef->stext;
-    delete rdef->etext;
-    delete rdef->sback;
-    delete rdef->eback;
+    delete rdef->start_text;
+    delete rdef->end_text;
+    delete rdef->start_back;
+    delete rdef->end_back;
     delete rdef;
   }
 

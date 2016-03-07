@@ -2,18 +2,6 @@
 #define _COLORER_REGIONDEFINE_H_
 
 /**
- * Enumeration to distinguish different types of region mapping
- * Do not use RTTI because of compatibility problems
- *
- * @ingroup colorer_handlers
- */
-enum RegionDefineType {
-  UNKNOWN_REGION = 0,
-  STYLED_REGION  = 1,
-  TEXT_REGION    = 2,
-};
-
-/**
  * Object contains information about region mapping into real colors or other properties.
  * This class represents abstract mapping information and declares required methods
  * to be implemented in it's subclasses.
@@ -23,6 +11,18 @@ enum RegionDefineType {
 class RegionDefine
 {
 public:
+
+  /**
+  * Enumeration to distinguish different types of region mapping
+  * Do not use RTTI because of compatibility problems
+  *
+  * @ingroup colorer_handlers
+  */
+  enum RegionDefineType {
+    UNKNOWN_REGION = 0,
+    STYLED_REGION = 1,
+    TEXT_REGION = 2,
+  };
 
   /**
    * Class type identifier

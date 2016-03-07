@@ -17,7 +17,10 @@ public:
    * Text wrapping information.
    * Pointers are managed externally.
    */
-  const String* stext, *etext, *sback, *eback;
+  const String* start_text;
+  const String* end_text;
+  const String* start_back;
+  const String* end_back;
 
   /**
    * Initial constructor
@@ -25,17 +28,17 @@ public:
   TextRegion(const String* _stext, const String* _etext,
              const String* _sback, const String* _eback)
   {
-    stext = _stext;
-    etext = _etext;
-    sback = _sback;
-    eback = _eback;
-    type = TEXT_REGION;
+    start_text = _stext;
+    end_text = _etext;
+    start_back = _sback;
+    end_back = _eback;
+    type = RegionDefine::TEXT_REGION;
   }
 
   TextRegion()
   {
-    stext = etext = sback = eback = nullptr;
-    type = TEXT_REGION;
+    start_text = end_text = start_back = end_back = nullptr;
+    type = RegionDefine::TEXT_REGION;
   }
 
   /**
@@ -56,7 +59,7 @@ public:
   static const TextRegion* cast(const RegionDefine* rd)
   {
     if (rd == nullptr) return nullptr;
-    if (rd->type != TEXT_REGION) {
+    if (rd->type != RegionDefine::TEXT_REGION) {
       throw Exception(DString("Bad type cast exception into TextRegion"));
     }
     const TextRegion* tr = (const TextRegion*)(rd);
@@ -71,13 +74,13 @@ public:
   {
     const TextRegion* parent = TextRegion::cast(_parent);
     if (parent == nullptr) return;
-    if (stext == nullptr || etext == nullptr) {
-      stext = parent->stext;
-      etext = parent->etext;
+    if (start_text == nullptr || end_text == nullptr) {
+      start_text = parent->start_text;
+      end_text = parent->end_text;
     }
-    if (sback == nullptr || eback == nullptr) {
-      sback = parent->sback;
-      eback = parent->eback;
+    if (start_back == nullptr || end_back == nullptr) {
+      start_back = parent->start_back;
+      end_back = parent->end_back;
     }
   }
 
@@ -89,10 +92,10 @@ public:
   {
     if (_rd == nullptr) return;
     const TextRegion* rd = TextRegion::cast(_rd);
-    stext = rd->stext;
-    etext = rd->etext;
-    sback = rd->sback;
-    eback = rd->eback;
+    start_text = rd->start_text;
+    end_text = rd->end_text;
+    start_back = rd->start_back;
+    end_back = rd->end_back;
     type  = rd->type;
   }
 

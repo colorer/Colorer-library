@@ -437,7 +437,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(DString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->stext);
+        commonWriter->write(TextRegion::cast(rd)->start_text);
       } else {
         commonWriter->write(DString("<html><body style='"));
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
@@ -480,7 +480,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(DString("</pre></body></html>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->etext);
+        commonWriter->write(TextRegion::cast(rd)->end_text);
       } else {
         commonWriter->write(DString("</pre></body></html>\n"));
       }
