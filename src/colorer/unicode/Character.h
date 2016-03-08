@@ -1,6 +1,6 @@
 #ifndef _COLORER_CHARACTER_H_
 #define _COLORER_CHARACTER_H_
-#include<wchar.h>
+#include <wchar.h>
 
 //#if   defined _MSC_VER
 
@@ -54,7 +54,8 @@ typedef unsigned short int wchar;
 
     @ingroup unicode
 */
-class Character{
+class Character
+{
 public:
   static wchar toLowerCase(wchar c);
   static wchar toUpperCase(wchar c);
@@ -71,9 +72,9 @@ public:
   static bool isWhitespace(wchar c);
 
   static bool isNumber(wchar c);
-  static bool toNumericValue(wchar c, float *f);
+  static bool toNumericValue(wchar c, float* f);
 
-  static char *getCategoryName(wchar c);
+  static char* getCategoryName(wchar c);
   static ECharCategory getCategory(wchar c);
 
   static int getCombiningClass(wchar c);

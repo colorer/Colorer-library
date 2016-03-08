@@ -1,13 +1,14 @@
 #ifndef _COLORER_BITARRAY_H_
 #define _COLORER_BITARRAY_H_
 
-#include<colorer/Common.h>
+#include <colorer/Common.h>
 
 /** Bit Array field.
     Creates and manages bit array objects.
     @ingroup unicode
 */
-class BitArray{
+class BitArray
+{
 public:
   /** Creates bit array with specified number of stored bitfields.
   */
@@ -42,7 +43,7 @@ public:
 #include<colorer/common/MemoryOperator.h>
 
 private:
-  int *array;
+  int* array;
   int size;
   void createArray(bool set = false);
 };

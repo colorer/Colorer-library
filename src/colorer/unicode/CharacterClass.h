@@ -1,8 +1,8 @@
 #ifndef _COLORER_CHARACTERCLASS_H_
 #define _COLORER_CHARACTERCLASS_H_
 
-#include<colorer/unicode/String.h>
-#include<colorer/unicode/BitArray.h>
+#include <colorer/unicode/String.h>
+#include <colorer/unicode/BitArray.h>
 
 /** Character classes store implementation.
     - CharacterClass allows to store enumerations of characters in compact
@@ -11,15 +11,16 @@
       char category -> enumeration conversion.
     @ingroup unicode
 */
-class CharacterClass{
+class CharacterClass
+{
 private:
-  BitArray **infoIndex;
+  BitArray** infoIndex;
 public:
   CharacterClass();
   CharacterClass(const CharacterClass &);
   ~CharacterClass();
 
-  static CharacterClass *createCharClass(const String &ccs, int pos, int *retPos);
+  static CharacterClass* createCharClass(const String &ccs, int pos, int* retPos);
 
   void addChar(wchar);
   void clearChar(wchar);
@@ -27,10 +28,10 @@ public:
   void clearRange(wchar, wchar);
 
   void addCategory(ECharCategory);
-  void addCategory(const char *);
+  void addCategory(const char*);
   void addCategory(const String &);
   void clearCategory(ECharCategory);
-  void clearCategory(const char *);
+  void clearCategory(const char*);
   void clearCategory(const String &);
 
   void addClass(const CharacterClass &);

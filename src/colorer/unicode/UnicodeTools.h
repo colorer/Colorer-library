@@ -6,14 +6,15 @@
 /** Different Unicode methods and tools.
     @ingroup unicode
 */
-class UnicodeTools{
+class UnicodeTools
+{
 public:
   /// sometimes need it...
-  static bool getNumber(const String *pstr, double *res);
-  static bool getNumber(const String *pstr, int *res);
-  static int getNumber(const String *pstr);
+  static bool getNumber(const String* pstr, double* res);
+  static bool getNumber(const String* pstr, int* res);
+  static int getNumber(const String* pstr);
   static int getHex(wchar c);
-  static int getHexNumber(const String *pstr);
+  static int getHexNumber(const String* pstr);
 
   /** For '{name}'  returns 'name'
       Removes brackets and returns new dynamic string,
@@ -23,7 +24,7 @@ public:
             base passed string remains valid until
             accessing it.
   */
-  static DString *getCurlyContent(const String &str, int pos);
+  static DString* getCurlyContent(const String &str, int pos);
 
   /** \\x{2028} \\x23 \\c  - into wchar
       @param str String to parse Escape sequence.

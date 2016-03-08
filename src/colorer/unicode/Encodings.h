@@ -1,7 +1,7 @@
 #ifndef _COLORER_ENCODINGS_H_
 #define _COLORER_ENCODINGS_H_
 
-#include<colorer/unicode/String.h>
+#include <colorer/unicode/String.h>
 
 /** Encodings information.
     - All codepage definitions are read from list of ANSI -> Unicode
@@ -10,7 +10,8 @@
     - Two-stage tables are used to access Unicode -> ANSI transformation.
     @ingroup unicode
 */
-class Encodings{
+class Encodings
+{
 public:
   // reverse order int integer notation!
   const static int ENC_UTF8_BOM;
@@ -37,9 +38,9 @@ public:
 
   static int getEncodingNamesNum();
   static int getDefaultEncodingIndex();
-  static const char *getDefaultEncodingName();
+  static const char* getDefaultEncodingName();
 
-  static int getEncodingIndex(const char *enc);
+  static int getEncodingIndex(const char* enc);
   static const char* getEncodingName(int enc);
 };
 
