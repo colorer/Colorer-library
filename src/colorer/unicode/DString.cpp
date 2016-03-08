@@ -1,5 +1,14 @@
 #include<colorer/unicode/DString.h>
 
+StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
+Exception("[StringIndexOutOfBoundsException] ")
+{}
+
+StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &msg) noexcept : StringIndexOutOfBoundsException()
+{
+  what_str.append(msg.getChars());
+}
+
 DString &DString::operator=(const DString &cstring)
 {
   if (type == ST_UTF8) delete[] stream_wstr;

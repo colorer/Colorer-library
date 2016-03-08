@@ -2,6 +2,25 @@
 #define _COLORER_DSTRING_H_
 
 #include<colorer/unicode/String.h>
+#include<colorer/Exception.h>
+
+/** Unknown encoding exception.
+@ingroup unicode
+*/
+class UnsupportedEncodingException : public Exception {
+public:
+  UnsupportedEncodingException() noexcept;
+  UnsupportedEncodingException(const String& msg) noexcept;
+};
+
+/** Index of requested character is out of bounds.
+@ingroup unicode
+*/
+class StringIndexOutOfBoundsException : public Exception {
+public:
+  StringIndexOutOfBoundsException() noexcept;
+  StringIndexOutOfBoundsException(const String& msg) noexcept;
+};
 
 /** Dynamic string class.
     Simple unicode wrapper over any other source.

@@ -123,7 +123,7 @@ bool XmlInputSource::isDirectory(const String* path)
 void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> &files)
 {
   WIN32_FIND_DATA ffd;
-  HANDLE dir = FindFirstFile((SString(relPath) + "\\*.*").getTChars(), &ffd);
+  HANDLE dir = FindFirstFile((SString(relPath) + "\\*.*").getWChars(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {

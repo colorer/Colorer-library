@@ -39,17 +39,6 @@ unsigned int i1, i2;
 }
 #endif
 
-
-StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
-  Exception("[StringIndexOutOfBoundsException] ")
-{}
-
-  StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &msg) noexcept : StringIndexOutOfBoundsException()
-{
-  what_str.append(msg.getChars());
-}
-
-
 String::String(){
   ret_char_val = nullptr;
   ret_wchar_val = nullptr;
@@ -286,12 +275,6 @@ int String::hashCode() const{
     hc = 31 * hc + (*this)[i];
   return hc;
 }
-
-/*
-String String::toLowerCase()
-{};
-String String::toUpperCase();
-*/
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
