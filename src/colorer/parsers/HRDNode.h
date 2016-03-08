@@ -1,55 +1,24 @@
-#ifndef _COLORER_STRINGBUFFER_H_
-#define _COLORER_STRINGBUFFER_H_
+#ifndef _COLORER_HRDNODE_H_
+#define _COLORER_HRDNODE_H_
 
-#include<colorer/unicode/String.h>
+#include <colorer/Common.h>
 
-/** Unicode growable StringBuffer.
-    @ingroup unicode
-*/
-class StringBuffer : public SString{
+class HRDNode
+{
 public:
-  /** Creates empty string buffer */
-  StringBuffer();
-  /** Creates empty string buffer */
-  StringBuffer(int alloc);
-  /** Creates string buffer with @c string */
-  StringBuffer(const char *string, int s = 0, int l = -1);
-  /** Creates string buffer with @c string */
-  StringBuffer(const String *cstring, int s = 0, int l = -1);
-  /** Creates string buffer with @c string */
-  StringBuffer(const String &cstring, int s = 0, int l = -1);
-  /** Destructor */
-  ~StringBuffer();
+  HRDNode() {};
+  ~HRDNode()
+  {
+    hrd_location.clear();
+  }
 
-  /** Changes the length of this StringBuffer */
-  void setLength(int newLength);
-
-  /** Appends to this string buffer @c string */
-  StringBuffer &append(const String &string);
-  /** Appends to this string buffer @c string */
-  StringBuffer &append(const String *string);
-
-  /** Appends to this string buffer @c string */
-  StringBuffer &append(wchar c);
-
-  /** Appends to this string buffer @c string.
-      C++ operator+ form.
-      You can write: yourcall(StringBuffer("first")+"second"+third);
-  */
-  StringBuffer &operator+(const String &string);
-  /** Appends to this string buffer @c string. C++ operator+ form. */
-  StringBuffer &operator+(const String *string);
-  /** Appends to this string buffer @c string. C++ operator+ form. */
-  StringBuffer &operator+(const char *string);
-  /** Appends to this string buffer @c string. C++ operator+= form. */
-  StringBuffer &operator+=(const String &string);
-  /** Appends to this string buffer @c string. C++ operator+= form. */
-  StringBuffer &operator+=(const char *string);
-private:
-  int alloc;
+  SString hrd_class;
+  SString hrd_name;
+  SString hrd_description;
+  std::vector<SString> hrd_location;
 };
 
-#endif
+#endif //_COLORER_HRDNODE_H_
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -86,4 +55,3 @@ private:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-

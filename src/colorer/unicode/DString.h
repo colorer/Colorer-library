@@ -2,12 +2,32 @@
 #define _COLORER_DSTRING_H_
 
 #include<colorer/unicode/String.h>
+#include<colorer/Exception.h>
+
+/** Unknown encoding exception.
+@ingroup unicode
+*/
+class UnsupportedEncodingException : public Exception {
+public:
+  UnsupportedEncodingException() noexcept;
+  UnsupportedEncodingException(const String& msg) noexcept;
+};
+
+/** Index of requested character is out of bounds.
+@ingroup unicode
+*/
+class StringIndexOutOfBoundsException : public Exception {
+public:
+  StringIndexOutOfBoundsException() noexcept;
+  StringIndexOutOfBoundsException(const String& msg) noexcept;
+};
 
 /** Dynamic string class.
     Simple unicode wrapper over any other source.
     @ingroup unicode
 */
-class DString : public String{
+class DString : public String
+{
 public:
   /** String clone operator */
   DString &operator=(const DString &cstring);
@@ -18,7 +38,7 @@ public:
       @param def_encoding Default encoding to be used, if no other
              variants found.
   */
-  DString(const byte *stream, int size, int def_encoding = -1);
+  DString(const byte* stream, int size, int def_encoding = -1);
 
   /** String from single-byte character buffer.
       @param string Character buffer, can't be null.
@@ -28,7 +48,7 @@ public:
       @param encoding Encoding, to use for char2unicode transformations.
              If -1, default encoding will be used.
   */
-  DString(const char *string, int s = 0, int l = -1, int encoding = -1);
+  DString(const char* string, int s = 0, int l = -1, int encoding = -1);
 
   /** String from unicode two-byte character buffer.
       @param string Unicode character buffer, can't be null.
@@ -36,7 +56,7 @@ public:
       @param l Length of created string. If -1, autodetects string length with
              last zero char.
   */
-  DString(const wchar *string, int s = 0, int l = -1);
+  DString(const wchar* string, int s = 0, int l = -1);
 
   /** String from UCS4 four-byte character buffer.
       @param string UCS4 unicode character buffer, can't be null.
@@ -44,7 +64,7 @@ public:
       @param l Length of created string. If -1, autodetects string length with
              last zero char.
   */
-  DString(const w4char *string, int s = 0, int l = -1);
+  DString(const w4char* string, int s = 0, int l = -1);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance, can't be null.
@@ -52,7 +72,7 @@ public:
       @param l Length of created string. If -1, autodetects string length with
              cstring.length() call.
   */
-  DString(const String *cstring, int s = 0, int l = -1);
+  DString(const String* cstring, int s = 0, int l = -1);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance.
@@ -66,6 +86,10 @@ public:
   DString();
   ~DString();
 
+  DString(DString const &) = delete;
+  DString(DString &&cstring);
+  DString &operator=(DString &&cstring);
+
   wchar operator[](int i) const;
   int length() const;
 
@@ -74,9 +98,9 @@ public:
       @param l Length of created string. If -1, creates string
              till end of current.
   */
-  String *substring(int s, int l = -1) const;
+  String* substring(int s, int l = -1) const;
 protected:
-  enum EStreamType{
+  enum EStreamType {
     ST_CHAR = 0,
     ST_UTF16,
     ST_UTF16_BE,
@@ -88,16 +112,49 @@ protected:
 
   EStreamType type;
   int encodingIdx;
-  union{
-    const char *str;
-    const wchar *wstr;
-    const w4char *w4str;
-    const String *cstr;
-    wchar *stream_wstr;
+  union {
+    const char* str;
+    const wchar* wstr;
+    const w4char* w4str;
+    const String* cstr;
+    wchar* stream_wstr;
   };
   int start, len;
 
 };
+
+inline DString::DString(DString &&cstring):
+  type(cstring.type),
+  encodingIdx(cstring.encodingIdx),
+  cstr(cstring.cstr),
+  start(cstring.start),
+  len(cstring.len)
+{
+
+  cstring.cstr = nullptr;
+  cstring.len = 0;
+  cstring.start = 0;
+  cstring.type = ST_CHAR;
+  cstring.encodingIdx = -1;
+}
+
+inline DString &DString::operator=(DString &&cstring)
+{
+  if (this != &cstring) {
+    type = cstring.type;
+    len = cstring.len;
+    start = cstring.start;
+    cstr = cstring.cstr;
+    encodingIdx = cstring.encodingIdx;
+
+    cstring.cstr = nullptr;
+    cstring.len = 0;
+    cstring.start = 0;
+    cstring.type = ST_CHAR;
+    cstring.encodingIdx = -1;
+  }
+  return *this;
+}
 
 #endif
 

@@ -71,7 +71,7 @@ void ConsoleTools::setInputEncoding(const String &str)
   inputEncoding.reset(new SString(str));
   inputEncodingIndex = Encodings::getEncodingIndex(inputEncoding->getChars());
   if (inputEncodingIndex == -1) {
-    throw Exception(StringBuffer("Unknown input encoding: ") + inputEncoding.get());
+    throw Exception(SString("Unknown input encoding: ") + inputEncoding.get());
   }
   if (outputEncoding == nullptr) {
     outputEncodingIndex = inputEncodingIndex;
@@ -83,7 +83,7 @@ void ConsoleTools::setOutputEncoding(const String &str)
   outputEncoding.reset(new SString(str));
   outputEncodingIndex = Encodings::getEncodingIndex(outputEncoding->getChars());
   if (outputEncodingIndex == -1) {
-    throw Exception(StringBuffer("Unknown output encoding: ") + outputEncoding.get());
+    throw Exception(SString("Unknown output encoding: ") + outputEncoding.get());
   }
 }
 
@@ -148,7 +148,7 @@ void ConsoleTools::setLinkSource(const String &str)
           const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
           const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
           const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
-          StringBuffer fullURL;
+          SString fullURL;
           if (*url != '\0') {
             fullURL.append(DString(url));
           }
@@ -162,7 +162,7 @@ void ConsoleTools::setLinkSource(const String &str)
             continue;
           }
           String* tok = new DString(token);
-          StringBuffer hkey(tok);
+          SString hkey(tok);
           if (*l_scheme != '\0') {
             hkey.append(DString("--")).append(DString(l_scheme));
           }
@@ -220,10 +220,10 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         break;
       }
       if (useNames) {
-        writer->write(StringBuffer(type->getName()) + "\n");
+        writer->write(SString(type->getName()) + "\n");
       } else {
         if (type->getGroup() != nullptr) {
-          writer->write(StringBuffer(type->getGroup()) + ": ");
+          writer->write(SString(type->getGroup()) + ": ");
         }
         writer->write(type->getDescription());
         writer->write(DString("\n"));
@@ -265,7 +265,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
     }
   }
   if (typeDescription == nullptr || type == nullptr) {
-    StringBuffer textStart;
+    SString textStart;
     int totalLength = 0;
     for (int i = 0; i < 4; i++) {
       String* iLine = lineSource->getLine(i);
@@ -437,7 +437,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(DString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->stext);
+        commonWriter->write(TextRegion::cast(rd)->start_text);
       } else {
         commonWriter->write(DString("<html><body style='"));
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
@@ -480,7 +480,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(DString("</pre></body></html>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->etext);
+        commonWriter->write(TextRegion::cast(rd)->end_text);
       } else {
         commonWriter->write(DString("</pre></body></html>\n"));
       }

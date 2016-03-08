@@ -40,7 +40,7 @@ const String* HTTPInputSource::getLocation() const
 const byte* HTTPInputSource::openStream()
 {
   if (stream != nullptr) {
-    throw InputSourceException(StringBuffer("openStream(): source stream already opened: '") + baseLocation + "'");
+    throw InputSourceException(SString("openStream(): source stream already opened: '") + baseLocation + "'");
   }
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
@@ -99,7 +99,7 @@ const byte* HTTPInputSource::openStream()
 void HTTPInputSource::closeStream()
 {
   if (stream == nullptr) {
-    throw InputSourceException(StringBuffer("closeStream(): source stream is not yet opened"));
+    throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
   }
   delete[] stream;
   stream = nullptr;

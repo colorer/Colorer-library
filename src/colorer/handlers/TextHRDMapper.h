@@ -38,7 +38,7 @@ public:
    * @param region Region full qualified name.
    * @param rdnew  New region definition to replace old one
    */
-  void  setRegionDefine(const String& region, const RegionDefine* rdnew);
+  void  setRegionDefine(const String &region, const RegionDefine* rdnew);
 };
 
 #endif

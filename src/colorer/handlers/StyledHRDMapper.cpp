@@ -14,7 +14,7 @@ const int StyledRegion::RD_STRIKEOUT = 8;
 StyledHRDMapper::StyledHRDMapper() {}
 StyledHRDMapper::~StyledHRDMapper()
 {
-  for(auto it: regionDefines){
+  for (auto it : regionDefines) {
     delete it.second;
   }
   regionDefines.clear();
@@ -85,7 +85,7 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
     const StyledRegion* rdef = StyledRegion::cast(it->second);
     char temporary[256];
-    writer->write(StringBuffer("  <define name='") + it->first + "'");
+    writer->write(SString("  <define name='") + it->first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(DString(temporary));
@@ -104,7 +104,7 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 }
 
 /** Adds or replaces region definition */
-void StyledHRDMapper::setRegionDefine(const String& name, const RegionDefine* rd)
+void StyledHRDMapper::setRegionDefine(const String &name, const RegionDefine* rd)
 {
   auto rd_old = regionDefines.find(&name);
 

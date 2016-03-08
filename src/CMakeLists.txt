@@ -53,6 +53,8 @@ set(SRC_COLORER
    ${HANDLERS}/RegionMapper.h
    ${HANDLERS}/StyledRegion.h
    ${HANDLERS}/TextRegion.h
+   ${PARSERS}/CatalogParser.cpp ${PARSERS}/CatalogParser.h
+   ${PARSERS}/HRDNode.h
    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
@@ -104,7 +106,6 @@ set(SRC_COLORER
    ${UNICODE}/DString.cpp ${UNICODE}/DString.h
    ${UNICODE}/Encodings.h ${UNICODE}/Encodings.cpp
    ${UNICODE}/String.cpp ${UNICODE}/String.h
-   ${UNICODE}/StringBuffer.h ${UNICODE}/StringBuffer.cpp
    ${UNICODE}/SString.cpp ${UNICODE}/SString.h
    ${UNICODE}/UnicodeTools.cpp ${UNICODE}/UnicodeTools.h
    ${UNICODE}/x_charcategory.h ${UNICODE}/x_defines.h

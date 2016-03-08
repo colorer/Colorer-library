@@ -133,7 +133,7 @@ FileType* BaseEditor::setFileType(const String& fileType)
 
 FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen)
 {
-  StringBuffer textStart;
+  SString textStart;
   int totalLength = 0;
   for (int i = 0; i < chooseStr; i++) {
     String* iLine = lineSource->getLine(i);

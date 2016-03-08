@@ -1,75 +1,129 @@
 #ifndef _COLORER_SSTRING_H_
 #define _COLORER_SSTRING_H_
 
-#include<colorer/unicode/String.h>
+#include <colorer/unicode/String.h>
 
 /**
- * Static unicode string.
- * Static string, do not depend on called character data.
+ * Unicode string.
  * @ingroup unicode
 */
-class SString : public String{
+class SString : public String
+{
 public:
   /**
-   * Static string constructor from String source
+  * Empty string constructor
+  */
+  SString();
+  /**
+   * String constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String *cstring, int s = 0, int l = -1);
+  SString(const String* cstring, int s = 0, int l = -1);
 
   /**
-   * Static string constructor from String source
+   * String constructor from String source
    * @param cstring source string, can't be null.
    */
   SString(const String &cstring, int s = 0, int l = -1);
   SString(const SString &cstring);
 
   /**
-   * Static string constructor from char stream
+   * String constructor from char stream
    * @param str source string, can't be null.
    */
-  SString(char *str, int enc = -1);
-  SString(wchar *str);
+  SString(const char* string, int s = 0, int l = -1);
+  SString(const wchar* string, int s = 0, int l = -1);
+  SString(char* str, int enc = -1);
+  SString(wchar* str);
 
   /**
-   * Static string constructor from integer number
+   * String constructor from integer number
    */
   SString(int no);
 
   ~SString();
 
-  String *substring(int s, int l = -1) const;
+  /** Changes the length of this StringBuffer */
+  void setLength(int newLength);
 
-  wchar operator[](int i) const;
-  int length() const;
+  wchar operator[](int i) const override;
+  int length() const override;
 
+  /** Appends to this string buffer @c string */
+  SString &append(const String &string);
+  /** Appends to this string buffer @c string */
+  SString &append(const String* string);
+
+  /** Appends to this string buffer @c string */
+  SString &append(wchar c);
+
+  /** Appends to this string buffer @c string.
+      C++ operator+ form.
+      You can write: yourcall(StringBuffer("first")+"second"+third);
+  */
+  SString &operator+(const String &string);
+  /** Appends to this string buffer @c string. C++ operator+ form. */
+  SString &operator+(const String* string);
+  /** Appends to this string buffer @c string. C++ operator+ form. */
+  SString &operator+(const char* string);
+  /** Appends to this string buffer @c string. C++ operator+= form. */
+  SString &operator+=(const String &string);
+  /** Appends to this string buffer @c string. C++ operator+= form. */
+  SString &operator+=(const char* string);
+
+  SString &operator=(SString const &cstring);
+  SString(SString &&cstring);
+  SString &operator=(SString &&cstring);
 protected:
-  /**
-   * Empty static string constructor
-   */
-  SString();
-  void construct(const String *cstring, int s, int l);
 
-  wchar *wstr;
+  void construct(const String* cstring, int s, int l);
+
+  std::unique_ptr<wchar[]> wstr;
   int len;
-public:
-  SString &operator=(SString &cstring);
+  int alloc;
 };
+
+inline SString::SString(SString &&cstring): wstr(std::move(cstring.wstr)),
+  len(cstring.len),
+  alloc(cstring.alloc)
+{
+  cstring.wstr = nullptr;
+  cstring.alloc = 0;
+  cstring.len = 0;
+}
+
+inline SString &SString::operator=(SString &&cstring)
+{
+  if (this != &cstring) {
+    wstr = std::move(cstring.wstr);
+    alloc = cstring.alloc;
+    len = cstring.len;
+    cstring.wstr = nullptr;
+    cstring.alloc = 0;
+    cstring.len = 0;
+  }
+  return *this;
+}
+
+inline int SString::length() const
+{
+  return len;
+}
 
 #include <unordered_map>
 namespace std
 {
   // Specializations for unordered containers
 
-  template <> struct hash<SString>
-  {
-    size_t operator()(const SString& value) const
+  template <> struct hash<SString> {
+    size_t operator()(const SString &value) const
     {
       return static_cast<std::size_t>(value.hashCode());
     }
   };
-  template <> struct equal_to<SString>
-  {
-    bool operator()(const SString& u1, const SString& u2) const {
+  template <> struct equal_to<SString> {
+    bool operator()(const SString &u1, const SString &u2) const
+    {
       return u1.compareTo(u2) == 0;
     }
   };

@@ -2,27 +2,28 @@
 #define _COLORER_REGIONDEFINE_H_
 
 /**
- * Enumeration to distinguish different types of region mapping
- * Do not use RTTI because of compatibility problems
- *
- * @ingroup colorer_handlers
- */
-enum RegionDefineType{
-  UNKNOWN_REGION = 0,
-  STYLED_REGION  = 1,
-  TEXT_REGION    = 2,
-};
-
-/**
  * Object contains information about region mapping into real colors or other properties.
  * This class represents abstract mapping information and declares required methods
  * to be implemented in it's subclasses.
  *
  * @ingroup colorer_handlers
  */
-class RegionDefine{
+class RegionDefine
+{
 public:
-  
+
+  /**
+  * Enumeration to distinguish different types of region mapping
+  * Do not use RTTI because of compatibility problems
+  *
+  * @ingroup colorer_handlers
+  */
+  enum RegionDefineType {
+    UNKNOWN_REGION = 0,
+    STYLED_REGION = 1,
+    TEXT_REGION = 2,
+  };
+
   /**
    * Class type identifier
    */
@@ -34,20 +35,21 @@ public:
    * transparent fields), this methods completes them with
    * passed parent's values.
    */
-  virtual void assignParent(const RegionDefine *parent) = 0;
+  virtual void assignParent(const RegionDefine* parent) = 0;
 
   /**
    * Direct assign of all passed @c rd values.
    * Copies all information from passed definition into
    * this region.
    */
-  virtual void setValues(const RegionDefine *rd) = 0;
+  virtual void setValues(const RegionDefine* rd) = 0;
 
   /**
    * Assign operator. Clones all values.
    * Works as setValues method.
    */
-  virtual RegionDefine &operator=(const RegionDefine &rd){
+  virtual RegionDefine &operator=(const RegionDefine &rd)
+  {
     setValues(&rd);
     return *this;
   }
@@ -56,10 +58,10 @@ public:
    * Clones current region and creates it's duplicate.
    * To be implemented in subclasses.
    */
-  virtual RegionDefine *clone() const = 0;
+  virtual RegionDefine* clone() const = 0;
 
   /** Default Destructor */
-  virtual ~RegionDefine(){};
+  virtual ~RegionDefine() {};
 };
 
 #endif

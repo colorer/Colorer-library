@@ -1,21 +1,53 @@
-#ifndef _COLORER_COMMON_H_
-#define _COLORER_COMMON_H_
+#ifndef _COLORER_CATALOGPARSER_H_
+#define _COLORER_CATALOGPARSER_H_
 
-/// system dependent byte
-typedef unsigned char byte;
+#include <colorer/Common.h>
+#include <colorer/parsers/HRDNode.h>
+#include <xercesc/dom/DOM.hpp>
 
-#include <memory>
-class String;
-class SString;
-typedef std::unique_ptr<String> UString;
-typedef std::unique_ptr<SString> USString;
+class CatalogParser
+{
+public:
+  CatalogParser() {};
+  ~CatalogParser() {};
 
-#include <g3log/g3log.hpp>
-#include <colorer/common/Features.h>
-#include <colorer/unicode/String.h>
-#include <colorer/common/MemoryChunks.h>
+  void parse(const String* path);
 
-#endif
+  std::vector<SString> hrc_locations;
+  std::list<std::unique_ptr<HRDNode>> hrd_nodes;
+private:
+
+  void parseCatalogBlock(const xercesc::DOMElement* elem);
+  void parseHrcSetsBlock(const xercesc::DOMElement* elem);
+  void addHrcSetsLocation(const xercesc::DOMElement* elem);
+  void parseHrdSetsBlock(const xercesc::DOMElement* elem);
+  void parseHRDSetsChild(const xercesc::DOMElement* elem);
+
+  CatalogParser(CatalogParser const &) = delete;
+  CatalogParser &operator=(CatalogParser const &) = delete;
+  CatalogParser(CatalogParser &&) = delete;
+  CatalogParser &operator=(CatalogParser &&) = delete;
+};
+
+class CatalogParserException : public Exception
+{
+public:
+  CatalogParserException() noexcept : Exception("[CatalogParserException] ") {};
+
+  CatalogParserException(const String &msg) noexcept : CatalogParserException()
+  {
+    what_str.append(msg.getChars());
+  }
+
+  CatalogParserException(const std::string &msg) noexcept
+  {
+    what_str.append(msg);
+  }
+};
+
+
+#endif //_COLORER_CATALOGPARSER_H_
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

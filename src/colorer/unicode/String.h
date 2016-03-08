@@ -2,31 +2,12 @@
 #define _COLORER_STRING_H_
 
 #include<string.h>
-#include<colorer/Exception.h>
 #include<colorer/unicode/Character.h>
 
 #ifdef __unix__
 extern "C" int stricmp(const char*c1, const char*c2);
 extern "C" int strnicmp(const char*c1, const char*c2, unsigned int n);
 #endif
-
-/** Unknown encoding exception.
-    @ingroup unicode
-*/
-class UnsupportedEncodingException : public Exception{
-public:
-  UnsupportedEncodingException() noexcept;
-  UnsupportedEncodingException(const String& msg) noexcept;
-};
-
-/** Index of requested character is out of bounds.
-    @ingroup unicode
-*/
-class StringIndexOutOfBoundsException : public Exception{
-public:
-  StringIndexOutOfBoundsException() noexcept;
-  StringIndexOutOfBoundsException(const String& msg) noexcept;
-};
 
 /** Abstract unicode string class.
     Colorer defines a set of basic classes to represent Unicode strings.
@@ -107,21 +88,14 @@ public:
   /** Internal hashcode of string
   */
   int hashCode() const;
-//  virtual String toLowerCase() = 0;
-//  virtual String toUpperCase() = 0;
+
 private:
   char *ret_char_val;
   wchar *ret_wchar_val;
 };
 
-#ifdef _UNICODE
-# define getTChars getWChars
-#else
-# define getTChars getChars
-#endif
 #include<colorer/unicode/DString.h>
 #include<colorer/unicode/SString.h>
-#include<colorer/unicode/StringBuffer.h>
 
 #endif
 
