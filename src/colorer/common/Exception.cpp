@@ -52,23 +52,6 @@ InputSourceException::InputSourceException(const std::string &msg) noexcept:
   what_str.append(msg);
 }
 
-OutOfBoundException::OutOfBoundException() noexcept:
-  Exception("[OutOfBoundException] ")
-{
-}
-
-OutOfBoundException::OutOfBoundException(const String &msg) noexcept:
-  OutOfBoundException()
-{
-  what_str.append(msg.getChars());
-}
-
-OutOfBoundException::OutOfBoundException(const std::string &msg) noexcept:
-  OutOfBoundException()
-{
-  what_str.append(msg);
-}
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

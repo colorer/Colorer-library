@@ -5,7 +5,6 @@
 #include <string>
 
 class String;
-class StringBuffer;
 
 /** Exception class.
     Defines throwable exception.
@@ -37,17 +36,6 @@ protected:
   /** Internal message container
   */
   std::string what_str;
-};
-
-/**
-    Thrown, when array index overflow occurs.
-    @ingroup common
-*/
-class OutOfBoundException : public Exception{
-public:
-  OutOfBoundException() noexcept;
-  OutOfBoundException(const String &msg) noexcept;
-  OutOfBoundException(const std::string &msg) noexcept;
 };
 
 /**
