@@ -65,23 +65,6 @@ bool String::operator!=(const String &str) const
   return false;
 }
 
-bool String::operator>(const String &str) const
-{
-  for (size_t i = 0; i < str.length() && i < this->length(); i++)
-    if ((*this)[i] < str[i]) return false;
-  if (this->length() > str.length()) return true;
-  return false;
-}
-
-bool String::operator<(const String &str) const
-{
-  for (size_t i = 0; i < str.length() && i < this->length(); i++) {
-    if ((*this)[i] > str[i]) return false;
-  };
-  if (this->length() < str.length()) return true;
-  return false;
-}
-
 bool String::equals(const String* str) const
 {
   if (str == nullptr) return false;

@@ -24,10 +24,6 @@ public:
   bool operator==(const String &str) const;
   /** Checks, if two strings are not equals */
   bool operator!=(const String &str) const;
-  /** Checks, if this string lexically 'more', than @c str */
-  bool operator>(const String &str) const;
-  /** Checks, if this string lexically 'less', than @c str */
-  bool operator<(const String &str) const;
 
   /** Checks, if two strings are equals */
   bool equals(const String *str) const;
