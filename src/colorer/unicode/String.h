@@ -58,8 +58,6 @@ public:
   virtual size_t indexOfIgnoreCase(const String &str, size_t pos = 0) const;
   /** Searches last index of character @c wc, ending with @c pos */
   virtual size_t lastIndexOf(wchar wc, size_t pos = npos) const;
-  /** Searches last index of substring @c str, ending with @c pos */
-  virtual size_t lastIndexOf(const String &str, size_t pos = npos) const;
 
   /** Tests, if string starts with specified @c str substring at position @c pos */
   virtual bool startsWith(const String &str, size_t pos = 0) const;

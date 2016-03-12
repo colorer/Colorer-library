@@ -206,24 +206,8 @@ size_t String::lastIndexOf(wchar wc, size_t pos) const
   size_t idx;
   if (pos == npos) pos = this->length();
   if (pos > this->length()) return npos;
-  for (idx = pos; idx > 0 && (*this)[idx - 1] != wc; idx--){};
+  for (idx = pos; idx > 0 && (*this)[idx - 1] != wc; idx--) {};
   return idx == 0 ? npos : idx - 1;
-}
-
-size_t String::lastIndexOf(const String &str, size_t pos) const
-{
-  //TODO check this 
-  if (pos == npos) pos = this->length();
-  size_t str_len = str.length();
-  if (pos + str_len > this->length()) return npos;
-  for (size_t idx = pos; idx > 0; idx--) {
-    size_t idx2;
-    for (idx2 = 0; idx2 != -1 && idx2 < str_len && idx + idx2 < this->length(); idx2++) {
-      if (str[idx2] != (*this)[idx - 1 + idx2]) idx2 = -2;
-    };
-    if (idx2 != -1) return idx - 1;
-  };
-  return npos;
 }
 
 bool String::startsWith(const String &str, size_t pos) const
@@ -281,4 +265,3 @@ size_t String::hashCode() const
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
