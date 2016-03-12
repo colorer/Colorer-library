@@ -1,5 +1,6 @@
-#include<stdio.h>
-#include<colorer/unicode/String.h>
+#include <stdio.h>
+#include <colorer/unicode/SString.h>
+#include <colorer/unicode/DString.h>
 
 SString::SString()
 {
@@ -8,9 +9,9 @@ SString::SString()
   len = 0;
 }
 
-void SString::construct(const String* cstring, int s, int l)
+void SString::construct(const String* cstring, size_t s, size_t l)
 {
-  if (s < 0 || s > cstring->length() || l < -1) throw Exception(DString("bad string constructor parameters"));
+  if (s > cstring->length()) throw Exception(DString("bad string constructor parameters"));
   if (l == -1) l = cstring->length() - s;
   wstr.reset(new wchar[l]);
   for (len = 0; len < l; len++)
@@ -18,29 +19,29 @@ void SString::construct(const String* cstring, int s, int l)
   alloc = len;
 }
 
-SString::SString(const String* cstring, int s, int l)
+SString::SString(const String* cstring, size_t s, size_t l)
 {
   construct(cstring, s, l);
 }
 
 SString::SString(const SString &cstring)
 {
-  construct(&cstring, 0, -1);
+  construct(&cstring, 0, npos);
 }
 
-SString::SString(const char* string, int s, int l)
+SString::SString(const char* string, size_t s, size_t l)
 {
   DString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
-SString::SString(const wchar* string, int s, int l)
+SString::SString(const wchar* string, size_t s, size_t l)
 {
   DString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
-SString::SString(const String &cstring, int s, int l)
+SString::SString(const String &cstring, size_t s, size_t l)
 {
   construct(&cstring, s, l);
 }
@@ -62,7 +63,15 @@ SString::SString(int no)
   char text[40];
   sprintf(text, "%d", no);
   DString dtext = DString(text);
-  construct(&dtext, 0, -1);
+  construct(&dtext, 0, npos);
+}
+
+SString::SString(size_t no)
+{
+  char text[40];
+  sprintf(text, "%zd", no); //-V111
+  DString dtext = DString(text);
+  construct(&dtext, 0, npos);
 }
 
 SString::~SString()
@@ -70,12 +79,12 @@ SString::~SString()
 
 }
 
-void SString::setLength(int newLength)
+void SString::setLength(size_t newLength)
 {
   if (newLength > alloc) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[newLength * 2]);
     alloc = newLength * 2;
-    for (int i = 0; i < newLength; i++) {
+    for (size_t i = 0; i < newLength; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = 0;
     };
@@ -84,9 +93,8 @@ void SString::setLength(int newLength)
   len = newLength;
 }
 
-wchar SString::operator[](int i) const
+wchar SString::operator[](size_t i) const
 {
-  if (i >= len) throw StringIndexOutOfBoundsException(SString(i));
   return wstr[i];
 }
 
@@ -99,14 +107,14 @@ SString &SString::append(const String* string)
 
 SString &SString::append(const String &string)
 {
-  int len_new = len + string.length();
+  size_t len_new = len + string.length();
   if (alloc > len_new) {
-    for (int i = len; i < len_new; i++)
+    for (size_t i = len; i < len_new; i++)
       wstr[i] = string[i - len];
   } else {
     std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
     alloc = len_new * 2;
-    for (int i = 0; i < len_new; i++) {
+    for (size_t i = 0; i < len_new; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = string[i - len];
     };

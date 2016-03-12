@@ -1,6 +1,7 @@
 #include <colorer/unicode/Encodings.h>
 #include <colorer/unicode/x_encodings.h>
-#include <string.h>
+#include <colorer/unicode/SString.h>
+#include <colorer/unicode/DString.h>
 
 UnsupportedEncodingException::UnsupportedEncodingException() noexcept :
   Exception("[UnsupportedEncodingException] ")
@@ -8,7 +9,7 @@ UnsupportedEncodingException::UnsupportedEncodingException() noexcept :
 
 UnsupportedEncodingException::UnsupportedEncodingException(const String &msg) noexcept : UnsupportedEncodingException()
 {
-  what_str.append(msg.getChars());
+  what_str.append(msg);
 }
 
 const int Encodings::ENC_UTF8_BOM    = 0xBFBBEF;
@@ -83,7 +84,7 @@ const char* Encodings::getDefaultEncodingName()
   return defEncoding;
 }
 
-int Encodings::toBytes(int encoding, wchar wc, byte* dest)
+size_t Encodings::toBytes(int encoding, wchar wc, byte* dest)
 {
   if (encoding < -6 || encoding == -1 || encoding >= encNamesNum)
     throw UnsupportedEncodingException(SString(encoding));
@@ -92,7 +93,7 @@ int Encodings::toBytes(int encoding, wchar wc, byte* dest)
     return 1;
   }
   if (encoding == ENC_UTF8) {
-    int dpos = 0;
+    size_t dpos = 0;
     if (wc <= 0x7F) {
       dest[dpos] = wc & 0x7F;
     }

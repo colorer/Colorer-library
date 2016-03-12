@@ -1,49 +1,14 @@
-#include <colorer/Exception.h>
+#ifndef _COLORER_COMMONSTRING_H_
+#define _COLORER_COMMONSTRING_H_
 
-Exception::Exception(const Exception &e) noexcept:
-  what_str(e.what_str)
-{
-}
+#include <wchar.h>
 
-Exception::Exception() noexcept
-{
-}
+typedef char16_t wchar;
+typedef char32_t w4char;
+typedef unsigned char byte;
 
-Exception::Exception(const char* msg) noexcept:
-  what_str(msg)
-{
-}
 
-Exception::Exception(const String &msg) noexcept:
-  what_str(msg)
-{
-}
-
-Exception &Exception::operator=(const Exception &e) noexcept
-{
-  what_str = e.what_str;
-  return *this;
-}
-
-Exception::~Exception()
-{
-}
-
-const char* Exception::what() const noexcept
-{
-  return what_str.getChars();
-}
-
-InputSourceException::InputSourceException() noexcept:
-  Exception("[InputSourceException] ")
-{
-}
-
-InputSourceException::InputSourceException(const String &msg) noexcept:
-  InputSourceException()
-{
-  what_str.append(msg);
-}
+#endif // _COLORER_COMMONSTRING_H_
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

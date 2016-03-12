@@ -1,38 +1,8 @@
 #ifndef _COLORER_CHARACTER_H_
 #define _COLORER_CHARACTER_H_
-#include <wchar.h>
 
-//#if   defined _MSC_VER
-
-//typedef unsigned short wchar_t;
-//typedef wchar_t wchar;
-
-/// default unicode char definition
-#ifndef WCHAR_MAX
-#error wchar misconfig
-#elif WCHAR_MAX == 0xFFFFFFFE/2
-typedef unsigned short wchar;
-#else
-typedef wchar_t wchar;
-#endif
-
-/// wide unicode char definition
-typedef unsigned long w4char;
-
-#define BAD_WCHAR ((wchar)0xFFFF)
-/*
-#elif defined __BORLANDC__
-typedef wchar_t wchar;
-#elif defined __GNUC__
-typedef wchar_t wchar;
-#else
-typedef unsigned short int wchar;
-#endif
-*/
-
-#include<colorer/Common.h>
-#include<colorer/unicode/Encodings.h>
-#include<colorer/unicode/x_charcategory.h>
+#include <colorer/unicode/CommonString.h>
+#include <colorer/unicode/x_charcategory.h>
 
 /** Character information class.
     \par Basic features:

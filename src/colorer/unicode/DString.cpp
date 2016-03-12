@@ -1,12 +1,14 @@
-#include<colorer/unicode/DString.h>
+#include <colorer/unicode/DString.h>
+#include <colorer/unicode/SString.h>
+#include <colorer/unicode/Encodings.h>
 
 StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
-Exception("[StringIndexOutOfBoundsException] ")
+  Exception("[StringIndexOutOfBoundsException] ")
 {}
 
 StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &msg) noexcept : StringIndexOutOfBoundsException()
 {
-  what_str.append(msg.getChars());
+  what_str.append(msg);
 }
 
 DString &DString::operator=(const DString &cstring)
@@ -19,13 +21,13 @@ DString &DString::operator=(const DString &cstring)
   len = cstring.len;
   if (type == ST_UTF8) {
     stream_wstr = new wchar[len];
-    for (int wi = 0; wi < len; wi++)
+    for (size_t wi = 0; wi < len; wi++)
       stream_wstr[wi] = cstring.stream_wstr[wi];
   }
   return *this;
 }
 
-DString::DString(const byte* stream, int size, int def_encoding)
+DString::DString(const byte* stream, size_t size, int def_encoding)
 {
   start = 0;
   len = size;
@@ -45,14 +47,14 @@ DString::DString(const byte* stream, int size, int def_encoding)
   if (type == ST_CHAR && encodingIdx == -1) {
     // check encoding parameter
     if (stream[0] == 0x3C && stream[1] == 0x3F) {
-      int p;
-      int cps = 0, cpe = 0;
+      size_t p;
+      size_t cps = 0, cpe = 0;
       for (p = 2; stream[p] != 0x3F && stream[p + 1] != 0x3C && p < 100; p++) {
         if (cps && stream[p] == stream[cps - 1]) {
           cpe = p;
           break;
         }
-        if (cps || strncmp((char*)stream + p, "encoding=", 9) !=0) continue;
+        if (cps || strncmp((char*)stream + p, "encoding=", 9) != 0) continue;
         p += 9;
         if (!cps && (stream[p] == '\"' || stream[p] == '\'')) {
           p++;
@@ -96,7 +98,7 @@ DString::DString(const byte* stream, int size, int def_encoding)
     len = size / 4;
   } else if (type == ST_UTF8) {
     stream_wstr = new wchar[size];
-    int pos;
+    size_t pos;
     for (pos = 0, len = 0; pos < size; pos++, len++) {
       wchar wc = 0;
       if (!(stream[pos] >> 7)) {
@@ -118,13 +120,12 @@ DString::DString(const byte* stream, int size, int def_encoding)
   }
 }
 
-DString::DString(const char* string, int s, int l, int encoding)
+DString::DString(const char* string, size_t s, size_t l, int encoding)
 {
   type = ST_CHAR;
   str = string;
   start = s;
   len = l;
-  if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1) {
     len = 0;
     if (string != nullptr) for (len = 0; str[len + s]; len++);
@@ -133,51 +134,49 @@ DString::DString(const char* string, int s, int l, int encoding)
   if (encodingIdx == -1) encodingIdx = Encodings::getDefaultEncodingIndex();
 }
 
-DString::DString(const wchar* string, int s, int l)
+DString::DString(const wchar* string, size_t s, size_t l)
 {
   type = ST_UTF16;
   wstr = string;
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     for (len = 0; wstr[len + s]; len++);
 }
 
-DString::DString(const w4char* string, int s, int l)
+DString::DString(const w4char* string, size_t s, size_t l)
 {
   type = ST_UTF32;
   w4str = string;
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s < 0 || len < -1) throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     for (len = 0; w4str[len + s]; len++);
 }
 
-DString::DString(const String* cstring, int s, int l)
+DString::DString(const String* cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = cstring;
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s < 0 || s > cstring->length() || len < -1 || len > cstring->length() - start)
+  if (s > cstring->length() || len > cstring->length() - start)
     throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     len = cstring->length() - start;
 }
 
-DString::DString(const String &cstring, int s, int l)
+DString::DString(const String &cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = &cstring;
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s < 0 || s > cstring.length() || len < -1 || len > cstring.length() - start)
+  if (s > cstring.length() || len > cstring.length() - start)
     throw Exception(DString("bad string constructor parameters"));
   if (len == -1)
     len = cstring.length() - start;
@@ -196,9 +195,9 @@ DString::~DString()
   if (type == ST_UTF8) delete[] stream_wstr;
 }
 
-wchar DString::operator[](int i) const
+wchar DString::operator[](size_t i) const
 {
-  if (start + i >= 0 && i < len) switch (type) {
+  if (i < len) switch (type) {
       case ST_CHAR:
         return Encodings::toWChar(encodingIdx, str[start + i]);
       case ST_UTF16:
@@ -225,7 +224,7 @@ wchar DString::operator[](int i) const
   throw StringIndexOutOfBoundsException(SString(i));
 }
 
-int DString::length() const
+size_t DString::length() const
 {
   return len;
 }

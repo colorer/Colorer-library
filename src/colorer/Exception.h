@@ -2,9 +2,7 @@
 #define _COLORER_EXCEPTION_H__
 
 #include <exception>
-#include <string>
-
-class String;
+#include <colorer/unicode/SString.h>
 
 /** Exception class.
     Defines throwable exception.
@@ -17,7 +15,7 @@ public:
       Creates exception with empty message
   */
   Exception() noexcept;
-  Exception(const std::string &msg) noexcept;
+  Exception(const char* msg) noexcept;
   /** Creates exception with string message
   */
   Exception(const String &msg) noexcept;
@@ -35,18 +33,18 @@ public:
 protected:
   /** Internal message container
   */
-  std::string what_str;
+  SString what_str;
 };
 
 /**
     InputSourceException is thrown, if some IO error occurs.
     @ingroup common
 */
-class InputSourceException : public Exception{
+class InputSourceException : public Exception
+{
 public:
   InputSourceException() noexcept;
-  InputSourceException(const std::string& msg) noexcept;
-  InputSourceException(const String& msg) noexcept;
+  InputSourceException(const String &msg) noexcept;
 };
 
 #endif
