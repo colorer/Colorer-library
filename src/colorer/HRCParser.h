@@ -15,11 +15,6 @@ public:
   HRCParserException() noexcept : Exception("[HRCParserException] ") {};
   HRCParserException(const String &msg) noexcept : HRCParserException()
   {
-    what_str.append(msg.getChars());
-  }
-  HRCParserException(const std::string &msg) noexcept :
-    HRCParserException()
-  {
     what_str.append(msg);
   }
 };

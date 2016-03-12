@@ -3,6 +3,7 @@
 #include <colorer/unicode/CharacterClass.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/x_charcategory_names.h>
+#include <colorer/unicode/x_charcategory.h>
 #include <colorer/unicode/x_charcategory2.h>
 
 /// macro - number of elements in array
@@ -57,9 +58,9 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
         delete cc;
         return nullptr;
       }
-      if (*categ == "ALL") cc->fill();
-      else if (*categ == "ASSIGNED") cc->addCategory("");
-      else if (*categ == "UNASSIGNED") {
+      if (*categ == DString("ALL")) cc->fill();
+      else if (*categ == DString("ASSIGNED")) cc->addCategory("");
+      else if (*categ == DString("UNASSIGNED")) {
         cc_temp.clear();
         cc_temp.addCategory("");
         cc->fill();

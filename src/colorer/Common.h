@@ -5,16 +5,15 @@
 typedef unsigned char byte;
 
 #include <memory>
-class String;
-class SString;
-typedef std::unique_ptr<String> UString;
-typedef std::unique_ptr<SString> USString;
-
 #include <g3log/g3log.hpp>
 #include <colorer/common/Features.h>
 #include <colorer/unicode/String.h>
+#include <colorer/unicode/SString.h>
+#include <colorer/unicode/DString.h>
 #include <colorer/common/MemoryChunks.h>
 
+typedef std::unique_ptr<String> UString;
+typedef std::unique_ptr<SString> USString;
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

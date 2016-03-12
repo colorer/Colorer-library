@@ -12,6 +12,7 @@
 #include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <colorer/xml/XmlInputSource.h>
+#include <colorer/unicode/Encodings.h>
 #include "ConsoleTools.h"
 
 using namespace xercesc;

@@ -37,7 +37,7 @@ protected:
   */
   void freeFile();
 private:
-  std::vector<String*> lines;
+  std::vector<SString*> lines;
   SString* fileName;
   void replaceTabs(size_t lno);
 

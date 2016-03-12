@@ -9,6 +9,7 @@
 #include <colorer/xml/XmlTagDefs.h>
 #include <colorer/xml/XStr.h>
 #include <colorer/unicode/UnicodeTools.h>
+#include <colorer/unicode/Character.h>
 
 #define CURRENT_FILE " Current file " << XStr(current_input_source->getInputSource()->getSystemId()) << "."
 
@@ -47,7 +48,7 @@ HRCParserImpl::~HRCParserImpl()
 void HRCParserImpl::loadSource(XmlInputSource* is)
 {
   if (!is) {
-    throw HRCParserException("Can't open stream - 'null' is bad stream.");
+    throw HRCParserException(DString("Can't open stream - 'null' is bad stream."));
   }
 
   XmlInputSource* istemp = current_input_source;
@@ -199,14 +200,14 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException("Error reading hrc file '" + *XStr(is->getInputSource()->getSystemId()).get_stdstr() + "'");
+    throw HRCParserException(SString("Error reading hrc file '") + DString(is->getInputSource()->getSystemId()) + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
-    throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + \
-                             *XStr(is->getInputSource()->getSystemId()).get_stdstr());
+    throw HRCParserException(SString("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file ") + \
+                             DString(is->getInputSource()->getSystemId()));
   }
   if (versionName == nullptr) {
     versionName = new DString(root->getAttribute(hrcHrcAttrVersion));
@@ -998,8 +999,8 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
   if (name == nullptr) {
     return nullptr;
   }
-  int colon = name->indexOf(':');
-  if (colon != -1) {
+  size_t colon = name->indexOf(':');
+  if (colon != String::npos) {
     if (parseType && DString(name, 0, colon) != *parseType->name) {
       LOGF(ERROR, "type name qualifer in '%s' doesn't match type '%s'", name->getChars(), parseType->name->getChars());
       return nullptr;
@@ -1039,8 +1040,8 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
   if (name == nullptr) {
     return nullptr;
   }
-  int colon = name->indexOf(':');
-  if (colon != -1) { // qualified name
+  size_t colon = name->indexOf(':');
+  if (colon != String::npos) { // qualified name
     DString prefix(name, 0, colon);
     auto ft = fileTypeHash.find(&prefix);
     FileTypeImpl* prefType = nullptr;
@@ -1087,7 +1088,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
 String* HRCParserImpl::useEntities(const String* name)
 {
   int copypos = 0;
-  int epos = 0;
+  size_t epos = 0;
 
   if (!name) {
     return nullptr;
@@ -1096,7 +1097,7 @@ String* HRCParserImpl::useEntities(const String* name)
 
   while (true) {
     epos = name->indexOf('%', epos);
-    if (epos == -1) {
+    if (epos == String::npos) {
       epos = name->length();
       break;
     }
@@ -1104,8 +1105,8 @@ String* HRCParserImpl::useEntities(const String* name)
       epos++;
       continue;
     }
-    int elpos = name->indexOf(';', epos);
-    if (elpos == -1) {
+    size_t elpos = name->indexOf(';', epos);
+    if (elpos == String::npos) {
       epos = name->length();
       break;
     }
@@ -1155,8 +1156,8 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   */
   if (reg != nullptr) {
     const String* s_name = reg->getName();
-    int idx = s_name->indexOf(DString(":default"));
-    if (idx != -1  && idx + 8 == s_name->length()) {
+    size_t idx = s_name->indexOf(DString(":default"));
+    if (idx != String::npos && idx + 8 == s_name->length()) {
       return nullptr;
     }
   }

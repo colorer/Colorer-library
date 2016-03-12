@@ -1,6 +1,7 @@
 #include <math.h>
 #include <float.h>
 #include <colorer/unicode/UnicodeTools.h>
+#include <colorer/unicode/Character.h>
 
 
 //  modifed GetNumber - sign extension!

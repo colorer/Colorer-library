@@ -1,10 +1,11 @@
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/io/InputSource.h>
+#include <colorer/unicode/Encodings.h>
 #include <stdio.h>
 
 void TextLinesStore::replaceTabs(size_t lno)
 {
-  String* od = lines.at(lno)->replace(DString("\t"), DString("    "));
+  SString* od = lines.at(lno)->replace(DString("\t"), DString("    "));
   delete lines.at(lno);
   lines.at(lno) = od;
 }

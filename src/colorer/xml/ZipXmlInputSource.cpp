@@ -20,7 +20,7 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, XmlInputSource* base)
 void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
   if (!path || *path == '\0') {
-    throw InputSourceException("Can't create jar source");
+    throw InputSourceException(DString("Can't create jar source"));
   }
   if (xercesc::XMLString::startsWith(path, kJar)) {
     int path_idx = xercesc::XMLString::lastIndexOf(path, '!');
@@ -50,7 +50,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
     in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 
   } else {
-    throw InputSourceException("Can't create jar source");
+    throw InputSourceException(DString("Can't create jar source"));
   }
 
   SString str("jar:");

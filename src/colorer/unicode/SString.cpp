@@ -162,6 +162,29 @@ SString &SString::operator=(SString const &cstring)
   return *this;
 }
 
+SString* SString::replace(const String &pattern, const String &newstring) const
+{
+  size_t copypos = 0;
+  size_t epos = 0;
+
+  SString* newname = new SString();
+  const String &name = *this;
+
+  while (true) {
+    epos = name.indexOf(pattern, epos);
+    if (epos == -1) {
+      epos = name.length();
+      break;
+    }
+    newname->append(DString(name, copypos, epos - copypos));
+    newname->append(newstring);
+    epos = epos + pattern.length();
+    copypos = epos;
+  }
+  if (epos > copypos) newname->append(DString(name, copypos, epos - copypos));
+  return newname;
+}
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

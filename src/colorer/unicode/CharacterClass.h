@@ -4,6 +4,8 @@
 #include <colorer/unicode/String.h>
 #include <colorer/unicode/BitArray.h>
 
+enum ECharCategory;
+
 /** Character classes store implementation.
     - CharacterClass allows to store enumerations of characters in compact
       form (two-stage bit-field tables).

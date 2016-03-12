@@ -22,7 +22,7 @@ void CatalogParser::parse(const String* path)
   uXmlInputSource catalogXIS = XmlInputSource::newInstance(path->getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw CatalogParserException("Error reading catalog.xml.");
+    throw CatalogParserException(DString("Error reading catalog.xml."));
   }
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();

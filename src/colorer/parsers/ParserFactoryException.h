@@ -15,7 +15,7 @@ public:
   ParserFactoryException() noexcept : Exception("[ParserFactoryException] ") {};
   ParserFactoryException(const String &msg) noexcept : ParserFactoryException()
   {
-    what_str.append(msg.getChars());
+    what_str.append(msg);
   }
 };
 

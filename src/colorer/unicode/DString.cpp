@@ -1,6 +1,7 @@
 #include <colorer/unicode/DString.h>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/Encodings.h>
+#include <cassert>
 
 StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
   Exception("[StringIndexOutOfBoundsException] ")
@@ -126,7 +127,7 @@ DString::DString(const char* string, size_t s, size_t l, int encoding)
   str = string;
   start = s;
   len = l;
-  if (len == -1) {
+  if (len == npos) {
     len = 0;
     if (string != nullptr) for (len = 0; str[len + s]; len++);
   }
@@ -141,7 +142,7 @@ DString::DString(const wchar* string, size_t s, size_t l)
   start = s;
   len = l;
   encodingIdx = -1;
-  if (len == -1)
+  if (len == npos)
     for (len = 0; wstr[len + s]; len++);
 }
 
@@ -152,7 +153,7 @@ DString::DString(const w4char* string, size_t s, size_t l)
   start = s;
   len = l;
   encodingIdx = -1;
-  if (len == -1)
+  if (len == npos)
     for (len = 0; w4str[len + s]; len++);
 }
 
@@ -163,9 +164,9 @@ DString::DString(const String* cstring, size_t s, size_t l)
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s > cstring->length() || len > cstring->length() - start)
+  if (s > cstring->length() || (len != npos && len > cstring->length() - start))
     throw Exception(DString("bad string constructor parameters"));
-  if (len == -1)
+  if (len == npos)
     len = cstring->length() - start;
 }
 
@@ -176,9 +177,9 @@ DString::DString(const String &cstring, size_t s, size_t l)
   start = s;
   len = l;
   encodingIdx = -1;
-  if (s > cstring.length() || len > cstring.length() - start)
+  if (s > cstring.length() || (len != npos && len > cstring.length() - start))
     throw Exception(DString("bad string constructor parameters"));
-  if (len == -1)
+  if (len == npos)
     len = cstring.length() - start;
 }
 

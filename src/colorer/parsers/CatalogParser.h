@@ -36,11 +36,6 @@ public:
 
   CatalogParserException(const String &msg) noexcept : CatalogParserException()
   {
-    what_str.append(msg.getChars());
-  }
-
-  CatalogParserException(const std::string &msg) noexcept
-  {
     what_str.append(msg);
   }
 };

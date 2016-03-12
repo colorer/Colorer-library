@@ -1,7 +1,7 @@
 #ifndef _COLORER_UNICODETOOLS_H_
 #define _COLORER_UNICODETOOLS_H_
 
-#include<colorer/unicode/String.h>
+#include <colorer/unicode/DString.h>
 
 /** Different Unicode methods and tools.
     @ingroup unicode

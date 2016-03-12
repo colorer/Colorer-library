@@ -296,7 +296,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
   for (size_t idx = 0; idx < hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx) != nullptr) {
+    if (hrd_node->hrd_location.at(idx).length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
@@ -327,7 +327,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 
   TextHRDMapper* mapper = new TextHRDMapper();
   for (size_t idx = 0; idx <  hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx) != nullptr) {
+    if (hrd_node->hrd_location.at(idx).length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());

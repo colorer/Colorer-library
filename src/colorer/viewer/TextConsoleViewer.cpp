@@ -1,6 +1,6 @@
-
-#include<colorer/viewer/TextConsoleViewer.h>
-#include<stdio.h>
+#include <colorer/viewer/TextConsoleViewer.h>
+#include <colorer/unicode/Encodings.h>
+#include <stdio.h>
 
 TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int background, int encoding){
   textLinesStore = ts;

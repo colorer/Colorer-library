@@ -74,6 +74,7 @@ public:
   SString &operator+=(const char* string);
 
   SString &operator=(SString const &cstring);
+  SString* replace(const String& pattern, const String& newstring) const;
   SString(SString &&cstring);
   SString &operator=(SString &&cstring);
 protected:

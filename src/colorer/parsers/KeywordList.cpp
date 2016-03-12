@@ -52,7 +52,7 @@ void KeywordList::substrIndex()
         break;
       }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          DString(kwList[i].keyword.get(), 0, kwList[ii].keyword->length()) == *kwList[ii].keyword.get()) {
+          DString(kwList[i].keyword.get(), 0, kwList[ii].keyword->length()).equals(kwList[ii].keyword.get())) {
         kwList[i].ssShorter = ii;
         break;
       }

@@ -192,6 +192,7 @@ size_t String::indexOf(const String &str, size_t pos) const
 {
   size_t thislen = this->length();
   size_t strlen = str.length();
+  if (thislen < strlen) return npos;
   for (size_t idx = pos; idx < thislen - strlen + 1; idx++) {
     size_t idx2;
     for (idx2 = 0; idx2 < strlen; idx2++) {
@@ -206,6 +207,7 @@ size_t String::indexOfIgnoreCase(const String &str, size_t pos) const
 {
   size_t thislen = this->length();
   size_t strlen = str.length();
+  if (thislen < strlen) return npos;
   for (size_t idx = pos; idx < thislen - strlen + 1; idx++) {
     size_t idx2;
     for (idx2 = 0; idx2 < strlen; idx2++) {

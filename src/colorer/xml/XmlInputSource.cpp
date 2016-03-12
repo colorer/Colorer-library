@@ -26,7 +26,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* b
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
 {
   if (!path || (*path == '\0')) {
-    throw InputSourceException("XmlInputSource::newInstance: path is nullptr");
+    throw InputSourceException(DString("XmlInputSource::newInstance: path is nullptr"));
   }
   if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
     return std::make_unique<ZipXmlInputSource>(path, base);
