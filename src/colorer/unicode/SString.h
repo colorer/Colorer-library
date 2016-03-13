@@ -74,7 +74,7 @@ public:
   SString &operator+=(const char* string);
 
   SString &operator=(SString const &cstring);
-  SString* replace(const String& pattern, const String& newstring) const;
+  SString* replace(const String &pattern, const String &newstring) const;
   SString(SString &&cstring);
   SString &operator=(SString &&cstring);
 protected:
@@ -111,6 +111,11 @@ inline SString &SString::operator=(SString &&cstring)
 inline size_t SString::length() const
 {
   return len;
+}
+
+inline wchar SString::operator[](size_t i) const
+{
+  return wstr[i];
 }
 
 #include <unordered_map>

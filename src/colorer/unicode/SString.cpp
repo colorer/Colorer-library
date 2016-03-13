@@ -2,17 +2,14 @@
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/DString.h>
 
-SString::SString()
+SString::SString(): wstr(nullptr), len(0), alloc(0)
 {
-  alloc = 0;
-  wstr = nullptr;
-  len = 0;
 }
 
 void SString::construct(const String* cstring, size_t s, size_t l)
 {
   if (s > cstring->length()) throw Exception(DString("bad string constructor parameters"));
-  if (l == -1) l = cstring->length() - s;
+  if (l == npos) l = cstring->length() - s;
   wstr.reset(new wchar[l]);
   for (len = 0; len < l; len++)
     wstr[len] = (*cstring)[s + len];
@@ -48,13 +45,13 @@ SString::SString(const String &cstring, size_t s, size_t l)
 
 SString::SString(char* str, int enc)
 {
-  DString ds(str, 0, -1, enc);
+  DString ds(str, 0, npos, enc);
   construct(&ds, 0, ds.length());
 }
 
 SString::SString(wchar* str)
 {
-  DString ds(str, 0, -1);
+  DString ds(str, 0, npos);
   construct(&ds, 0, ds.length());
 }
 
@@ -76,7 +73,6 @@ SString::SString(size_t no)
 
 SString::~SString()
 {
-
 }
 
 void SString::setLength(size_t newLength)
@@ -91,11 +87,6 @@ void SString::setLength(size_t newLength)
     wstr = std::move(wstr_new);
   }
   len = newLength;
-}
-
-wchar SString::operator[](size_t i) const
-{
-  return wstr[i];
 }
 
 SString &SString::append(const String* string)
@@ -158,7 +149,7 @@ SString &SString::operator+=(const String &string)
 
 SString &SString::operator=(SString const &cstring)
 {
-  construct(&cstring, 0, -1);
+  construct(&cstring, 0, npos);
   return *this;
 }
 
@@ -168,11 +159,11 @@ SString* SString::replace(const String &pattern, const String &newstring) const
   size_t epos = 0;
 
   SString* newname = new SString();
-  const String &name = *this;
+  const SString &name = *this;
 
   while (true) {
     epos = name.indexOf(pattern, epos);
-    if (epos == -1) {
+    if (epos == npos) {
       epos = name.length();
       break;
     }
