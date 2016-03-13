@@ -11,7 +11,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   what_str.append(msg);
 }
 
-ÑString &ÑString::operator=(const ÑString &cstring)
+CString &CString::operator=(const CString &cstring)
 {
   if (type == ST_UTF8) delete[] stream_wstr;
   type = cstring.type;
@@ -27,7 +27,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   return *this;
 }
 
-ÑString::ÑString(const byte* stream, size_t size, int def_encoding)
+CString::CString(const byte* stream, size_t size, int def_encoding)
 {
   start = 0;
   len = size;
@@ -63,7 +63,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
           break;
       }
       if (cps && cpe) {
-        ÑString dcp((char*)stream, cps, cpe - cps);
+        CString dcp((char*)stream, cps, cpe - cps);
         encodingIdx = Encodings::getEncodingIndex(dcp.getChars());
         if (encodingIdx == -1)
           throw UnsupportedEncodingException(dcp);
@@ -120,7 +120,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   }
 }
 
-ÑString::ÑString(const char* string, size_t s, size_t l, int encoding)
+CString::CString(const char* string, size_t s, size_t l, int encoding)
 {
   type = ST_CHAR;
   str = string;
@@ -134,7 +134,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   if (encodingIdx == -1) encodingIdx = Encodings::getDefaultEncodingIndex();
 }
 
-ÑString::ÑString(const wchar* string, size_t s, size_t l)
+CString::CString(const wchar* string, size_t s, size_t l)
 {
   type = ST_UTF16;
   wstr = string;
@@ -145,7 +145,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
     for (len = 0; wstr[len + s]; len++);
 }
 
-ÑString::ÑString(const w4char* string, size_t s, size_t l)
+CString::CString(const w4char* string, size_t s, size_t l)
 {
   type = ST_UTF32;
   w4str = string;
@@ -156,7 +156,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
     for (len = 0; w4str[len + s]; len++);
 }
 
-ÑString::ÑString(const String* cstring, size_t s, size_t l)
+CString::CString(const String* cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = cstring;
@@ -164,12 +164,12 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   len = l;
   encodingIdx = -1;
   if (s > cstring->length() || (len != npos && len > cstring->length() - start))
-    throw Exception(ÑString("bad string constructor parameters"));
+    throw Exception(CString("bad string constructor parameters"));
   if (len == npos)
     len = cstring->length() - start;
 }
 
-ÑString::ÑString(const String &cstring, size_t s, size_t l)
+CString::CString(const String &cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = &cstring;
@@ -177,12 +177,12 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   len = l;
   encodingIdx = -1;
   if (s > cstring.length() || (len != npos && len > cstring.length() - start))
-    throw Exception(ÑString("bad string constructor parameters"));
+    throw Exception(CString("bad string constructor parameters"));
   if (len == npos)
     len = cstring.length() - start;
 }
 
-ÑString::ÑString()
+CString::CString()
 {
   type = ST_CHAR;
   len = 0;
@@ -190,12 +190,12 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   encodingIdx = -1;
 }
 
-ÑString::~ÑString()
+CString::~CString()
 {
   if (type == ST_UTF8) delete[] stream_wstr;
 }
 
-wchar ÑString::operator[](size_t i) const
+wchar CString::operator[](size_t i) const
 {
   if (i < len) switch (type) {
       case ST_CHAR:
@@ -224,7 +224,7 @@ wchar ÑString::operator[](size_t i) const
   throw StringIndexOutOfBoundsException(SString(i));
 }
 
-size_t ÑString::length() const
+size_t CString::length() const
 {
   return len;
 }

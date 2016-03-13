@@ -31,12 +31,12 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       }
-      markupWriter->write(ÑString("<span class='"));
+      markupWriter->write(CString("<span class='"));
 
       const Region *region = l1->region;
       while(region != nullptr){
-        SString *token0 = SString(region->getName()).replace(ÑString(":"),ÑString("-"));
-        SString *token = token0->replace(ÑString("."),ÑString("-"));
+        SString *token0 = SString(region->getName()).replace(CString(":"),CString("-"));
+        SString *token = token0->replace(CString("."),CString("-"));
         delete token0;
         markupWriter->write(token);
         delete token;
@@ -46,9 +46,9 @@ public:
         }
       }
 
-      markupWriter->write(ÑString("'>"));
+      markupWriter->write(CString("'>"));
       textWriter->write(line, pos, end - l1->start);
-      markupWriter->write(ÑString("</span>"));
+      markupWriter->write(CString("</span>"));
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -113,12 +113,12 @@ public:
         pos = l1->start;
       };
       if (docLinkHash->size() > 0)
-        writeHref(markupWriter, docLinkHash, l1->scheme, ÑString(line, pos, end - l1->start), true);
+        writeHref(markupWriter, docLinkHash, l1->scheme, CString(line, pos, end - l1->start), true);
       writeStart(markupWriter, l1->styled());
       textWriter->write(line, pos, end - l1->start);
       writeEnd(markupWriter, l1->styled());
       if (docLinkHash->size() > 0)
-        writeHref(markupWriter, docLinkHash, l1->scheme, ÑString(line, pos, end - l1->start), false);
+        writeHref(markupWriter, docLinkHash, l1->scheme, CString(line, pos, end - l1->start), false);
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -137,29 +137,29 @@ public:
     if (lr->style&StyledRegion::RD_ITALIC) cp += sprintf(span+cp, "font-style:italic; ");
     if (lr->style&StyledRegion::RD_UNDERLINE) cp += sprintf(span+cp, "text-decoration:underline; ");
     if (lr->style&StyledRegion::RD_STRIKEOUT) cp += sprintf(span+cp, "text-decoration:strikeout; ");
-    if (cp > 0) writer->write(ÑString(span));
+    if (cp > 0) writer->write(CString(span));
   }
 
   /** Puts into stream starting HTML \<span> tag with requested style specification
   */
   static void writeStart(Writer *writer, const StyledRegion *lr){
     if (!lr->bfore && !lr->bback) return;
-    writer->write(ÑString("<span style='"));
+    writer->write(CString("<span style='"));
     writeStyle(writer, lr);
-    writer->write(ÑString("'>"));
+    writer->write(CString("'>"));
   }
 
   /** Puts into stream ending HTML \</span> tag
   */
   static void writeEnd(Writer *writer, const StyledRegion *lr){
     if (!lr->bfore && !lr->bback) return;
-    writer->write(ÑString("</span>"));
+    writer->write(CString("</span>"));
   }
 
   static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
     String *url = nullptr;
     if (scheme != nullptr){
-      auto it_url = docLinkHash->find(&(SString(token).append(ÑString("--")).append(scheme->getName())));
+      auto it_url = docLinkHash->find(&(SString(token).append(CString("--")).append(scheme->getName())));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
@@ -173,8 +173,8 @@ public:
       }
     }
     if (url != nullptr){
-      if (start) writer->write(SString("<a href='")+url+ÑString("'>"));
-      else writer->write(ÑString("</a>"));
+      if (start) writer->write(SString("<a href='")+url+CString("'>"));
+      else writer->write(CString("</a>"));
     }
   }
 

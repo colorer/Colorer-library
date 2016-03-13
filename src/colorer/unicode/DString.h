@@ -49,7 +49,7 @@ inline DString::DString(const SString* cstring, size_t s, size_t l)
   start = s;
   len = l;
   if (s > cstring->length() || (len != npos && len > cstring->length() - start))
-    throw Exception(ÑString("bad string constructor parameters"));
+    throw Exception(CString("bad string constructor parameters"));
   if (len == npos)
     len = cstring->length() - start;
 }
@@ -60,7 +60,7 @@ inline DString::DString(const SString &cstring, size_t s, size_t l)
   start = s;
   len = l;
   if (s > cstring.length() || (len != npos && len > cstring.length() - start))
-    throw Exception(ÑString("bad string constructor parameters"));
+    throw Exception(CString("bad string constructor parameters"));
   if (len == npos)
     len = cstring.length() - start;
 }

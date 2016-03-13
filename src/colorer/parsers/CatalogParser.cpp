@@ -22,7 +22,7 @@ void CatalogParser::parse(const String* path)
   uXmlInputSource catalogXIS = XmlInputSource::newInstance(path->getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw CatalogParserException(ÑString("Error reading catalog.xml."));
+    throw CatalogParserException(CString("Error reading catalog.xml."));
   }
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();
@@ -121,7 +121,7 @@ void CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
         xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
-          hrd_node->hrd_location.emplace_back(SString(ÑString(attr_value)));
+          hrd_node->hrd_location.emplace_back(SString(CString(attr_value)));
           LOGF(DEBUG, "add hrd location '%s' for %s:%s", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
         } else {
           LOG(WARNING) << "found hrd with empty location. skip it location.";

@@ -49,7 +49,7 @@ INPUT_RECORD ir;
       };
 
       if (i >= textLinesStore->getLineCount()) continue;
-      ÑString iLine = textLinesStore->getLine(i);
+      CString iLine = textLinesStore->getLine(i);
 
       for(li = 0; li < csbi.dwSize.X; li++){
         if (leftpos+li >= iLine.length()) break;
@@ -167,7 +167,7 @@ INPUT_RECORD ir;
   printf("unix edition doesn't support interactive text viewing\n\n");
 
   for(int i = 0; i < textLinesStore->getLineCount(); i++){
-    ÑString line = textLinesStore->getLine(i);
+    CString line = textLinesStore->getLine(i);
     printf("%s\n", line.getChars());
   };
 

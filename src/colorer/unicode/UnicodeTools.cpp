@@ -174,7 +174,7 @@ int UnicodeTools::getHexNumber(const String* pstr)
   return num;
 }
 
-ÑString* UnicodeTools::getCurlyContent(const String &str, int pos)
+CString* UnicodeTools::getCurlyContent(const String &str, int pos)
 {
   if (str[pos] != '{') return nullptr;
   int lpos;
@@ -189,7 +189,7 @@ int UnicodeTools::getHexNumber(const String* pstr)
       return nullptr;
   }
   if (lpos == str.length()) return nullptr;
-  return new ÑString(&str, pos + 1, lpos - pos - 1);
+  return new CString(&str, pos + 1, lpos - pos - 1);
 }
 wchar UnicodeTools::getEscapedChar(const String &str, int pos, int &retPos)
 {
@@ -207,7 +207,7 @@ wchar UnicodeTools::getEscapedChar(const String &str, int pos, int &retPos)
         retPos += val_len + 2;
         return tmp;
       } else {
-        ÑString dtmp = ÑString(&str, pos + 2, 2);
+        CString dtmp = CString(&str, pos + 2, 2);
         int tmp = getHexNumber(&dtmp);
         if (str.length() <= pos + 2 || tmp == -1) return BAD_WCHAR;
         retPos += 2;

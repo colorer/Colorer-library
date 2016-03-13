@@ -28,11 +28,11 @@ public:
     Simple unicode wrapper over any other source.
     @ingroup unicode
 */
-class ÑString : public String
+class CString : public String
 {
 public:
   /** String clone operator */
-  ÑString &operator=(const ÑString &cstring);
+  CString &operator=(const CString &cstring);
 
   /** Creates string from byte stream with encoding autodetecting
       @param stream Input raw byte stream, can't be null.
@@ -40,7 +40,7 @@ public:
       @param def_encoding Default encoding to be used, if no other
              variants found.
   */
-  ÑString(const byte* stream, size_t size, int def_encoding = -1);
+  CString(const byte* stream, size_t size, int def_encoding = -1);
 
   /** String from single-byte character buffer.
       @param string Character buffer, can't be null.
@@ -50,7 +50,7 @@ public:
       @param encoding Encoding, to use for char2unicode transformations.
              If -1, default encoding will be used.
   */
-  ÑString(const char* string, size_t s = 0, size_t l = npos, int encoding = -1);
+  CString(const char* string, size_t s = 0, size_t l = npos, int encoding = -1);
 
   /** String from unicode two-byte character buffer.
       @param string Unicode character buffer, can't be null.
@@ -58,14 +58,14 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              last zero char.
   */
-  ÑString(const wchar* string, size_t s = 0, size_t l = npos);
+  CString(const wchar* string, size_t s = 0, size_t l = npos);
   /** String from UCS4 four-byte character buffer.
       @param string UCS4 unicode character buffer, can't be null.
       @param s Starting string position. Zero - create from start of buffer.
       @param l Length of created string. If npos, autodetects string length with
              last zero char.
   */
-  ÑString(const w4char* string, size_t s = 0, size_t l = npos);
+  CString(const w4char* string, size_t s = 0, size_t l = npos);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance, can't be null.
@@ -73,7 +73,7 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  ÑString(const String* cstring, size_t s = 0, size_t l = npos);
+  CString(const String* cstring, size_t s = 0, size_t l = npos);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance.
@@ -81,15 +81,15 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  ÑString(const String &cstring, size_t s = 0, size_t l = npos);
+  CString(const String &cstring, size_t s = 0, size_t l = npos);
 
   /** Empty String */
-  ÑString();
-  ~ÑString();
+  CString();
+  ~CString();
 
-  ÑString(ÑString const &) = delete;
-  ÑString(ÑString &&cstring);
-  ÑString &operator=(ÑString &&cstring);
+  CString(CString const &) = delete;
+  CString(CString &&cstring);
+  CString &operator=(CString &&cstring);
 
   wchar operator[](size_t i) const override;
   size_t length() const override;
@@ -119,7 +119,7 @@ protected:
 
 };
 
-inline ÑString::ÑString(ÑString &&cstring):
+inline CString::CString(CString &&cstring):
   type(cstring.type),
   encodingIdx(cstring.encodingIdx),
   cstr(cstring.cstr),
@@ -134,7 +134,7 @@ inline ÑString::ÑString(ÑString &&cstring):
   cstring.encodingIdx = -1;
 }
 
-inline ÑString &ÑString::operator=(ÑString &&cstring)
+inline CString &CString::operator=(CString &&cstring)
 {
   if (this != &cstring) {
     type = cstring.type;

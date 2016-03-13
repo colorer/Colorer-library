@@ -122,7 +122,7 @@ EError CRegExp::setRELow(const String &expr)
   tree_root->param0 = cMatch++;
 
   int endPos;
-  EError err = setStructs(tree_root->un.param, ÑString(&expr, start, len), endPos);
+  EError err = setStructs(tree_root->un.param, CString(&expr, start, len), endPos);
   if (endPos != len) err = EBRACKETS;
 
   if (err) return err;
@@ -434,9 +434,9 @@ SRegInfo *next, *temp;
       };
       if (en == -1) return EBRACKETS;
       if (comma == -1) comma = en;
-      ÑString ds = ÑString(&expr, st, comma-st);
+      CString ds = CString(&expr, st, comma-st);
       next->s = UnicodeTools::getNumber(&ds);
-      ÑString de = ÑString(&expr, comma+1, en-comma-1);
+      CString de = CString(&expr, comma+1, en-comma-1);
       if (comma != en) next->e = UnicodeTools::getNumber(&de);
       else next->e = next->s;
       if (next->e == -1) return EOP;
@@ -508,7 +508,7 @@ SRegInfo *next, *temp;
       next->un.param = new SRegInfo;
       next->un.param->parent = next;
       int endPos;
-      EError err = setStructs(next->un.param, ÑString(&expr, i), endPos);
+      EError err = setStructs(next->un.param, CString(&expr, i), endPos);
       if (endPos == expr.length()-i) return EBRACKETS;
       if (err) return err;
       i += endPos;
@@ -555,7 +555,7 @@ SRegInfo *next, *temp;
         if (idx > 0) delete retmp;
       };
       reword->op = ReWord;
-      reword->un.word = new SString(ÑString(wcword, 0, wsize));
+      reword->un.word = new SString(CString(wcword, 0, wsize));
       delete[] wcword;
       reword->next = reafterword;
       if (reafterword) reafterword->prev = reword;
@@ -882,7 +882,7 @@ int action=-1;
           continue;
         }
         if (ignoreCase){
-          if (!ÑString(&pattern, toParse, wlen).equalsIgnoreCase(re->un.word)){
+          if (!CString(&pattern, toParse, wlen).equalsIgnoreCase(re->un.word)){
             check_stack(false,&re,&prev,&toParse,&leftenter,&action);
             continue;
           }

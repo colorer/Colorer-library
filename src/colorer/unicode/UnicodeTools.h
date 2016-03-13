@@ -24,7 +24,7 @@ public:
             base passed string remains valid until
             accessing it.
   */
-  static ÑString* getCurlyContent(const String &str, int pos);
+  static CString* getCurlyContent(const String &str, int pos);
 
   /** \\x{2028} \\x23 \\c  - into wchar
       @param str String to parse Escape sequence.

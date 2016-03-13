@@ -8,7 +8,7 @@ SString::SString(): wstr(nullptr), len(0), alloc(0)
 
 void SString::construct(const String* cstring, size_t s, size_t l)
 {
-  if (s > cstring->length()) throw Exception(ÑString("bad string constructor parameters"));
+  if (s > cstring->length()) throw Exception(CString("bad string constructor parameters"));
   if (l == npos) l = cstring->length() - s;
   wstr.reset(new wchar[l]);
   for (len = 0; len < l; len++)
@@ -28,13 +28,13 @@ SString::SString(const SString &cstring)
 
 SString::SString(const char* string, size_t s, size_t l)
 {
-  ÑString ds(string, s, l);
+  CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
 SString::SString(const wchar* string, size_t s, size_t l)
 {
-  ÑString ds(string, s, l);
+  CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
@@ -45,13 +45,13 @@ SString::SString(const String &cstring, size_t s, size_t l)
 
 SString::SString(char* str, int enc)
 {
-  ÑString ds(str, 0, npos, enc);
+  CString ds(str, 0, npos, enc);
   construct(&ds, 0, ds.length());
 }
 
 SString::SString(wchar* str)
 {
-  ÑString ds(str, 0, npos);
+  CString ds(str, 0, npos);
   construct(&ds, 0, ds.length());
 }
 
@@ -59,7 +59,7 @@ SString::SString(int no)
 {
   char text[40];
   sprintf(text, "%d", no);
-  ÑString dtext = ÑString(text);
+  CString dtext = CString(text);
   construct(&dtext, 0, npos);
 }
 
@@ -67,7 +67,7 @@ SString::SString(size_t no)
 {
   char text[40];
   sprintf(text, "%zd", no); //-V111
-  ÑString dtext = ÑString(text);
+  CString dtext = CString(text);
   construct(&dtext, 0, npos);
 }
 
@@ -92,7 +92,7 @@ void SString::setLength(size_t newLength)
 SString &SString::append(const String* string)
 {
   if (string == nullptr)
-    return append(ÑString("null"));
+    return append(CString("null"));
   return append(*string);
 }
 
@@ -134,12 +134,12 @@ SString &SString::operator+(const String* string)
 
 SString &SString::operator+(const char* string)
 {
-  return append(ÑString(string));
+  return append(CString(string));
 }
 
 SString &SString::operator+=(const char* string)
 {
-  return operator+(ÑString(string));
+  return operator+(CString(string));
 }
 
 SString &SString::operator+=(const String &string)
@@ -167,12 +167,12 @@ SString* SString::replace(const String &pattern, const String &newstring) const
       epos = name.length();
       break;
     }
-    newname->append(ÑString(name, copypos, epos - copypos));
+    newname->append(CString(name, copypos, epos - copypos));
     newname->append(newstring);
     epos = epos + pattern.length();
     copypos = epos;
   }
-  if (epos > copypos) newname->append(ÑString(name, copypos, epos - copypos));
+  if (epos > copypos) newname->append(CString(name, copypos, epos - copypos));
   return newname;
 }
 
