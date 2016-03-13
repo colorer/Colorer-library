@@ -104,6 +104,7 @@ set(SRC_COLORER
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
    ${UNICODE}/CString.cpp ${UNICODE}/CString.h
+   ${UNICODE}/DString.h
    ${UNICODE}/Encodings.h ${UNICODE}/Encodings.cpp
    ${UNICODE}/String.cpp ${UNICODE}/String.h
    ${UNICODE}/SString.cpp ${UNICODE}/SString.h
