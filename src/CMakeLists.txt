@@ -65,7 +65,7 @@ set(SRC_COLORER
    ${PARSERS}/ParserFactory.cpp
    ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
    ${PARSERS}/SchemeNode.cpp ${PARSERS}/SchemeNode.h
-   ${PARSERS}/VirtualEntry.H
+   ${PARSERS}/VirtualEntry.h
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
