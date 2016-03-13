@@ -1,7 +1,6 @@
-#include <colorer/unicode/DString.h>
+#include <colorer/unicode/CString.h>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/Encodings.h>
-#include <cassert>
 
 StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
   Exception("[StringIndexOutOfBoundsException] ")
@@ -12,7 +11,7 @@ StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &m
   what_str.append(msg);
 }
 
-DString &DString::operator=(const DString &cstring)
+ÑString &ÑString::operator=(const ÑString &cstring)
 {
   if (type == ST_UTF8) delete[] stream_wstr;
   type = cstring.type;
@@ -28,7 +27,7 @@ DString &DString::operator=(const DString &cstring)
   return *this;
 }
 
-DString::DString(const byte* stream, size_t size, int def_encoding)
+ÑString::ÑString(const byte* stream, size_t size, int def_encoding)
 {
   start = 0;
   len = size;
@@ -64,7 +63,7 @@ DString::DString(const byte* stream, size_t size, int def_encoding)
           break;
       }
       if (cps && cpe) {
-        DString dcp((char*)stream, cps, cpe - cps);
+        ÑString dcp((char*)stream, cps, cpe - cps);
         encodingIdx = Encodings::getEncodingIndex(dcp.getChars());
         if (encodingIdx == -1)
           throw UnsupportedEncodingException(dcp);
@@ -121,7 +120,7 @@ DString::DString(const byte* stream, size_t size, int def_encoding)
   }
 }
 
-DString::DString(const char* string, size_t s, size_t l, int encoding)
+ÑString::ÑString(const char* string, size_t s, size_t l, int encoding)
 {
   type = ST_CHAR;
   str = string;
@@ -135,7 +134,7 @@ DString::DString(const char* string, size_t s, size_t l, int encoding)
   if (encodingIdx == -1) encodingIdx = Encodings::getDefaultEncodingIndex();
 }
 
-DString::DString(const wchar* string, size_t s, size_t l)
+ÑString::ÑString(const wchar* string, size_t s, size_t l)
 {
   type = ST_UTF16;
   wstr = string;
@@ -146,7 +145,7 @@ DString::DString(const wchar* string, size_t s, size_t l)
     for (len = 0; wstr[len + s]; len++);
 }
 
-DString::DString(const w4char* string, size_t s, size_t l)
+ÑString::ÑString(const w4char* string, size_t s, size_t l)
 {
   type = ST_UTF32;
   w4str = string;
@@ -157,7 +156,7 @@ DString::DString(const w4char* string, size_t s, size_t l)
     for (len = 0; w4str[len + s]; len++);
 }
 
-DString::DString(const String* cstring, size_t s, size_t l)
+ÑString::ÑString(const String* cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = cstring;
@@ -165,12 +164,12 @@ DString::DString(const String* cstring, size_t s, size_t l)
   len = l;
   encodingIdx = -1;
   if (s > cstring->length() || (len != npos && len > cstring->length() - start))
-    throw Exception(DString("bad string constructor parameters"));
+    throw Exception(ÑString("bad string constructor parameters"));
   if (len == npos)
     len = cstring->length() - start;
 }
 
-DString::DString(const String &cstring, size_t s, size_t l)
+ÑString::ÑString(const String &cstring, size_t s, size_t l)
 {
   type = ST_CSTRING;
   cstr = &cstring;
@@ -178,12 +177,12 @@ DString::DString(const String &cstring, size_t s, size_t l)
   len = l;
   encodingIdx = -1;
   if (s > cstring.length() || (len != npos && len > cstring.length() - start))
-    throw Exception(DString("bad string constructor parameters"));
+    throw Exception(ÑString("bad string constructor parameters"));
   if (len == npos)
     len = cstring.length() - start;
 }
 
-DString::DString()
+ÑString::ÑString()
 {
   type = ST_CHAR;
   len = 0;
@@ -191,12 +190,12 @@ DString::DString()
   encodingIdx = -1;
 }
 
-DString::~DString()
+ÑString::~ÑString()
 {
   if (type == ST_UTF8) delete[] stream_wstr;
 }
 
-wchar DString::operator[](size_t i) const
+wchar ÑString::operator[](size_t i) const
 {
   if (i < len) switch (type) {
       case ST_CHAR:
@@ -225,7 +224,7 @@ wchar DString::operator[](size_t i) const
   throw StringIndexOutOfBoundsException(SString(i));
 }
 
-size_t DString::length() const
+size_t ÑString::length() const
 {
   return len;
 }

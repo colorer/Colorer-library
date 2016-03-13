@@ -30,7 +30,7 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  DString d_id = DString(input_source->getInputSource()->getSystemId());
+  ÑString d_id = ÑString(input_source->getInputSource()->getSystemId());
   //íå íóæíî óäàëÿòü îáúåêò, óäàëÿåìûé èç ìàññèâà. ìû è òàê óæå â äåñòðóêòîðå
   isHash->erase(&d_id);
   if (isHash->size() == 0) {
@@ -47,7 +47,7 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     isHash = new std::unordered_map<SString, SharedXmlInputSource*>();
   }
 
-  DString d_id = DString(tempis->getInputSource()->getSystemId());
+  ÑString d_id = ÑString(tempis->getInputSource()->getSystemId());
   auto s = isHash->find(d_id);
   if (s != isHash->end()) {
     SharedXmlInputSource* sis = s->second;
@@ -55,7 +55,7 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     return sis;
   } else {
     SharedXmlInputSource* sis = new SharedXmlInputSource(tempis);
-    isHash->insert(std::make_pair(DString(sis->getInputSource()->getSystemId()), sis));
+    isHash->insert(std::make_pair(ÑString(sis->getInputSource()->getSystemId()), sis));
     return sis;
   }
 }

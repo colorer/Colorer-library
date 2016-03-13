@@ -89,7 +89,7 @@ void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region*
     return;
   }
 
-  String* itemLabel = new DString(line, sx, ex - sx);
+  String* itemLabel = new ÑString(line, sx, ex - sx);
 
   if (lineIsEmpty) {
     outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));

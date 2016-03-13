@@ -103,7 +103,7 @@ set(SRC_COLORER
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
-   ${UNICODE}/DString.cpp ${UNICODE}/DString.h
+   ${UNICODE}/CString.cpp ${UNICODE}/CString.h
    ${UNICODE}/Encodings.h ${UNICODE}/Encodings.cpp
    ${UNICODE}/String.cpp ${UNICODE}/String.h
    ${UNICODE}/SString.cpp ${UNICODE}/SString.h

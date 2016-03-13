@@ -5,7 +5,7 @@
 
 void TextLinesStore::replaceTabs(size_t lno)
 {
-  SString* od = lines.at(lno)->replace(DString("\t"), DString("    "));
+  SString* od = lines.at(lno)->replace(ÑString("\t"), ÑString("    "));
   delete lines.at(lno);
   lines.at(lno) = od;
 }
@@ -59,7 +59,7 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
     int len = is->length();
 
     int ei = inputEncoding == nullptr ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
-    DString file(data, len, ei);
+    ÑString file(data, len, ei);
     int length = file.length();
     lines.reserve(static_cast<size_t>(length / 30)); // estimate number of lines
 

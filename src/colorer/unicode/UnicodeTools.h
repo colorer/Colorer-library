@@ -1,7 +1,7 @@
 #ifndef _COLORER_UNICODETOOLS_H_
 #define _COLORER_UNICODETOOLS_H_
 
-#include <colorer/unicode/DString.h>
+#include <colorer/unicode/CString.h>
 
 /** Different Unicode methods and tools.
     @ingroup unicode
@@ -24,7 +24,7 @@ public:
             base passed string remains valid until
             accessing it.
   */
-  static DString* getCurlyContent(const String &str, int pos);
+  static ÑString* getCurlyContent(const String &str, int pos);
 
   /** \\x{2028} \\x23 \\c  - into wchar
       @param str String to parse Escape sequence.

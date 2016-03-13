@@ -1,5 +1,5 @@
-#ifndef _COLORER_DSTRING_H_
-#define _COLORER_DSTRING_H_
+#ifndef _COLORER_CSTRING_H_
+#define _COLORER_CSTRING_H_
 
 #include <colorer/unicode/String.h>
 #include <colorer/Exception.h>
@@ -28,11 +28,11 @@ public:
     Simple unicode wrapper over any other source.
     @ingroup unicode
 */
-class DString : public String
+class ÑString : public String
 {
 public:
   /** String clone operator */
-  DString &operator=(const DString &cstring);
+  ÑString &operator=(const ÑString &cstring);
 
   /** Creates string from byte stream with encoding autodetecting
       @param stream Input raw byte stream, can't be null.
@@ -40,66 +40,60 @@ public:
       @param def_encoding Default encoding to be used, if no other
              variants found.
   */
-  DString(const byte* stream, size_t size, int def_encoding = -1);
+  ÑString(const byte* stream, size_t size, int def_encoding = -1);
 
   /** String from single-byte character buffer.
       @param string Character buffer, can't be null.
       @param s Start string position. Zero - create from start of buffer.
-      @param l Length of created string. If -1, autodetects string length with
+      @param l Length of created string. If npos, autodetects string length with
              last zero byte.
       @param encoding Encoding, to use for char2unicode transformations.
              If -1, default encoding will be used.
   */
-  DString(const char* string, size_t s = 0, size_t l = npos, int encoding = -1);
+  ÑString(const char* string, size_t s = 0, size_t l = npos, int encoding = -1);
 
   /** String from unicode two-byte character buffer.
       @param string Unicode character buffer, can't be null.
       @param s Start string position. Zero - create from start of buffer.
-      @param l Length of created string. If -1, autodetects string length with
+      @param l Length of created string. If npos, autodetects string length with
              last zero char.
   */
-  DString(const wchar* string, size_t s = 0, size_t l = npos);
+  ÑString(const wchar* string, size_t s = 0, size_t l = npos);
   /** String from UCS4 four-byte character buffer.
       @param string UCS4 unicode character buffer, can't be null.
       @param s Starting string position. Zero - create from start of buffer.
-      @param l Length of created string. If -1, autodetects string length with
+      @param l Length of created string. If npos, autodetects string length with
              last zero char.
   */
-  DString(const w4char* string, size_t s = 0, size_t l = npos);
+  ÑString(const w4char* string, size_t s = 0, size_t l = npos);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance, can't be null.
       @param s Starting string position.
-      @param l Length of created string. If -1, autodetects string length with
+      @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  DString(const String* cstring, size_t s = 0, size_t l = npos);
+  ÑString(const String* cstring, size_t s = 0, size_t l = npos);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance.
       @param s Starting string position.
-      @param l Length of created string. If -1, autodetects string length with
+      @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  DString(const String &cstring, size_t s = 0, size_t l = npos);
+  ÑString(const String &cstring, size_t s = 0, size_t l = npos);
 
   /** Empty String */
-  DString();
-  ~DString();
+  ÑString();
+  ~ÑString();
 
-  DString(DString const &) = delete;
-  DString(DString &&cstring);
-  DString &operator=(DString &&cstring);
+  ÑString(ÑString const &) = delete;
+  ÑString(ÑString &&cstring);
+  ÑString &operator=(ÑString &&cstring);
 
   wchar operator[](size_t i) const override;
   size_t length() const override;
 
-  /** Creates Dynamic string as substring of called object.
-      @param s Starting string position.
-      @param l Length of created string. If -1, creates string
-             till end of current.
-  */
-  String* substring(int s, int l = -1) const;
 protected:
   enum EStreamType {
     ST_CHAR = 0,
@@ -125,7 +119,7 @@ protected:
 
 };
 
-inline DString::DString(DString &&cstring):
+inline ÑString::ÑString(ÑString &&cstring):
   type(cstring.type),
   encodingIdx(cstring.encodingIdx),
   cstr(cstring.cstr),
@@ -140,7 +134,7 @@ inline DString::DString(DString &&cstring):
   cstring.encodingIdx = -1;
 }
 
-inline DString &DString::operator=(DString &&cstring)
+inline ÑString &ÑString::operator=(ÑString &&cstring)
 {
   if (this != &cstring) {
     type = cstring.type;

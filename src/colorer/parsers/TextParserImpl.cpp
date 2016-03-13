@@ -248,9 +248,9 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
 
     int cr;
     if (node->kwList->matchCase) {
-      cr = node->kwList->kwList[pos].keyword->compareTo(DString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->compareTo(ÑString(*str, gx, kwlen));
     } else {
-      cr = node->kwList->kwList[pos].keyword->compareToIgnoreCase(DString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->compareToIgnoreCase(ÑString(*str, gx, kwlen));
     }
 
     if (cr == 0 && right - left == 1) {
@@ -416,7 +416,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         int o_schemeStart = schemeStart;
         SMatches o_matchend = matchend;
         SMatches* o_match;
-        DString* o_str;
+        ÑString* o_str;
         schemeNode->end->getBackTrace((const String**)&o_str, &o_match);
 
         baseScheme = ssubst;

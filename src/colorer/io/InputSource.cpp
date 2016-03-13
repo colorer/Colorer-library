@@ -20,7 +20,7 @@ String *InputSource::getAbsolutePath(const String*basePath, const String*relPath
   if (root_pos == -1) root_pos = 0;
   else root_pos++;
   SString *newPath = new SString();
-  newPath->append(DString(basePath, 0, root_pos)).append(relPath);
+  newPath->append(ÑString(basePath, 0, root_pos)).append(relPath);
   return newPath;
 };
 
@@ -30,22 +30,22 @@ InputSource *InputSource::newInstance(const String *path){
 
 InputSource *InputSource::newInstance(const String *path, InputSource *base){
   if (path == nullptr){
-    throw InputSourceException(DString("InputSource::newInstance: path is nullptr"));
+    throw InputSourceException(ÑString("InputSource::newInstance: path is nullptr"));
   }
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-  if (path->startsWith(DString("http://"))){
+  if (path->startsWith(ÑString("http://"))){
     return new HTTPInputSource(path, nullptr);
   };
 #endif
 #if COLORER_FEATURE_JARINPUTSOURCE
-  if (path->startsWith(DString("jar:"))){
+  if (path->startsWith(ÑString("jar:"))){
     return new JARInputSource(path, base);
   };
 #endif
   if (base != nullptr){
     InputSource *is = base->createRelative(path);
     if (is != nullptr) return is;
-    throw InputSourceException(DString("Unknown input source type"));
+    throw InputSourceException(ÑString("Unknown input source type"));
   };
   return new FileInputSource(path, nullptr);
 };

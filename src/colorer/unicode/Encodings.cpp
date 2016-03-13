@@ -1,7 +1,7 @@
 #include <colorer/unicode/Encodings.h>
 #include <colorer/unicode/x_encodings.h>
 #include <colorer/unicode/SString.h>
-#include <colorer/unicode/DString.h>
+#include <colorer/unicode/CString.h>
 
 UnsupportedEncodingException::UnsupportedEncodingException() noexcept :
   Exception("[UnsupportedEncodingException] ")
@@ -35,13 +35,13 @@ static int bomArraySize[5] = { 3, 2, 2, 4, 4 };
 
 byte* Encodings::getEncodingBOM(int encoding)
 {
-  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(DString("getEncodingBOM was called for bad encoding"));
+  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(ÑString("getEncodingBOM was called for bad encoding"));
   return bomArray[-encoding - 2];
 }
 
 int Encodings::getEncodingBOMSize(int encoding)
 {
-  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(DString("getEncodingBOM was called for bad encoding"));
+  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(ÑString("getEncodingBOM was called for bad encoding"));
   return bomArraySize[-encoding - 2];
 }
 

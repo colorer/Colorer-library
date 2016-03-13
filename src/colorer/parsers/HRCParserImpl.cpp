@@ -48,7 +48,7 @@ HRCParserImpl::~HRCParserImpl()
 void HRCParserImpl::loadSource(XmlInputSource* is)
 {
   if (!is) {
-    throw HRCParserException(DString("Can't open stream - 'null' is bad stream."));
+    throw HRCParserException(ÑString("Can't open stream - 'null' is bad stream."));
   }
 
   XmlInputSource* istemp = current_input_source;
@@ -200,17 +200,17 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException(SString("Error reading hrc file '") + DString(is->getInputSource()->getSystemId()) + "'");
+    throw HRCParserException(SString("Error reading hrc file '") + ÑString(is->getInputSource()->getSystemId()) + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
     throw HRCParserException(SString("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file ") + \
-                             DString(is->getInputSource()->getSystemId()));
+                             ÑString(is->getInputSource()->getSystemId()));
   }
   if (versionName == nullptr) {
-    versionName = new DString(root->getAttribute(hrcHrcAttrVersion));
+    versionName = new ÑString(root->getAttribute(hrcHrcAttrVersion));
   }
 
   bool globalUpdateStarted = false;
@@ -283,7 +283,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
     typeDescription = typeName;
   }
   FileTypeImpl* f = nullptr;
-  DString tname = DString(typeName);
+  ÑString tname = ÑString(typeName);
   auto ft = fileTypeHash.find(&tname);
   if (ft != fileTypeHash.end()) {
     f = ft->second;
@@ -294,10 +294,10 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
     //  return;
   }
   FileTypeImpl* type = new FileTypeImpl(this);
-  type->name.reset(new SString(DString(typeName)));
-  type->description.reset(new SString(DString(typeDescription)));
+  type->name.reset(new SString(ÑString(typeName)));
+  type->description.reset(new SString(ÑString(typeDescription)));
   if (typeGroup != nullptr) {
-    type->group.reset(new SString(DString(typeGroup)));
+    type->group.reset(new SString(ÑString(typeGroup)));
   }
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
     type->isPackage = true;
@@ -353,7 +353,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
-  DString dmatch = DString(match);
+  ÑString dmatch = ÑString(match);
   CRegExp* matchRE = new CRegExp(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
@@ -363,7 +363,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   }
   FileTypeChooser::ChooserType ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? FileTypeChooser::ChooserType::CT_FILENAME : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype ? 1 : 2;
-  DString weight = DString(elem->getAttribute(hrcFilenameAttrWeight));
+  ÑString weight = ÑString(elem->getAttribute(hrcFilenameAttrWeight));
   UnicodeTools::getNumber(&weight, &prior);
   FileTypeChooser* ftc = new FileTypeChooser(ctype, prior, matchRE);
   parseProtoType->chooserVector.push_back(ftc);
@@ -382,11 +382,11 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
           LOGF(WARNING, "Bad parameter in prototype '%s'", parseProtoType->getName()->getChars());
           continue;
         }
-        DString d_name = DString(name);
+        ÑString d_name = ÑString(name);
         TypeParameter* tp = parseProtoType->addParam(&d_name);
-        tp->default_value.reset(new SString(DString(value)));
+        tp->default_value.reset(new SString(ÑString(value)));
         if (*descr != '\0') {
-          tp->description.reset(new SString(DString(descr)));
+          tp->description.reset(new SString(ÑString(descr)));
         }
       }
       continue;
@@ -405,7 +405,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
     LOG(ERROR) << "Unnamed type found";
     return;
   }
-  DString d_name = DString(typeName);
+  ÑString d_name = ÑString(typeName);
   auto type_ref = fileTypeHash.find(&d_name);
   if (type_ref == fileTypeHash.end()) {
     LOGF(ERROR, "type '%s' without prototype", d_name.getChars());
@@ -478,12 +478,12 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
     LOG(ERROR) << "No 'name' attribute in <region> element";
     return;
   }
-  DString d_region = DString(regionName);
+  ÑString d_region = ÑString(regionName);
   String* qname1 = qualifyOwnName(&d_region);
   if (qname1 == nullptr) {
     return;
   }
-  DString d_regionparent = DString(regionParent);
+  ÑString d_regionparent = ÑString(regionParent);
   String* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QNT_DEFINE, true);
   if (regionNamesHash.find(qname1) != regionNamesHash.end()) {
     LOGF(WARNING, "Duplicate region '%s' definition in type '%s'", qname1->getChars(), parseType->getName()->getChars());
@@ -492,7 +492,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
     return;
   }
 
-  DString regiondescr = DString(regionDescr);
+  ÑString regiondescr = ÑString(regionDescr);
   const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), (int)regionNamesVector.size());
   regionNamesVector.push_back(region);
   std::pair<SString, const Region*> pp(qname1, region);
@@ -510,8 +510,8 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
     LOG(ERROR) << "Bad entity attributes";
     return;
   }
-  DString dentityName = DString(entityName);
-  DString dentityValue = DString(entityValue);
+  ÑString dentityName = ÑString(entityName);
+  ÑString dentityValue = ÑString(entityValue);
   String* qname1 = qualifyOwnName(&dentityName);
   String* qname2 = useEntities(&dentityValue);
   if (qname1 != nullptr && qname2 != nullptr) {
@@ -524,18 +524,18 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
 void HRCParserImpl::addTypeImport(const xercesc::DOMElement* elem)
 {
   const XMLCh* typeParam = elem->getAttribute(hrcImportAttrType);
-  DString typeparam = DString(typeParam);
+  ÑString typeparam = ÑString(typeParam);
   if (*typeParam == '\0' || fileTypeHash.find(&typeparam) == fileTypeHash.end()) {
     LOGF(ERROR, "Import with bad '%s' attribute in type '%s'", typeparam.getChars(), parseType->name->getChars());
     return;
   }
-  parseType->importVector.emplace_back(new SString(DString(typeParam)));
+  parseType->importVector.emplace_back(new SString(ÑString(typeParam)));
 }
 
 void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
 {
   const XMLCh* schemeName = elem->getAttribute(hrcSchemeAttrName);
-  DString dschemeName = DString(schemeName);
+  ÑString dschemeName = ÑString(schemeName);
   String* qSchemeName = qualifyOwnName(*schemeName != '\0' ? &dschemeName : nullptr);
   if (qSchemeName == nullptr) {
     LOGF(ERROR, "bad scheme name in type '%s'", parseType->getName()->getChars());
@@ -556,10 +556,10 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
   schemeHash.emplace(pp);
   const XMLCh* condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh* condUnless = elem->getAttribute(hrcSchemeAttrUnless);
-  const String* p1 = parseType->getParamValue(DString(condIf));
-  const String* p2 = parseType->getParamValue(DString(condUnless));
-  if ((*condIf != '\0' && !DString("true").equals(p1)) ||
-      (*condUnless != '\0' && DString("true").equals(p2))) {
+  const String* p1 = parseType->getParamValue(ÑString(condIf));
+  const String* p2 = parseType->getParamValue(ÑString(condUnless));
+  if ((*condIf != '\0' && !ÑString("true").equals(p1)) ||
+      (*condUnless != '\0' && ÑString("true").equals(p2))) {
     //disabledSchemes.put(scheme->schemeName, 1);
     return;
   }
@@ -607,8 +607,8 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
   }
   SchemeNode* scheme_node = new SchemeNode();
   scheme_node->type = SchemeNode::SNT_INHERIT;
-  scheme_node->schemeName.reset(new SString(DString(nqSchemeName)));
-  DString dnqSchemeName = DString(nqSchemeName);
+  scheme_node->schemeName.reset(new SString(ÑString(nqSchemeName)));
+  ÑString dnqSchemeName = ÑString(nqSchemeName);
   String* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
   if (schemeName == nullptr) {
     //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with '"+scheme->schemeName+"'");
@@ -631,8 +631,8 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
           LOGF(ERROR, "bad virtualize attributes in scheme '%s'", scheme->schemeName->getChars());
           continue;
         }
-        DString d_schemeName = DString(x_schemeName);
-        DString d_substName = DString(x_substName);
+        ÑString d_schemeName = ÑString(x_schemeName);
+        ÑString d_substName = ÑString(x_substName);
         scheme_node->virtualEntryVector.push_back(new VirtualEntry(&d_schemeName, &d_substName));
       }
     }
@@ -664,11 +664,11 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
     LOGF(ERROR, "no 'match' in regexp in scheme '%s'", scheme->schemeName->getChars());
     return;
   }
-  DString dmatchParam = DString(matchParam);
+  ÑString dmatchParam = ÑString(matchParam);
   String* entMatchParam = useEntities(&dmatchParam);
   SchemeNode* scheme_node = new SchemeNode();
-  DString dhrcRegexpAttrPriority = DString(elem->getAttribute(hrcRegexpAttrPriority));
-  scheme_node->lowPriority = DString("low").equals(&dhrcRegexpAttrPriority);
+  ÑString dhrcRegexpAttrPriority = ÑString(elem->getAttribute(hrcRegexpAttrPriority));
+  scheme_node->lowPriority = ÑString("low").equals(&dhrcRegexpAttrPriority);
   scheme_node->type = SchemeNode::SNT_RE;
   scheme_node->start.reset(new CRegExp(entMatchParam));
   if (!scheme_node->start || !scheme_node->start->isOk())
@@ -733,13 +733,13 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
 
   String* startParam;
   String* endParam;
-  DString dsParam = DString(sParam);
+  ÑString dsParam = ÑString(sParam);
   if (!(startParam = useEntities(&dsParam))) {
     LOGF(ERROR, "'start' block attribute not found in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
     return;
   }
-  DString deParam = DString(eParam);
+  ÑString deParam = ÑString(eParam);
   if (!(endParam = useEntities(&deParam))) {
     LOGF(ERROR, "'end' block attribute not found in scheme '%s'", scheme->schemeName->getChars());
     delete startParam;
@@ -754,13 +754,13 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
     return;
   }
   SchemeNode* scheme_node = new SchemeNode();
-  scheme_node->schemeName.reset(new SString(DString(schemeName)));
-  DString attr_pr = DString(elem->getAttribute(hrcBlockAttrPriority));
-  DString attr_cpr = DString(elem->getAttribute(hrcBlockAttrContentPriority));
-  DString attr_ireg = DString(elem->getAttribute(hrcBlockAttrInnerRegion));
-  scheme_node->lowPriority = DString("low").equals(&attr_pr);
-  scheme_node->lowContentPriority = DString("low").equals(&attr_cpr);
-  scheme_node->innerRegion = DString("yes").equals(&attr_ireg);
+  scheme_node->schemeName.reset(new SString(ÑString(schemeName)));
+  ÑString attr_pr = ÑString(elem->getAttribute(hrcBlockAttrPriority));
+  ÑString attr_cpr = ÑString(elem->getAttribute(hrcBlockAttrContentPriority));
+  ÑString attr_ireg = ÑString(elem->getAttribute(hrcBlockAttrInnerRegion));
+  scheme_node->lowPriority = ÑString("low").equals(&attr_pr);
+  scheme_node->lowContentPriority = ÑString("low").equals(&attr_cpr);
+  scheme_node->innerRegion = ÑString("yes").equals(&attr_ireg);
   scheme_node->type = SchemeNode::SNT_SCHEME;
   scheme_node->start.reset(new CRegExp(startParam));
   scheme_node->start->setPositionMoves(false);
@@ -787,11 +787,11 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
 void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   SchemeNode* scheme_node = new SchemeNode();
-  DString dhrcKeywordsAttrIgnorecase = DString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
-  DString dhrcKeywordsAttrPriority = DString(elem->getAttribute(hrcKeywordsAttrPriority));
-  bool isCase = !DString("yes").equals(&dhrcKeywordsAttrIgnorecase);
-  scheme_node->lowPriority = !DString("normal").equals(&dhrcKeywordsAttrPriority);
-  const Region* brgn = getNCRegion(elem, DString("region"));
+  ÑString dhrcKeywordsAttrIgnorecase = ÑString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
+  ÑString dhrcKeywordsAttrPriority = ÑString(elem->getAttribute(hrcKeywordsAttrPriority));
+  bool isCase = !ÑString("yes").equals(&dhrcKeywordsAttrIgnorecase);
+  scheme_node->lowPriority = !ÑString("normal").equals(&dhrcKeywordsAttrPriority);
+  const Region* brgn = getNCRegion(elem, ÑString("region"));
   if (brgn == nullptr) {
     return;
   }
@@ -799,7 +799,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
 
   scheme_node->worddiv = nullptr;
   if (*worddiv != '\0') {
-    DString dworddiv = DString(worddiv);
+    ÑString dworddiv = ÑString(worddiv);
     String* entWordDiv = useEntities(&dworddiv);
     scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr));
     if (scheme_node->worddiv == nullptr) {
@@ -855,11 +855,11 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, cons
   const Region* rgn = brgn;
   const XMLCh* reg = elem->getAttribute(hrcWordAttrRegion);
   if (*reg != '\0') {
-    rgn = getNCRegion(elem, DString(hrcWordAttrRegion));
+    rgn = getNCRegion(elem, ÑString(hrcWordAttrRegion));
   }
 
   int pos = scheme_node->kwList->num;
-  scheme_node->kwList->kwList[pos].keyword.reset(new SString(DString(param)));
+  scheme_node->kwList->kwList[pos].keyword.reset(new SString(ÑString(param)));
   scheme_node->kwList->kwList[pos].region = rgn;
   scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
   scheme_node->kwList->kwList[pos].ssShorter = -1;
@@ -899,16 +899,16 @@ void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
 
   if (el) {
     if (node->region == nullptr) {
-      node->region = getNCRegion(el, DString("region"));
+      node->region = getNCRegion(el, ÑString("region"));
     }
 
     for (int i = 0; i < REGIONS_NUM; i++) {
       rg_tmpl[6] = (i < 0xA ? i : i + 7 + 32) + '0';
 
       if (st) {
-        node->regions[i] = getNCRegion(el, DString(rg_tmpl));
+        node->regions[i] = getNCRegion(el, ÑString(rg_tmpl));
       } else {
-        node->regione[i] = getNCRegion(el, DString(rg_tmpl));
+        node->regione[i] = getNCRegion(el, ÑString(rg_tmpl));
       }
     }
   }
@@ -927,13 +927,13 @@ void HRCParserImpl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement
   int i;
   static char rg_tmpl[9] = "region\0\0";
 
-  node->region = getNCRegion(el, DString("region"));
+  node->region = getNCRegion(el, ÑString("region"));
   for (i = 0; i < REGIONS_NUM; i++) {
     rg_tmpl[6] = '0';
     rg_tmpl[7] = (i < 0xA ? i : i + 7 + 32) + '0';
-    node->regions[i] = getNCRegion(el, DString(rg_tmpl));
+    node->regions[i] = getNCRegion(el, ÑString(rg_tmpl));
     rg_tmpl[6] = '1';
-    node->regione[i] = getNCRegion(el, DString(rg_tmpl));
+    node->regione[i] = getNCRegion(el, ÑString(rg_tmpl));
   }
 }
 
@@ -1001,7 +1001,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
   }
   size_t colon = name->indexOf(':');
   if (colon != String::npos) {
-    if (parseType && DString(name, 0, colon) != *parseType->name) {
+    if (parseType && ÑString(name, 0, colon) != *parseType->name) {
       LOGF(ERROR, "type name qualifer in '%s' doesn't match type '%s'", name->getChars(), parseType->name->getChars());
       return nullptr;
     } else {
@@ -1012,7 +1012,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
       return nullptr;
     }
     SString* sbuf = new SString(parseType->getName());
-    sbuf->append(DString(":")).append(name);
+    sbuf->append(ÑString(":")).append(name);
     return sbuf;
   }
 }
@@ -1042,7 +1042,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
   }
   size_t colon = name->indexOf(':');
   if (colon != String::npos) { // qualified name
-    DString prefix(name, 0, colon);
+    ÑString prefix(name, 0, colon);
     auto ft = fileTypeHash.find(&prefix);
     FileTypeImpl* prefType = nullptr;
     if (ft != fileTypeHash.end()) {
@@ -1072,7 +1072,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
       }
 
       SString* qname = new SString(tname);
-      qname->append(DString(":")).append(name);
+      qname->append(ÑString(":")).append(name);
       if (checkNameExist(qname, importer, qntype, false)) {
         return qname;
       }
@@ -1110,7 +1110,7 @@ String* HRCParserImpl::useEntities(const String* name)
       epos = name->length();
       break;
     }
-    DString enname(name, epos + 1, elpos - epos - 1);
+    ÑString enname(name, epos + 1, elpos - epos - 1);
 
     String* qEnName = qualifyForeignName(&enname, QNT_ENTITY, true);
     const String* enval = nullptr;
@@ -1122,13 +1122,13 @@ String* HRCParserImpl::useEntities(const String* name)
       epos++;
       continue;
     }
-    newname->append(DString(name, copypos, epos - copypos));
+    newname->append(ÑString(name, copypos, epos - copypos));
     newname->append(enval);
     epos = elpos + 1;
     copypos = epos;
   }
   if (epos > copypos) {
-    newname->append(DString(name, copypos, epos - copypos));
+    newname->append(ÑString(name, copypos, epos - copypos));
   }
   return newname;
 }
@@ -1156,7 +1156,7 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   */
   if (reg != nullptr) {
     const String* s_name = reg->getName();
-    size_t idx = s_name->indexOf(DString(":default"));
+    size_t idx = s_name->indexOf(ÑString(":default"));
     if (idx != String::npos && idx + 8 == s_name->length()) {
       return nullptr;
     }
@@ -1170,7 +1170,7 @@ const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const St
   if (*par == '\0') {
     return nullptr;
   }
-  DString dpar = DString(par);
+  ÑString dpar = ÑString(par);
   return getNCRegion(&dpar, true);
 }
 

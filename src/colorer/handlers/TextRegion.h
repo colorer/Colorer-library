@@ -60,7 +60,7 @@ public:
   {
     if (rd == nullptr) return nullptr;
     if (rd->type != RegionDefine::TEXT_REGION) {
-      throw Exception(DString("Bad type cast exception into TextRegion"));
+      throw Exception(ÑString("Bad type cast exception into TextRegion"));
     }
     const TextRegion* tr = (const TextRegion*)(rd);
     return tr;

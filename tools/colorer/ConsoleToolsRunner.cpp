@@ -42,7 +42,7 @@ void readArgs(int argc, char* argv[])
 
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
-      settings.input_file.reset(new SString(DString(argv[i])));
+      settings.input_file.reset(new SString(ÑString(argv[i])));
       continue;
     }
 
@@ -75,9 +75,9 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.link_sources.reset(new SString(DString(argv[i] + 3)));
+        settings.link_sources.reset(new SString(ÑString(argv[i] + 3)));
       } else {
-        settings.link_sources.reset(new SString(DString(argv[i + 1])));
+        settings.link_sources.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
@@ -118,54 +118,54 @@ void readArgs(int argc, char* argv[])
 
     if (argv[i][1] == 't' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.type_desc.reset(new SString(DString(argv[i] + 2)));
+        settings.type_desc.reset(new SString(ÑString(argv[i] + 2)));
       } else {
-        settings.type_desc.reset(new SString(DString(argv[i + 1])));
+        settings.type_desc.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'o' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.output_file.reset(new SString(DString(argv[i] + 2)));
+        settings.output_file.reset(new SString(ÑString(argv[i] + 2)));
       } else {
-        settings.output_file.reset(new SString(DString(argv[i + 1])));
+        settings.output_file.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'i' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.hrd_name.reset(new SString(DString(argv[i] + 2)));
+        settings.hrd_name.reset(new SString(ÑString(argv[i] + 2)));
       } else {
-        settings.hrd_name.reset(new SString(DString(argv[i + 1])));
+        settings.hrd_name.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.catalog.reset(new SString(DString(argv[i] + 2)));
+        settings.catalog.reset(new SString(ÑString(argv[i] + 2)));
       } else {
-        settings.catalog.reset(new SString(DString(argv[i + 1])));
+        settings.catalog.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.input_encoding.reset(new SString(DString(argv[i] + 3)));
+        settings.input_encoding.reset(new SString(ÑString(argv[i] + 3)));
       } else {
-        settings.input_encoding.reset(new SString(DString(argv[i + 1])));
+        settings.input_encoding.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.output_encoding.reset(new SString(DString(argv[i] + 3)));
+        settings.output_encoding.reset(new SString(ÑString(argv[i] + 3)));
       } else {
-        settings.output_encoding.reset(new SString(DString(argv[i + 1])));
+        settings.output_encoding.reset(new SString(ÑString(argv[i + 1])));
         i++;
       }
       continue;
