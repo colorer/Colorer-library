@@ -1,6 +1,12 @@
 #ifndef _COLORER_FEATURES_H_
 #define _COLORER_FEATURES_H_
 
+#ifdef COLORER_ENABLE_TRACE
+#define CTRACE(info) info
+#else
+#define CTRACE(info) nullptr
+#endif
+
 /**
   If defined, use dlmalloc memory management implementation
 */
