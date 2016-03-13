@@ -1,3 +1,4 @@
+#include <string.h>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/Character.h>

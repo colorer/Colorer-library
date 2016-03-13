@@ -472,7 +472,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    LOGF(DEBUG, "[BaseEditor] newFirstLine=%d, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
+    LOGF(DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {

@@ -3,7 +3,6 @@
 #include <colorer/unicode/CharacterClass.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/x_charcategory_names.h>
-#include <colorer/unicode/x_charcategory.h>
 #include <colorer/unicode/x_charcategory2.h>
 
 /// macro - number of elements in array

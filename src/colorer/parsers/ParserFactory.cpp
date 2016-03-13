@@ -125,7 +125,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   if (home_path != nullptr) {
     try {
       TextLinesStore tls;
-      tls.loadFile(&StringBuffer(home_path).append(CString("/.colorer5catalog")), nullptr, false);
+      tls.loadFile(&SString(home_path).append(CString("/.colorer5catalog")), nullptr, false);
       if (tls.getLineCount() > 0) {
         paths.emplace_back(SString(tls.getLine(0)));
       }

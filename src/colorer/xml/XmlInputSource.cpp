@@ -109,7 +109,7 @@ bool XmlInputSource::isDirectory(const String* path)
   int ret = stat(path->getChars(), &st);
 
   if (ret == -1) {
-    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
+    throw Exception(SString("Can't get info for file/path: ") + path);
   }
   else if ((st.st_mode & S_IFDIR)) {
     is_dir = true;
@@ -146,9 +146,9 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
     dirent* dire;
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
-      stat((StringBuffer(relPath) + "/" + dire->d_name).getChars(), &st);
+      stat((SString(relPath) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
-        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);
+        files.push_back(SString(relPath) + "/" + dire->d_name);
       }
     }
   }

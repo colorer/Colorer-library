@@ -1,7 +1,8 @@
+#include <stdio.h>
+#include <string.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/unicode/Encodings.h>
-#include <stdio.h>
 
 void TextLinesStore::replaceTabs(size_t lno)
 {
