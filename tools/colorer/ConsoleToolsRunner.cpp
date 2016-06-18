@@ -240,7 +240,7 @@ void printError()
           "  -ds        Disable HTML symbol substitutions in generator's output\n"
           "  -dh        Disable HTML header and footer output\n"
           " Logging parameters (default logging off):\n"
-          "  -en        Enable logging"
+          "  -en        Enable logging\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
           "  -el<name>  Log level (TRACE, DEBUG, INFO, WARNING, ERROR, ERROR_F, FATAL)\n"
