@@ -1,5 +1,6 @@
 #include <colorer/parsers/TextParserImpl.h>
 #include <colorer/unicode/Character.h>
+#include <colorer/unicode/DString.h>
 
 TextParserImpl::TextParserImpl()
 {
@@ -248,9 +249,9 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
 
     int cr;
     if (node->kwList->matchCase) {
-      cr = node->kwList->kwList[pos].keyword->compareTo(CString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->compareTo(DString(*str, gx, kwlen));
     } else {
-      cr = node->kwList->kwList[pos].keyword->compareToIgnoreCase(CString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->compareToIgnoreCase(DString(*str, gx, kwlen));
     }
 
     if (cr == 0 && right - left == 1) {

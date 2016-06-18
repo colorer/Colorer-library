@@ -31,7 +31,7 @@ public:
   /** Returns total lines count in text. */
   size_t getLineCount();
 
-  String* getLine(size_t lno);
+  SString* getLine(size_t lno) override;
 protected:
   /** Frees loaded file lines.
   */

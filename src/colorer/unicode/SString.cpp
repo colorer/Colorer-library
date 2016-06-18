@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/CString.h>
+#include <colorer/unicode/DString.h>
 
 SString::SString(): wstr(nullptr), len(0), alloc(0)
 {
@@ -174,6 +175,36 @@ SString* SString::replace(const String &pattern, const String &newstring) const
   }
   if (epos > copypos) newname->append(CString(name, copypos, epos - copypos));
   return newname;
+}
+
+int SString::compareTo(const SString &str) const
+{
+  size_t i;
+  size_t sl = str.length();
+  size_t l = length();
+  for (i = 0; i < sl && i < l; i++) {
+    int cmp = str[i] - this->wstr[i];
+    if (cmp > 0) return -1;
+    if (cmp < 0) return 1;
+  };
+  if (i < sl) return -1;
+  if (i < l) return 1;
+  return 0;
+}
+
+int SString::compareTo(const DString &str) const
+{
+  size_t i;
+  size_t sl = str.length();
+  size_t l = length();
+  for (i = 0; i < sl && i < l; i++) {
+    int cmp = str.str->wstr[str.start + i] - this->wstr[i];
+    if (cmp > 0) return -1;
+    if (cmp < 0) return 1;
+  };
+  if (i < sl) return -1;
+  if (i < l) return 1;
+  return 0;
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

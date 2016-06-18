@@ -29,7 +29,7 @@ public:
   void clearCache();
 
 private:
-  String* str;
+  SString* str;
   int stackLevel;
   int gx, gy, gy2, len;
   int clearLine, endLine, schemeStart;

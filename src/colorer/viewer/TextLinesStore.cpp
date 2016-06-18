@@ -95,7 +95,7 @@ const String* TextLinesStore::getFileName()
   return fileName;
 }
 
-String* TextLinesStore::getLine(size_t lno)
+SString* TextLinesStore::getLine(size_t lno)
 {
   if (lines.size() <= lno) {
     return nullptr;

@@ -3,6 +3,7 @@
 
 #include <colorer/unicode/String.h>
 #include <memory>
+class DString;
 
 /**
  * Unicode string.
@@ -75,6 +76,8 @@ public:
 
   SString &operator=(SString const &cstring);
   SString* replace(const String &pattern, const String &newstring) const;
+  int compareTo(const SString& str) const;
+  int compareTo(const DString& str) const;
   SString(SString &&cstring);
   SString &operator=(SString &&cstring);
 protected:

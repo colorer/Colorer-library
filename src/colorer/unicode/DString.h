@@ -37,7 +37,6 @@ public:
   wchar operator[](size_t i) const override;
   size_t length() const override;
 
-protected:
   const SString* str;
   size_t start;
   size_t len;
