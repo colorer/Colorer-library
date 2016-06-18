@@ -167,13 +167,14 @@ if(MSVC)
   set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /EHsc /Zi")
   set(FLAGS_C_DEFAULT "${FLAGS_C_DEFAULT}")
 
-  set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
+  set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT /Zc:threadSafeInit-")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
   set(STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
   # support AMD proc on vc2015
   if(${CMAKE_CL_64} STREQUAL "0")
     set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /arch:IA32")
+    set(FLAGS_C_DEFAULT "${FLAGS_C_DEFAULT} /arch:IA32")
   endif()
 endif()
 
