@@ -26,7 +26,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* b
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
 {
   if (!path || (*path == '\0')) {
-    throw InputSourceException("XmlInputSource::newInstance: path is nullptr");
+    throw InputSourceException(CString("XmlInputSource::newInstance: path is nullptr"));
   }
   if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
     return std::make_unique<ZipXmlInputSource>(path, base);
@@ -47,7 +47,7 @@ UString XmlInputSource::getAbsolutePath(const String* basePath, const String* re
     root_pos++;
   }
   std::unique_ptr<SString> newPath(new SString());
-  newPath->append(DString(basePath, 0, root_pos)).append(relPath);
+  newPath->append(CString(basePath, 0, root_pos)).append(relPath);
   return std::move(newPath);
 }
 
@@ -77,14 +77,14 @@ bool XmlInputSource::isRelative(const String* path)
 UString XmlInputSource::getClearPath(const String* basePath, const String* relPath)
 {
   UString clear_path(new SString(relPath));
-  if (relPath->indexOf(DString("%")) != -1) {
+  if (relPath->indexOf(CString("%")) != -1) {
     XMLCh* e_path = ExpandEnvironment(clear_path.get()->getWChars());
-    clear_path.reset(new SString(DString(e_path)));
+    clear_path.reset(new SString(CString(e_path)));
     delete e_path;
   }
   if (isRelative(clear_path.get())) {
     clear_path = std::move(getAbsolutePath(basePath, clear_path.get()));
-    if (clear_path->startsWith(DString("file://"))) {
+    if (clear_path->startsWith(CString("file://"))) {
       clear_path.reset(new SString(clear_path.get(), 7, -1));
     }
   }
@@ -109,7 +109,7 @@ bool XmlInputSource::isDirectory(const String* path)
   int ret = stat(path->getChars(), &st);
 
   if (ret == -1) {
-    throw Exception(StringBuffer("Can't get info for file/path: ") + path);
+    throw Exception(SString("Can't get info for file/path: ") + path);
   }
   else if ((st.st_mode & S_IFDIR)) {
     is_dir = true;
@@ -146,9 +146,9 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
     dirent* dire;
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
-      stat((StringBuffer(relPath) + "/" + dire->d_name).getChars(), &st);
+      stat((SString(relPath) + "/" + dire->d_name).getChars(), &st);
       if (!(st.st_mode & S_IFDIR)) {
-        files.push_back(StringBuffer(relPath) + "/" + dire->d_name);
+        files.push_back(SString(relPath) + "/" + dire->d_name);
       }
     }
   }

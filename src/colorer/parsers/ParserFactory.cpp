@@ -60,7 +60,7 @@ SString ParserFactory::searchCatalog() const
   LOG(DEBUG) << "end search catalog.xml";
   if (right_path.length() == 0) {
     LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
-    throw ParserFactoryException(DString("Can't find suitable catalog.xml file. Check your program settings."));
+    throw ParserFactoryException(CString("Can't find suitable catalog.xml file. Check your program settings."));
   }
   return right_path;
 }
@@ -74,13 +74,13 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
     wchar_t cname[MAX_PATH];
     int len = GetModuleFileName(hmod, cname, MAX_PATH);
     if (len > 0) {
-      DString module(cname, 0, len - 1);
+      CString module(cname, 0, len - 1);
       int pos[2];
       pos[0] = module.lastIndexOf('\\');
       pos[1] = module.lastIndexOf('\\', pos[0]);
       for (int idx = 0; idx < 2; idx++)
         if (pos[idx] >= 0) {
-          paths.emplace_back(SString(DString(module, 0, pos[idx])).append(DString("\\catalog.xml")));
+          paths.emplace_back(SString(CString(module, 0, pos[idx])).append(CString("\\catalog.xml")));
         }
     }
   }
@@ -96,7 +96,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   char* home_path = getenv("HOMEPATH");
   if (home_drive && home_path) {
     try {
-      SString d = SString(home_drive).append(DString(home_path)).append(DString("/.colorer5catalog"));
+      SString d = SString(home_drive).append(CString(home_path)).append(CString("/.colorer5catalog"));
       if (_access(d.getChars(), 0) != -1) {
         TextLinesStore tls;
         tls.loadFile(&d, nullptr, false);
@@ -125,7 +125,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   if (home_path != nullptr) {
     try {
       TextLinesStore tls;
-      tls.loadFile(&StringBuffer(home_path).append(DString("/.colorer5catalog")), nullptr, false);
+      tls.loadFile(&SString(home_path).append(CString("/.colorer5catalog")), nullptr, false);
       if (tls.getLineCount() > 0) {
         paths.emplace_back(SString(tls.getLine(0)));
       }
@@ -135,8 +135,8 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   }
 
   // /usr/share/colorer/catalog.xml
-  paths.emplace_back(SString(DString("/usr/share/colorer/catalog.xml")));
-  paths.emplace_back(SString(DString("/usr/local/share/colorer/catalog.xml")));
+  paths.emplace_back(SString(CString("/usr/share/colorer/catalog.xml")));
+  paths.emplace_back(SString(CString("/usr/local/share/colorer/catalog.xml")));
 }
 #endif
 
@@ -145,7 +145,7 @@ void ParserFactory::loadCatalog(const String* catalog_path)
   if (!catalog_path) {
     base_catalog_path = searchCatalog();
     if (base_catalog_path.length() == 0) {
-      throw ParserFactoryException(DString("Can't find suitable catalog.xml file."));
+      throw ParserFactoryException(CString("Can't find suitable catalog.xml file."));
     }
   } else {
     base_catalog_path = SString(catalog_path);
@@ -270,7 +270,7 @@ TextParser* ParserFactory::createTextParser()
 StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const String* nameID)
 {
   const String* class_id;
-  const DString class_default("rgb");
+  const CString class_default("rgb");
   if (classID == nullptr) {
     class_id = &class_default;
   } else {
@@ -278,12 +278,12 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
   }
 
   const String* name_id;
-  const DString name_default("default");
-  DString name_env;
+  const CString name_default("default");
+  CString name_env;
   if (nameID == nullptr) {
     char* hrd = getenv("COLORER5HRD");
     if (hrd != nullptr) {
-      name_env = DString(hrd);
+      name_env = CString(hrd);
       name_id = &name_env;
     } else {
       name_id = &name_default;
@@ -296,7 +296,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   StyledHRDMapper* mapper = new StyledHRDMapper();
   for (size_t idx = 0; idx < hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx) != nullptr) {
+    if (hrd_node->hrd_location.at(idx).length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
@@ -304,7 +304,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
       } catch (Exception &e) {
         LOGF(ERROR, "Can't load hrd:");
         LOG(ERROR) << e.what();
-        throw ParserFactoryException(DString("Error load hrd"));
+        throw ParserFactoryException(CString("Error load hrd"));
       }
     }
   return mapper;
@@ -313,10 +313,10 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 {
   // fixed class 'text'
-  DString d_text = DString("text");
+  CString d_text = CString("text");
 
   const String* name_id;
-  const DString name_default("default");
+  const CString name_default("default");
   if (nameID == nullptr) {
     name_id = &name_default;
   } else {
@@ -327,7 +327,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 
   TextHRDMapper* mapper = new TextHRDMapper();
   for (size_t idx = 0; idx <  hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx) != nullptr) {
+    if (hrd_node->hrd_location.at(idx).length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
         dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());

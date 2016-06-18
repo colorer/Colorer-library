@@ -2,6 +2,8 @@
 #define _COLORER_SSTRING_H_
 
 #include <colorer/unicode/String.h>
+#include <memory>
+class DString;
 
 /**
  * Unicode string.
@@ -18,21 +20,21 @@ public:
    * String constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String* cstring, int s = 0, int l = -1);
+  SString(const String* cstring, size_t s = 0, size_t l = npos);
 
   /**
    * String constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String &cstring, int s = 0, int l = -1);
+  SString(const String &cstring, size_t s = 0, size_t l = npos);
   SString(const SString &cstring);
 
   /**
    * String constructor from char stream
    * @param str source string, can't be null.
    */
-  SString(const char* string, int s = 0, int l = -1);
-  SString(const wchar* string, int s = 0, int l = -1);
+  SString(const char* string, size_t s = 0, size_t l = npos);
+  SString(const wchar* string, size_t s = 0, size_t l = npos);
   SString(char* str, int enc = -1);
   SString(wchar* str);
 
@@ -40,14 +42,15 @@ public:
    * String constructor from integer number
    */
   SString(int no);
+  SString(size_t no);
 
   ~SString();
 
   /** Changes the length of this StringBuffer */
-  void setLength(int newLength);
+  void setLength(size_t newLength);
 
-  wchar operator[](int i) const override;
-  int length() const override;
+  wchar operator[](size_t i) const override;
+  size_t length() const override;
 
   /** Appends to this string buffer @c string */
   SString &append(const String &string);
@@ -72,15 +75,18 @@ public:
   SString &operator+=(const char* string);
 
   SString &operator=(SString const &cstring);
+  SString* replace(const String &pattern, const String &newstring) const;
+  int compareTo(const SString& str) const;
+  int compareTo(const DString& str) const;
   SString(SString &&cstring);
   SString &operator=(SString &&cstring);
 protected:
 
-  void construct(const String* cstring, int s, int l);
+  void construct(const String* cstring, size_t s, size_t l);
 
   std::unique_ptr<wchar[]> wstr;
-  int len;
-  int alloc;
+  size_t len;
+  size_t alloc;
 };
 
 inline SString::SString(SString &&cstring): wstr(std::move(cstring.wstr)),
@@ -105,9 +111,14 @@ inline SString &SString::operator=(SString &&cstring)
   return *this;
 }
 
-inline int SString::length() const
+inline size_t SString::length() const
 {
   return len;
+}
+
+inline wchar SString::operator[](size_t i) const
+{
+  return wstr[i];
 }
 
 #include <unordered_map>
@@ -118,7 +129,7 @@ namespace std
   template <> struct hash<SString> {
     size_t operator()(const SString &value) const
     {
-      return static_cast<std::size_t>(value.hashCode());
+      return value.hashCode();
     }
   };
   template <> struct equal_to<SString> {

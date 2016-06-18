@@ -29,13 +29,13 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
@@ -46,21 +46,21 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
         continue;
       }
 
-      const String* name = new DString(xname);
+      const String* name = new CString(xname);
       auto rd_new = regionDefines.find(name);
       if (rd_new != regionDefines.end()) {
         regionDefines.erase(rd_new);
       }
 
       int val = 0;
-      DString dhrdAssignAttrFore = DString(subelem->getAttribute(hrdAssignAttrFore));
+      CString dhrdAssignAttrFore = CString(subelem->getAttribute(hrdAssignAttrFore));
       bool bfore = UnicodeTools::getNumber(&dhrdAssignAttrFore, &val);
       int fore = val;
-      DString dhrdAssignAttrBack = DString(subelem->getAttribute(hrdAssignAttrBack));
+      CString dhrdAssignAttrBack = CString(subelem->getAttribute(hrdAssignAttrBack));
       bool bback = UnicodeTools::getNumber(&dhrdAssignAttrBack, &val);
       int back = val;
       int style = 0;
-      DString dhrdAssignAttrStyle = DString(subelem->getAttribute(hrdAssignAttrStyle));
+      CString dhrdAssignAttrStyle = CString(subelem->getAttribute(hrdAssignAttrStyle));
       if (UnicodeTools::getNumber(&dhrdAssignAttrStyle, &val)) {
         style = val;
       }
@@ -79,7 +79,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
 */
 void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write(DString("<?xml version=\"1.0\"?>\n\
+  writer->write(CString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
@@ -88,19 +88,19 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
     writer->write(SString("  <define name='") + it->first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
-      writer->write(DString(temporary));
+      writer->write(CString(temporary));
     }
     if (rdef->bback) {
       sprintf(temporary, " back=\"#%06x\"", rdef->back);
-      writer->write(DString(temporary));
+      writer->write(CString(temporary));
     }
     if (rdef->style) {
       sprintf(temporary, " style=\"#%06x\"", rdef->style);
-      writer->write(DString(temporary));
+      writer->write(CString(temporary));
     }
-    writer->write(DString("/>\n"));
+    writer->write(CString("/>\n"));
   }
-  writer->write(DString("\n</hrd>\n"));
+  writer->write(CString("\n</hrd>\n"));
 }
 
 /** Adds or replaces region definition */

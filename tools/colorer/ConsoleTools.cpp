@@ -12,6 +12,7 @@
 #include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <colorer/xml/XmlInputSource.h>
+#include <colorer/unicode/Encodings.h>
 #include "ConsoleTools.h"
 
 using namespace xercesc;
@@ -125,13 +126,13 @@ void ConsoleTools::setLinkSource(const String &str)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*linkSource->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
   xercesc::DOMDocument* linkSourceTree = xml_parser.getDocument();
   xercesc::DOMElement* elem = linkSourceTree->getDocumentElement();
 
   if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
 
   for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {
@@ -150,10 +151,10 @@ void ConsoleTools::setLinkSource(const String &str)
           const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
           SString fullURL;
           if (*url != '\0') {
-            fullURL.append(DString(url));
+            fullURL.append(CString(url));
           }
           if (*l_url != '\0') {
-            fullURL.append(DString(l_url));
+            fullURL.append(CString(l_url));
           }
           if (*l_scheme == '\0') {
             l_scheme = scheme;
@@ -161,10 +162,10 @@ void ConsoleTools::setLinkSource(const String &str)
           if (*token == '\0') {
             continue;
           }
-          String* tok = new DString(token);
+          String* tok = new CString(token);
           SString hkey(tok);
           if (*l_scheme != '\0') {
-            hkey.append(DString("--")).append(DString(l_scheme));
+            hkey.append(CString("--")).append(CString(l_scheme));
           }
           std::pair<SString, String*> pair_url(&hkey, new SString(&fullURL));
           docLinkHash.emplace(pair_url);
@@ -188,14 +189,14 @@ void ConsoleTools::RETest()
     printf("\nregexp:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    DString dtext = DString(text);
+    CString dtext = CString(text);
     if (!re->setRE(&dtext)) {
       continue;
     }
     printf("exprn:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    dtext = DString(text);
+    dtext = CString(text);
     res = re->parse(&dtext, &match);
     printf("%s\nmatch:  ", res ? "ok" : "error");
     for (int i = 0; i < match.cMatch; i++) {
@@ -226,7 +227,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
           writer->write(SString(type->getGroup()) + ": ");
         }
         writer->write(type->getDescription());
-        writer->write(DString("\n"));
+        writer->write(CString("\n"));
       }
 
       if (load) {
@@ -253,11 +254,11 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         }
         if (type->getDescription() != nullptr &&
             type->getDescription()->length() >= typeDescription->length() &&
-            DString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            CString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            DString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            CString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
           break;
         }
         type = nullptr;
@@ -273,7 +274,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         break;
       }
       textStart.append(iLine);
-      textStart.append(DString("\n"));
+      textStart.append(CString("\n"));
       totalLength += iLine->length();
       if (totalLength > 500) {
         break;
@@ -297,7 +298,7 @@ void ConsoleTools::profile(int loopCount)
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
-  DString dcons = DString("console");
+  CString dcons = CString("console");
   baseEditor.setRegionMapper(&dcons, hrdName.get());
   FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
   type->getBaseScheme();
@@ -326,7 +327,7 @@ void ConsoleTools::viewFile()
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
-    DString dcons = DString("console");
+    CString dcons = CString("console");
     baseEditor.setRegionMapper(&dcons, hrdName.get());
     FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
@@ -354,7 +355,7 @@ void ConsoleTools::forward()
 {
   colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
-  DString eStream(stream, fis->length(), inputEncodingIndex);
+  CString eStream(stream, fis->length(), inputEncodingIndex);
 
   Writer* outputFile;
   try {
@@ -391,7 +392,7 @@ void ConsoleTools::genOutput(bool useTokens)
     RegionMapper* mapper = nullptr;
     if (!useTokens) {
       try {
-        DString drgb = DString("rgb");
+        CString drgb = CString("rgb");
         mapper = pf.createStyledMapper(&drgb, hrdName.get());
       } catch (ParserFactoryException &) {
         useMarkup = true;
@@ -434,21 +435,21 @@ void ConsoleTools::genOutput(bool useTokens)
     }
 
     if (htmlWrapping && useTokens) {
-      commonWriter->write(DString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
+      commonWriter->write(CString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
         commonWriter->write(TextRegion::cast(rd)->start_text);
       } else {
-        commonWriter->write(DString("<html><body style='"));
+        commonWriter->write(CString("<html><body style='"));
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
-        commonWriter->write(DString("'><pre>\n"));
+        commonWriter->write(CString("'><pre>\n"));
       }
     }
 
     if (copyrightHeader) {
-      commonWriter->write(DString("Created with colorer-take5 library. Type '"));
+      commonWriter->write(CString("Created with colorer-take5 library. Type '"));
       commonWriter->write(type->getName());
-      commonWriter->write(DString("'\n\n"));
+      commonWriter->write(CString("'\n\n"));
     }
 
     int lni = 0;
@@ -464,7 +465,7 @@ void ConsoleTools::genOutput(bool useTokens)
           commonWriter->write(0x0020);
         }
         commonWriter->write(SString(i));
-        commonWriter->write(DString(": "));
+        commonWriter->write(CString(": "));
       }
       if (useTokens) {
         ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
@@ -473,16 +474,16 @@ void ConsoleTools::genOutput(bool useTokens)
       } else {
         ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }
-      commonWriter->write(DString("\n"));
+      commonWriter->write(CString("\n"));
     }
 
     if (htmlWrapping && useTokens) {
-      commonWriter->write(DString("</pre></body></html>\n"));
+      commonWriter->write(CString("</pre></body></html>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
         commonWriter->write(TextRegion::cast(rd)->end_text);
       } else {
-        commonWriter->write(DString("</pre></body></html>\n"));
+        commonWriter->write(CString("</pre></body></html>\n"));
       }
     }
 

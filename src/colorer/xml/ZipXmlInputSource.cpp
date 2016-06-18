@@ -20,42 +20,42 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, XmlInputSource* base)
 void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
   if (!path || *path == '\0') {
-    throw InputSourceException("Can't create jar source");
+    throw InputSourceException(CString("Can't create jar source"));
   }
   if (xercesc::XMLString::startsWith(path, kJar)) {
     int path_idx = xercesc::XMLString::lastIndexOf(path, '!');
     if (path_idx == -1) {
-      throw InputSourceException(SString("Bad jar uri format: ") + DString(path));
+      throw InputSourceException(SString("Bad jar uri format: ") + CString(path));
     }
 
     std::unique_ptr<XMLCh[]> bpath( new XMLCh[path_idx - 4 + 1]);
     xercesc::XMLString::subString(bpath.get(), path, 4, path_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
 
-    in_jar_location.reset(new SString(DString(path), path_idx + 1, -1));
+    in_jar_location.reset(new SString(CString(path), path_idx + 1, -1));
 
   } else if (base != nullptr && xercesc::XMLString::startsWith(base, kJar)) {
 
     int base_idx = xercesc::XMLString::lastIndexOf(base, '!');
     if (base_idx == -1) {
-      throw InputSourceException(SString("Bad jar uri format: ") + DString(path));
+      throw InputSourceException(SString("Bad jar uri format: ") + CString(path));
     }
 
     std::unique_ptr<XMLCh[]> bpath(new XMLCh[base_idx - 4 + 1]);
     xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
 
-    UString in_base(new SString(DString(base), base_idx + 1, -1));
-    DString d_path = DString(path);
+    UString in_base(new SString(CString(base), base_idx + 1, -1));
+    CString d_path = CString(path);
     in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 
   } else {
-    throw InputSourceException("Can't create jar source");
+    throw InputSourceException(CString("Can't create jar source"));
   }
 
   SString str("jar:");
-  str.append(DString(jar_input_source->getInputSource()->getSystemId()));
-  str.append(DString("!"));
+  str.append(CString(jar_input_source->getInputSource()->getSystemId()));
+  str.append(CString("!"));
   str.append(in_jar_location.get());
   setSystemId(str.getWChars());
 }

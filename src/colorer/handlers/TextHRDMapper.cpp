@@ -30,13 +30,13 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception(DString("Error loading HRD file"));
+    throw Exception(CString("Error loading HRD file"));
   }
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
@@ -46,7 +46,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
         continue;
       }
 
-      const String* name = new DString(xname);
+      const String* name = new CString(xname);
       auto tp = regionDefines.find(name);
       if (tp != regionDefines.end()) {
         const TextRegion* rd = TextRegion::cast(tp->second);
@@ -63,19 +63,19 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
       const XMLCh* sval;
       sval = subelem->getAttribute(hrdAssignAttrSText);
       if (*sval != '\0') {
-        stext = new SString(DString(sval));
+        stext = new SString(CString(sval));
       }
       sval = subelem->getAttribute(hrdAssignAttrEText);
       if (*sval != '\0') {
-        etext = new SString(DString(sval));
+        etext = new SString(CString(sval));
       }
       sval = subelem->getAttribute(hrdAssignAttrSBack);
       if (*sval != '\0') {
-        sback = new SString(DString(sval));
+        sback = new SString(CString(sval));
       }
       sval = subelem->getAttribute(hrdAssignAttrEBack);
       if (*sval != '\0') {
-        eback = new SString(DString(sval));
+        eback = new SString(CString(sval));
       }
 
       RegionDefine* rdef = new TextRegion(stext, etext, sback, eback);
@@ -92,7 +92,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 */
 void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write(DString("<?xml version=\"1.0\"?>\n\
+  writer->write(CString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
   for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
@@ -110,9 +110,9 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
     if (rdef->end_back != nullptr) {
       writer->write(SString(" end_back='") + rdef->end_back + "'");
     }
-    writer->write(DString("/>\n"));
+    writer->write(CString("/>\n"));
   }
-  writer->write(DString("\n</hrd>\n"));
+  writer->write(CString("\n</hrd>\n"));
 }
 
 /** Adds or replaces region definition */

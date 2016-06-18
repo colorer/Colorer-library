@@ -1,10 +1,12 @@
+#include <stdio.h>
+#include <string.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/io/InputSource.h>
-#include <stdio.h>
+#include <colorer/unicode/Encodings.h>
 
 void TextLinesStore::replaceTabs(size_t lno)
 {
-  String* od = lines.at(lno)->replace(DString("\t"), DString("    "));
+  SString* od = lines.at(lno)->replace(CString("\t"), CString("    "));
   delete lines.at(lno);
   lines.at(lno) = od;
 }
@@ -58,7 +60,7 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
     int len = is->length();
 
     int ei = inputEncoding == nullptr ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
-    DString file(data, len, ei);
+    CString file(data, len, ei);
     int length = file.length();
     lines.reserve(static_cast<size_t>(length / 30)); // estimate number of lines
 
@@ -93,7 +95,7 @@ const String* TextLinesStore::getFileName()
   return fileName;
 }
 
-String* TextLinesStore::getLine(size_t lno)
+SString* TextLinesStore::getLine(size_t lno)
 {
   if (lines.size() <= lno) {
     return nullptr;

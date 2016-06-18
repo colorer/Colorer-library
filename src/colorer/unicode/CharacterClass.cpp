@@ -57,9 +57,9 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
         delete cc;
         return nullptr;
       }
-      if (*categ == "ALL") cc->fill();
-      else if (*categ == "ASSIGNED") cc->addCategory("");
-      else if (*categ == "UNASSIGNED") {
+      if (*categ == CString("ALL")) cc->fill();
+      else if (*categ == CString("ASSIGNED")) cc->addCategory("");
+      else if (*categ == CString("UNASSIGNED")) {
         cc_temp.clear();
         cc_temp.addCategory("");
         cc->fill();
@@ -250,7 +250,7 @@ void CharacterClass::addCategory(const String &cat)
 
 void CharacterClass::addCategory(const char* cat)
 {
-  addCategory(DString(cat));
+  addCategory(CString(cat));
 }
 
 void CharacterClass::clearCategory(ECharCategory cat)
@@ -279,7 +279,7 @@ void CharacterClass::clearCategory(const String &cat)
 
 void CharacterClass::clearCategory(const char* cat)
 {
-  clearCategory(DString(cat));
+  clearCategory(CString(cat));
 }
 
 void CharacterClass::addClass(const CharacterClass &cclass)

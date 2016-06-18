@@ -12,12 +12,12 @@ JARInputSource::JARInputSource(const String *basePath, InputSource *base){
 
   inJarLocation = new SString(basePath, ex_idx+1, -1);
   
-  DString bpath = DString(basePath, 4, ex_idx-4);
+  CString bpath = CString(basePath, 4, ex_idx-4);
   sharedIS = SharedInputSource::getInputSource(&bpath, base);
 
   SString str("jar:");
   str.append(sharedIS->getLocation());
-  str.append(DString("!"));
+  str.append(CString("!"));
   str.append(inJarLocation);
   baseLocation = new SString(&str);
 
@@ -43,7 +43,7 @@ JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, boo
 
   SString str("jar:");
   str.append(sharedIS->getLocation());
-  str.append(DString("!"));
+  str.append(CString("!"));
   str.append(inJarLocation);
   baseLocation = new SString(&str);
   stream = nullptr;
@@ -124,7 +124,7 @@ void JARInputSource::closeStream(){
 
 int JARInputSource::length() const{
   if (stream == nullptr)
-    throw InputSourceException(DString("length(): stream is not yet opened"));
+    throw InputSourceException(CString("length(): stream is not yet opened"));
   return len;
 }
 

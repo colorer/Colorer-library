@@ -1,3 +1,4 @@
+#include <string.h>
 #include <colorer/parsers/SchemeNode.h>
 
 const char* schemeNodeTypeNames[] = { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };

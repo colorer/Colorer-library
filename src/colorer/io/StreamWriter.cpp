@@ -1,12 +1,14 @@
+#include <stdio.h>
+#include <colorer/Common.h>
+#include <colorer/unicode/Encodings.h>
+#include <colorer/io/StreamWriter.h>
 
-#include<stdio.h>
-#include<colorer/io/StreamWriter.h>
 
 StreamWriter::StreamWriter(){};
 
 void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
   
-  if (fstream == 0) throw Exception(DString("Invalid stream"));
+  if (fstream == 0) throw Exception(CString("Invalid stream"));
   file = fstream;
   if (encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
   encodingIndex = encoding;

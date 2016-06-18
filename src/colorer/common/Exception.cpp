@@ -1,5 +1,4 @@
 #include <colorer/Exception.h>
-#include <colorer/unicode/String.h>
 
 Exception::Exception(const Exception &e) noexcept:
   what_str(e.what_str)
@@ -10,13 +9,13 @@ Exception::Exception() noexcept
 {
 }
 
-Exception::Exception(const std::string& msg) noexcept:
+Exception::Exception(const char* msg) noexcept:
   what_str(msg)
 {
 }
 
 Exception::Exception(const String &msg) noexcept:
-  what_str(msg.getChars())
+  what_str(msg)
 {
 }
 
@@ -32,13 +31,7 @@ Exception::~Exception()
 
 const char* Exception::what() const noexcept
 {
-  return what_str.c_str();
-}
-
-InputSourceException::InputSourceException(const String &msg) noexcept:
-  InputSourceException()
-{
-  what_str.append(msg.getChars());
+  return what_str.getChars();
 }
 
 InputSourceException::InputSourceException() noexcept:
@@ -46,25 +39,8 @@ InputSourceException::InputSourceException() noexcept:
 {
 }
 
-InputSourceException::InputSourceException(const std::string &msg) noexcept:
+InputSourceException::InputSourceException(const String &msg) noexcept:
   InputSourceException()
-{
-  what_str.append(msg);
-}
-
-OutOfBoundException::OutOfBoundException() noexcept:
-  Exception("[OutOfBoundException] ")
-{
-}
-
-OutOfBoundException::OutOfBoundException(const String &msg) noexcept:
-  OutOfBoundException()
-{
-  what_str.append(msg.getChars());
-}
-
-OutOfBoundException::OutOfBoundException(const std::string &msg) noexcept:
-  OutOfBoundException()
 {
   what_str.append(msg);
 }

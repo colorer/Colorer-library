@@ -139,7 +139,7 @@ bool Character::isMirrored(wchar c)
 
 int Character::sizeofTables()
 {
-  return sizeof(arr_idxCharInfo) + sizeof(arr_CharInfo) + sizeof(arr_idxCharInfo2) + sizeof(arr_CharInfo2);
+  return sizeof(arr_idxCharInfo) + sizeof(arr_CharInfo) + sizeof(arr_idxCharInfo2) + sizeof(arr_CharInfo2); //-V119
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

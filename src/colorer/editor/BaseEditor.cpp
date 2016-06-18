@@ -8,7 +8,7 @@ const int CHOOSE_LEN = 200 * CHOOSE_STR;
 BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 {
   if (parserFactory == nullptr || lineSource == nullptr) {
-    throw Exception(DString("Bad BaseEditor constructor parameters"));
+    throw Exception(CString("Bad BaseEditor constructor parameters"));
   }
   this->parserFactory = parserFactory;
   this->lineSource = lineSource;
@@ -36,11 +36,11 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   breakParse = false;
   validationProcess = false;
 
-  DString def_text = DString("def:Text");
-  DString def_syntax = DString("def:Syntax");
-  DString def_special = DString("def:Special");
-  DString def_pstart = DString("def:PairStart");
-  DString def_pend = DString("def:PairEnd");
+  CString def_text = CString("def:Text");
+  CString def_syntax = CString("def:Syntax");
+  CString def_special = CString("def:Special");
+  CString def_pstart = CString("def:PairStart");
+  CString def_pend = CString("def:PairEnd");
   def_Text = hrcParser->getRegion(&def_text);
   def_Syntax = hrcParser->getRegion(&def_syntax);
   def_Special = hrcParser->getRegion(&def_special);
@@ -109,9 +109,9 @@ void BaseEditor::remapLRS(bool recreate)
   invalidLine = 0;
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
   if (regionMapper != nullptr) {
-    rd_def_Text = regionMapper->getRegionDefine(DString("def:Text"));
-    rd_def_HorzCross = regionMapper->getRegionDefine(DString("def:HorzCross"));
-    rd_def_VertCross = regionMapper->getRegionDefine(DString("def:VertCross"));
+    rd_def_Text = regionMapper->getRegionDefine(CString("def:Text"));
+    rd_def_HorzCross = regionMapper->getRegionDefine(CString("def:HorzCross"));
+    rd_def_VertCross = regionMapper->getRegionDefine(CString("def:VertCross"));
   }
 }
 
@@ -141,7 +141,7 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
       break;
     }
     textStart.append(iLine);
-    textStart.append(DString("\n"));
+    textStart.append(CString("\n"));
     totalLength += iLine->length();
     if (totalLength > chooseLen) {
       break;
@@ -149,8 +149,8 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
   }
   currentFileType = hrcParser->chooseFileType(fileName, &textStart);
 
-  int chooseStrNext = currentFileType->getParamValueInt(DString("firstlines"), chooseStr);
-  int chooseLenNext = currentFileType->getParamValueInt(DString("firstlinebytes"), chooseLen);
+  int chooseStrNext = currentFileType->getParamValueInt(CString("firstlines"), chooseStr);
+  int chooseLenNext = currentFileType->getParamValueInt(CString("firstlinebytes"), chooseLen);
 
   if (chooseStrNext != chooseStr || chooseLenNext != chooseLen) {
     currentFileType = chooseFileTypeCh(fileName, chooseStrNext, chooseLenNext);
@@ -165,11 +165,11 @@ FileType* BaseEditor::chooseFileType(const String* fileName)
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
-    DString ds_def = DString("default");
+    CString ds_def = CString("default");
     FileType* def = hrcParser->getFileType(&ds_def);
     if (def) {
-      chooseStr = def->getParamValueInt(DString("firstlines"), chooseStr);
-      chooseLen = def->getParamValueInt(DString("firstlinebytes"), chooseLen);
+      chooseStr = def->getParamValueInt(CString("firstlines"), chooseStr);
+      chooseLen = def->getParamValueInt(CString("firstlinebytes"), chooseLen);
     }
 
     currentFileType = chooseFileTypeCh(fileName, chooseStr, chooseLen);
@@ -472,7 +472,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    LOGF(DEBUG, "[BaseEditor] newFirstLine=%d, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
+    LOGF(DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {

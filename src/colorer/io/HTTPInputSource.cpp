@@ -108,7 +108,7 @@ void HTTPInputSource::closeStream()
 int HTTPInputSource::length() const
 {
   if (stream == nullptr) {
-    throw InputSourceException(DString("length(): stream is not yet opened"));
+    throw InputSourceException(CString("length(): stream is not yet opened"));
   }
   return len;
 }

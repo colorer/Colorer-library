@@ -65,7 +65,7 @@ set(SRC_COLORER
    ${PARSERS}/ParserFactory.cpp
    ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
    ${PARSERS}/SchemeNode.cpp ${PARSERS}/SchemeNode.h
-   ${PARSERS}/VirtualEntry.H
+   ${PARSERS}/VirtualEntry.h
    ${VIEWER}/ParsedLineWriter.h
    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
@@ -103,7 +103,8 @@ set(SRC_COLORER
    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
-   ${UNICODE}/DString.cpp ${UNICODE}/DString.h
+   ${UNICODE}/CString.cpp ${UNICODE}/CString.h
+   ${UNICODE}/DString.h
    ${UNICODE}/Encodings.h ${UNICODE}/Encodings.cpp
    ${UNICODE}/String.cpp ${UNICODE}/String.h
    ${UNICODE}/SString.cpp ${UNICODE}/SString.h
@@ -169,6 +170,11 @@ if(MSVC)
   set(FLAGS_RELEASE "${FLAGS_RELEASE} /O2 /Oi /Ot /Oy /GL /GF /GS- /Gy /MT")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
   set(STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
+
+  # support AMD proc on vc2015
+  if(${CMAKE_CL_64} STREQUAL "0")
+    set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /arch:IA32")
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)

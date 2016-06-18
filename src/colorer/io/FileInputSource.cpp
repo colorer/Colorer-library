@@ -20,11 +20,11 @@
 
 FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
   bool prefix = true;
-  if (basePath->startsWith(DString("file://"))){
+  if (basePath->startsWith(CString("file://"))){
     baseLocation = new SString(basePath, 7, -1);
-  }else if (basePath->startsWith(DString("file:/"))){
+  }else if (basePath->startsWith(CString("file:/"))){
     baseLocation = new SString(basePath, 6, -1);
-  }else if (basePath->startsWith(DString("file:"))){
+  }else if (basePath->startsWith(CString("file:"))){
     baseLocation = new SString(basePath, 5, -1);
   }else{
     if (isRelative(basePath) && base != nullptr)
@@ -42,9 +42,9 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
   baseLocation = new SString(temp);
   delete[] temp;
 #endif
-  if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith(DString("/"))){
+  if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith(CString("/"))){
     SString *n_baseLocation = new SString();
-    n_baseLocation->append(DString("/")).append(baseLocation);
+    n_baseLocation->append(CString("/")).append(baseLocation);
     delete baseLocation;
     baseLocation = n_baseLocation;
   }
@@ -92,7 +92,7 @@ void FileInputSource::closeStream(){
 
 int FileInputSource::length() const{
   if (stream == nullptr)
-    throw InputSourceException(DString("length(): stream is not yet opened"));
+    throw InputSourceException(CString("length(): stream is not yet opened"));
   return len;
 };
 

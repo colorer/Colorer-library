@@ -3,6 +3,7 @@
 
 #include <colorer/unicode/String.h>
 #include <colorer/unicode/BitArray.h>
+#include <colorer/unicode/Character.h>
 
 /** Character classes store implementation.
     - CharacterClass allows to store enumerations of characters in compact

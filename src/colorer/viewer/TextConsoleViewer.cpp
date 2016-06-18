@@ -1,6 +1,6 @@
-
-#include<colorer/viewer/TextConsoleViewer.h>
-#include<stdio.h>
+#include <colorer/viewer/TextConsoleViewer.h>
+#include <colorer/unicode/Encodings.h>
+#include <stdio.h>
 
 TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int background, int encoding){
   textLinesStore = ts;
@@ -49,7 +49,7 @@ INPUT_RECORD ir;
       };
 
       if (i >= textLinesStore->getLineCount()) continue;
-      DString iLine = textLinesStore->getLine(i);
+      CString iLine = textLinesStore->getLine(i);
 
       for(li = 0; li < csbi.dwSize.X; li++){
         if (leftpos+li >= iLine.length()) break;
@@ -167,7 +167,7 @@ INPUT_RECORD ir;
   printf("unix edition doesn't support interactive text viewing\n\n");
 
   for(int i = 0; i < textLinesStore->getLineCount(); i++){
-    DString line = textLinesStore->getLine(i);
+    CString line = textLinesStore->getLine(i);
     printf("%s\n", line.getChars());
   };
 

@@ -1,25 +1,24 @@
-#ifndef _COLORER_PARSERFACTORY_EXCEPTION_H_
-#define _COLORER_PARSERFACTORY_EXCEPTION_H_
+#ifndef _COLORER_COMMONSTRING_H_
+#define _COLORER_COMMONSTRING_H_
 
-#include<colorer/Common.h>
+#include <wchar.h>
 
-/** Exception, thrown by ParserFactory class methods.
-    Indicates some (mostly fatal) errors in loading
-    of catalog file (catalog.xml), or in creating
-    parsers objects.
-    @ingroup colorer
-*/
-class ParserFactoryException : public Exception
-{
-public:
-  ParserFactoryException() noexcept : Exception("[ParserFactoryException] ") {};
-  ParserFactoryException(const String &msg) noexcept : ParserFactoryException()
-  {
-    what_str.append(msg);
-  }
-};
-
+/// default unicode char definition
+#ifndef WCHAR_MAX
+#error wchar misconfig
+#elif WCHAR_MAX == 0xFFFFFFFE/2
+typedef unsigned short wchar;
+#else
+typedef wchar_t wchar;
 #endif
+
+typedef char32_t w4char;
+typedef unsigned char byte;
+
+#define BAD_WCHAR ((wchar)0xFFFF)
+
+#endif // _COLORER_COMMONSTRING_H_
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -55,4 +54,3 @@ public:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-

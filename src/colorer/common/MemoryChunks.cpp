@@ -100,7 +100,7 @@ static int allocCount = 0;
 void* chunk_alloc(size_t size)
 {
   if (size >= CHUNK_SIZE + 4) {
-    throw Exception(DString("Too big memory request"));
+    throw Exception(CString("Too big memory request"));
   }
   /* Init static - cygwin problems workaround */
   if (chunks == nullptr) {
