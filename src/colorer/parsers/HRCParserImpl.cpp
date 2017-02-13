@@ -786,15 +786,17 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
 
 void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
+  const Region* brgn = getNCRegion(elem, CString("region"));
+  if (brgn == nullptr) {
+    return;
+  }
+
   SchemeNode* scheme_node = new SchemeNode();
   CString dhrcKeywordsAttrIgnorecase = CString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
   CString dhrcKeywordsAttrPriority = CString(elem->getAttribute(hrcKeywordsAttrPriority));
   bool isCase = !CString("yes").equals(&dhrcKeywordsAttrIgnorecase);
   scheme_node->lowPriority = !CString("normal").equals(&dhrcKeywordsAttrPriority);
-  const Region* brgn = getNCRegion(elem, CString("region"));
-  if (brgn == nullptr) {
-    return;
-  }
+
   const XMLCh* worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
 
   scheme_node->worddiv = nullptr;

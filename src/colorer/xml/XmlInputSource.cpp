@@ -80,7 +80,7 @@ UString XmlInputSource::getClearPath(const String* basePath, const String* relPa
   if (relPath->indexOf(CString("%")) != -1) {
     XMLCh* e_path = ExpandEnvironment(clear_path.get()->getWChars());
     clear_path.reset(new SString(CString(e_path)));
-    delete e_path;
+    delete[] e_path;
   }
   if (isRelative(clear_path.get())) {
     clear_path = std::move(getAbsolutePath(basePath, clear_path.get()));
