@@ -58,9 +58,11 @@ std::string LogFileSink::formatMessage(LogMessageMover message)
                          );
   std::ostringstream oss;
 
-  oss << "[" << message.get().timestamp();
-  if (show_microseconds) {
-    oss << "." << message.get().microseconds();
+  oss << "[";
+  if (!show_microseconds) {
+    oss << message.get().timestamp(default_format);
+  }else {
+    oss << message.get().timestamp(long_format);
   }
   oss << "]";
   oss << " [" << levelstr << "]" << '\t';
@@ -73,9 +75,11 @@ std::string LogFileSink::formatMessage(LogMessageMover message)
 
   if (internal::FATAL_SIGNAL.value == message.get()._level.value) {
     oss.str(""); // clear any previous text and formatting
-    oss << "\n" << message.get().timestamp();
-    if (show_microseconds) {
-      oss << "." << message.get().microseconds();
+    oss << "\n";
+    if (!show_microseconds) {
+      oss << message.get().timestamp(default_format);
+    } else {
+      oss << message.get().timestamp(long_format);
     }
     oss << "\n\n***** FATAL SIGNAL RECEIVED ******* " << std::endl;
     oss << '"' << message.get().message() << '"';

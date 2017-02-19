@@ -8,6 +8,9 @@
 
 using namespace g3;
 
+static const std::string default_format = "%Y/%m/%d %H:%M:%S";
+static const std::string long_format = "%Y/%m/%d %H:%M:%S.%f6";
+
 class LogFileSink
 {
 public:
