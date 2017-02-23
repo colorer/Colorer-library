@@ -960,7 +960,7 @@ void HRCParserImpl::updateLinks()
             LOGF(ERROR, "cannot resolve scheme name '%s' in scheme '%s'", snode->schemeName->getChars(), scheme->schemeName->getChars());
           }
           delete schemeName;
-          snode->schemeName.release();
+          snode->schemeName.reset();
         }
         if (snode->type == SchemeNode::SNT_INHERIT) {
           for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
@@ -973,7 +973,7 @@ void HRCParserImpl::updateLinks()
                 LOGF(ERROR, "cannot virtualize scheme '%s' in scheme '%s'", vt->virtSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
-              vt->virtSchemeName.release();
+              vt->virtSchemeName.reset();
             }
             if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
               String* vsn = qualifyForeignName(vt->substSchemeName.get(), QNT_SCHEME, true);
@@ -983,7 +983,7 @@ void HRCParserImpl::updateLinks()
                 LOGF(ERROR, "cannot virtualize using subst-scheme scheme '%s' in scheme '%s'", vt->substSchemeName->getChars(), scheme->schemeName->getChars());
               }
               delete vsn;
-              vt->substSchemeName.release();
+              vt->substSchemeName.reset();
             }
           }
         }
