@@ -14,9 +14,6 @@ FileTypeImpl::~FileTypeImpl(){
   for(auto it : chooserVector){
     delete it;
   }
-  for (auto it = chooserVector.begin(); it!=chooserVector.end(); ++it) {
-    delete *it;
-  }
   chooserVector.clear();
 
   for(auto it: paramsHash){

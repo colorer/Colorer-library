@@ -30,18 +30,6 @@ HRCParserImpl::~HRCParserImpl()
     delete it.second;
   }
 
-  for (auto it = schemeHash.begin(); it!=schemeHash.end(); ++it) {
-    delete it->second;
-  }
-
-  for (auto it = regionNamesVector.begin(); it!=regionNamesVector.end(); ++it) {
-    delete *it;
-  }
-
-  for (auto it = schemeEntitiesHash.begin(); it!=schemeEntitiesHash.end(); ++it) {
-    delete it->second;
-  }
-
   for (auto it : schemeHash) {
     delete it.second;
   }
