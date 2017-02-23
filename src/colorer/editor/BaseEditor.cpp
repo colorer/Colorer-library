@@ -1,4 +1,3 @@
-#include <common/Logging.h>
 #include <colorer/editor/BaseEditor.h>
 
 #define IDLE_PARSE(time) (100+time*4)
@@ -6,12 +5,10 @@
 const int CHOOSE_STR = 4;
 const int CHOOSE_LEN = 200 * CHOOSE_STR;
 
-colorer::ErrorHandler* eh;
-
 BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 {
   if (parserFactory == nullptr || lineSource == nullptr) {
-    throw Exception(DString("Bad BaseEditor constructor parameters"));
+    throw Exception(CString("Bad BaseEditor constructor parameters"));
   }
   this->parserFactory = parserFactory;
   this->lineSource = lineSource;
@@ -39,11 +36,11 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   breakParse = false;
   validationProcess = false;
 
-  DString def_text = DString("def:Text");
-  DString def_syntax = DString("def:Syntax");
-  DString def_special = DString("def:Special");
-  DString def_pstart = DString("def:PairStart");
-  DString def_pend = DString("def:PairEnd");
+  CString def_text = CString("def:Text");
+  CString def_syntax = CString("def:Syntax");
+  CString def_special = CString("def:Special");
+  CString def_pstart = CString("def:PairStart");
+  CString def_pend = CString("def:PairEnd");
   def_Text = hrcParser->getRegion(&def_text);
   def_Syntax = hrcParser->getRegion(&def_syntax);
   def_Special = hrcParser->getRegion(&def_special);
@@ -53,7 +50,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   setRegionCompact(regionCompact);
 
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
-  eh = parserFactory->getErrorHandler();
 }
 
 BaseEditor::~BaseEditor()
@@ -113,15 +109,15 @@ void BaseEditor::remapLRS(bool recreate)
   invalidLine = 0;
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
   if (regionMapper != nullptr) {
-    rd_def_Text = regionMapper->getRegionDefine(DString("def:Text"));
-    rd_def_HorzCross = regionMapper->getRegionDefine(DString("def:HorzCross"));
-    rd_def_VertCross = regionMapper->getRegionDefine(DString("def:VertCross"));
+    rd_def_Text = regionMapper->getRegionDefine(CString("def:Text"));
+    rd_def_HorzCross = regionMapper->getRegionDefine(CString("def:HorzCross"));
+    rd_def_VertCross = regionMapper->getRegionDefine(CString("def:VertCross"));
   }
 }
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  CLR_INFO("BaseEditor", "setFileType:%s", ftype->getName()->getChars());
+  LOGF(DEBUG, "[BaseEditor] setFileType: %s", ftype->getName()->getChars());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
@@ -137,7 +133,7 @@ FileType* BaseEditor::setFileType(const String& fileType)
 
 FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen)
 {
-  StringBuffer textStart;
+  SString textStart;
   int totalLength = 0;
   for (int i = 0; i < chooseStr; i++) {
     String* iLine = lineSource->getLine(i);
@@ -145,7 +141,7 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
       break;
     }
     textStart.append(iLine);
-    textStart.append(DString("\n"));
+    textStart.append(CString("\n"));
     totalLength += iLine->length();
     if (totalLength > chooseLen) {
       break;
@@ -153,8 +149,8 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
   }
   currentFileType = hrcParser->chooseFileType(fileName, &textStart);
 
-  int chooseStrNext = currentFileType->getParamValueInt(DString("firstlines"), chooseStr);
-  int chooseLenNext = currentFileType->getParamValueInt(DString("firstlinebytes"), chooseLen);
+  int chooseStrNext = currentFileType->getParamValueInt(CString("firstlines"), chooseStr);
+  int chooseLenNext = currentFileType->getParamValueInt(CString("firstlinebytes"), chooseLen);
 
   if (chooseStrNext != chooseStr || chooseLenNext != chooseLen) {
     currentFileType = chooseFileTypeCh(fileName, chooseStrNext, chooseLenNext);
@@ -169,11 +165,11 @@ FileType* BaseEditor::chooseFileType(const String* fileName)
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
-    DString ds_def = DString("default");
+    CString ds_def = CString("default");
     FileType* def = hrcParser->getFileType(&ds_def);
     if (def) {
-      chooseStr = def->getParamValueInt(DString("firstlines"), chooseStr);
-      chooseLen = def->getParamValueInt(DString("firstlinebytes"), chooseLen);
+      chooseStr = def->getParamValueInt(CString("firstlines"), chooseStr);
+      chooseLen = def->getParamValueInt(CString("firstlinebytes"), chooseLen);
     }
 
     currentFileType = chooseFileTypeCh(fileName, chooseStr, chooseLen);
@@ -385,7 +381,7 @@ LineRegion* BaseEditor::getLineRegions(int lno)
 
 void BaseEditor::modifyEvent(int topLine)
 {
-  CLR_TRACE("BaseEditor", "modifyEvent:%d", topLine);
+  LOGF(DEBUG, "[BaseEditor] modifyEvent: %d", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
     for (auto it = editorListeners.begin(); it != editorListeners.end(); ++it) {
@@ -404,14 +400,14 @@ void BaseEditor::modifyLineEvent(int line)
 
 void BaseEditor::visibleTextEvent(int wStart, int wSize)
 {
-  CLR_TRACE("BaseEditor", "visibleTextEvent:%d-%d", wStart, wSize);
+  LOGF(DEBUG, "[BaseEditor] visibleTextEvent: %d-%d", wStart, wSize);
   this->wStart = wStart;
   this->wSize = wSize;
 }
 
 void BaseEditor::lineCountEvent(int newLineCount)
 {
-  CLR_TRACE("BaseEditor", "lineCountEvent:%d", newLineCount);
+  LOGF(DEBUG, "[BaseEditor] lineCountEvent: %d", newLineCount);
   lineCount = newLineCount;
 }
 
@@ -445,7 +441,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     lrSupport->clear();
     // Regions were dropped
     layoutChanged = true;
-    CLR_TRACE("BaseEditor", "lrSize != wSize*2");
+    LOGF(DEBUG, "[BaseEditor] lrSize != wSize*2");
   }
 
   /* Fixes window position according to line number */
@@ -476,7 +472,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    CLR_TRACE("BaseEditor", "newFirstLine=%d, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
+    LOGF(DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {
@@ -500,14 +496,13 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
 
-    CLR_TRACE("BaseEditor", "validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
-
+    LOGF(DEBUG, "[BaseEditor] validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
     if (tpmode == TPM_CACHE_UPDATE) {
       invalidLine = stopLine + 1;
     }
-    CLR_TRACE("BaseEditor", "validate:parsed: invalidLine=%d", invalidLine);
+    LOGF(DEBUG, "[BaseEditor] validate:parsed: invalidLine=%d", invalidLine);
   }
 }
 
@@ -593,11 +588,11 @@ bool BaseEditor::haveInvalidLine()
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -606,9 +601,10 @@ bool BaseEditor::haveInvalidLine()
  * of those above. If you wish to allow use of your version of this file only
  * under the terms of either the GPL or the LGPL, and not to allow others to
  * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting thd provisions above and replace them with the notice
+ * decision by deleting the provisions above and replace them with the notice
  * and other provisions required by the GPL or the LGPL. If you do not delete
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.9)
+cmake_minimum_required (VERSION 2.8.11)
 project (consoletools)
 
 #====================================================
@@ -9,19 +9,22 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 #====================================================
 # init variables
 #====================================================
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif()
-message("Consoletools build type: ${CMAKE_BUILD_TYPE}")
-   
+  
 #====================================================
 # colorer_lib
 #====================================================
-add_subdirectory(../../src ./build)
 include_directories (../../src/)
 include_directories (../../libs/xercesc/src)
-set(SRC_CPP ConsoleToolsRunner.cpp)
+add_definitions(-DXERCES_STATIC_LIBRARY)
+
+
+set(SRC_CPP ConsoleToolsRunner.cpp
+   ConsoleTools.cpp ConsoleTools.h
+   version.h)
+
+if(WIN32)
+  set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
+endif(WIN32)
 
 #====================================================
 # common flags
@@ -55,11 +58,15 @@ if(MSVC)
   set(FLAGS_DEBUG "${FLAGS_DEBUG} /Od /MTd /GS /RTC1 /W3")
   set(LINK_FLAGS_RELEASE "/LTCG")
 
+  # support AMD proc on vc2015
+  if(${CMAKE_CL_64} STREQUAL "0")
+    set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} /arch:IA32")
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(COLORER_WARNING_FLAGS )
-  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++11")
+  set(FLAGS_CXX_DEFAULT "${FLAGS_CXX_DEFAULT} -fpermissive -std=c++14")
 
   set(FLAGS_RELEASE "${FLAGS_RELEASE} -s -O3")
   set(FLAGS_DEBUG "${FLAGS_DEBUG} -g3")
@@ -83,7 +90,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c_3_1 )
+set(LIBRARIES colorer_lib xerces-c_3_1 g3logger)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})

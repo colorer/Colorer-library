@@ -14,8 +14,8 @@ Outliner::~Outliner()
   baseEditor->removeRegionHandler(this);
   baseEditor->removeEditorListener(this);
 
-  for(auto it=outline.begin(); it!=outline.end(); it++){
-    delete *it;
+  for (auto it : outline) {
+    delete it;
   }
   outline.clear();
 }
@@ -89,7 +89,7 @@ void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region*
     return;
   }
 
-  String* itemLabel = new DString(line, sx, ex - sx);
+  String* itemLabel = new CString(line, sx, ex - sx);
 
   if (lineIsEmpty) {
     outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
@@ -129,11 +129,11 @@ void Outliner::leaveScheme(size_t lno, String* line, int sx, int ex, const Regio
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -148,3 +148,4 @@ void Outliner::leaveScheme(size_t lno, String* line, int sx, int ex, const Regio
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

@@ -1,30 +1,31 @@
 #ifndef _COLORER_REGIONMAPPER_H_
 #define _COLORER_REGIONMAPPER_H_
 
-#include<colorer/Region.h>
-#include<colorer/handlers/RegionDefine.h>
+#include <colorer/Region.h>
+#include <colorer/handlers/RegionDefine.h>
 
 /**
  * Abstract interface to perform Region -> RegionDefine mappings.
  * @ingroup colorer_handlers
  */
-class RegionMapper{
+class RegionMapper
+{
 public:
   /**
    * Searches mapped region define value.
    * @return Region define, associated with passed @c region
    * parameter, or null if nothing found
    */
-  virtual const RegionDefine *getRegionDefine(const Region *region) const = 0;
+  virtual const RegionDefine* getRegionDefine(const Region* region) const = 0;
 
   /**
    * Searches mapped region define value with qualified name @c name.
    */
-  virtual const RegionDefine *getRegionDefine(const String &name) const = 0;
+  virtual const RegionDefine* getRegionDefine(const String &name) const = 0;
 
-  virtual ~RegionMapper(){};
+  virtual ~RegionMapper() {};
 protected:
-  RegionMapper(){};
+  RegionMapper() {};
 };
 
 #endif
@@ -44,11 +45,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -63,3 +64,4 @@ protected:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

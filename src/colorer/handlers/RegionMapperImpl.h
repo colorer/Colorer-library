@@ -2,12 +2,11 @@
 #define _COLORER_REGIONMAPPERIMPL_H_
 
 #include <vector>
-#include <common/io/Writer.h>
+#include <colorer/io/Writer.h>
 #include <colorer/handlers/RegionMapper.h>
 #include <colorer/handlers/RegionDefine.h>
 #include <xercesc/sax/InputSource.hpp>
-#include <colorer/ErrorHandler.h>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 /** Abstract RegionMapper.
     Stores all region mappings in hashtable and sequental vector.
@@ -21,7 +20,7 @@ public:
 
   /** Loads region defines from @c is InputSource
   */
-  virtual void  loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = nullptr) = 0;
+  virtual void  loadRegionMappings(XmlInputSource* is) = 0;
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input
@@ -32,7 +31,7 @@ public:
       @param region Region full qualified name.
       @param rdnew  New region definition to replace old one
   */
-  virtual void  setRegionDefine(const String& region, const RegionDefine* rdnew) = 0;
+  virtual void  setRegionDefine(const String &region, const RegionDefine* rdnew) = 0;
 
   /** Enumerates all loaded region defines.
       @return RegionDefine with specified internal index, or null if @c idx is too big
@@ -40,14 +39,14 @@ public:
   std::vector<const RegionDefine*> enumerateRegionDefines() const;
 
   const RegionDefine* getRegionDefine(const Region* region) const;
-  const RegionDefine* getRegionDefine(const String& name) const;
+  const RegionDefine* getRegionDefine(const String &name) const;
 
 protected:
   std::unordered_map<SString, RegionDefine*> regionDefines;
   mutable std::vector<const RegionDefine*> regionDefinesVector;
 
-  RegionMapperImpl(const RegionMapperImpl&);
-  void operator=(const RegionMapperImpl&);
+  RegionMapperImpl(const RegionMapperImpl &);
+  void operator=(const RegionMapperImpl &);
 };
 
 #endif
@@ -67,11 +66,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -86,3 +85,4 @@ protected:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

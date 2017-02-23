@@ -20,7 +20,7 @@ public:
   /** Level of enclosure */
   int level;
   /** Item text */
-  std::unique_ptr<StringBuffer> token;
+  std::unique_ptr<SString> token;
   /** This item's region */
   const Region* region;
 
@@ -34,7 +34,7 @@ public:
     lno(lno_), pos(pos_), level(level_), token(nullptr), region(region_)
   {
     if (token_ != nullptr) {
-      token.reset(new StringBuffer(token_));
+      token.reset(new SString(token_));
     }
   }
 
@@ -60,11 +60,11 @@ public:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -79,3 +79,4 @@ public:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

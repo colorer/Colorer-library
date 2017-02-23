@@ -1,23 +1,22 @@
 #ifndef _COLORER_HRCPARSER_H_
 #define _COLORER_HRCPARSER_H_
 
-#include<common/io/InputSource.h>
-
-#include<colorer/ErrorHandler.h>
-#include<colorer/FileType.h>
-#include<colorer/Region.h>
-#include <xml/XmlInputSource.h>
+#include <colorer/FileType.h>
+#include <colorer/Region.h>
+#include <colorer/xml/XmlInputSource.h>
 
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
 */
-class HRCParserException : public Exception{
+class HRCParserException : public Exception
+{
 public:
-  HRCParserException(){};
-  HRCParserException(const String& msg){
-    message->append(DString("HRCParserException: ")).append(msg);
-  };
+  HRCParserException() noexcept : Exception("[HRCParserException] ") {};
+  HRCParserException(const String &msg) noexcept : HRCParserException()
+  {
+    what_str.append(msg);
+  }
 };
 
 
@@ -29,10 +28,6 @@ public:
 class HRCParser
 {
 public:
-  /** Error Handler, used to inform application about different error conditions
-      @param eh ErrorHandler instance, or null to drop error handling.
-  */
-  virtual void setErrorHandler(colorer::ErrorHandler *eh) = 0;
   /** Loads HRC from specified InputSource stream.
       Referred HRC file can contain prototypes and
       real types definitions. If it contains just prototype definition,
@@ -104,11 +99,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or

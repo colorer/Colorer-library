@@ -1,15 +1,15 @@
 #ifndef _COLORER_TEXTPARSER_H_
 #define _COLORER_TEXTPARSER_H_
 
-#include<colorer/FileType.h>
-#include<colorer/LineSource.h>
-#include<colorer/RegionHandler.h>
+#include <colorer/FileType.h>
+#include <colorer/LineSource.h>
+#include <colorer/RegionHandler.h>
 
 /**
  * List of available parse modes
  * @ingroup colorer
  */
-enum TextParseMode{
+enum TextParseMode {
   /**
    * Parser will start execution from the root
    * document's scheme, no cache information will be used
@@ -53,17 +53,17 @@ public:
    * it's baseScheme. If parameter is null, there will
    * be no any kind of parse over the text.
    */
-  virtual void setFileType(FileType *type) = 0;
+  virtual void setFileType(FileType* type) = 0;
 
   /**
    * Installs LineSource, used as an input of text to parse
    */
-  virtual void setLineSource(LineSource *lh) = 0;
+  virtual void setLineSource(LineSource* lh) = 0;
 
   /**
    * RegionHandler, used as output stream for parsed tree.
    */
-  virtual void setRegionHandler(RegionHandler *rh) = 0;
+  virtual void setRegionHandler(RegionHandler* rh) = 0;
 
   /**
    * Performs cachable text parse.
@@ -90,9 +90,9 @@ public:
    */
   virtual void clearCache() = 0;
 
-  virtual ~TextParser(){};
+  virtual ~TextParser() {};
 protected:
-  TextParser(){};
+  TextParser() {};
 };
 
 #endif
@@ -112,11 +112,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -131,3 +131,4 @@ protected:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

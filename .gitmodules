@@ -7,3 +7,6 @@
 [submodule "libs/dlmalloc"]
 	path = libs/dlmalloc
 	url = https://github.com/colorer/dlmalloc.git
+[submodule "libs/g3log"]
+	path = libs/g3log
+	url = https://github.com/colorer/g3log.git

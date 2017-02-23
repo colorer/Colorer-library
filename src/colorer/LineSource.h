@@ -1,7 +1,7 @@
 #ifndef _COLORER_LINESOURCE_H_
 #define _COLORER_LINESOURCE_H_
 
-#include <common/Common.h>
+#include <colorer/Common.h>
 
 /**
  * Interface for editor line information requests.
@@ -38,7 +38,7 @@ public:
    * @param lno Requested line number
    * @return Unicode string, enwrapped into String class.
    */
-  virtual String* getLine(size_t lno) = 0;
+  virtual SString* getLine(size_t lno) = 0;
 protected:
   LineSource() {};
   virtual ~LineSource() {};
@@ -61,11 +61,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or

@@ -1,9 +1,10 @@
 #include <colorer/parsers/TextParserImpl.h>
-#include <common/Logging.h>
+#include <colorer/unicode/Character.h>
+#include <colorer/unicode/DString.h>
 
 TextParserImpl::TextParserImpl()
 {
-  CLR_TRACE("TextParserImpl", "constructor");
+  CTRACE(LOGF(TRACE, "[TextParserImpl] constructor"));
   cache = new ParseCache();
   clearCache();
   lineSource = nullptr;
@@ -50,7 +51,7 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
   breakParsing = false;
   updateCache = (mode == TPM_CACHE_UPDATE);
 
-  CLR_TRACE("TextParserImpl", "parse from=%d, num=%d", from, num);
+  CTRACE(LOGF(TRACE, "[TextParserImpl] parse from=%d, num=%d", from, num));
   /* Check for initial bad conditions */
   if (regionHandler == nullptr) {
     return from;
@@ -75,13 +76,13 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
   if (mode == TPM_CACHE_READ || mode == TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
     if (parent != nullptr) {
-      CLR_TRACE("TPCache", "searchLine() parent:%s,%d-%d", parent->scheme->getName()->getChars(), parent->sline, parent->eline);
+      CTRACE(LOGF(TRACE, "[TPCache] searchLine() parent:%s,%d-%d", parent->scheme->getName()->getChars(), parent->sline, parent->eline));
     }
   }
   cachedLineNo = from;
   cachedParent = parent;
   cachedForward = forward;
-  CLR_TRACE("TextParserImpl", "parse: cache filled");
+  CTRACE(LOGF(TRACE, "[TextParserImpl] parse: cache filled"));
 
 
   do {
@@ -102,11 +103,11 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
     baseScheme = parent->scheme;
 
     stackLevel = 0;
-    CLR_TRACE("TextParserImpl", "parse: goes into colorize()");
+    CTRACE(LOGF(TRACE, "[TextParserImpl] parse: goes into colorize()"));
     if (parent != cache) {
       vtlist->restore(parent->vcache);
       parent->clender->end->setBackTrace(parent->backLine, &parent->matchstart);
-      colorize(parent->clender->end, parent->clender->lowContentPriority);
+      colorize(parent->clender->end.get(), parent->clender->lowContentPriority);
       vtlist->clear();
     } else {
       colorize(nullptr, false);
@@ -276,7 +277,7 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
         }
       }
       if (!badbound) {
-        CLR_TRACE("TextParserImpl", "KW matched. gx=%d, region=%s", gx, node->kwList->kwList[pos].region->getName()->getChars());
+        CTRACE(LOGF(TRACE, "[TextParserImpl] KW matched. gx=%d, region=%s", gx, node->kwList->kwList[pos].region->getName()->getChars()));
         addRegion(gy, gx, gx + kwlen, node->kwList->kwList[pos].region);
         gx += kwlen;
         return MATCH_RE;
@@ -310,16 +311,16 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
   ParseCache* ResF = nullptr;
   ParseCache* ResP = nullptr;
 
-  CLR_TRACE("TextParserImpl", "searchRE: entered scheme \"%s\"", cscheme->getName()->getChars());
+  CTRACE(LOGF(TRACE, "[TextParserImpl] searchRE: entered scheme \"%s\"", cscheme->getName()->getChars()));
 
   if (!cscheme) {
     return MATCH_NOTHING;
   }
   for (int idx = 0; idx < cscheme->nodes.size(); idx++) {
     SchemeNode* schemeNode = cscheme->nodes.at(idx);
-    CLR_TRACE("TextParserImpl", "searchRE: processing node:%d/%d, type:%s", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]);
+    CTRACE(LOGF(TRACE, "[TextParserImpl] searchRE: processing node:%d/%d, type:%s", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
-      case SNT_INHERIT:
+      case SchemeNode::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;
         }
@@ -339,17 +340,17 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         }
         break;
 
-      case SNT_KEYWORDS:
+      case SchemeNode::SNT_KEYWORDS:
         if (searchKW(schemeNode, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
 
-      case SNT_RE:
+      case SchemeNode::SNT_RE:
         if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
-        CLR_TRACE("TextParserImpl", "RE matched. gx=%d", gx);
+        CTRACE(LOGF(TRACE, "[TextParserImpl] RE matched. gx=%d", gx));
         for (i = 0; i < match.cMatch; i++) {
           addRegion(gy, match.s[i], match.e[i], schemeNode->regions[i]);
         }
@@ -364,7 +365,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         gx = match.e[0];
         return MATCH_RE;
 
-      case SNT_SCHEME: {
+      case SchemeNode::SNT_SCHEME: {
         if (!schemeNode->scheme) {
           break;
         }
@@ -373,7 +374,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           break;
         }
 
-        CLR_TRACE("TextParserImpl", "Scheme matched. gx=%d", gx);
+        CTRACE(LOGF(TRACE, "[TextParserImpl] Scheme matched. gx=%d", gx));
 
         gx = match.e[0];
         ssubst = vtlist->pushvirt(schemeNode->scheme);
@@ -416,7 +417,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         int o_schemeStart = schemeStart;
         SMatches o_matchend = matchend;
         SMatches* o_match;
-        DString* o_str;
+        CString* o_str;
         schemeNode->end->getBackTrace((const String**)&o_str, &o_match);
 
         baseScheme = ssubst;
@@ -425,7 +426,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 
         enterScheme(no, &match, schemeNode);
 
-        colorize(schemeNode->end, schemeNode->lowContentPriority);
+        colorize(schemeNode->end.get(), schemeNode->lowContentPriority);
 
         if (gy < gy2) {
           leaveScheme(gy, &matchend, schemeNode);
@@ -484,17 +485,14 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
   stackLevel++;
 
   for (; gy < gy2;) {
-    CLR_TRACE("TextParserImpl", "colorize: line no %d", gy);
+    CTRACE(LOGF(TRACE, "[TextParserImpl] colorize: line no %d", gy));
     // clears line at start,
     // prevents multiple requests on each line
     if (clearLine != gy) {
       clearLine = gy;
       str = lineSource->getLine(gy);
       if (str == nullptr) {
-        throw Exception(StringBuffer("null String passed into the parser: ") + SString(gy));
-        //!!unreachable code
-        //gy = gy2;
-        break;
+        throw Exception(SString("null String passed into the parser: ") + SString(gy));
       }
       regionHandler->clearLine(gy, str);
     }
@@ -593,11 +591,11 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -612,3 +610,4 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

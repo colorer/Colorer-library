@@ -1,15 +1,12 @@
 #ifndef _COLORER_HRCPARSERIMPL_H_
 #define _COLORER_HRCPARSERIMPL_H_
 
-#include <cregexp/cregexp.h>
+#include <colorer/cregexp/cregexp.h>
 #include <colorer/HRCParser.h>
-#include <unicode/UnicodeTools.h>
-#include <colorer/parsers/helpers/HRCParserHelpers.h>
+#include <colorer/parsers/SchemeImpl.h>
 
-#include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 class FileTypeImpl;
 
@@ -25,7 +22,6 @@ public:
   HRCParserImpl();
   ~HRCParserImpl();
 
-  void setErrorHandler(colorer::ErrorHandler* eh);
 
   void loadSource(XmlInputSource* is);
   FileType* getFileType(const String* name);
@@ -60,11 +56,9 @@ protected:
 
   FileTypeImpl* parseProtoType;
   FileTypeImpl* parseType;
-  XmlInputSource* curInputSource;
+  XmlInputSource* current_input_source;
   bool structureChanged;
   bool updateStarted;
-
-  colorer::ErrorHandler* errorHandler;
 
   void loadFileType(FileType* filetype);
   void unloadFileType(FileTypeImpl* filetype);
@@ -105,7 +99,7 @@ protected:
   const Region* getNCRegion(const String* name, bool logErrors);
 };
 
-#include<colorer/parsers/helpers/FileTypeImpl.h>
+#include<colorer/parsers/FileTypeImpl.h>
 
 #endif
 
@@ -125,12 +119,11 @@ protected:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
- *  Eugene Efremov <4mirror@mail.ru>
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -145,3 +138,4 @@ protected:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

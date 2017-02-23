@@ -1,10 +1,10 @@
 #ifndef _COLORER_TEXTHRDMAPPER_H_
 #define _COLORER_TEXTHRDMAPPER_H_
 
-#include <common/io/Writer.h>
+#include <colorer/io/Writer.h>
 #include <colorer/handlers/RegionMapperImpl.h>
 #include <colorer/handlers/TextRegion.h>
-#include <xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 
 /** HRD files reader.
     HRD Files format contains mappings of HRC syntax regions into
@@ -23,7 +23,7 @@ public:
   /**
    * Loads region defines from @c is InputSource
    */
-  void  loadRegionMappings(XmlInputSource* is, colorer::ErrorHandler* eh = nullptr);
+  void  loadRegionMappings(XmlInputSource* is);
 
   /**
    * Saves all loaded region defines into @c writer.
@@ -38,7 +38,7 @@ public:
    * @param region Region full qualified name.
    * @param rdnew  New region definition to replace old one
    */
-  void  setRegionDefine(const String& region, const RegionDefine* rdnew);
+  void  setRegionDefine(const String &region, const RegionDefine* rdnew);
 };
 
 #endif
@@ -58,11 +58,11 @@ public:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -77,3 +77,4 @@ public:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+

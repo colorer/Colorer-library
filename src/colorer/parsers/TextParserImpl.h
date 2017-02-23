@@ -2,7 +2,7 @@
 #define _COLORER_TEXTPARSERIMPL_H_
 
 #include<colorer/TextParser.h>
-#include<colorer/parsers/helpers/TextParserHelpers.h>
+#include<colorer/parsers/TextParserHelpers.h>
 
 #define MAX_RECURSION_LEVEL 100
 
@@ -19,49 +19,49 @@ public:
   TextParserImpl();
   ~TextParserImpl();
 
-  void setFileType(FileType *type);
+  void setFileType(FileType* type);
 
-  void setLineSource(LineSource *lh);
-  void setRegionHandler(RegionHandler *rh);
+  void setLineSource(LineSource* lh);
+  void setRegionHandler(RegionHandler* rh);
 
   int  parse(int from, int num, TextParseMode mode);
   void breakParse();
   void clearCache();
 
 private:
-  String *str;
+  SString* str;
   int stackLevel;
   int gx, gy, gy2, len;
   int clearLine, endLine, schemeStart;
-  SchemeImpl *baseScheme;
+  SchemeImpl* baseScheme;
 
   bool breakParsing;
   bool first, invisibleSchemesFilled;
   bool drawing, updateCache;
-  const Region *picked;
+  const Region* picked;
 
-  ParseCache *cache;
-  ParseCache *parent, *forward;
+  ParseCache* cache;
+  ParseCache* parent, *forward;
 
   int cachedLineNo;
-  ParseCache *cachedParent,*cachedForward;
+  ParseCache* cachedParent, *cachedForward;
 
   SMatches matchend;
-  VTList *vtlist;
+  VTList* vtlist;
 
-  LineSource *lineSource;
-  RegionHandler *regionHandler;
+  LineSource* lineSource;
+  RegionHandler* regionHandler;
 
-  void fillInvisibleSchemes(ParseCache *cache);
+  void fillInvisibleSchemes(ParseCache* cache);
   void addRegion(int lno, int sx, int ex, const Region* region);
   void enterScheme(int lno, int sx, int ex, const Region* region);
   void leaveScheme(int lno, int sx, int ex, const Region* region);
-  void enterScheme(int lno, SMatches *match, const SchemeNode *schemeNode);
-  void leaveScheme(int lno, SMatches *match, const SchemeNode *schemeNode);
+  void enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode);
+  void leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode);
 
-  int searchKW(const SchemeNode *node, int no, int lowLen, int hiLen);
-  int searchRE(SchemeImpl *cscheme, int no, int lowLen, int hiLen);
-  bool colorize(CRegExp *root_end_re, bool lowContentPriority);
+  int searchKW(const SchemeNode* node, int no, int lowLen, int hiLen);
+  int searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen);
+  bool colorize(CRegExp* root_end_re, bool lowContentPriority);
 };
 
 #endif
@@ -82,11 +82,11 @@ private:
  * The Original Code is the Colorer Library.
  *
  * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
+ * Cail Lomecb <irusskih at gmail dot com>.
+ * Portions created by the Initial Developer are Copyright (C) 1999-2009
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): see file CONTRIBUTORS
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -101,3 +101,4 @@ private:
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
