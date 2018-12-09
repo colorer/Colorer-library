@@ -280,7 +280,16 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         break;
       }
     }
-    type = hrcParser->chooseFileType(inputFileName.get(), &textStart, 0);
+
+	CString fnpath(inputFileName.get());
+	int slash_idx = fnpath.lastIndexOf('\\');
+
+	if (slash_idx == -1) {
+		slash_idx = fnpath.lastIndexOf('/');
+	}
+	std::unique_ptr<String> file_name (new SString(fnpath, slash_idx + 1));
+
+    type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
   }
   return type;
 }
