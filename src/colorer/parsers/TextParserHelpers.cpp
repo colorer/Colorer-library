@@ -37,12 +37,14 @@ ParseCache::~ParseCache()
 
 ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
 {
-  ParseCache* r1, *r2, *tmp = this;
+  ParseCache* r1 = nullptr, *r2 = nullptr, *tmp = this;
   *cache = nullptr;
   while (tmp) {
     CTRACE(LOGF(TRACE, "[TPCache] searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline));
     if (tmp->sline <= ln && tmp->eline >= ln) {
-      r1 = tmp->children->searchLine(ln, &r2);
+	  if (tmp->children) {
+		r1 = tmp->children->searchLine(ln, &r2);
+	  }
       if (r1) {
         *cache = r2;
         return r1;
