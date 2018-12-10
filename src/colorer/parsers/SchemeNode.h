@@ -1,6 +1,7 @@
 #ifndef _COLORER_SCHEMENODE_H_
 #define _COLORER_SCHEMENODE_H_
 
+#include <vector>
 #include <colorer/Common.h>
 #include <colorer/Region.h>
 #include <colorer/parsers/KeywordList.h>

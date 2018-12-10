@@ -2,6 +2,7 @@
 #define _COLORER_CATALOGPARSER_H_
 
 #include <list>
+#include <vector>
 #include <colorer/Common.h>
 #include <colorer/parsers/HRDNode.h>
 #include <xercesc/dom/DOM.hpp>

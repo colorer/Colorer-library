@@ -1,3 +1,4 @@
+#include <cstring>
 #include <colorer/unicode/Encodings.h>
 #include <colorer/unicode/x_encodings.h>
 #include <colorer/unicode/SString.h>
