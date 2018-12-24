@@ -10,6 +10,7 @@ project (colorer_lib)
 # xercesc_lib
 #====================================================
 include_directories(../libs/xercesc/src)
+include_directories(${xerces-c_BINARY_DIR}/src)
 add_definitions(-DXERCES_STATIC_LIBRARY)
 
 #====================================================

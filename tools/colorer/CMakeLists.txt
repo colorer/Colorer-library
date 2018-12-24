@@ -15,6 +15,7 @@ set(COLORER_FEATURE_HTTPINPUTSOURCE OFF CACHE BOOL "If defined, HTTP InputSource
 #====================================================
 include_directories (../../src/)
 include_directories (../../libs/xercesc/src)
+include_directories(${xerces-c_BINARY_DIR}/src)
 add_definitions(-DXERCES_STATIC_LIBRARY)
 
 
@@ -90,7 +91,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c_3_1 g3logger)
+set(LIBRARIES colorer_lib xerces-c g3logger)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})

@@ -13,9 +13,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin CACHE STRING "Single 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin CACHE STRING "Single Directory for all Executables" FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin CACHE STRING "Single Directory for all Libraries" FORCE)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+
 set(ADD_FATAL_EXAMPLE OFF CACHE BOOL "Build g3log without examples")
 set(USE_DYNAMIC_LOGGING_LEVELS ON CACHE BOOL "Build g3log with dynamic logging levels")
+
 add_subdirectory(./libs/g3log)
+
+set(xmlch-type "wchar_t" CACHE STRING "XMLCh type wchar_t" FORCE)
+set(BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
+set(XERCESC_BUILD_DOC OFF CACHE BOOL "Build docs")
+set(XERCESC_BUILD_TESTS OFF CACHE BOOL "Build test")
+set(XERCESC_BUILD_SAMPLES OFF CACHE BOOL "Build samples")
 
 add_subdirectory(./libs/xercesc)
 
