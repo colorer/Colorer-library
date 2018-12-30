@@ -8,7 +8,7 @@
 
 void CatalogParser::parse(const String* path)
 {
-  LOG(DEBUG) << "begin parse catalog.xml";
+  LOG(G3LOG_DEBUG) << "begin parse catalog.xml";
   hrc_locations.clear();
   hrd_nodes.clear();
 
@@ -33,7 +33,7 @@ void CatalogParser::parse(const String* path)
 
   parseCatalogBlock(elem);
 
-  LOG(DEBUG) << "end parse catalog.xml";
+  LOG(G3LOG_DEBUG) << "end parse catalog.xml";
 }
 
 void CatalogParser::parseCatalogBlock(const xercesc::DOMElement* elem)
@@ -70,7 +70,7 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMElement* elem)
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
           hrc_locations.emplace_back(SString(attr_value));
-          LOG(DEBUG) << "add hrc location: '" << hrc_locations.back().getChars() << "'";
+          LOG(G3LOG_DEBUG) << "add hrc location: '" << hrc_locations.back().getChars() << "'";
         } else {
           LOG(WARNING) << "found hrc with empty location. skip it location.";
         }
@@ -122,7 +122,7 @@ void CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
           hrd_node->hrd_location.emplace_back(SString(CString(attr_value)));
-          LOGF(DEBUG, "add hrd location '%s' for %s:%s", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+          LOGF(G3LOG_DEBUG, "add hrd location '%s' for %s:%s", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
         } else {
           LOG(WARNING) << "found hrd with empty location. skip it location.";
         }

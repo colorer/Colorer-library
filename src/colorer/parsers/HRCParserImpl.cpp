@@ -97,16 +97,16 @@ void HRCParserImpl::loadFileType(FileType* filetype)
   try {
     loadSource(thisType->inputSource.get());
   } catch (InputSourceException &e) {
-    LOGF(ERRORF, "Can't open source stream: %s", e.what());
+    LOGF(ERROR, "Can't open source stream: %s", e.what());
     thisType->load_broken = true;
   } catch (HRCParserException &e) {
-    LOGF(ERRORF, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    LOGF(ERROR, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->load_broken = true;
   } catch (Exception &e) {
-    LOGF(ERRORF, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    LOGF(ERROR, "%s [%s]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->load_broken = true;
   } catch (...) {
-    LOGF(ERRORF, "Unknown exception while loading %s", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    LOGF(ERROR, "Unknown exception while loading %s", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
     thisType->load_broken = true;
   }
 
@@ -190,7 +190,7 @@ const String* HRCParserImpl::getVersion()
 
 void HRCParserImpl::parseHRC(XmlInputSource* is)
 {
-  LOG(DEBUG) << "begin parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
+  LOG(G3LOG_DEBUG) << "begin parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
@@ -227,7 +227,7 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
     updateStarted = false;
   }
 
-  LOG(DEBUG) << "end parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
+  LOG(G3LOG_DEBUG) << "end parse '" << XStr(is->getInputSource()->getSystemId()) << "'";
 }
 
 void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
@@ -462,7 +462,7 @@ void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement* elem)
         continue;
       }
     }
-    // случай entity ссылки на другой файл.
+    // пїЅпїЅпїЅпїЅпїЅпїЅ entity пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       parseTypeBlock(static_cast<xercesc::DOMElement*>(node));
     }

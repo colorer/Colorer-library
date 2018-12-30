@@ -117,7 +117,7 @@ void BaseEditor::remapLRS(bool recreate)
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  LOGF(DEBUG, "[BaseEditor] setFileType: %s", ftype->getName()->getChars());
+  LOGF(G3LOG_DEBUG, "[BaseEditor] setFileType: %s", ftype->getName()->getChars());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
@@ -381,7 +381,7 @@ LineRegion* BaseEditor::getLineRegions(int lno)
 
 void BaseEditor::modifyEvent(int topLine)
 {
-  LOGF(DEBUG, "[BaseEditor] modifyEvent: %d", topLine);
+  LOGF(G3LOG_DEBUG, "[BaseEditor] modifyEvent: %d", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
     for (auto it = editorListeners.begin(); it != editorListeners.end(); ++it) {
@@ -400,14 +400,14 @@ void BaseEditor::modifyLineEvent(int line)
 
 void BaseEditor::visibleTextEvent(int wStart, int wSize)
 {
-  LOGF(DEBUG, "[BaseEditor] visibleTextEvent: %d-%d", wStart, wSize);
+  LOGF(G3LOG_DEBUG, "[BaseEditor] visibleTextEvent: %d-%d", wStart, wSize);
   this->wStart = wStart;
   this->wSize = wSize;
 }
 
 void BaseEditor::lineCountEvent(int newLineCount)
 {
-  LOGF(DEBUG, "[BaseEditor] lineCountEvent: %d", newLineCount);
+  LOGF(G3LOG_DEBUG, "[BaseEditor] lineCountEvent: %d", newLineCount);
   lineCount = newLineCount;
 }
 
@@ -441,7 +441,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     lrSupport->clear();
     // Regions were dropped
     layoutChanged = true;
-    LOGF(DEBUG, "[BaseEditor] lrSize != wSize*2");
+    LOGF(G3LOG_DEBUG, "[BaseEditor] lrSize != wSize*2");
   }
 
   /* Fixes window position according to line number */
@@ -472,7 +472,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    LOGF(DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
+    LOGF(G3LOG_DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {
@@ -496,13 +496,13 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
 
-    LOGF(DEBUG, "[BaseEditor] validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
+    LOGF(G3LOG_DEBUG, "[BaseEditor] validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
     if (tpmode == TPM_CACHE_UPDATE) {
       invalidLine = stopLine + 1;
     }
-    LOGF(DEBUG, "[BaseEditor] validate:parsed: invalidLine=%d", invalidLine);
+    LOGF(G3LOG_DEBUG, "[BaseEditor] validate:parsed: invalidLine=%d", invalidLine);
   }
 }
 

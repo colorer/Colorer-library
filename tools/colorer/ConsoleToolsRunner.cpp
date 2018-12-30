@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <colorer/common/Colorer.h>
 #include <g3log/logworker.hpp>
 #include <g3log/loglevels.hpp>
@@ -342,8 +343,14 @@ int main(int argc, char* argv[])
   std::unique_ptr<LogWorker> log_worker;
   if (settings.enable_logging) {
     log_worker = std::move(g3::LogWorker::createLogWorker());
-    auto handle = log_worker->addSink(std2::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false, settings.standing_logfile), &LogFileSink::fileWrite);
-    g3::only_change_at_initialization::setLogLevel(settings.log_level);
+    auto handle = log_worker->addSink(std::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false, settings.standing_logfile), &LogFileSink::fileWrite);
+    auto all_levels = g3::log_levels::getAll();
+    for (auto level : all_levels){
+      if (level.second.level.text.compare(settings.log_level)) {
+        g3::log_levels::set(level.second.level, true);
+        break;
+      }
+    }
     g3::initializeLogging(log_worker.get());
   }
   

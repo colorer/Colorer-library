@@ -48,11 +48,10 @@ std::string LogFileSink::formatMessage(LogMessageMover message)
 {
   auto level_value = message.get()._level.value;
   const char* levelstr = (
-                           level_value == DEBUG.value ? "DEBUG  "
+                           level_value == G3LOG_DEBUG.value ? "DEBUG  "
                            : level_value == ERROR.value ? "ERROR  "
                            : level_value == INFO.value ? "INFO   "
                            : level_value == WARNING.value ? "WARNING"
-                           : level_value == ERRORF.value ? "ERRORF "
                            : level_value == FATAL.value ? "FATAL  "
                            : ""
                          );
@@ -168,7 +167,9 @@ std::string LogFileSink::createLogFileName(const std::string &verified_prefix)
 {
   std::stringstream oss_name;
   oss_name << verified_prefix << ".";
-  oss_name << localtime_formatted(systemtime_now(), file_name_time_formatted);
+  auto now = std::chrono::system_clock::now();
+  auto time_formatted = g3::localtime_formatted(now, file_name_time_formatted);
+  oss_name << time_formatted;
   oss_name << ".log";
   return oss_name.str();
 }

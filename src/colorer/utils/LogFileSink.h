@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include <g3log/logmessage.hpp>
-#include <g3log/std2_make_unique.hpp>
+#include <colorer/Common.h>
 
 using namespace g3;
 
