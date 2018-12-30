@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
     g3::initializeLogging(log_worker.get());
   }
   
-  auto colorer_lib = Colorer::createColorer(log_worker.get());
+  auto colorer_lib = Colorer::createColorer(log_worker.release());
 
   return workIt();
 }
