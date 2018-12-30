@@ -35,7 +35,12 @@ add_subdirectory(./libs/g3log)
 #====================================================
 # xercesc
 #====================================================
-set(xmlch-type "wchar_t" CACHE STRING "XMLCh type wchar_t" FORCE)
+if(WIN32)
+  set(XMLCH_TYPE "wchar_t")
+else()
+  set(XMLCH_TYPE "uint16_t")
+endif()
+set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
 set(BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
 set(XERCESC_BUILD_DOC OFF CACHE BOOL "Build docs")
 set(XERCESC_BUILD_TESTS OFF CACHE BOOL "Build test")
