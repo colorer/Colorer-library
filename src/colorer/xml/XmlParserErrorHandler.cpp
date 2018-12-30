@@ -19,7 +19,7 @@ void XmlParserErrorHandler::error(const xercesc::SAXParseException &toCatch)
 void XmlParserErrorHandler::fatalError(const xercesc::SAXParseException &toCatch)
 {
   fSawErrors = true;
-  LOG(ERRORF) << "Fatal Error at file " << XStr(toCatch.getSystemId()) << ", line " << toCatch.getLineNumber() <<
+  LOG(ERROR) << "Fatal Error at file " << XStr(toCatch.getSystemId()) << ", line " << toCatch.getLineNumber() <<
               ", column " << toCatch.getColumnNumber() << " Message: " << XStr(toCatch.getMessage());
 }
 

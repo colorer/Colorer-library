@@ -17,6 +17,7 @@ add_definitions(-DXERCES_STATIC_LIBRARY)
 # g3log
 #====================================================
 include_directories(../libs/g3log/src)
+include_directories(${g3log_BINARY_DIR}/include)
 # ERROR level conflicts with windows.h
 add_definitions(-DNOGDI)
 

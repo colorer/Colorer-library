@@ -27,6 +27,8 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 #====================================================
 set(ADD_FATAL_EXAMPLE OFF CACHE BOOL "Build g3log without examples")
 set(USE_DYNAMIC_LOGGING_LEVELS ON CACHE BOOL "Build g3log with dynamic logging levels")
+set(G3_SHARED_LIB OFF CACHE BOOL "Build shared library")
+set(G3_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
 
 add_subdirectory(./libs/g3log)
 

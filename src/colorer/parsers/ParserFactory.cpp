@@ -36,7 +36,7 @@ ParserFactory::~ParserFactory()
 
 SString ParserFactory::searchCatalog() const
 {
-  LOG(DEBUG) << "begin search catalog.xml";
+  LOG(G3LOG_DEBUG) << "begin search catalog.xml";
 
   std::vector<SString> paths;
   getPossibleCatalogPaths(paths);
@@ -44,22 +44,22 @@ SString ParserFactory::searchCatalog() const
   SString right_path;
   for (auto path : paths) {
     try {
-      LOG(DEBUG) << "test path '" << path.getChars() << "'";
+      LOG(G3LOG_DEBUG) << "test path '" << path.getChars() << "'";
 
       uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
 
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
       right_path = SString(catalog->getInputSource()->getSystemId());
 
-      LOG(DEBUG) << "found valid path '" << path.getChars() << "' = '" << right_path.getChars() << "'";
+      LOG(G3LOG_DEBUG) << "found valid path '" << path.getChars() << "' = '" << right_path.getChars() << "'";
       break;
     } catch (const Exception &e) {
       LOG(ERROR) << e.what();
     }
   }
-  LOG(DEBUG) << "end search catalog.xml";
+  LOG(G3LOG_DEBUG) << "end search catalog.xml";
   if (right_path.length() == 0) {
-    LOGF(ERRORF, "Can't find suitable catalog.xml file. Check your program settings.");
+    LOGF(ERROR, "Can't find suitable catalog.xml file. Check your program settings.");
     throw ParserFactoryException(CString("Can't find suitable catalog.xml file. Check your program settings."));
   }
   return right_path;
@@ -153,10 +153,10 @@ void ParserFactory::loadCatalog(const String* catalog_path)
 
 
   parseCatalog(base_catalog_path);
-  LOG(DEBUG) << "begin load hrc files";
+  LOG(G3LOG_DEBUG) << "begin load hrc files";
   for (auto location : hrc_locations) {
     try {
-      LOG(DEBUG) << "try load '" << location.getChars() << "'";
+      LOG(G3LOG_DEBUG) << "try load '" << location.getChars() << "'";
       auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
       if (XmlInputSource::isDirectory(clear_path.get())) {
         std::vector<SString> paths;
@@ -172,7 +172,7 @@ void ParserFactory::loadCatalog(const String* catalog_path)
     }
   }
 
-  LOG(DEBUG) << "end load hrc files";
+  LOG(G3LOG_DEBUG) << "end load hrc files";
 }
 
 void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) const
@@ -181,8 +181,8 @@ void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) con
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception &e) {
-    LOGF(ERRORF, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
-    LOG(ERRORF) << e.what();
+    LOGF(ERROR, "Can't load hrc: %s", XStr(dfis->getInputSource()->getSystemId()).get_char());
+    LOG(ERROR) << e.what();
   }
 }
 
