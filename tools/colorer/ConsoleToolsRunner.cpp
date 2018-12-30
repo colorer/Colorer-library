@@ -244,7 +244,7 @@ void printError()
           "  -en        Enable logging\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el<name>  Log level (TRACE, DEBUG, INFO, WARNING, ERROR, ERROR_F, FATAL)\n"
+          "  -el<name>  Log level (TRACE, DEBUG, INFO, WARNING, ERROR, FATAL)\n"
           "  -es        Standing log file name, without date\n"
          );
 };

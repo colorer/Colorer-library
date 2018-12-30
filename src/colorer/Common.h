@@ -14,7 +14,8 @@ typedef unsigned char byte;
 
 typedef std::unique_ptr<String> UString;
 typedef std::unique_ptr<SString> USString;
-const LEVELS ERROR {WARNING.value +1, "MyInfoLevel"};
+const LEVELS TRACE {DEBUG.value -1, "TRACE"};
+const LEVELS ERROR {WARNING.value +1, "ERROR"};
 
 #endif
 /* ***** BEGIN LICENSE BLOCK *****
