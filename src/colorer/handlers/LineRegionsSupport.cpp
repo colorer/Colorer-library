@@ -11,7 +11,7 @@ LineRegionsSupport::LineRegionsSupport()
 LineRegionsSupport::~LineRegionsSupport()
 {
   clear();
-  for (auto i = 1; i < schemeStack.size();i++){
+  for (size_t i = 1; i < schemeStack.size();i++){
     delete schemeStack[i];
   }
   schemeStack.clear();
@@ -90,7 +90,7 @@ bool LineRegionsSupport::checkLine(size_t lno) const
 
 void LineRegionsSupport::startParsing(size_t lno)
 {
-  for (auto i = 1; i < schemeStack.size(); i++) {
+  for (size_t i = 1; i < schemeStack.size(); i++) {
     delete schemeStack[i];
   }
   schemeStack.clear();

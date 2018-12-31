@@ -118,7 +118,7 @@ FileType* HRCParserImpl::chooseFileType(const String* fileName, const String* fi
   FileTypeImpl* best = nullptr;
   double max_prior = 0;
   const double DELTA = 1e-6;
-  for (int idx = 0; idx < fileTypeVector.size(); idx++) {
+  for (size_t idx = 0; idx < fileTypeVector.size(); idx++) {
     FileTypeImpl* ret = fileTypeVector.at(idx);
     double prior = ret->getPriority(fileName, firstLine);
 
@@ -950,7 +950,7 @@ void HRCParserImpl::updateLinks()
       }
       FileTypeImpl* old_parseType = parseType;
       parseType = scheme->fileType;
-      for (int sni = 0; sni < scheme->nodes.size(); sni++) {
+      for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes.at(sni);
         if (snode->schemeName != nullptr && (snode->type == SchemeNode::SNT_SCHEME || snode->type == SchemeNode::SNT_INHERIT) && snode->scheme == nullptr) {
           String* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
@@ -963,7 +963,7 @@ void HRCParserImpl::updateLinks()
           snode->schemeName.reset();
         }
         if (snode->type == SchemeNode::SNT_INHERIT) {
-          for (int vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
+          for (size_t vti = 0; vti < snode->virtualEntryVector.size(); vti++) {
             VirtualEntry* vt = snode->virtualEntryVector.at(vti);
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
               String* vsn = qualifyForeignName(vt->virtSchemeName.get(), QNT_SCHEME, true);
