@@ -1,4 +1,4 @@
-#include <colorer/xml/XmlInputSource.h>
+п»ї#include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
 #include <colorer/xml/ZipXmlInputSource.h>
 #include <colorer/Exception.h>
@@ -59,7 +59,7 @@ XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
   ExpandEnvironmentStrings(path, temp, static_cast<DWORD>(i));
   return temp;
 #else
-  //TODO реализовать под nix
+  //TODO СЂРµР°Р»РёР·РѕРІР°С‚СЊ РїРѕРґ nix
   XMLSize_t i = xercesc::XMLString::stringLen(path);
   XMLCh* temp = new XMLCh[i];
   xercesc::XMLString::copyString(temp, path);

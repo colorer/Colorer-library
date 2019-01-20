@@ -1,4 +1,4 @@
-#include <xercesc/dom/DOM.hpp>
+п»ї#include <xercesc/dom/DOM.hpp>
 #include <colorer/common/Colorer.h>
 
 Colorer::Colorer()
@@ -8,7 +8,7 @@ Colorer::Colorer()
 
 Colorer::~Colorer()
 {
-  // закрываем xerces, подчищая память
+  // Р·Р°РєСЂС‹РІР°РµРј xerces, РїРѕРґС‡РёС‰Р°СЏ РїР°РјСЏС‚СЊ
   xercesc::XMLPlatformUtils::Terminate();
 }
 
@@ -21,7 +21,7 @@ std::unique_ptr<Colorer> Colorer::createColorer(g3::LogWorker* log_worker)
 
 void Colorer::initColorer()
 {
-  // инициализация xerces, иначе будут ошибки работы со строками
+  // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ xerces, РёРЅР°С‡Рµ Р±СѓРґСѓС‚ РѕС€РёР±РєРё СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё
   xercesc::XMLPlatformUtils::Initialize();
 }
 
@@ -35,7 +35,7 @@ void Colorer::setLogWorker(g3::LogWorker* _log_worker)
 {
   if (!_log_worker) {
     shutdownLogging();
-    // защита от использования без иницализации логирования
+    // Р·Р°С‰РёС‚Р° РѕС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ Р±РµР· РёРЅРёС†Р°Р»РёР·Р°С†РёРё Р»РѕРіРёСЂРѕРІР°РЅРёСЏ
     log_worker = g3::LogWorker::createLogWorker();
     auto handle = log_worker->addSink(std::make_unique<VoidReceiver>(), &VoidReceiver::receiveMsg);
     g3::log_levels::disableAll();

@@ -1,11 +1,11 @@
-#ifndef _COLORER_LOCALFILEINPUTSOURCE_H_
+п»ї#ifndef _COLORER_LOCALFILEINPUTSOURCE_H_
 #define _COLORER_LOCALFILEINPUTSOURCE_H_
 
 #include <colorer/xml/XmlInputSource.h>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 
 /**
-* LocalFileXmlInputSource класс для работы с InputSource - локальными файлами
+* LocalFileXmlInputSource РєР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ InputSource - Р»РѕРєР°Р»СЊРЅС‹РјРё С„Р°Р№Р»Р°РјРё
 */
 class LocalFileXmlInputSource : public XmlInputSource
 {

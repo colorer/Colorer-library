@@ -1,4 +1,4 @@
-#include <colorer/xml/SharedXmlInputSource.h>
+ï»¿#include <colorer/xml/SharedXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 
 std::unordered_map<SString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
@@ -31,7 +31,7 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 SharedXmlInputSource::~SharedXmlInputSource()
 {
   CString d_id = CString(input_source->getInputSource()->getSystemId());
-  //íå íóæíî óäàëÿòü îáúåêò, óäàëÿåìûé èç ìàññèâà. ìû è òàê óæå â äåñòðóêòîðå
+  //Ð½Ðµ Ð½ÑƒÐ¶Ð½Ð¾ ÑƒÐ´Ð°Ð»ÑÑ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚, ÑƒÐ´Ð°Ð»ÑÐµÐ¼Ñ‹Ð¹ Ð¸Ð· Ð¼Ð°ÑÑÐ¸Ð²Ð°. Ð¼Ñ‹ Ð¸ Ñ‚Ð°Ðº ÑƒÐ¶Ðµ Ð² Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ðµ
   isHash->erase(&d_id);
   if (isHash->size() == 0) {
     delete isHash;
