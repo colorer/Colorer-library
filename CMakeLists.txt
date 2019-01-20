@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.10)
 project(colorer CXX)
 
 #====================================================
 # global settings
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
+option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
@@ -21,6 +22,16 @@ if(NOT COLORER_INTERNAL_BUILD)
 endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+
+#====================================================
+# load modules
+#====================================================
+# additional modules path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+if (COLORER_PVS_STUDIO_CHECK)
+  include(PVS-Studio)
+endif ()
 
 #====================================================
 # g3log

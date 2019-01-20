@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 3.10)
 project (colorer_lib)
 
 #====================================================
@@ -207,3 +207,13 @@ set_target_properties(
   STATIC_LIBRARY_FLAGS "${STATIC_LIBRARY_FLAGS}"
   STATIC_LIBRARY_FLAGS_RELEASE "${STATIC_LIBRARY_FLAGS_RELEASE}"
 )
+
+# static analyze
+if (COLORER_PVS_STUDIO_CHECK)
+  pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
+      ANALYZE ${PROJECT_NAME}
+      MODE GA 64 OP CS
+      CFG_TEXT "exclude-path=*/libs/*"
+      OUTPUT FORMAT errorfile
+      LOG ${PROJECT_NAME}.err)
+endif ()
