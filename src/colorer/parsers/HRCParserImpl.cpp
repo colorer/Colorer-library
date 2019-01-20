@@ -700,7 +700,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
       continue;
     }
 
-    const XMLCh* p = '\0';
+    const XMLCh* p = nullptr;
     if (blkel->getAttributeNode(hrcBlockAttrMatch)) {
       p = blkel->getAttribute(hrcBlockAttrMatch);
     } else {
