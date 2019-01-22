@@ -29,9 +29,9 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 # additional modules path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-if (COLORER_PVS_STUDIO_CHECK)
+if(COLORER_PVS_STUDIO_CHECK)
   include(PVS-Studio)
-endif ()
+endif()
 
 #====================================================
 # g3log
