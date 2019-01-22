@@ -91,7 +91,7 @@ set(CMAKE_C_FLAGS_DEBUG "${FLAGS_DEBUG}")
 # build
 #====================================================
 
-set(LIBRARIES colorer_lib xerces-c g3logger)
+set(LIBRARIES colorer_lib xerces-c g3logger minizip)
 set(SRC_FILES ${SRC_CPP})
 add_executable (colorer ${SRC_FILES} )
 target_link_libraries(colorer ${LIBRARIES} ${WININETLIB} ${THREAD_LIBS})

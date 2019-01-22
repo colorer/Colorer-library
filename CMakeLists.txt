@@ -61,6 +61,15 @@ set(XERCESC_BUILD_SAMPLES OFF CACHE BOOL "Build samples")
 add_subdirectory(./libs/xercesc)
 
 #====================================================
+# zlib
+#====================================================
+set(ZLIB_EXAMPLES OFF CACHE BOOL "")
+set(ZLIB_MINIZIP ON CACHE BOOL "")
+set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "")
+
+add_subdirectory(./libs/zlib)
+
+#====================================================
 # colorer library
 #====================================================
 add_subdirectory(./src)

@@ -127,15 +127,8 @@ include_directories (./ ${XML})
 set(ZLIB ../libs/zlib)
 set(MINIZIP ${ZLIB}/contrib/minizip)
 
-set(SRC_ZLIB
-    ${ZLIB}/adler32.c ${ZLIB}/crc32.c ${ZLIB}/crc32.h ${ZLIB}/inffast.c ${ZLIB}/inffast.h
-    ${ZLIB}/inflate.c ${ZLIB}/inflate.h ${ZLIB}/inftrees.c ${ZLIB}/inftrees.h 
-    ${ZLIB}/uncompr.c ${ZLIB}/zutil.c ${ZLIB}/zutil.h
-    ${MINIZIP}/ioapi.h ${MINIZIP}/ioapi.c ${MINIZIP}/unzip.c ${MINIZIP}/unzip.h
-)
-
 # add ${MINIZIP} to fix build on farmanager server
-include_directories (../libs/zlib/ ${MINIZIP})
+include_directories (../libs/zlib/ ${MINIZIP} ${ZLIB_BINARY_DIR})
 
 #====================================================
 # dlmalloc
