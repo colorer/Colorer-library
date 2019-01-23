@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(colorer_lib)
+project(colorer_lib CXX C)
 
 #====================================================
 # colorer
@@ -115,6 +115,14 @@ endif()
 #====================================================
 # common flags
 #====================================================
+set(COLORER_DEF -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
+if(WIN32)
+  set(COLORER_DEF ${COLORER_DEF} -D_WIN32)
+endif(WIN32)
+if(MSVC)
+  set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # defaut for gcc
   # CMAKE_CXX_FLAGS=
@@ -127,16 +135,26 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(FLAGS_DEBUG)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # defaut for msvc
+  # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS /W3
+  # CMAKE_C_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
+  # CMAKE_C_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
+
   # CMAKE_CXX_FLAGS= /DWIN32 /D_WINDOWS /W3 /GR /EHsc
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
   # set all flags and clean default, because Visual Studio project don`t overwrite default parameters
   # https://stackoverflow.com/questions/45995784/how-to-set-compiler-options-with-cmake-in-visual-studio-2017
+  set(FLAGS_C_DEFAULT /DWIN32 /D_WINDOWS /W3)
+  set(FLAGS_C_RELEASE /MT /O2 /Ob2 /DNDEBUG)
+  set(FLAGS_C_DEBUG /MTd /Zi /Ob0 /Od /RTC1)
   set(FLAGS_CXX_DEFAULT /DWIN32 /D_WINDOWS /W3 /GR /EHsc)
-  set(FLAGS_RELEASE /MT /O2 /Ob2 /DNDEBUG)
-  set(FLAGS_DEBUG /MTd /Zi /Ob0 /Od /RTC1)
+  set(FLAGS_CXX_RELEASE /MT /O2 /Ob2 /DNDEBUG)
+  set(FLAGS_CXX_DEBUG /MTd /Zi /Ob0 /Od /RTC1)
 
+  set(CMAKE_C_FLAGS "")
+  set(CMAKE_C_FLAGS_DEBUG "")
+  set(CMAKE_C_FLAGS_RELEASE "")
   set(CMAKE_CXX_FLAGS "")
   set(CMAKE_CXX_FLAGS_RELEASE "")
   set(CMAKE_CXX_FLAGS_DEBUG "")
@@ -161,7 +179,7 @@ target_link_libraries(colorer_lib
     PUBLIC g3logger
     PUBLIC ${THREAD_LIBS}
     )
-target_compile_definitions(colorer_lib PUBLIC -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
+target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED YES
@@ -169,16 +187,22 @@ set_target_properties(colorer_lib PROPERTIES
     )
 
 # set options for target
-set(FLAGS_CXX_DEBUG ${FLAGS_DEBUG} ${FLAGS_CXX_DEFAULT})
-set(FLAGS_CXX_RELEASE ${FLAGS_RELEASE} ${FLAGS_CXX_DEFAULT})
-target_compile_options(colorer_lib
-    PRIVATE $<$<CONFIG:DEBUG>:${FLAGS_CXX_DEBUG}>
-    PUBLIC $<$<CONFIG:DEBUG>:${FLAGS_CXX_DEBUG}>
-    )
-target_compile_options(colorer_lib
-    PRIVATE $<$<CONFIG:RELEASE>:${FLAGS_CXX_RELEASE}>
-    PUBLIC $<$<CONFIG:RELEASE>:${FLAGS_CXX_RELEASE}>
-    )
+set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
+set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
+set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
+set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+  target_compile_options(colorer_lib
+      PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
+      PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>
+      )
+else()
+  target_compile_options(colorer_lib
+      PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_RELEASE}>
+      PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>
+      )
+endif()
 
 set_target_properties(colorer_lib PROPERTIES OUTPUT_NAME "colorer")
 if(MSVC)

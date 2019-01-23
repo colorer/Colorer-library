@@ -16,6 +16,13 @@ endif(WIN32)
 # build
 #====================================================
 
+#inherit compile optionsfrom library
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(CMAKE_CXX_FLAGS "")
+  set(CMAKE_CXX_FLAGS_RELEASE "")
+  set(CMAKE_CXX_FLAGS_DEBUG "")
+endif ()
+
 add_executable(consoletools ${SRC_CPP})
 target_link_libraries(consoletools PRIVATE colorer_lib)
 set_target_properties(consoletools PROPERTIES OUTPUT_NAME "colorer")
