@@ -72,7 +72,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   HMODULE hmod = GetModuleHandle(nullptr);
   if (hmod) {
     wchar_t cname[MAX_PATH];
-    int len = GetModuleFileName(hmod, cname, MAX_PATH);
+    int len = GetModuleFileNameW(hmod, cname, MAX_PATH);
     if (len > 0) {
       CString module(cname, 0, len - 1);
       int pos[2];
