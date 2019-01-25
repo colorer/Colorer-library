@@ -1,4 +1,4 @@
-﻿#include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/DOM.hpp>
 #include <colorer/common/Colorer.h>
 
 Colorer::Colorer()

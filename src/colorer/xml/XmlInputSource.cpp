@@ -1,4 +1,4 @@
-﻿#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
 #include <colorer/xml/ZipXmlInputSource.h>
 #include <colorer/Exception.h>
