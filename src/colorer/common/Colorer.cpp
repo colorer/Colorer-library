@@ -12,12 +12,6 @@ Colorer::~Colorer()
   xercesc::XMLPlatformUtils::Terminate();
 }
 
-std::unique_ptr<Colorer> Colorer::createColorer()
-{
-  auto colorer = std::unique_ptr<Colorer>(new Colorer);
-  return colorer;
-}
-
 void Colorer::initColorer()
 {
   // инициализация xerces, иначе будут ошибки работы со строками

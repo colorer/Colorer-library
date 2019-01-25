@@ -25,9 +25,7 @@ struct setting {
   std::unique_ptr<SString> hrd_name;
   std::string log_file_prefix = "consoletools";
   std::string log_file_dir = "./";
-  std::string log_level = "INFO";
-  bool enable_logging = false;
-  bool standing_logfile = false;
+  std::string log_level = "off";
   int profile_loops = 1;
   bool line_numbers = false;
   bool copyright = true;
@@ -197,14 +195,6 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
-    if (argv[i][1] == 'e' && argv[i][2] == 'n') {
-      settings.enable_logging = true;
-      continue;
-    }
-    if (argv[i][1] == 'e' && argv[i][2] == 's') {
-      settings.standing_logfile = true;
-      continue;
-    }
     if (argv[i][1]) {
       fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i] + 1);
     }
@@ -240,11 +230,9 @@ void printError()
           "  -ds        Disable HTML symbol substitutions in generator's output\n"
           "  -dh        Disable HTML header and footer output\n"
           " Logging parameters (default logging off):\n"
-          "  -en        Enable logging\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el<name>  Log level (DEBUG, INFO, WARNING, ERROR)\n"
-          "  -es        Standing log file name, without date\n"
+          "  -el<name>  Log level (off, debug, info, warning, error)\n"
          );
 };
 
@@ -289,7 +277,7 @@ int workIt()
 
   if (settings.copyright) {
     fprintf(stdout, "\nColorer console tools, version %s%s\n", VER_FILEVERSION_STR, CONF);
-    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2016 Aleksey Dobrunov \n\n");
+    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2019 Aleksey Dobrunov \n\n");
   }
 
   try {
@@ -339,19 +327,20 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-  if (settings.enable_logging) {
-    auto logger = spdlog::basic_logger_mt("main", "consoletools.log");
-    spdlog::set_default_logger(logger);
-
-    if (settings.log_level == "DEBUG") {
-      logger->set_level(spdlog::level::debug);
-    } else {
-      logger->set_level(spdlog::level::info);
+  auto level = spdlog::level::from_str(settings.log_level);
+  if (level!= spdlog::level::off) {
+    try {
+      std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
+      auto logger = spdlog::basic_logger_mt("main", file_name);
+      spdlog::set_default_logger(logger);
+      logger->set_level(level);
+    } catch (std::exception &e){
+      fprintf(stderr, "%s\n", e.what());
+      return -1;
     }
-
   }
-  
-  auto colorer_lib = Colorer::createColorer();
+
+  auto colorer = std::unique_ptr<Colorer>(new Colorer);
 
   return workIt();
 }

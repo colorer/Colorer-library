@@ -5,14 +5,14 @@
 
 class Colorer
 {
-  Colorer();
-  void initColorer();
-
 public:
+
   ~Colorer();
-  static std::unique_ptr<Colorer> createColorer();
+  Colorer();
 
 private:
+
+  void initColorer();
 
 };
 
