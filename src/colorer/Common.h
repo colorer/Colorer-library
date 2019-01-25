@@ -5,7 +5,7 @@
 typedef unsigned char byte;
 
 #include <memory>
-#include <g3log/g3log.hpp>
+#include <spdlog/spdlog.h>
 #include <colorer/common/Features.h>
 #include <colorer/unicode/String.h>
 #include <colorer/unicode/SString.h>
@@ -14,8 +14,6 @@ typedef unsigned char byte;
 
 typedef std::unique_ptr<String> UString;
 typedef std::unique_ptr<SString> USString;
-const LEVELS TRACE {DEBUG.value -1, "TRACE"};
-const LEVELS ERROR {WARNING.value +1, "ERROR"};
 
 #endif
 /* ***** BEGIN LICENSE BLOCK *****

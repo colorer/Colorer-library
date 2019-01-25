@@ -2,7 +2,6 @@
 #define _COLORER_COLORER_H_
 
 #include <memory>
-#include <g3log/logworker.hpp>
 
 class Colorer
 {
@@ -11,23 +10,10 @@ class Colorer
 
 public:
   ~Colorer();
-  static std::unique_ptr<Colorer> createColorer(g3::LogWorker* log_worker = nullptr);
-  void shutdownLogging();
-  void setLogWorker(g3::LogWorker* _log_worker);
-  g3::LogWorker* getLogWorker();
+  static std::unique_ptr<Colorer> createColorer();
 
 private:
-  std::unique_ptr<g3::LogWorker> log_worker;
-};
 
-/* empty logger*/
-struct VoidReceiver {
-  explicit VoidReceiver() {}
-
-  void receiveMsg(g3::LogMessageMover msg)
-  {
-    /*ignored*/
-  }
 };
 
 #endif //_COLORER_COLORER_H_

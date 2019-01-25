@@ -4,9 +4,6 @@
 #include <colorer/common/Colorer.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <g3log/logworker.hpp>
-#include <g3log/loglevels.hpp>
-#include <colorer/utils/LogFileSink.h>
 #include "ConsoleTools.h"
 #include "version.h"
 
@@ -246,7 +243,7 @@ void printError()
           "  -en        Enable logging\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el<name>  Log level (TRACE, DEBUG, INFO, WARNING, ERROR, FATAL)\n"
+          "  -el<name>  Log level (DEBUG, INFO, WARNING, ERROR)\n"
           "  -es        Standing log file name, without date\n"
          );
 };
@@ -329,7 +326,7 @@ int workIt()
         break;
     }
   } catch (Exception &e) {
-    LOG(ERROR) << e.what();
+    spdlog::error("{0}", e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
   }
@@ -342,20 +339,8 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-  std::unique_ptr<LogWorker> log_worker;
   if (settings.enable_logging) {
-    log_worker = std::move(g3::LogWorker::createLogWorker());
-    auto handle = log_worker->addSink(std::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false, settings.standing_logfile), &LogFileSink::fileWrite);
-    auto all_levels = g3::log_levels::getAll();
-    for (auto level : all_levels){
-      if (level.second.level.text.compare(settings.log_level)) {
-        g3::log_levels::set(level.second.level, true);
-        break;
-      }
-    }
-    g3::initializeLogging(log_worker.get());
-
-    auto logger = spdlog::basic_logger_mt("main", "readbase.log");
+    auto logger = spdlog::basic_logger_mt("main", "consoletools.log");
     spdlog::set_default_logger(logger);
 
     if (settings.log_level == "DEBUG") {
@@ -366,7 +351,7 @@ int main(int argc, char* argv[])
 
   }
   
-  auto colorer_lib = Colorer::createColorer(log_worker.release());
+  auto colorer_lib = Colorer::createColorer();
 
   return workIt();
 }

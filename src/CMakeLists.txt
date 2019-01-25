@@ -14,7 +14,6 @@ set(IO ./colorer/io)
 set(REGEXP ./colorer/cregexp)
 set(XML ./colorer/xml)
 set(UNICODE ./colorer/unicode)
-set(UTILS ./colorer/utils)
 
 set(SRC_COLORER
     ${EDITOR}/BaseEditor.cpp ${EDITOR}/BaseEditor.h
@@ -90,8 +89,6 @@ set(SRC_COLORER
     ${UNICODE}/x_charcategory.h ${UNICODE}/x_defines.h
     ${UNICODE}/x_charcategory2.h ${UNICODE}/x_encodings.h
     ${UNICODE}/x_charcategory_names.h ${UNICODE}/x_tables.h
-
-    ${UTILS}/LogFileSink.cpp ${UTILS}/LogFileSink.h
     )
 
 #====================================================
@@ -99,18 +96,6 @@ set(SRC_COLORER
 #====================================================
 set(DLMALLOC ../libs/dlmalloc)
 set(SRC_MALLOC ${DLMALLOC}/dlmalloc.c)
-
-#====================================================
-# g3log
-#====================================================
-if(CMAKE_COMPILER_IS_GNUCXX)
-  if(NOT (WIN32 OR MINGW OR MSYS))
-    INCLUDE(FindThreads)
-    if(CMAKE_USE_PTHREADS_INIT)
-      set(THREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
-    endif()
-  endif()
-endif()
 
 #====================================================
 # common flags
@@ -170,14 +155,11 @@ target_include_directories(colorer_lib
     PUBLIC ../libs/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
     PUBLIC ../libs/dlmalloc
-    PUBLIC ../libs/g3log/src
-    PUBLIC ${g3log_BINARY_DIR}/include
     PUBLIC ../libs/spdlog/include
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
     PUBLIC ZLIB::MINIZIP
-    PUBLIC g3logger
     PUBLIC ${THREAD_LIBS}
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})

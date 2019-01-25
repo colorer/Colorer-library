@@ -26,7 +26,7 @@ public:
   int delref()
   {
     if (ref_count == 0) {
-      LOGF(ERROR, "[SharedInputSource] delref: already zeroed references");
+      spdlog::error("[SharedInputSource] delref: already zeroed references");
     }
     ref_count--;
     if (ref_count <= 0) {
