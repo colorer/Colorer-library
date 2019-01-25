@@ -172,6 +172,7 @@ target_include_directories(colorer_lib
     PUBLIC ../libs/dlmalloc
     PUBLIC ../libs/g3log/src
     PUBLIC ${g3log_BINARY_DIR}/include
+    PUBLIC ../libs/spdlog/include
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c

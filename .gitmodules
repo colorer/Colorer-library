@@ -10,3 +10,6 @@
 [submodule "libs/g3log"]
 	path = libs/g3log
 	url = https://github.com/colorer/g3log.git
+[submodule "libs/spdlog"]
+	path = libs/spdlog
+	url = https://github.com/colorer/spdlog.git

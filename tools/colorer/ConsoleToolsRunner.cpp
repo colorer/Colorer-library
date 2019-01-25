@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <colorer/common/Colorer.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <g3log/logworker.hpp>
 #include <g3log/loglevels.hpp>
 #include <colorer/utils/LogFileSink.h>
@@ -352,6 +354,16 @@ int main(int argc, char* argv[])
       }
     }
     g3::initializeLogging(log_worker.get());
+
+    auto logger = spdlog::basic_logger_mt("main", "readbase.log");
+    spdlog::set_default_logger(logger);
+
+    if (settings.log_level == "DEBUG") {
+      logger->set_level(spdlog::level::debug);
+    } else {
+      logger->set_level(spdlog::level::info);
+    }
+
   }
   
   auto colorer_lib = Colorer::createColorer(log_worker.release());
