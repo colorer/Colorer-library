@@ -40,7 +40,7 @@ void readArgs(int argc, char* argv[])
 
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
-      settings.input_file.reset(new SString(CString(argv[i])));
+      settings.input_file = std::make_unique<SString>(CString(argv[i]));
       continue;
     }
 
@@ -73,9 +73,9 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.link_sources.reset(new SString(CString(argv[i] + 3)));
+        settings.link_sources = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.link_sources.reset(new SString(CString(argv[i + 1])));
+        settings.link_sources = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
@@ -116,54 +116,54 @@ void readArgs(int argc, char* argv[])
 
     if (argv[i][1] == 't' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.type_desc.reset(new SString(CString(argv[i] + 2)));
+        settings.type_desc = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.type_desc.reset(new SString(CString(argv[i + 1])));
+        settings.type_desc = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'o' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.output_file.reset(new SString(CString(argv[i] + 2)));
+        settings.output_file = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.output_file.reset(new SString(CString(argv[i + 1])));
+        settings.output_file = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'i' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.hrd_name.reset(new SString(CString(argv[i] + 2)));
+        settings.hrd_name = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.hrd_name.reset(new SString(CString(argv[i + 1])));
+        settings.hrd_name = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.catalog.reset(new SString(CString(argv[i] + 2)));
+        settings.catalog = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.catalog.reset(new SString(CString(argv[i + 1])));
+        settings.catalog = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.input_encoding.reset(new SString(CString(argv[i] + 3)));
+        settings.input_encoding = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.input_encoding.reset(new SString(CString(argv[i + 1])));
+        settings.input_encoding = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.output_encoding.reset(new SString(CString(argv[i] + 3)));
+        settings.output_encoding = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.output_encoding.reset(new SString(CString(argv[i + 1])));
+        settings.output_encoding = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
@@ -239,28 +239,28 @@ void printError()
 void initConsoleTools(ConsoleTools &ct)
 {
   if (settings.input_file) {
-    ct.setInputFileName(*settings.input_file.get());
+    ct.setInputFileName(*settings.input_file);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(*settings.catalog.get());
+    ct.setCatalogPath(*settings.catalog);
   }
   if (settings.link_sources) {
-    ct.setLinkSource(*settings.link_sources.get());
+    ct.setLinkSource(*settings.link_sources);
   }
   if (settings.output_file) {
-    ct.setOutputFileName(*settings.output_file.get());
+    ct.setOutputFileName(*settings.output_file);
   }
   if (settings.input_encoding) {
-    ct.setInputEncoding(*settings.input_encoding.get());
+    ct.setInputEncoding(*settings.input_encoding);
   }
   if (settings.output_encoding) {
-    ct.setOutputEncoding(*settings.output_encoding.get());
+    ct.setOutputEncoding(*settings.output_encoding);
   }
   if (settings.type_desc) {
-    ct.setTypeDescription(*settings.type_desc.get());
+    ct.setTypeDescription(*settings.type_desc);
   }
   if (settings.hrd_name) {
-    ct.setHRDName(*settings.hrd_name.get());
+    ct.setHRDName(*settings.hrd_name);
   }
   ct.addLineNumbers(settings.line_numbers);
   ct.setCopyrightHeader(settings.copyright);
