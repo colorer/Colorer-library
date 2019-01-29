@@ -1,4 +1,4 @@
-﻿#include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/DOM.hpp>
 #include <colorer/common/Colorer.h>
 
 Colorer::Colorer()
@@ -12,42 +12,10 @@ Colorer::~Colorer()
   xercesc::XMLPlatformUtils::Terminate();
 }
 
-std::unique_ptr<Colorer> Colorer::createColorer(g3::LogWorker* log_worker)
-{
-  auto colorer = std::unique_ptr<Colorer>(new Colorer);
-  colorer->setLogWorker(log_worker);
-  return colorer;
-}
-
 void Colorer::initColorer()
 {
   // инициализация xerces, иначе будут ошибки работы со строками
   xercesc::XMLPlatformUtils::Initialize();
-}
-
-void Colorer::shutdownLogging()
-{
-  log_worker.reset();
-  g3::internal::shutDownLogging();
-}
-
-void Colorer::setLogWorker(g3::LogWorker* _log_worker)
-{
-  if (!_log_worker) {
-    shutdownLogging();
-    // защита от использования без иницализации логирования
-    log_worker = g3::LogWorker::createLogWorker();
-    auto handle = log_worker->addSink(std::make_unique<VoidReceiver>(), &VoidReceiver::receiveMsg);
-    g3::log_levels::disableAll();
-    g3::initializeLogging(log_worker.get());
-  } else {
-    log_worker.reset(_log_worker);
-  }
-}
-
-g3::LogWorker* Colorer::getLogWorker()
-{
-  return log_worker.get();
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

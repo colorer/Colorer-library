@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.10)
 project(colorer CXX)
 
 #====================================================
 # global settings
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
+option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
@@ -23,14 +24,14 @@ endif()
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 
 #====================================================
-# g3log
+# load modules
 #====================================================
-set(ADD_FATAL_EXAMPLE OFF CACHE BOOL "Build g3log without examples")
-set(USE_DYNAMIC_LOGGING_LEVELS ON CACHE BOOL "Build g3log with dynamic logging levels")
-set(G3_SHARED_LIB OFF CACHE BOOL "Build shared library")
-set(G3_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
+# additional modules path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-add_subdirectory(./libs/g3log)
+if(COLORER_PVS_STUDIO_CHECK)
+  include(PVS-Studio)
+endif()
 
 #====================================================
 # xercesc
@@ -48,6 +49,16 @@ set(XERCESC_BUILD_TESTS OFF CACHE BOOL "Build test")
 set(XERCESC_BUILD_SAMPLES OFF CACHE BOOL "Build samples")
 
 add_subdirectory(./libs/xercesc)
+
+#====================================================
+# zlib
+#====================================================
+set(ZLIB_EXAMPLES OFF CACHE BOOL "Build zlib example programs")
+set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
+set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
+set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
+
+add_subdirectory(./libs/zlib)
 
 #====================================================
 # colorer library

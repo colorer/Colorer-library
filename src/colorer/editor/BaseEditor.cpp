@@ -117,7 +117,7 @@ void BaseEditor::remapLRS(bool recreate)
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  LOGF(G3LOG_DEBUG, "[BaseEditor] setFileType: %s", ftype->getName()->getChars());
+  spdlog::debug("[BaseEditor] setFileType: {0}", ftype->getName()->getChars());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
@@ -381,7 +381,7 @@ LineRegion* BaseEditor::getLineRegions(int lno)
 
 void BaseEditor::modifyEvent(int topLine)
 {
-  LOGF(G3LOG_DEBUG, "[BaseEditor] modifyEvent: %d", topLine);
+  spdlog::debug("[BaseEditor] modifyEvent: {0}", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
     for (auto it = editorListeners.begin(); it != editorListeners.end(); ++it) {
@@ -400,14 +400,14 @@ void BaseEditor::modifyLineEvent(int line)
 
 void BaseEditor::visibleTextEvent(int wStart, int wSize)
 {
-  LOGF(G3LOG_DEBUG, "[BaseEditor] visibleTextEvent: %d-%d", wStart, wSize);
+  spdlog::debug("[BaseEditor] visibleTextEvent: {0}-{1}", wStart, wSize);
   this->wStart = wStart;
   this->wSize = wSize;
 }
 
 void BaseEditor::lineCountEvent(int newLineCount)
 {
-  LOGF(G3LOG_DEBUG, "[BaseEditor] lineCountEvent: %d", newLineCount);
+  spdlog::debug("[BaseEditor] lineCountEvent: {0}", newLineCount);
   lineCount = newLineCount;
 }
 
@@ -441,7 +441,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     lrSupport->clear();
     // Regions were dropped
     layoutChanged = true;
-    LOGF(G3LOG_DEBUG, "[BaseEditor] lrSize != wSize*2");
+    spdlog::debug("[BaseEditor] lrSize != wSize*2");
   }
 
   /* Fixes window position according to line number */
@@ -472,7 +472,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    LOGF(G3LOG_DEBUG, "[BaseEditor] newFirstLine=%zd, parseFrom=%d, parseTo=%d", firstLine, parseFrom, parseTo);
+    spdlog::debug("[BaseEditor] newFirstLine={0}, parseFrom={1}, parseTo={2}", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {
@@ -496,13 +496,13 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
 
-    LOGF(G3LOG_DEBUG, "[BaseEditor] validate:parse:%d-%d, %s", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
+    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
     if (tpmode == TPM_CACHE_UPDATE) {
       invalidLine = stopLine + 1;
     }
-    LOGF(G3LOG_DEBUG, "[BaseEditor] validate:parsed: invalidLine=%d", invalidLine);
+    spdlog::debug("[BaseEditor] validate:parsed: invalidLine={0}", invalidLine);
   }
 }
 

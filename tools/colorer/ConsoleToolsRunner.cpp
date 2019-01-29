@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <colorer/common/Colorer.h>
-#include <g3log/logworker.hpp>
-#include <g3log/loglevels.hpp>
-#include <colorer/utils/LogFileSink.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include "ConsoleTools.h"
 #include "version.h"
 
@@ -26,9 +25,7 @@ struct setting {
   std::unique_ptr<SString> hrd_name;
   std::string log_file_prefix = "consoletools";
   std::string log_file_dir = "./";
-  std::string log_level = "INFO";
-  bool enable_logging = false;
-  bool standing_logfile = false;
+  std::string log_level = "off";
   int profile_loops = 1;
   bool line_numbers = false;
   bool copyright = true;
@@ -43,7 +40,7 @@ void readArgs(int argc, char* argv[])
 
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
-      settings.input_file.reset(new SString(CString(argv[i])));
+      settings.input_file = std::make_unique<SString>(CString(argv[i]));
       continue;
     }
 
@@ -76,9 +73,9 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.link_sources.reset(new SString(CString(argv[i] + 3)));
+        settings.link_sources = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.link_sources.reset(new SString(CString(argv[i + 1])));
+        settings.link_sources = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
@@ -119,54 +116,54 @@ void readArgs(int argc, char* argv[])
 
     if (argv[i][1] == 't' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.type_desc.reset(new SString(CString(argv[i] + 2)));
+        settings.type_desc = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.type_desc.reset(new SString(CString(argv[i + 1])));
+        settings.type_desc = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'o' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.output_file.reset(new SString(CString(argv[i] + 2)));
+        settings.output_file = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.output_file.reset(new SString(CString(argv[i + 1])));
+        settings.output_file = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'i' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.hrd_name.reset(new SString(CString(argv[i] + 2)));
+        settings.hrd_name = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.hrd_name.reset(new SString(CString(argv[i + 1])));
+        settings.hrd_name = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.catalog.reset(new SString(CString(argv[i] + 2)));
+        settings.catalog = std::make_unique<SString>(CString(argv[i] + 2));
       } else {
-        settings.catalog.reset(new SString(CString(argv[i + 1])));
+        settings.catalog = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.input_encoding.reset(new SString(CString(argv[i] + 3)));
+        settings.input_encoding = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.input_encoding.reset(new SString(CString(argv[i + 1])));
+        settings.input_encoding = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.output_encoding.reset(new SString(CString(argv[i] + 3)));
+        settings.output_encoding = std::make_unique<SString>(CString(argv[i] + 3));
       } else {
-        settings.output_encoding.reset(new SString(CString(argv[i + 1])));
+        settings.output_encoding = std::make_unique<SString>(CString(argv[i + 1]));
         i++;
       }
       continue;
@@ -196,14 +193,6 @@ void readArgs(int argc, char* argv[])
         settings.log_level = std::string(argv[i + 1]);
         i++;
       }
-      continue;
-    }
-    if (argv[i][1] == 'e' && argv[i][2] == 'n') {
-      settings.enable_logging = true;
-      continue;
-    }
-    if (argv[i][1] == 'e' && argv[i][2] == 's') {
-      settings.standing_logfile = true;
       continue;
     }
     if (argv[i][1]) {
@@ -241,39 +230,37 @@ void printError()
           "  -ds        Disable HTML symbol substitutions in generator's output\n"
           "  -dh        Disable HTML header and footer output\n"
           " Logging parameters (default logging off):\n"
-          "  -en        Enable logging\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el<name>  Log level (TRACE, DEBUG, INFO, WARNING, ERROR, FATAL)\n"
-          "  -es        Standing log file name, without date\n"
+          "  -el<name>  Log level (off, debug, info, warning, error)\n"
          );
 };
 
 void initConsoleTools(ConsoleTools &ct)
 {
   if (settings.input_file) {
-    ct.setInputFileName(*settings.input_file.get());
+    ct.setInputFileName(*settings.input_file);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(*settings.catalog.get());
+    ct.setCatalogPath(*settings.catalog);
   }
   if (settings.link_sources) {
-    ct.setLinkSource(*settings.link_sources.get());
+    ct.setLinkSource(*settings.link_sources);
   }
   if (settings.output_file) {
-    ct.setOutputFileName(*settings.output_file.get());
+    ct.setOutputFileName(*settings.output_file);
   }
   if (settings.input_encoding) {
-    ct.setInputEncoding(*settings.input_encoding.get());
+    ct.setInputEncoding(*settings.input_encoding);
   }
   if (settings.output_encoding) {
-    ct.setOutputEncoding(*settings.output_encoding.get());
+    ct.setOutputEncoding(*settings.output_encoding);
   }
   if (settings.type_desc) {
-    ct.setTypeDescription(*settings.type_desc.get());
+    ct.setTypeDescription(*settings.type_desc);
   }
   if (settings.hrd_name) {
-    ct.setHRDName(*settings.hrd_name.get());
+    ct.setHRDName(*settings.hrd_name);
   }
   ct.addLineNumbers(settings.line_numbers);
   ct.setCopyrightHeader(settings.copyright);
@@ -290,7 +277,7 @@ int workIt()
 
   if (settings.copyright) {
     fprintf(stdout, "\nColorer console tools, version %s%s\n", VER_FILEVERSION_STR, CONF);
-    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2016 Aleksey Dobrunov \n\n");
+    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2019 Aleksey Dobrunov \n\n");
   }
 
   try {
@@ -327,7 +314,7 @@ int workIt()
         break;
     }
   } catch (Exception &e) {
-    LOG(ERROR) << e.what();
+    spdlog::error("{0}", e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
   }
@@ -340,21 +327,20 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-  std::unique_ptr<LogWorker> log_worker;
-  if (settings.enable_logging) {
-    log_worker = std::move(g3::LogWorker::createLogWorker());
-    auto handle = log_worker->addSink(std::make_unique<LogFileSink>(settings.log_file_prefix, settings.log_file_dir, false, settings.standing_logfile), &LogFileSink::fileWrite);
-    auto all_levels = g3::log_levels::getAll();
-    for (auto level : all_levels){
-      if (level.second.level.text.compare(settings.log_level)) {
-        g3::log_levels::set(level.second.level, true);
-        break;
-      }
+  auto level = spdlog::level::from_str(settings.log_level);
+  if (level!= spdlog::level::off) {
+    try {
+      std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
+      auto logger = spdlog::basic_logger_mt("main", file_name);
+      spdlog::set_default_logger(logger);
+      logger->set_level(level);
+    } catch (std::exception &e){
+      fprintf(stderr, "%s\n", e.what());
+      return -1;
     }
-    g3::initializeLogging(log_worker.get());
   }
-  
-  auto colorer_lib = Colorer::createColorer(log_worker.release());
+
+  auto colorer = std::unique_ptr<Colorer>(new Colorer);
 
   return workIt();
 }
