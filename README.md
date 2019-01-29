@@ -8,7 +8,7 @@ To build library and other utils from source, you will need:
 
   * Visual Studio 2015 update 1 or higher / gcc 4.9 or higher
   * git
-  * cmake 2.8.9 or higher
+  * cmake 3.10 or higher
 
 Download the source from git repository:
 
