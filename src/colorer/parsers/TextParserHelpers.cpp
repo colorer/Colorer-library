@@ -12,7 +12,7 @@ ParseCache::ParseCache()
 
 ParseCache::~ParseCache()
 {
-  CTRACE(LOGF(TRACE, "[TPCache] ~ParseCache():%s,%d-%d", scheme->getName()->getChars(), sline, eline));
+  CTRACE(spdlog::trace("[TPCache] ~ParseCache():{0},{1}-{2}", scheme->getName()->getChars(), sline, eline));
   delete backLine;
   delete children;
   prev = nullptr;
@@ -40,7 +40,7 @@ ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
   ParseCache* r1 = nullptr, *r2 = nullptr, *tmp = this;
   *cache = nullptr;
   while (tmp) {
-    CTRACE(LOGF(TRACE, "[TPCache] searchLine() tmp:%s,%d-%d", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline));
+    CTRACE(spdlog::trace("[TPCache] searchLine() tmp:{0},{1}-{2}", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline));
     if (tmp->sline <= ln && tmp->eline >= ln) {
 	  if (tmp->children) {
 		r1 = tmp->children->searchLine(ln, &r2);
