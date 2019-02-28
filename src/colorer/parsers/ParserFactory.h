@@ -100,6 +100,7 @@ public:
   * @throw ParserFactoryException If can't load specified catalog.
   */
   void loadCatalog(const String* catalog_path);
+  void addHrd(std::unique_ptr<HRDNode> hrd);
 private:
 
   SString searchCatalog() const;

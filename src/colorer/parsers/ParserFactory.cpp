@@ -21,6 +21,8 @@
 
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XStr.h>
+#include "ParserFactory.h"
+
 
 ParserFactory::ParserFactory(): hrc_parser(new HRCParserImpl())
 {
@@ -201,10 +203,7 @@ void ParserFactory::parseCatalog(const SString &catalog_path)
   while (!catalog_parser.hrd_nodes.empty()) {
     auto hrd = std::move(catalog_parser.hrd_nodes.front());
     catalog_parser.hrd_nodes.pop_front();
-    if (hrd_nodes.find(hrd->hrd_class) == hrd_nodes.end()) {
-      hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HRDNode>>>());
-    }
-    hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
+    addHrd(std::move(hrd));
   }
 }
 
@@ -338,6 +337,14 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
       }
     }
   return mapper;
+}
+
+void ParserFactory::addHrd(std::unique_ptr<HRDNode> hrd)
+{
+  if (hrd_nodes.find(hrd->hrd_class) == hrd_nodes.end()) {
+    hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HRDNode>>>());
+  }
+  hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
 }
 
 /* ***** BEGIN LICENSE BLOCK *****

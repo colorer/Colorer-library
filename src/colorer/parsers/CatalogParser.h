@@ -14,6 +14,7 @@ public:
   ~CatalogParser() {};
 
   void parse(const String* path);
+  static std::unique_ptr<HRDNode> parseHRDSetsChild(const xercesc::DOMElement* elem);
 
   std::vector<SString> hrc_locations;
   std::list<std::unique_ptr<HRDNode>> hrd_nodes;
@@ -23,7 +24,6 @@ private:
   void parseHrcSetsBlock(const xercesc::DOMElement* elem);
   void addHrcSetsLocation(const xercesc::DOMElement* elem);
   void parseHrdSetsBlock(const xercesc::DOMElement* elem);
-  void parseHRDSetsChild(const xercesc::DOMElement* elem);
 
   CatalogParser(CatalogParser const &) = delete;
   CatalogParser &operator=(CatalogParser const &) = delete;

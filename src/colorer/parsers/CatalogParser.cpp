@@ -89,7 +89,8 @@ void CatalogParser::parseHrdSetsBlock(const xercesc::DOMElement* elem)
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(node);
       if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
-        parseHRDSetsChild(subelem);
+        auto hrd = parseHRDSetsChild(subelem);
+        if (hrd) hrd_nodes.push_back(std::move(hrd));
       }
       continue;
     }
@@ -99,7 +100,7 @@ void CatalogParser::parseHrdSetsBlock(const xercesc::DOMElement* elem)
   }
 }
 
-void CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
+std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
 {
   const XMLCh* xhrd_class = elem->getAttribute(catHrdAttrClass);
   const XMLCh* xhrd_name = elem->getAttribute(catHrdAttrName);
@@ -107,7 +108,7 @@ void CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
 
   if (*xhrd_class == xercesc::chNull || *xhrd_name == xercesc::chNull) {
     spdlog::warn("found HRD with empty class/name. skip this record.");
-    return;
+    return nullptr;
   }
 
   auto hrd_node = std::make_unique<HRDNode>();
@@ -131,8 +132,9 @@ void CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
   }
 
   if (hrd_node->hrd_location.size() > 0) {
-    hrd_nodes.push_back(std::move(hrd_node));
+    return hrd_node;
   } else {
     spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+    return nullptr;
   }
 }
