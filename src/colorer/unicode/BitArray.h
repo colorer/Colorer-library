@@ -40,7 +40,6 @@ public:
   bool getBit(int pos);
 
 #define CNAME "BitArray"
-#include<colorer/common/MemoryOperator.h>
 
 private:
   int* array;

@@ -4,9 +4,6 @@
 [submodule "libs/zlib"]
 	path = libs/zlib
 	url = https://github.com/colorer/zlib.git
-[submodule "libs/dlmalloc"]
-	path = libs/dlmalloc
-	url = https://github.com/colorer/dlmalloc.git
 [submodule "libs/spdlog"]
 	path = libs/spdlog
 	url = https://github.com/colorer/spdlog.git

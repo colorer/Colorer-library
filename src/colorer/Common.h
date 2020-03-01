@@ -10,7 +10,6 @@ typedef unsigned char byte;
 #include <colorer/unicode/String.h>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/CString.h>
-#include <colorer/common/MemoryChunks.h>
 
 typedef std::unique_ptr<String> UString;
 typedef std::unique_ptr<SString> USString;

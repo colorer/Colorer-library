@@ -33,7 +33,6 @@ public:
   void sortList();
   void substrIndex();
 
-#include<colorer/common/MemoryOperator.h>
 
 };
 

@@ -23,7 +23,6 @@ public:
 
   ~VirtualEntry() {}
 
-#include<colorer/common/MemoryOperator.h>
 
 };
 

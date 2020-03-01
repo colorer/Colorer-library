@@ -140,8 +140,6 @@ public:
   SRegInfo();
   ~SRegInfo();
 
-#include<colorer/common/MemoryOperator.h>
-
   union{
     EMetaSymbols metaSymbol;
     wchar symbol;

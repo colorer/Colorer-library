@@ -57,7 +57,6 @@ set(SRC_COLORER
     ${COLORER}/TextParser.h
     ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
     ${COMMON}/Exception.cpp
-    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
     ${COMMON}/Features.h
     ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
     ${IO}/FileWriter.h ${IO}/FileWriter.cpp
@@ -92,15 +91,9 @@ set(SRC_COLORER
     )
 
 #====================================================
-# dlmalloc
-#====================================================
-set(DLMALLOC ../libs/dlmalloc)
-set(SRC_MALLOC ${DLMALLOC}/dlmalloc.c)
-
-#====================================================
 # common flags
 #====================================================
-set(COLORER_DEF -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
+set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
 if(WIN32)
   set(COLORER_DEF ${COLORER_DEF} -D_WIN32)
 endif(WIN32)

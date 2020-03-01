@@ -45,7 +45,6 @@ public:
   bool lowPriority;
   bool lowContentPriority;
 
-#include<colorer/common/MemoryOperator.h>
 
   SchemeNode();
   ~SchemeNode();

@@ -29,7 +29,6 @@ public:
     return (FileType*)fileType;
   }
 
-#include<colorer/common/MemoryOperator.h>
 
 protected:
   UString schemeName;

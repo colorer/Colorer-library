@@ -43,8 +43,6 @@ public:
 
   bool inClass(wchar c) const;
 
-#include<colorer/common/MemoryOperator.h>
-
 };
 
 #endif
