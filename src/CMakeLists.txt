@@ -147,7 +147,7 @@ target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
-    PUBLIC ../libs/spdlog/include
+    PUBLIC ../external/spdlog/include
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
