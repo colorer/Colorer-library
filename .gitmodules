@@ -1,9 +1,9 @@
-[submodule "libs/xercesc"]
-	path = libs/xercesc
-	url = https://github.com/colorer/xerces-c.git
 [submodule "libs/zlib"]
 	path = libs/zlib
 	url = https://github.com/colorer/zlib.git
 [submodule "libs/spdlog"]
 	path = libs/spdlog
 	url = https://github.com/colorer/spdlog.git
+[submodule "external/xercesc"]
+	path = external/xercesc
+	url = https://github.com/apache/xerces-c.git

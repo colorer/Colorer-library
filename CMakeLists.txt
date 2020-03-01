@@ -48,13 +48,8 @@ else()
   set(XMLCH_TYPE "uint16_t")
 endif()
 set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
-set(show-warnings OFF CACHE BOOL "Enable compiler warnings")
-set(BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
-set(XERCESC_BUILD_DOC OFF CACHE BOOL "Build docs")
-set(XERCESC_BUILD_TESTS OFF CACHE BOOL "Build test")
-set(XERCESC_BUILD_SAMPLES OFF CACHE BOOL "Build samples")
-
-add_subdirectory(./libs/xercesc)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 
 #====================================================
 # zlib
