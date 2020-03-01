@@ -153,6 +153,7 @@ target_link_libraries(colorer_lib
     PUBLIC xerces-c
     PUBLIC ZLIB::MINIZIP
     PUBLIC ${THREAD_LIBS}
+    PUBLIC spdlog::spdlog
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
