@@ -59,7 +59,7 @@ set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
 set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
 set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
 
-add_subdirectory(./libs/zlib)
+add_subdirectory(./external/zlib)
 
 #====================================================
 # colorer library

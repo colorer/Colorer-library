@@ -1,5 +1,5 @@
 [submodule "libs/zlib"]
-	path = libs/zlib
+	path = external/zlib
 	url = https://github.com/colorer/zlib.git
 [submodule "external/xercesc"]
 	path = external/xercesc
