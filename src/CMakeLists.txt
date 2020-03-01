@@ -193,7 +193,7 @@ if(COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
-      CFG_TEXT "exclude-path=*/libs/*"
+      CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
 endif()

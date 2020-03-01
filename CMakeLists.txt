@@ -36,6 +36,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(COLORER_PVS_STUDIO_CHECK)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
   include(PVS-Studio)
 endif()
 
