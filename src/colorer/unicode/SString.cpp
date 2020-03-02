@@ -84,7 +84,7 @@ void SString::setLength(size_t newLength)
     for (size_t i = 0; i < newLength; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = 0;
-    };
+    }
     wstr = std::move(wstr_new);
   }
   len = newLength;
@@ -109,9 +109,9 @@ SString &SString::append(const String &string)
     for (size_t i = 0; i < len_new; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = string[i - len];
-    };
+    }
     wstr = std::move(wstr_new);
-  };
+  }
   len = len_new;
   return *this;
 }
@@ -186,7 +186,7 @@ int SString::compareTo(const SString &str) const
     int cmp = str[i] - this->wstr[i];
     if (cmp > 0) return -1;
     if (cmp < 0) return 1;
-  };
+  }
   if (i < sl) return -1;
   if (i < l) return 1;
   return 0;
@@ -201,7 +201,7 @@ int SString::compareTo(const DString &str) const
     int cmp = str.str->wstr[str.start + i] - this->wstr[i];
     if (cmp > 0) return -1;
     if (cmp < 0) return 1;
-  };
+  }
   if (i < sl) return -1;
   if (i < l) return 1;
   return 0;

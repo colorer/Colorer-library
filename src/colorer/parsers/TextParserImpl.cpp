@@ -316,8 +316,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
   if (!cscheme) {
     return MATCH_NOTHING;
   }
-  for (size_t idx = 0; idx < cscheme->nodes.size(); idx++) {
-    SchemeNode* schemeNode = cscheme->nodes.at(idx);
+  for (auto schemeNode : cscheme->nodes) {
     CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
       case SchemeNode::SNT_INHERIT:
@@ -382,7 +381,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           ssubst = schemeNode->scheme;
         }
 
-        SString* backLine = new SString(str);
+        auto* backLine = new SString(str);
         if (updateCache) {
           ResF = forward;
           ResP = parent;

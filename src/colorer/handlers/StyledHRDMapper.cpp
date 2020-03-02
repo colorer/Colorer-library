@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -14,7 +14,7 @@ const int StyledRegion::RD_STRIKEOUT = 8;
 StyledHRDMapper::StyledHRDMapper() {}
 StyledHRDMapper::~StyledHRDMapper()
 {
-  for (auto it : regionDefines) {
+  for (const auto& it : regionDefines) {
     delete it.second;
   }
   regionDefines.clear();
@@ -40,7 +40,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
-      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(curel);
+      auto* subelem = static_cast<xercesc::DOMElement*>(curel);
       const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
       if (*xname == '\0') {
         continue;
@@ -82,10 +82,10 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
   writer->write(CString("<?xml version=\"1.0\"?>\n\
 <!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
 <hrd>\n"));
-  for (auto it = regionDefines.begin(); it != regionDefines.end(); ++it) {
-    const StyledRegion* rdef = StyledRegion::cast(it->second);
+  for (const auto & regionDefine : regionDefines) {
+    const StyledRegion* rdef = StyledRegion::cast(regionDefine.second);
     char temporary[256];
-    writer->write(SString("  <define name='") + it->first + "'");
+    writer->write(SString("  <define name='") + regionDefine.first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(CString(temporary));
@@ -114,9 +114,9 @@ void StyledHRDMapper::setRegionDefine(const String &name, const RegionDefine* rd
   regionDefines.emplace(pp);
 
   // Searches and replaces old region references
-  for (size_t idx = 0; idx < regionDefinesVector.size(); idx++) {
-    if (regionDefinesVector.at(idx) == rd_old->second) {
-      regionDefinesVector.at(idx) = rd_new;
+  for (auto & idx : regionDefinesVector) {
+    if (idx == rd_old->second) {
+      idx = rd_new;
       break;
     }
   }

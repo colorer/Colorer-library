@@ -78,7 +78,7 @@ public:
       if (l1->start > pos){
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
-      };
+      }
       if (l1->texted()->start_back != nullptr) markupWriter->write(l1->texted()->start_back);
       if (l1->texted()->start_text != nullptr) markupWriter->write(l1->texted()->start_text);
       textWriter->write(line, pos, end - l1->start);
@@ -111,7 +111,7 @@ public:
       if (l1->start > pos){
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
-      };
+      }
       if (docLinkHash->size() > 0)
         writeHref(markupWriter, docLinkHash, l1->scheme, CString(line, pos, end - l1->start), true);
       writeStart(markupWriter, l1->styled());

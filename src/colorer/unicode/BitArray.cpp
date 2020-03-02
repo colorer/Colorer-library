@@ -3,7 +3,7 @@
 
 BitArray::BitArray(int size)
 {
-  array = 0;
+  array = nullptr;
   this->size = size / 8 / 4 + 1;
   if (size % 8 == 0 && size / 8 % 4 == 0) this->size--;
 }
@@ -77,7 +77,7 @@ void BitArray::clearRange(int s, int e)
     array[idx] = 0x0;
   if (cs == 0 && ce == size - 1) {
     delete[] array;
-    array = (int*)0;
+    array = (int*)nullptr;
   }
 }
 void BitArray::addBitArray(BitArray* ba)

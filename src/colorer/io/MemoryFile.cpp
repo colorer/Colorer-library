@@ -18,7 +18,7 @@ uLong ZCALLBACK mem_read_file_func (voidpf opaque, voidpf stream, void *buf, uLo
   memmove(buf, mf->stream+mf->pointer, size);
   mf->pointer += size;
   return size;
-};
+}
 
 
 uLong ZCALLBACK mem_write_file_func (voidpf opaque, voidpf stream, const void *buf, uLong size)
@@ -60,7 +60,7 @@ long ZCALLBACK mem_seek_file_func (voidpf opaque, voidpf stream, uLong offset, i
       break;
     default:
       return -1;
-  };
+  }
   return 0;
 }
 

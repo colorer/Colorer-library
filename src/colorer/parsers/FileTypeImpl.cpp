@@ -1,6 +1,8 @@
 #include <colorer/parsers/FileTypeImpl.h>
 #include <colorer/unicode/UnicodeTools.h>
 
+#include <memory>
+
 FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser): name(nullptr), group(nullptr), description(nullptr)
 {
   this->hrcParser = hrcParser;
@@ -16,7 +18,7 @@ FileTypeImpl::~FileTypeImpl(){
   }
   chooserVector.clear();
 
-  for(auto it: paramsHash){
+  for(const auto& it: paramsHash){
     delete it.second;
   }
   paramsHash.clear();
@@ -32,9 +34,9 @@ Scheme* FileTypeImpl::getBaseScheme() {
 std::vector<SString> FileTypeImpl::enumParams() const {
   std::vector<SString> r;
   r.reserve(paramsHash.size());
-  for ( auto p = paramsHash.begin(); p != paramsHash.end(); ++p)
+  for (const auto & p : paramsHash)
   {
-	  r.push_back(p->first);
+	  r.push_back(p.first);
   }
   return r;
 }
@@ -77,8 +79,8 @@ const String* FileTypeImpl::getParamUserValue(const String &name) const{
 }
 
 TypeParameter* FileTypeImpl::addParam(const String *name){
-  TypeParameter* tp = new TypeParameter;
-  tp->name.reset(new SString(name));
+  auto* tp = new TypeParameter;
+  tp->name = std::make_unique<SString>(name);
   std::pair<SString, TypeParameter*> pp(name, tp);
   paramsHash.emplace(pp);
   return tp;
@@ -87,14 +89,14 @@ TypeParameter* FileTypeImpl::addParam(const String *name){
 void FileTypeImpl::setParamValue(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    tp->second->user_value.reset(new SString(value));
+    tp->second->user_value = std::make_unique<SString>(value);
   }
 }
 
 void FileTypeImpl::setParamDefaultValue(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    tp->second->default_value.reset(new SString(value));
+    tp->second->default_value = std::make_unique<SString>(value);
   }
 }
 
@@ -105,7 +107,7 @@ void FileTypeImpl::setParamUserValue(const String &name, const String *value){
 void FileTypeImpl::setParamDescription(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    tp->second->description.reset(new SString(value));
+    tp->second->description = std::make_unique<SString>(value);
   }
 }
 
@@ -119,8 +121,8 @@ size_t FileTypeImpl::getParamCount() const{
 
 size_t FileTypeImpl::getParamUserValueCount() const{
   size_t count=0;
-  for ( auto it = paramsHash.begin(); it != paramsHash.end(); ++it){
-    if (it->second->user_value) count++;
+  for (const auto & it : paramsHash){
+    if (it.second->user_value) count++;
   }
   return count;
 }
@@ -128,8 +130,7 @@ size_t FileTypeImpl::getParamUserValueCount() const{
 double FileTypeImpl::getPriority(const String *fileName, const String *fileContent) const{
   SMatches match;
   double cur_prior = 0;
-  for(size_t idx = 0; idx < chooserVector.size(); idx++){
-    FileTypeChooser *ftc = chooserVector.at(idx);
+  for(auto ftc : chooserVector){
     if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
       cur_prior += ftc->getPriority();
     if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))

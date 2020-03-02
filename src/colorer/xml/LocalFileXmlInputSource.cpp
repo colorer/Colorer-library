@@ -1,11 +1,12 @@
 #include <colorer/xml/LocalFileXmlInputSource.h>
+#include <memory>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include "XStr.h"
 
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
-  input_source.reset(new xercesc::LocalFileInputSource(base, path));
+  input_source = std::make_unique<xercesc::LocalFileInputSource>(base, path);
   if (xercesc::XMLString::findAny(path, kPercent) != nullptr) {
     XMLCh* e_path = ExpandEnvironment(path);
     input_source->setSystemId(e_path);

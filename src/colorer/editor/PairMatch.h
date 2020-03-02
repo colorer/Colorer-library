@@ -48,7 +48,7 @@ public:
     if (topPosition){
       pairBalance = 1;
       this->topPosition = true;
-    };
+    }
     eline = -1;
   }
 

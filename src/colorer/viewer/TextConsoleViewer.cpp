@@ -8,8 +8,8 @@ TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int bac
   if(encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
   this->encoding = encoding;
   this->background = background;
-};
-TextConsoleViewer::~TextConsoleViewer(){};
+}
+TextConsoleViewer::~TextConsoleViewer(){}
 
 void TextConsoleViewer::view()
 {
@@ -46,7 +46,7 @@ INPUT_RECORD ir;
       for(li = 0; li < csbi.dwSize.X; li++){
         buffer[Y*csbi.dwSize.X + li].Char.UnicodeChar = ' ';
         buffer[Y*csbi.dwSize.X + li].Attributes = background;
-      };
+      }
 
       if (i >= textLinesStore->getLineCount()) continue;
       CString iLine = textLinesStore->getLine(i);
@@ -56,7 +56,7 @@ INPUT_RECORD ir;
         buffer[Y*csbi.dwSize.X + li].Char.UnicodeChar = iLine[leftpos+li];
         if (unc_fault)
           buffer[Y*csbi.dwSize.X + li].Char.AsciiChar = Encodings::toChar(encoding, iLine[leftpos+li]);
-      };
+      }
       for(LineRegion *l1 = baseEditor->getLineRegions(i); l1 != nullptr; l1 = l1->next){
         if (l1->special || l1->rdef == nullptr) continue;
         int end = l1->end;
@@ -66,7 +66,7 @@ INPUT_RECORD ir;
         if (X < 0){
           len += X;
           X = 0;
-        };
+        }
         if (len < 0 || X >= csbi.dwSize.X) continue;
         if (len+X > csbi.dwSize.X) len = csbi.dwSize.X-X;
         WORD color = (WORD)(l1->styled()->fore + (l1->styled()->back<<4));
@@ -74,8 +74,8 @@ INPUT_RECORD ir;
         if (!l1->styled()->bback) color = (color&0xF) + (background&0xF0);
         for(int li = 0; li < len; li++)
           buffer[Y*csbi.dwSize.X + X + li].Attributes = color;
-      };
-    };
+      }
+    }
     COORD coor;
     coor.X = coor.Y = 0;
     SMALL_RECT sr;
@@ -86,7 +86,7 @@ INPUT_RECORD ir;
     if (!unc_fault && !WriteConsoleOutputW(hCon, buffer, csbi.dwSize, coor, &sr)){
       unc_fault = true;
       continue;
-    };
+    }
     if (unc_fault) WriteConsoleOutputA(hCon, buffer, csbi.dwSize, coor, &sr);
 
     // managing the keyboard
@@ -98,7 +98,7 @@ INPUT_RECORD ir;
         delete[] buffer;
         buffer = new CHAR_INFO[csbi.dwSize.X * csbi.dwSize.Y];
         break;
-      };
+      }
       if (ir.EventType == MOUSE_EVENT && ir.Event.MouseEvent.dwEventFlags == 0x4){
         switch(ir.Event.MouseEvent.dwButtonState){
           case 0x780000:
@@ -110,9 +110,9 @@ INPUT_RECORD ir;
             if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y) topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0) topline = 0;
             break;
-        };
+        }
         break;
-      };
+      }
       if (ir.EventType == KEY_EVENT && ir.Event.KeyEvent.bKeyDown){
         // moving view position
         switch(ir.Event.KeyEvent.wVirtualKeyCode){
@@ -151,9 +151,9 @@ INPUT_RECORD ir;
             if (topline < 0) topline = 0;
             leftpos = 0;
             break;
-        };
+        }
         break;
-      };
+      }
     }while(true);
   }while(ir.Event.KeyEvent.wVirtualKeyCode != VK_ESCAPE);
 
@@ -169,9 +169,9 @@ INPUT_RECORD ir;
   for(int i = 0; i < textLinesStore->getLineCount(); i++){
     CString line = textLinesStore->getLine(i);
     printf("%s\n", line.getChars());
-  };
+  }
 
 #endif
-};
+}
 
 

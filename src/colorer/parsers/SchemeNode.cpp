@@ -1,4 +1,4 @@
-#include <string.h>
+#include <cstring>
 #include <colorer/parsers/SchemeNode.h>
 
 const char* schemeNodeTypeNames[] = { "EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT" };
@@ -21,7 +21,7 @@ SchemeNode::SchemeNode()
   memset(regionsn, 0, sizeof(regionsn));
   memset(regione, 0, sizeof(regione));
   memset(regionen, 0, sizeof(regionen));
-};
+}
 
 SchemeNode::~SchemeNode()
 {

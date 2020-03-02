@@ -15,7 +15,7 @@ extern "C" int stricmp(const char* c1, const char* c2)
     if (!i2) return 1;
     c1++;
     c2++;
-  };
+  }
   return 0;
 }
 
@@ -32,7 +32,7 @@ extern "C" int strnicmp(const char* c1, const char* c2, unsigned int len)
     c1++;
     c2++;
     len--;
-  };
+  }
   return 0;
 }
 #endif
@@ -89,7 +89,7 @@ int String::compareTo(const String &str) const
     int cmp = str[i] - (*this)[i];
     if (cmp > 0) return -1;
     if (cmp < 0) return 1;
-  };
+  }
   if (i < sl) return -1;
   if (i < l) return 1;
   return 0;
@@ -104,7 +104,7 @@ int String::compareToIgnoreCase(const String &str) const
     int cmp = Character::toLowerCase(str[i]) - Character::toLowerCase((*this)[i]);
     if (cmp > 0) return -1;
     if (cmp < 0) return 1;
-  };
+  }
   if (i < sl) return -1;
   if (i < l) return 1;
   return 0;
@@ -139,13 +139,13 @@ size_t String::getBytes(byte** bytes, int encoding) const
       byte* copy_buf = new byte[len + 1];
       for (size_t cp = 0; cp < cpos; cp++) {
         copy_buf[cp] = (*bytes)[cp];
-      };
+      }
       delete[] *bytes;
       *bytes = copy_buf;
-    };
+    }
     for (size_t cpidx = 0; cpidx < retLen; cpidx++)
       (*bytes)[cpos++] = buf[cpidx];
-  };
+  }
   (*bytes)[cpos] = 0;
   return cpos;
 }
@@ -167,7 +167,7 @@ const wchar* String::getWChars() const
 size_t String::indexOf(wchar wc, size_t pos) const
 {
   size_t idx;
-  for (idx = pos; idx < this->length() && (*this)[idx] != wc; idx++) {};
+  for (idx = pos; idx < this->length() && (*this)[idx] != wc; idx++) {}
   return idx == this->length() ? npos : idx;
 }
 
@@ -180,9 +180,9 @@ size_t String::indexOf(const String &str, size_t pos) const
     size_t idx2;
     for (idx2 = 0; idx2 < strlen; idx2++) {
       if (str[idx2] != (*this)[idx + idx2]) break;
-    };
+    }
     if (idx2 == strlen) return idx;
-  };
+  }
   return npos;
 }
 
@@ -195,9 +195,9 @@ size_t String::indexOfIgnoreCase(const String &str, size_t pos) const
     size_t idx2;
     for (idx2 = 0; idx2 < strlen; idx2++) {
       if (Character::toLowerCase(str[idx2]) != Character::toLowerCase((*this)[idx + idx2])) break;
-    };
+    }
     if (idx2 == strlen) return idx;
-  };
+  }
   return -1;
 }
 
@@ -206,7 +206,7 @@ size_t String::lastIndexOf(wchar wc, size_t pos) const
   size_t idx;
   if (pos == npos) pos = this->length();
   if (pos > this->length()) return npos;
-  for (idx = pos; idx > 0 && (*this)[idx - 1] != wc; idx--) {};
+  for (idx = pos; idx > 0 && (*this)[idx - 1] != wc; idx--) {}
   return idx == 0 ? npos : idx - 1;
 }
 
@@ -217,7 +217,7 @@ bool String::startsWith(const String &str, size_t pos) const
   for (size_t idx = 0; idx < strlen; idx++) {
     if (idx + pos >= thislen) return false;
     if (str[idx] != (*this)[pos + idx]) return false;
-  };
+  }
   return true;
 }
 

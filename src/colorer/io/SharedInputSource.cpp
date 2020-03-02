@@ -14,7 +14,7 @@ SharedInputSource::~SharedInputSource()
   isHash->erase(is->getLocation());
   if (isHash->size() == 0) {
     delete isHash;
-    isHash = NULL;
+    isHash = nullptr;
   }
   delete is;
 }

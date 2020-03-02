@@ -32,7 +32,7 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
     else
       baseLocation = new SString(basePath);
     prefix = false;
-  };
+  }
 #if defined _WIN32
    // replace the environment variables to their values
   size_t i=ExpandEnvironmentStringsW(baseLocation->getWChars(),nullptr,0);
@@ -49,19 +49,19 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
     baseLocation = n_baseLocation;
   }
   stream = nullptr;
-};
+}
 
 FileInputSource::~FileInputSource(){
   delete baseLocation;
   delete[] stream;
-};
+}
 colorer::InputSource *FileInputSource::createRelative(const String *relPath){
   return new FileInputSource(relPath, this);
-};
+}
 
 const String *FileInputSource::getLocation() const{
   return baseLocation;
-};
+}
 
 const byte *FileInputSource::openStream()
 {
@@ -82,18 +82,18 @@ const byte *FileInputSource::openStream()
   read(source, stream, len);
   close(source);
   return stream;
-};
+}
 
 void FileInputSource::closeStream(){
   if (stream == nullptr) throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
   delete[] stream;
   stream = nullptr;
-};
+}
 
 int FileInputSource::length() const{
   if (stream == nullptr)
     throw InputSourceException(CString("length(): stream is not yet opened"));
   return len;
-};
+}
 
 

@@ -54,7 +54,7 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     sis->addref();
     return sis;
   } else {
-    SharedXmlInputSource* sis = new SharedXmlInputSource(tempis);
+    auto* sis = new SharedXmlInputSource(tempis);
     isHash->insert(std::make_pair(CString(sis->getInputSource()->getSystemId()), sis));
     return sis;
   }

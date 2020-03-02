@@ -4,8 +4,8 @@ std::vector<const RegionDefine*> RegionMapperImpl::enumerateRegionDefines() cons
 {
   std::vector<const RegionDefine*> r;
   r.reserve(regionDefines.size());
-  for (auto p = regionDefines.begin(); p != regionDefines.end(); ++p) {
-    r.push_back(p->second);
+  for (const auto & regionDefine : regionDefines) {
+    r.push_back(regionDefine.second);
   }
   return r;
 }
