@@ -51,7 +51,7 @@ InputSource *InputSource::newInstance(const String *path, InputSource *base){
 }
 
 bool InputSource::isRelative(const String *path){
-  if (path->indexOf(':') != -1 && path->indexOf(':') < 10) return false;
+  if (path->indexOf(':') != String::npos && path->indexOf(':') < 10) return false;
   if (path->indexOf('/') == 0 || path->indexOf('\\') == 0) return false;
   return true;
 }

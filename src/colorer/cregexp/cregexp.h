@@ -332,7 +332,7 @@ private:
   SMatches *matches;
   int cMatch;
 #if !defined NAMED_MATCHES_IN_HASH
-  String *(brnames[NAMED_MATCHES_NUM]);
+  String* brnames[NAMED_MATCHES_NUM];
   int cnMatch;
 #else
   SMatchHash *namedMatches;

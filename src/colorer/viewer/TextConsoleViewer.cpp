@@ -166,7 +166,7 @@ INPUT_RECORD ir;
 
   printf("unix edition doesn't support interactive text viewing\n\n");
 
-  for(int i = 0; i < textLinesStore->getLineCount(); i++){
+  for(size_t i = 0; i < textLinesStore->getLineCount(); i++){
     CString line = textLinesStore->getLine(i);
     printf("%s\n", line.getChars());
   }

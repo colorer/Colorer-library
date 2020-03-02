@@ -172,7 +172,7 @@ SRegInfo *next, *temp;
   retPos = -1;
 
   next = re;
-  for(int i = 0; i < expr.length(); i++){
+  for(unsigned int i = 0; i < expr.length(); i++){
     // simple character
     if (extend && Character::isWhitespace(expr[i])) continue;
     // context return
@@ -419,7 +419,7 @@ SRegInfo *next, *temp;
       int en = -1;
       int comma = -1;
       bool nonGreedy = false;
-      int j;
+      unsigned int j;
       for (j = i; j < expr.length(); j++){
         if (expr.length() > j+1 && expr[j] == '}' && expr[j+1] == '?'){
           en = j;

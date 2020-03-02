@@ -4,7 +4,7 @@
 #ifdef COLORER_ENABLE_TRACE
 #define CTRACE(info) info
 #else
-#define CTRACE(info) nullptr
+#define CTRACE(info)
 #endif
 
 /**

@@ -69,7 +69,7 @@ XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
 
 bool XmlInputSource::isRelative(const String* path)
 {
-  if (path->indexOf(':') != -1 && path->indexOf(':') < 10) return false;
+  if (path->indexOf(':') != String::npos && path->indexOf(':') < 10) return false;
   if (path->indexOf('/') == 0 || path->indexOf('\\') == 0) return false;
   return true;
 }
@@ -77,7 +77,7 @@ bool XmlInputSource::isRelative(const String* path)
 UString XmlInputSource::getClearPath(const String* basePath, const String* relPath)
 {
   UString clear_path(new SString(relPath));
-  if (relPath->indexOf(CString("%")) != -1) {
+  if (relPath->indexOf(CString("%")) != String::npos) {
     XMLCh* e_path = ExpandEnvironment(clear_path.get()->getWChars());
     clear_path.reset(new SString(CString(e_path)));
     delete[] e_path;
@@ -88,7 +88,7 @@ UString XmlInputSource::getClearPath(const String* basePath, const String* relPa
       clear_path.reset(new SString(clear_path.get(), 7, -1));
     }
   }
-  return std::move(clear_path);
+  return clear_path;
 }
 
 bool XmlInputSource::isDirectory(const String* path)

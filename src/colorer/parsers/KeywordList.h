@@ -25,7 +25,7 @@ class KeywordList
 public:
   int num;
   bool matchCase;
-  int minKeywordLength;
+  unsigned int minKeywordLength;
   std::unique_ptr<CharacterClass> firstChar;
   KeywordInfo* kwList;
   KeywordList();

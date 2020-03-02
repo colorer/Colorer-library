@@ -319,6 +319,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
   for (auto schemeNode : cscheme->nodes) {
     CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
+      case SchemeNode::SNT_EMPTY: break;
       case SchemeNode::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;

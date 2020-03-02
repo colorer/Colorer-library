@@ -42,7 +42,7 @@ FileInputSource::FileInputSource(const String *basePath, FileInputSource *base){
   baseLocation = new SString(temp);
   delete[] temp;
 #endif
-  if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith(CString("/"))){
+  if(prefix && (baseLocation->indexOf(':') == String::npos || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith(CString("/"))){
     SString *n_baseLocation = new SString();
     n_baseLocation->append(CString("/")).append(baseLocation);
     delete baseLocation;
