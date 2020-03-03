@@ -12,7 +12,7 @@
  */
 class StyledRegion : public RegionDefine
 {
-public:
+ public:
   static const int RD_BOLD;
   static const int RD_ITALIC;
   static const int RD_UNDERLINE;
@@ -51,12 +51,12 @@ public:
 
   /** Copy constructor.
       Clones all values including region reference. */
-  StyledRegion(const StyledRegion &rd)
+  StyledRegion(const StyledRegion& rd)
   {
     operator=(rd);
   }
 
-  ~StyledRegion() {}
+  ~StyledRegion() override = default;
 
   /** Static method, used to cast RegionDefine class into
       StyledRegion class.
@@ -64,19 +64,22 @@ public:
   */
   static const StyledRegion* cast(const RegionDefine* rd)
   {
-    if (rd == nullptr) return nullptr;
-    if (rd->type != RegionDefine::STYLED_REGION) throw Exception("Bad type cast exception into StyledRegion");
-    const StyledRegion* sr = (const StyledRegion*)(rd);
+    if (rd == nullptr)
+      return nullptr;
+    if (rd->type != RegionDefine::STYLED_REGION)
+      throw Exception("Bad type cast exception into StyledRegion");
+    const auto* sr = (const StyledRegion*) (rd);
     return sr;
   }
   /** Completes region define with it's parent values.
       The values only replaced, are these, which are empty
       in this region define. Style is replaced using OR operation.
   */
-  void assignParent(const RegionDefine* _parent)
+  void assignParent(const RegionDefine* _parent) override
   {
     const StyledRegion* parent = StyledRegion::cast(_parent);
-    if (parent == nullptr) return;
+    if (parent == nullptr)
+      return;
     if (!bfore) {
       fore = parent->fore;
       bfore = parent->bfore;
@@ -88,18 +91,18 @@ public:
     style = style | parent->style;
   }
 
-  void setValues(const RegionDefine* _rd)
+  void setValues(const RegionDefine* _rd) override
   {
     const StyledRegion* rd = StyledRegion::cast(_rd);
-    fore  = rd->fore;
+    fore = rd->fore;
     bfore = rd->bfore;
-    back  = rd->back;
+    back = rd->back;
     bback = rd->bback;
     style = rd->style;
-    type  = rd->type;
+    type = rd->type;
   }
 
-  RegionDefine* clone() const
+  RegionDefine* clone() const override
   {
     RegionDefine* rd = new StyledRegion(*this);
     return rd;
@@ -107,5 +110,3 @@ public:
 };
 
 #endif
-
-

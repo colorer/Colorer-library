@@ -11,7 +11,7 @@ LineRegionsSupport::LineRegionsSupport()
 LineRegionsSupport::~LineRegionsSupport()
 {
   clear();
-  for (size_t i = 1; i < schemeStack.size();i++){
+  for (size_t i = 1; i < schemeStack.size(); i++) {
     delete schemeStack[i];
   }
   schemeStack.clear();
@@ -30,9 +30,9 @@ size_t LineRegionsSupport::size()
 
 void LineRegionsSupport::clear()
 {
-  for (size_t idx = 0; idx < lineRegions.size(); idx++) {
-    LineRegion* ln = lineRegions.at(idx);
-    lineRegions.at(idx) = nullptr;
+  for (auto & lineRegion : lineRegions) {
+    LineRegion* ln = lineRegion;
+    lineRegion = nullptr;
     while (ln != nullptr) {
       LineRegion* lnn = ln->next;
       delete ln;
@@ -209,5 +209,3 @@ void LineRegionsSupport::addLineRegion(size_t lno, LineRegion* lr)
     lstart->prev = lr;
   }
 }
-
-

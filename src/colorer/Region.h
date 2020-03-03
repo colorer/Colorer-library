@@ -17,12 +17,12 @@ class Region
 {
 public:
   /** Full Qualified region name (<code>def:Text</code> for example) */
-  virtual const String* getName() const
+  virtual const UnicodeString* getName() const
   {
     return name;
   }
   /** Region description */
-  virtual const String* getDescription() const
+  virtual const UnicodeString* getDescription() const
   {
     return description;
   }
@@ -57,12 +57,12 @@ public:
     Basic constructor.
     Used only by HRCParser.
   */
-  Region(const String* _name, const String* _description, const Region* _parent, int _id)
+  Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, int _id)
   {
-    name = new SString(_name);
+    name = new UnicodeString(*_name);
     description = nullptr;
     if (_description != nullptr) {
-      description = new SString(_description);
+      description = new UnicodeString(*_description);
     }
     parent = _parent;
     id = _id;
@@ -76,7 +76,7 @@ public:
 
 protected:
   /** Internal members */
-  String* name, *description;
+  UnicodeString* name, *description;
   const Region* parent;
   int id;
 };

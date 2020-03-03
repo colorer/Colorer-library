@@ -82,8 +82,6 @@ public:
   */
   LineRegion(const LineRegion& lr)
   {
-    //_next = lr._next;
-    //_prev = lr._prev;
     operator=(lr);
   }
   ~LineRegion()

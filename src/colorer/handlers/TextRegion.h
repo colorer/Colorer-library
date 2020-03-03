@@ -11,22 +11,20 @@
  */
 class TextRegion : public RegionDefine
 {
-public:
-
+ public:
   /**
    * Text wrapping information.
    * Pointers are managed externally.
    */
-  const String* start_text;
-  const String* end_text;
-  const String* start_back;
-  const String* end_back;
+  const UnicodeString* start_text;
+  const UnicodeString* end_text;
+  const UnicodeString* start_back;
+  const UnicodeString* end_back;
 
   /**
    * Initial constructor
    */
-  TextRegion(const String* _stext, const String* _etext,
-             const String* _sback, const String* _eback)
+  TextRegion(const UnicodeString* _stext, const UnicodeString* _etext, const UnicodeString* _sback, const UnicodeString* _eback)
   {
     start_text = _stext;
     end_text = _etext;
@@ -45,12 +43,12 @@ public:
    * Copy constructor.
    * Clones all values including region reference
    */
-  TextRegion(const TextRegion &rd)
+  TextRegion(const TextRegion& rd)
   {
     operator=(rd);
   }
 
-  ~TextRegion() {}
+  ~TextRegion() override = default;
 
   /**
    * Static method, used to cast RegionDefine class into TextRegion class.
@@ -58,22 +56,24 @@ public:
    */
   static const TextRegion* cast(const RegionDefine* rd)
   {
-    if (rd == nullptr) return nullptr;
+    if (rd == nullptr)
+      return nullptr;
     if (rd->type != RegionDefine::TEXT_REGION) {
       throw Exception("Bad type cast exception into TextRegion");
     }
-    const TextRegion* tr = (const TextRegion*)(rd);
+    const auto* tr = (const TextRegion*) (rd);
     return tr;
   }
 
   /**
    * Assigns region define with it's parent values.
    * All fields are to be replaced, if they are null-ed.
-  */
-  void assignParent(const RegionDefine* _parent)
+   */
+  void assignParent(const RegionDefine* _parent) override
   {
     const TextRegion* parent = TextRegion::cast(_parent);
-    if (parent == nullptr) return;
+    if (parent == nullptr)
+      return;
     if (start_text == nullptr || end_text == nullptr) {
       start_text = parent->start_text;
       end_text = parent->end_text;
@@ -88,25 +88,23 @@ public:
    * Direct assign of all passed @c rd values.
    * Do not assign region reference.
    */
-  void setValues(const RegionDefine* _rd)
+  void setValues(const RegionDefine* _rd) override
   {
-    if (_rd == nullptr) return;
+    if (_rd == nullptr)
+      return;
     const TextRegion* rd = TextRegion::cast(_rd);
     start_text = rd->start_text;
     end_text = rd->end_text;
     start_back = rd->start_back;
     end_back = rd->end_back;
-    type  = rd->type;
+    type = rd->type;
   }
 
-  RegionDefine* clone() const
+  RegionDefine* clone() const override
   {
     RegionDefine* rd = new TextRegion(*this);
     return rd;
   }
-
 };
 
 #endif
-
-

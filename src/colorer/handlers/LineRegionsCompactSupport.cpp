@@ -1,7 +1,7 @@
 #include <colorer/handlers/LineRegionsCompactSupport.h>
 
-LineRegionsCompactSupport::LineRegionsCompactSupport() {}
-LineRegionsCompactSupport::~LineRegionsCompactSupport() {}
+LineRegionsCompactSupport::LineRegionsCompactSupport() = default;
+LineRegionsCompactSupport::~LineRegionsCompactSupport() = default;
 
 void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
 {
@@ -99,8 +99,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
     if (lnext->special) {
       continue;
     }
-    if ((lnext->end == -1 || lnext->end > ladd->end) && ladd->end != -1
-        && lnext->start < ladd->end) {
+    if ((lnext->end == -1 || lnext->end > ladd->end) && ladd->end != -1 && lnext->start < ladd->end) {
       lnext->start = ladd->end;
     }
     // make region zero-width, if it is hided by our new region
@@ -118,6 +117,3 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
   }
   lineRegions.at(getLineIndex(lno)) = lstart;
 }
-
-
-

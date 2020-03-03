@@ -35,7 +35,7 @@ public:
 
       const Region *region = l1->region;
       while(region != nullptr){
-        SString *token0 = SString(region->getName()).replace(CString(":"),CString("-"));
+        SString *token0 = UStr::to_string(region->getName()).replace(CString(":"),CString("-"));
         SString *token = token0->replace(CString("."),CString("-"));
         delete token0;
         markupWriter->write(token);

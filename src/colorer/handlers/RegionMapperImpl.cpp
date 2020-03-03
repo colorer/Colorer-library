@@ -4,7 +4,7 @@ std::vector<const RegionDefine*> RegionMapperImpl::enumerateRegionDefines() cons
 {
   std::vector<const RegionDefine*> r;
   r.reserve(regionDefines.size());
-  for (const auto & regionDefine : regionDefines) {
+  for (const auto& regionDefine : regionDefines) {
     r.push_back(regionDefine.second);
   }
   return r;
@@ -27,7 +27,7 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
     regionDefinesVector.resize(region->getID() * 2);
   }
 
-  auto rd_new = regionDefines.find(region->getName());
+  auto rd_new = regionDefines.find(*region->getName());
   if (rd_new != regionDefines.end()) {
     regionDefinesVector.at(region->getID()) = rd_new->second;
     return rd_new->second;
@@ -41,8 +41,8 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
 }
 
 /** Returns region mapping by it's full qualified name.
-*/
-const RegionDefine* RegionMapperImpl::getRegionDefine(const String &name) const
+ */
+const RegionDefine* RegionMapperImpl::getRegionDefine(const UnicodeString& name) const
 {
   auto tp = regionDefines.find(name);
   if (tp != regionDefines.end()) {
@@ -50,6 +50,3 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const String &name) const
   }
   return nullptr;
 }
-
-
-

@@ -491,7 +491,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   CString regiondescr = CString(regionDescr);
-  const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), (int)regionNamesVector.size());
+  const Region* region = new Region(&UStr::to_unistr(qname1), &UStr::to_unistr(&regiondescr), getRegion(qname2), (int)regionNamesVector.size());
   regionNamesVector.push_back(region);
   std::pair<SString, const Region*> pp(qname1, region);
   regionNamesHash.emplace(pp);
@@ -1154,9 +1154,9 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
       Regions with this name are always transparent
   */
   if (reg != nullptr) {
-    const String* s_name = reg->getName();
-    size_t idx = s_name->indexOf(CString(":default"));
-    if (idx != String::npos && idx + 8 == s_name->length()) {
+    auto* s_name = reg->getName();
+    auto idx = s_name->indexOf(":default");
+    if (idx != -1 && idx + 8 == s_name->length()) {
       return nullptr;
     }
   }

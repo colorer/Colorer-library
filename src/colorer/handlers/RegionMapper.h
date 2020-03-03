@@ -10,7 +10,7 @@
  */
 class RegionMapper
 {
-public:
+ public:
   /**
    * Searches mapped region define value.
    * @return Region define, associated with passed @c region
@@ -21,13 +21,12 @@ public:
   /**
    * Searches mapped region define value with qualified name @c name.
    */
-  virtual const RegionDefine* getRegionDefine(const String &name) const = 0;
+  virtual const RegionDefine* getRegionDefine(const UnicodeString& name) const = 0;
 
-  virtual ~RegionMapper() {};
-protected:
-  RegionMapper() {};
+  virtual ~RegionMapper() = default;
+
+ protected:
+  RegionMapper() = default;
 };
 
 #endif
-
-

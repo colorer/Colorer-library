@@ -14,12 +14,12 @@ class LineRegionsCompactSupport : public LineRegionsSupport
 {
 public:
   LineRegionsCompactSupport();
-  ~LineRegionsCompactSupport();
+  ~LineRegionsCompactSupport() override;
 protected:
   /** This method compacts regions while
      adding them into list structure
   */
-  void addLineRegion(size_t lno, LineRegion* ladd);
+  void addLineRegion(size_t lno, LineRegion* ladd) override;
 };
 
 #endif

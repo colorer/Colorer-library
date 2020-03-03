@@ -1,20 +1,20 @@
 #ifndef _COLORER_LINEREGIONSSUPPORT_H_
 #define _COLORER_LINEREGIONSSUPPORT_H_
 
-#include <vector>
 #include <colorer/RegionHandler.h>
+#include <colorer/handlers/LineRegion.h>
 #include <colorer/handlers/RegionDefine.h>
 #include <colorer/handlers/RegionMapper.h>
-#include <colorer/handlers/LineRegion.h>
+#include <vector>
 
 /** Region store implementation of RegionHandler.
     @ingroup colorer_handlers
 */
 class LineRegionsSupport : public RegionHandler
 {
-public:
+ public:
   LineRegionsSupport();
-  ~LineRegionsSupport();
+  ~LineRegionsSupport() override;
 
   /**
    * Resizes structures to mantain regions for @c lineCount lines.
@@ -72,12 +72,13 @@ public:
   /**
    * RegionHandler implementation
    */
-  void startParsing(size_t lno);
-  void clearLine(size_t lno, String* line);
-  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-protected:
+  void startParsing(size_t lno) override;
+  void clearLine(size_t lno, String* line) override;
+  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region) override;
+  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+
+ protected:
   /**
    * Behaviour is redefined in derived classes
    */
@@ -98,6 +99,3 @@ protected:
 };
 
 #endif
-
-
-

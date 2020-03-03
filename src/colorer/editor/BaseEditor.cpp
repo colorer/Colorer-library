@@ -109,9 +109,9 @@ void BaseEditor::remapLRS(bool recreate)
   invalidLine = 0;
   rd_def_Text = rd_def_HorzCross = rd_def_VertCross = nullptr;
   if (regionMapper != nullptr) {
-    rd_def_Text = regionMapper->getRegionDefine(CString("def:Text"));
-    rd_def_HorzCross = regionMapper->getRegionDefine(CString("def:HorzCross"));
-    rd_def_VertCross = regionMapper->getRegionDefine(CString("def:VertCross"));
+    rd_def_Text = regionMapper->getRegionDefine("def:Text");
+    rd_def_HorzCross = regionMapper->getRegionDefine("def:HorzCross");
+    rd_def_VertCross = regionMapper->getRegionDefine("def:VertCross");
   }
 }
 

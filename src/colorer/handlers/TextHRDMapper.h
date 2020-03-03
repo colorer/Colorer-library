@@ -1,9 +1,9 @@
 #ifndef _COLORER_TEXTHRDMAPPER_H_
 #define _COLORER_TEXTHRDMAPPER_H_
 
-#include <colorer/io/Writer.h>
 #include <colorer/handlers/RegionMapperImpl.h>
 #include <colorer/handlers/TextRegion.h>
+#include <colorer/io/Writer.h>
 #include <colorer/xml/XmlInputSource.h>
 
 /** HRD files reader.
@@ -16,14 +16,14 @@
 */
 class TextHRDMapper : public RegionMapperImpl
 {
-public:
+ public:
   TextHRDMapper();
-  ~TextHRDMapper();
+  ~TextHRDMapper() override;
 
   /**
    * Loads region defines from @c is InputSource
    */
-  void  loadRegionMappings(XmlInputSource* is);
+  void loadRegionMappings(XmlInputSource* is) override;
 
   /**
    * Saves all loaded region defines into @c writer.
@@ -31,16 +31,14 @@ public:
    * to input one, because there could be multiple input
    * documents.
    */
-  void  saveRegionMappings(Writer* writer) const;
+  void saveRegionMappings(Writer* writer) const override;
 
   /**
    * Changes specified region definition to @c rdnew
    * @param region Region full qualified name.
    * @param rdnew  New region definition to replace old one
    */
-  void  setRegionDefine(const String &region, const RegionDefine* rdnew);
+  void setRegionDefine(const UnicodeString& region, const RegionDefine* rdnew) override;
 };
 
 #endif
-
-
