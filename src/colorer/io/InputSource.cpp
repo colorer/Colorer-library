@@ -30,7 +30,7 @@ InputSource *InputSource::newInstance(const String *path){
 
 InputSource *InputSource::newInstance(const String *path, InputSource *base){
   if (path == nullptr){
-    throw InputSourceException(CString("InputSource::newInstance: path is nullptr"));
+    throw InputSourceException("InputSource::newInstance: path is nullptr");
   }
 #if COLORER_FEATURE_HTTPINPUTSOURCE
   if (path->startsWith(CString("http://"))){
@@ -45,7 +45,7 @@ InputSource *InputSource::newInstance(const String *path, InputSource *base){
   if (base != nullptr){
     InputSource *is = base->createRelative(path);
     if (is != nullptr) return is;
-    throw InputSourceException(CString("Unknown input source type"));
+    throw InputSourceException("Unknown input source type");
   }
   return new FileInputSource(path, nullptr);
 }

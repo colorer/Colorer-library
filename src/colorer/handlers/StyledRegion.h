@@ -65,7 +65,7 @@ public:
   static const StyledRegion* cast(const RegionDefine* rd)
   {
     if (rd == nullptr) return nullptr;
-    if (rd->type != RegionDefine::STYLED_REGION) throw Exception(CString("Bad type cast exception into StyledRegion"));
+    if (rd->type != RegionDefine::STYLED_REGION) throw Exception("Bad type cast exception into StyledRegion");
     const StyledRegion* sr = (const StyledRegion*)(rd);
     return sr;
   }

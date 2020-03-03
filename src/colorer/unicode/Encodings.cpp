@@ -4,13 +4,9 @@
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/CString.h>
 
-UnsupportedEncodingException::UnsupportedEncodingException() noexcept :
-  Exception("[UnsupportedEncodingException] ")
-{}
-
-UnsupportedEncodingException::UnsupportedEncodingException(const String &msg) noexcept : UnsupportedEncodingException()
+UnsupportedEncodingException::UnsupportedEncodingException(const UnicodeString &msg) noexcept : Exception("[UnsupportedEncodingException] " + msg)
 {
-  what_str.append(msg);
+
 }
 
 const int Encodings::ENC_UTF8_BOM    = 0xBFBBEF;
@@ -36,13 +32,13 @@ static int bomArraySize[5] = { 3, 2, 2, 4, 4 };
 
 byte* Encodings::getEncodingBOM(int encoding)
 {
-  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(CString("getEncodingBOM was called for bad encoding"));
+  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException("getEncodingBOM was called for bad encoding");
   return bomArray[-encoding - 2];
 }
 
 int Encodings::getEncodingBOMSize(int encoding)
 {
-  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException(CString("getEncodingBOM was called for bad encoding"));
+  if (encoding >= -1 || encoding < -6) throw UnsupportedEncodingException("getEncodingBOM was called for bad encoding");
   return bomArraySize[-encoding - 2];
 }
 
@@ -88,7 +84,7 @@ const char* Encodings::getDefaultEncodingName()
 size_t Encodings::toBytes(int encoding, wchar wc, byte* dest)
 {
   if (encoding < -6 || encoding == -1 || encoding >= encNamesNum)
-    throw UnsupportedEncodingException(SString(encoding));
+    throw UnsupportedEncodingException(encoding);
   if (encoding >= 0) {
     dest[0] = TO_CHAR(encoding, wc);
     return 1;
@@ -148,7 +144,7 @@ size_t Encodings::toBytes(int encoding, wchar wc, byte* dest)
     return 4;
   }
 #endif
-  throw UnsupportedEncodingException(SString(encoding));
+  throw UnsupportedEncodingException(encoding);
 }
 
 // no checks for encoding index validness!!!!

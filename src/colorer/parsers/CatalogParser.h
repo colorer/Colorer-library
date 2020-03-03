@@ -33,15 +33,9 @@ private:
 
 class CatalogParserException : public Exception
 {
-public:
-  CatalogParserException() noexcept : Exception("[CatalogParserException] ") {};
-
-  CatalogParserException(const String &msg) noexcept : CatalogParserException()
-  {
-    what_str.append(msg);
-  }
+ public:
+  explicit CatalogParserException(const UnicodeString& msg) noexcept : Exception("[CatalogParserException] " + msg) {}
 };
-
 
 #endif //_COLORER_CATALOGPARSER_H_
 

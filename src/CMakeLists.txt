@@ -58,6 +58,7 @@ set(SRC_COLORER
     ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
     ${COMMON}/Exception.cpp
     ${COMMON}/Features.h
+    ${COMMON}/UnicodeString.h ${COMMON}/UnicodeString.cpp
     ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
     ${IO}/FileWriter.h ${IO}/FileWriter.cpp
     ${IO}/InputSource.cpp ${IO}/InputSource.h
@@ -148,12 +149,14 @@ target_include_directories(colorer_lib
     PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
     PUBLIC ../external/spdlog/include
+    PUBLIC ${ICU_INCLUDE_DIR}
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
     PUBLIC ZLIB::MINIZIP
     PUBLIC ${THREAD_LIBS}
     PUBLIC spdlog::spdlog
+    PUBLIC ${ICU_UC_LIBRARY}
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES

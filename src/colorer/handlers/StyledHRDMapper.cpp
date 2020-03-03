@@ -29,13 +29,13 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception(CString("Error loading HRD file"));
+    throw Exception("Error loading HRD file");
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception(CString("Error loading HRD file"));
+    throw Exception("Error loading HRD file");
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {

@@ -8,7 +8,7 @@ StreamWriter::StreamWriter(){}
 
 void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
   
-  if (fstream == nullptr) throw Exception(CString("Invalid stream"));
+  if (fstream == nullptr) throw Exception("Invalid stream");
   file = fstream;
   if (encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
   encodingIndex = encoding;

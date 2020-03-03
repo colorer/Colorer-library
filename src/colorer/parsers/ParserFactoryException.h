@@ -11,12 +11,8 @@
 */
 class ParserFactoryException : public Exception
 {
-public:
-  ParserFactoryException() noexcept : Exception("[ParserFactoryException] ") {};
-  ParserFactoryException(const String &msg) noexcept : ParserFactoryException()
-  {
-    what_str.append(msg);
-  }
+ public:
+  explicit ParserFactoryException(const UnicodeString& msg) noexcept : Exception("[ParserFactoryException] " + msg) {}
 };
 
 #endif

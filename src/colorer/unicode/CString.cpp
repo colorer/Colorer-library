@@ -3,13 +3,8 @@
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/Encodings.h>
 
-StringIndexOutOfBoundsException::StringIndexOutOfBoundsException() noexcept:
-  Exception("[StringIndexOutOfBoundsException] ")
-{}
-
-StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const String &msg) noexcept : StringIndexOutOfBoundsException()
+StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const UnicodeString &msg) noexcept : Exception("[StringIndexOutOfBoundsException] " + msg)
 {
-  what_str.append(msg);
 }
 
 CString &CString::operator=(const CString &cstring)
@@ -42,7 +37,7 @@ CString::CString(const byte* stream, size_t size, int def_encoding)
   if (def_encoding == Encodings::ENC_UTF32)   type = ST_UTF32;
   if (def_encoding == Encodings::ENC_UTF32BE) type = ST_UTF32_BE;
   if (def_encoding > Encodings::getEncodingNamesNum())
-    throw UnsupportedEncodingException(SString(def_encoding));
+    throw UnsupportedEncodingException(def_encoding);
   encodingIdx = def_encoding;
 
   if (type == ST_CHAR && encodingIdx == -1) {
@@ -67,10 +62,10 @@ CString::CString(const byte* stream, size_t size, int def_encoding)
         CString dcp((char*)stream, cps, cpe - cps);
         encodingIdx = Encodings::getEncodingIndex(dcp.getChars());
         if (encodingIdx == -1)
-          throw UnsupportedEncodingException(dcp);
+          throw UnsupportedEncodingException(UStr::to_unistr(&dcp));
         if (encodingIdx == Encodings::ENC_UTF8)
           type = ST_UTF8;
-        else if (encodingIdx < 0) throw UnsupportedEncodingException(SString("encoding conflict - can't use ") + dcp);
+        else if (encodingIdx < 0) throw UnsupportedEncodingException("encoding conflict - can't use " + UStr::to_unistr(&dcp));
       } else type = ST_UTF8;
     }
 
@@ -165,7 +160,7 @@ CString::CString(const String* cstring, size_t s, size_t l)
   len = l;
   encodingIdx = -1;
   if (s > cstring->length() || (len != npos && len > cstring->length() - start))
-    throw Exception(CString("bad string constructor parameters"));
+    throw Exception("bad string constructor parameters");
   if (len == npos)
     len = cstring->length() - start;
 }
@@ -178,7 +173,7 @@ CString::CString(const String &cstring, size_t s, size_t l)
   len = l;
   encodingIdx = -1;
   if (s > cstring.length() || (len != npos && len > cstring.length() - start))
-    throw Exception(CString("bad string constructor parameters"));
+    throw Exception("bad string constructor parameters");
   if (len == npos)
     len = cstring.length() - start;
 }
@@ -222,7 +217,7 @@ wchar CString::operator[](size_t i) const
         }
         return (wchar)(((w4str[start + i] & 0xFF) << 24) + ((w4str[start + i] & 0xFF00) << 8) + ((w4str[start + i] & 0xFF0000) >> 8) + ((w4str[start + i] & 0xFF000000) >> 24));
     }
-  throw StringIndexOutOfBoundsException(SString(i));
+  throw StringIndexOutOfBoundsException(UStr::to_unistr(i));
 }
 
 size_t CString::length() const

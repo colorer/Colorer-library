@@ -62,7 +62,7 @@ SString ParserFactory::searchCatalog() const
   spdlog::debug("end search catalog.xml");
   if (right_path.length() == 0) {
     spdlog::error("Can't find suitable catalog.xml file. Check your program settings.");
-    throw ParserFactoryException(CString("Can't find suitable catalog.xml file. Check your program settings."));
+    throw ParserFactoryException("Can't find suitable catalog.xml file. Check your program settings.");
   }
   return right_path;
 }
@@ -147,7 +147,7 @@ void ParserFactory::loadCatalog(const String* catalog_path)
   if (!catalog_path) {
     base_catalog_path = searchCatalog();
     if (base_catalog_path.length() == 0) {
-      throw ParserFactoryException(CString("Can't find suitable catalog.xml file."));
+      throw ParserFactoryException("Can't find suitable catalog.xml file.");
     }
   } else {
     base_catalog_path = SString(catalog_path);
@@ -246,14 +246,14 @@ const HRDNode* ParserFactory::getHRDNode(const String &classID, const String &na
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
-    throw ParserFactoryException(SString("can't find HRDClass '") + classID + "'");
+    throw ParserFactoryException("can't find HRDClass '" + UStr::to_unistr(&classID) + "'");
   }
   for (auto & p : *hash->second) {
     if (nameID.compareTo(p.get()->hrd_name) == 0) {
       return p.get();
     }
   }
-  throw ParserFactoryException(SString("can't find HRDName '") + nameID + "'");
+  throw ParserFactoryException("can't find HRDName '" + UStr::to_unistr(&nameID) + "'");
 }
 
 HRCParser* ParserFactory::getHRCParser() const
@@ -303,7 +303,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
       } catch (Exception &e) {
         spdlog::error("Can't load hrd:");
         spdlog::error("{0}", e.what());
-        throw ParserFactoryException(CString("Error load hrd"));
+        throw ParserFactoryException("Error load hrd");
       }
     }
   return mapper;

@@ -11,14 +11,9 @@
 */
 class HRCParserException : public Exception
 {
-public:
-  HRCParserException() noexcept : Exception("[HRCParserException] ") {};
-  HRCParserException(const String &msg) noexcept : HRCParserException()
-  {
-    what_str.append(msg);
-  }
+ public:
+  explicit HRCParserException(const UnicodeString& msg) noexcept : Exception("[HRCParserException] " + msg) {}
 };
-
 
 /** Abstract template of HRCParser class implementation.
     Defines basic operations of loading and accessing

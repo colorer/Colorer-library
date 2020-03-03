@@ -10,8 +10,7 @@
 class UnsupportedEncodingException : public Exception
 {
 public:
-  UnsupportedEncodingException() noexcept;
-  UnsupportedEncodingException(const String &msg) noexcept;
+  explicit UnsupportedEncodingException(const UnicodeString &msg) noexcept;
 };
 
 /** Index of requested character is out of bounds.
@@ -20,8 +19,7 @@ public:
 class StringIndexOutOfBoundsException : public Exception
 {
 public:
-  StringIndexOutOfBoundsException() noexcept;
-  StringIndexOutOfBoundsException(const String &msg) noexcept;
+  explicit StringIndexOutOfBoundsException(const UnicodeString &msg) noexcept;
 };
 
 /** Dynamic string class.

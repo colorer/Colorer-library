@@ -9,7 +9,7 @@ SString::SString(): wstr(nullptr), len(0), alloc(0)
 
 void SString::construct(const String* cstring, size_t s, size_t l)
 {
-  if (s > cstring->length()) throw Exception(CString("bad string constructor parameters"));
+  if (s > cstring->length()) throw Exception("bad string constructor parameters");
   if (l == npos) l = cstring->length() - s;
   wstr.reset(new wchar[l]);
   for (len = 0; len < l; len++)

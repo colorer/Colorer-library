@@ -72,7 +72,7 @@ void ConsoleTools::setInputEncoding(const String &str)
   inputEncoding.reset(new SString(str));
   inputEncodingIndex = Encodings::getEncodingIndex(inputEncoding->getChars());
   if (inputEncodingIndex == -1) {
-    throw Exception(SString("Unknown input encoding: ") + inputEncoding.get());
+    throw Exception("Unknown input encoding: " + UStr::to_unistr(inputEncoding.get()));
   }
   if (outputEncoding == nullptr) {
     outputEncodingIndex = inputEncodingIndex;
@@ -84,7 +84,7 @@ void ConsoleTools::setOutputEncoding(const String &str)
   outputEncoding.reset(new SString(str));
   outputEncodingIndex = Encodings::getEncodingIndex(outputEncoding->getChars());
   if (outputEncodingIndex == -1) {
-    throw Exception(SString("Unknown output encoding: ") + outputEncoding.get());
+    throw Exception("Unknown output encoding: " + UStr::to_unistr(outputEncoding.get()));
   }
 }
 
@@ -126,13 +126,13 @@ void ConsoleTools::setLinkSource(const String &str)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*linkSource->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception(CString("Error loading HRD file"));
+    throw Exception("Error loading HRD file");
   }
   xercesc::DOMDocument* linkSourceTree = xml_parser.getDocument();
   xercesc::DOMElement* elem = linkSourceTree->getDocumentElement();
 
   if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
-    throw Exception(CString("Error loading HRD file"));
+    throw Exception("Error loading HRD file");
   }
 
   for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {

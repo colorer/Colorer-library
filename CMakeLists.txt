@@ -41,6 +41,14 @@ if(COLORER_PVS_STUDIO_CHECK)
 endif()
 
 #====================================================
+# find dependences
+#====================================================
+find_package(ICU COMPONENTS uc)
+if (NOT ${ICU_FIND_COMPONENTS})
+  message(FATAL_ERROR "Not found ICU library")
+endif ()
+
+#====================================================
 # xercesc
 #====================================================
 if(WIN32)

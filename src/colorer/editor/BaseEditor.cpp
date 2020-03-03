@@ -8,7 +8,7 @@ const int CHOOSE_LEN = 200 * CHOOSE_STR;
 BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
 {
   if (parserFactory == nullptr || lineSource == nullptr) {
-    throw Exception(CString("Bad BaseEditor constructor parameters"));
+    throw Exception("Bad BaseEditor constructor parameters");
   }
   this->parserFactory = parserFactory;
   this->lineSource = lineSource;

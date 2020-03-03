@@ -47,7 +47,7 @@ HRCParserImpl::~HRCParserImpl()
 void HRCParserImpl::loadSource(XmlInputSource* is)
 {
   if (!is) {
-    throw HRCParserException(CString("Can't open stream - 'null' is bad stream."));
+    throw HRCParserException("Can't open stream - 'null' is bad stream.");
   }
 
   XmlInputSource* istemp = current_input_source;
@@ -198,14 +198,14 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException(SString("Error reading hrc file '") + CString(is->getInputSource()->getSystemId()) + "'");
+    throw HRCParserException("Error reading hrc file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (root && !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
-    throw HRCParserException(SString("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file ") + \
-                             CString(is->getInputSource()->getSystemId()));
+    throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + \
+                             UnicodeString(is->getInputSource()->getSystemId()));
   }
   if (versionName == nullptr) {
     versionName = new CString(root->getAttribute(hrcHrcAttrVersion));

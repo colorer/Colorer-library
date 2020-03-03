@@ -5,10 +5,10 @@
 
 JARInputSource::JARInputSource(const String *basePath, InputSource *base){
   if (basePath == nullptr)
-    throw InputSourceException(SString("Can't create jar source"));
+    throw InputSourceException("Can't create jar source");
   // absolute jar uri
   int ex_idx = basePath->lastIndexOf('!');
-  if (ex_idx == -1) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
+  if (ex_idx == -1) throw InputSourceException("Bad jar uri format: " + UStr::to_unistr(basePath));
 
   inJarLocation = new SString(basePath, ex_idx+1, -1);
   
@@ -35,7 +35,7 @@ JARInputSource::~JARInputSource(){
 JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, bool faked){
   // relative jar uri
   JARInputSource *parent = base;
-  if (parent == nullptr) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
+  if (parent == nullptr) throw InputSourceException("Bad jar uri format: " + UStr::to_unistr(basePath));
   sharedIS = parent->getShared();
   sharedIS->addref();
 
@@ -61,7 +61,7 @@ const String *JARInputSource::getLocation() const{
 const byte *JARInputSource::openStream()
 {
   if (stream != nullptr)
-    throw InputSourceException(SString("openStream(): source stream already opened: '")+baseLocation+"'");
+    throw InputSourceException("openStream(): source stream already opened: '"+ UStr::to_unistr(baseLocation)+"'");
 
   MemoryFile *mf = new MemoryFile;
   mf->stream = sharedIS->getStream();
@@ -74,20 +74,20 @@ const byte *JARInputSource::openStream()
   if (fid == 0) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't locate file in JAR content: '"+ UStr::to_unistr(inJarLocation)+"'");
   }
   int ret = unzLocateFile(fid, inJarLocation->getChars(), 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't locate file in JAR content: '"+ UStr::to_unistr(inJarLocation)+"'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't retrieve current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't retrieve current file in JAR content: '"+ UStr::to_unistr(inJarLocation)+"'");
   }
 
   len = file_info.uncompressed_size;
@@ -96,19 +96,19 @@ const byte *JARInputSource::openStream()
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't open current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't open current file in JAR content: '"+ UStr::to_unistr(inJarLocation)+"'");
   }
   ret = unzReadCurrentFile(fid, stream, len);
   if (ret <= 0) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't read current file in JAR content: '")+inJarLocation+"' ("+SString(ret)+")");
+	  throw InputSourceException("Can't read current file in JAR content: '"+ UStr::to_unistr(inJarLocation)+"' ("+ UStr::to_unistr(ret)+")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Bad JAR file CRC"));
+	  throw InputSourceException("Bad JAR file CRC");
   }
   ret = unzClose(fid);
   delete mf;
@@ -117,14 +117,14 @@ const byte *JARInputSource::openStream()
 
 void JARInputSource::closeStream(){
   if (stream == nullptr)
-    throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
+    throw InputSourceException("closeStream(): source stream is not yet opened");
   delete stream;
   stream = nullptr;
 }
 
 int JARInputSource::length() const{
   if (stream == nullptr)
-    throw InputSourceException(CString("length(): stream is not yet opened"));
+    throw InputSourceException("length(): stream is not yet opened");
   return len;
 }
 

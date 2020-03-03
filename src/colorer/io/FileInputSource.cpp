@@ -65,14 +65,14 @@ const String *FileInputSource::getLocation() const{
 
 const byte *FileInputSource::openStream()
 {
-  if (stream != nullptr) throw InputSourceException(SString("openStream(): source stream already opened: '")+baseLocation+"'");
+  if (stream != nullptr) throw InputSourceException("openStream(): source stream already opened: '" + UStr::to_unistr(baseLocation)+"'");
 #if defined _WIN32
   int source = _wopen(baseLocation->getWChars(), O_BINARY);
 #else
   int source = open(baseLocation->getChars(), O_BINARY);
 #endif
   if (source == -1)
-    throw InputSourceException(SString("Can't open file '")+baseLocation+"'");
+    throw InputSourceException("Can't open file '" + UStr::to_unistr(baseLocation)+"'");
   struct stat st;
   fstat(source, &st);
   len = st.st_size;
@@ -85,14 +85,14 @@ const byte *FileInputSource::openStream()
 }
 
 void FileInputSource::closeStream(){
-  if (stream == nullptr) throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
+  if (stream == nullptr) throw InputSourceException("closeStream(): source stream is not yet opened");
   delete[] stream;
   stream = nullptr;
 }
 
 int FileInputSource::length() const{
   if (stream == nullptr)
-    throw InputSourceException(CString("length(): stream is not yet opened"));
+    throw InputSourceException("length(): stream is not yet opened");
   return len;
 }
 

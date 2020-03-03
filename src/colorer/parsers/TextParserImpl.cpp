@@ -492,7 +492,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       clearLine = gy;
       str = lineSource->getLine(gy);
       if (str == nullptr) {
-        throw Exception(SString("null String passed into the parser: ") + SString(gy));
+        throw Exception("null String passed into the parser: " + UStr::to_unistr(gy));
       }
       regionHandler->clearLine(gy, str);
     }

@@ -20,12 +20,12 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, XmlInputSource* base)
 void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
   if (!path || *path == '\0') {
-    throw InputSourceException(CString("Can't create jar source"));
+    throw InputSourceException("Can't create jar source");
   }
   if (xercesc::XMLString::startsWith(path, kJar)) {
     int path_idx = xercesc::XMLString::lastIndexOf(path, '!');
     if (path_idx == -1) {
-      throw InputSourceException(SString("Bad jar uri format: ") + CString(path));
+      throw InputSourceException("Bad jar uri format: " + UnicodeString(path));
     }
 
     std::unique_ptr<XMLCh[]> bpath( new XMLCh[path_idx - 4 + 1]);
@@ -38,7 +38,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 
     int base_idx = xercesc::XMLString::lastIndexOf(base, '!');
     if (base_idx == -1) {
-      throw InputSourceException(SString("Bad jar uri format: ") + CString(path));
+      throw InputSourceException("Bad jar uri format: " + UnicodeString(path));
     }
 
     std::unique_ptr<XMLCh[]> bpath(new XMLCh[base_idx - 4 + 1]);
@@ -50,7 +50,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
     in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 
   } else {
-    throw InputSourceException(CString("Can't create jar source"));
+    throw InputSourceException("Can't create jar source");
   }
 
   SString str("jar:");
@@ -95,20 +95,20 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
   if (!fid) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Can't locate file in JAR content: '") + path + "'");
+    throw InputSourceException("Can't locate file in JAR content: '" + UStr::to_unistr(path) + "'");
   }
   int ret = unzLocateFile(fid, path->getChars(), 0);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Can't locate file in JAR content: '") + path + "'");
+    throw InputSourceException("Can't locate file in JAR content: '" + UStr::to_unistr(path) + "'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Can't retrieve current file in JAR content: '") + path + "'");
+    throw InputSourceException("Can't retrieve current file in JAR content: '" +  UStr::to_unistr(path) + "'");
   }
 
   len = file_info.uncompressed_size;
@@ -117,19 +117,19 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const String* path)
   if (ret != UNZ_OK)  {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Can't open current file in JAR content: '") + path + "'");
+    throw InputSourceException("Can't open current file in JAR content: '" + UStr::to_unistr(path) + "'");
   }
   ret = unzReadCurrentFile(fid, stream.get(), len);
   if (ret <= 0) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Can't read current file in JAR content: '") + path + "' (" + SString(ret) + ")");
+    throw InputSourceException("Can't read current file in JAR content: '" + UStr::to_unistr(path) + "' (" + UStr::to_unistr(ret) + ")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException(SString("Bad JAR file CRC"));
+    throw InputSourceException("Bad JAR file CRC");
   }
   ret = unzClose(fid);
   delete mf;

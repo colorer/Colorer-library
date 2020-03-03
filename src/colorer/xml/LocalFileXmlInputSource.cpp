@@ -22,7 +22,7 @@ xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
 {
   std::unique_ptr<xercesc::BinFileInputStream> stream(new xercesc::BinFileInputStream(input_source->getSystemId()));
   if (!stream->getIsOpen()) {
-    throw InputSourceException(SString("Can't open file '") + CString(input_source->getSystemId()) + "'");
+    throw InputSourceException("Can't open file '" + UnicodeString(input_source->getSystemId()) + "'");
   }
   return stream.release();
 }

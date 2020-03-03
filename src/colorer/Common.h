@@ -14,5 +14,7 @@ typedef unsigned char byte;
 typedef std::unique_ptr<String> UString;
 typedef std::unique_ptr<SString> USString;
 
+#include <colorer/common/UnicodeString.h>
+
 #endif
 

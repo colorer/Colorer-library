@@ -22,13 +22,13 @@ void CatalogParser::parse(const String* path)
   uXmlInputSource catalogXIS = XmlInputSource::newInstance(path->getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw CatalogParserException(CString("Error reading catalog.xml."));
+    throw CatalogParserException("Error reading catalog.xml.");
   }
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
   if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw CatalogParserException(SString("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file ") + path);
+    throw CatalogParserException("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " + UStr::to_unistr(path));
   }
 
   parseCatalogBlock(elem);

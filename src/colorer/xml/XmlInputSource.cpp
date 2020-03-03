@@ -26,7 +26,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* b
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
 {
   if (!path || (*path == '\0')) {
-    throw InputSourceException(CString("XmlInputSource::newInstance: path is nullptr"));
+    throw InputSourceException("XmlInputSource::newInstance: path is nullptr");
   }
   if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
     return std::make_unique<ZipXmlInputSource>(path, base);
@@ -109,7 +109,7 @@ bool XmlInputSource::isDirectory(const String* path)
   int ret = stat(path->getChars(), &st);
 
   if (ret == -1) {
-    throw Exception(SString("Can't get info for file/path: ") + path);
+    throw Exception("Can't get info for file/path: " +  UStr::to_unistr(path));
   }
   else if ((st.st_mode & S_IFDIR)) {
     is_dir = true;
