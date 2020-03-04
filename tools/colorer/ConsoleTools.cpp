@@ -221,12 +221,12 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         break;
       }
       if (useNames) {
-        writer->write(SString(type->getName()) + "\n");
+        writer->write(UStr::to_string(type->getName()) + "\n");
       } else {
         if (type->getGroup() != nullptr) {
-          writer->write(SString(type->getGroup()) + ": ");
+          writer->write(UStr::to_string(type->getGroup()) + ": ");
         }
-        writer->write(type->getDescription());
+        writer->write(UStr::to_string(type->getDescription()));
         writer->write(CString("\n"));
       }
 
@@ -245,7 +245,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
 {
   FileType* type = nullptr;
   if (typeDescription != nullptr) {
-    type = hrcParser->getFileType(typeDescription.get());
+    type = hrcParser->getFileType(&UStr::to_unistr(typeDescription.get()));
     if (type == nullptr) {
       for (int idx = 0;; idx++) {
         type = hrcParser->enumerateFileTypes(idx);
@@ -254,11 +254,11 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         }
         if (type->getDescription() != nullptr &&
             type->getDescription()->length() >= typeDescription->length() &&
-            CString(type->getDescription(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            CString(UStr::to_string(type->getDescription()), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            CString(type->getName(), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            CString(UStr::to_string(type->getName()), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
           break;
         }
         type = nullptr;
@@ -289,7 +289,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
 	}
 	std::unique_ptr<String> file_name (new SString(fnpath, slash_idx + 1));
 
-    type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
+    type = hrcParser->chooseFileType(&UStr::to_unistr(file_name.get()), &UStr::to_unistr(&textStart), 0);
   }
   return type;
 }

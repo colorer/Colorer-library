@@ -40,7 +40,7 @@ public:
   /** @param name Requested type name.
       @return File type, or null, there are no type with specified name.
   */
-  virtual FileType *getFileType(const String *name) = 0;
+  virtual FileType *getFileType(const UnicodeString *name) = 0;
 
   /** Searches and returns the best type for specified file.
       This method uses fileName and firstLine parameters
@@ -50,7 +50,7 @@ public:
       @param typeNo Sequential number of type, if more than one type
                     satisfy these input parameters.
   */
-  virtual FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0) = 0;
+  virtual FileType *chooseFileType(const UnicodeString *fileName, const UnicodeString *firstLine, int typeNo = 0) = 0;
 
   virtual size_t getFileTypesCount() = 0;
 

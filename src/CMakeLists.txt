@@ -59,6 +59,7 @@ set(SRC_COLORER
     ${COMMON}/Exception.cpp
     ${COMMON}/Features.h
     ${COMMON}/UnicodeString.h ${COMMON}/UnicodeString.cpp
+    ${COMMON}//UnicodeLogger.h
     ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
     ${IO}/FileWriter.h ${IO}/FileWriter.cpp
     ${IO}/InputSource.cpp ${IO}/InputSource.h

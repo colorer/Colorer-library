@@ -1,9 +1,9 @@
 #ifndef _COLORER_FILETYPE_H_
 #define _COLORER_FILETYPE_H_
 
-#include <vector>
 #include <colorer/Common.h>
 #include <colorer/Scheme.h>
+#include <vector>
 
 /**
  * HRC FileType (or prototype) instance.
@@ -11,24 +11,23 @@
  */
 class FileType
 {
-public:
-
+ public:
   /**
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  virtual const String* getName() const = 0;
+  virtual const UnicodeString* getName() const = 0;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  virtual const String* getGroup() const = 0;
+  virtual const UnicodeString* getGroup() const = 0;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  virtual const String* getDescription() const = 0;
+  virtual const UnicodeString* getDescription() const = 0;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.
@@ -41,9 +40,9 @@ public:
       @return Parameter name with index <code>idx</code> or <code>null</code>
       if index is too large.
   */
-  virtual std::vector<SString> enumParams() const = 0;
+  virtual std::vector<UnicodeString> enumParams() const = 0;
 
-  virtual const String* getParamDescription(const String &name) const = 0;
+  virtual const UnicodeString* getParamDescription(const UnicodeString& name) const = 0;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -60,8 +59,8 @@ public:
       @param name Parameter's name
       @return Value (changed or default) of this parameter
   */
-  virtual const String* getParamValue(const String &name) const = 0;
-  virtual int getParamValueInt(const String &name, int def) const = 0;
+  virtual const UnicodeString* getParamValue(const UnicodeString& name) const = 0;
+  virtual int getParamValueInt(const UnicodeString& name, int def) const = 0;
 
   /** Returns parameter's default value of this file type.
       Default values are the values, explicitly pointed with
@@ -69,7 +68,7 @@ public:
       @param name Parameter's name
       @return Default value of this parameter
   */
-  virtual const String* getParamDefaultValue(const String &name) const = 0;
+  virtual const UnicodeString* getParamDefaultValue(const UnicodeString& name) const = 0;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC
@@ -79,12 +78,11 @@ public:
       @param name Parameter's name
       @param value New value of this parameter.
   */
-  virtual void setParamValue(const String &name, const String* value) = 0;
+  virtual void setParamValue(const UnicodeString& name, const UnicodeString* value) = 0;
 
-protected:
+ protected:
   FileType() {};
   virtual ~FileType() {};
 };
 
 #endif
-

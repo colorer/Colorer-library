@@ -1,25 +1,26 @@
 #ifndef _COLORER_FILETYPEIMPL_H_
 #define _COLORER_FILETYPEIMPL_H_
 
-#include <vector>
-#include <unordered_map>
-#include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/FileTypeChooser.h>
+#include <colorer/parsers/HRCParserImpl.h>
+#include <unordered_map>
+#include <vector>
 
 /* structure for storing data of scheme parameter*/
-class TypeParameter {
-public:
-  TypeParameter(): name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
+class TypeParameter
+{
+ public:
+  TypeParameter() : name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
   ~TypeParameter() {}
 
   /* parameter name*/
-  UString name;
+  uUnicodeString name;
   /* parameter description*/
-  UString description;
+  uUnicodeString description;
   /* default value*/
-  UString default_value;
+  uUnicodeString default_value;
   /* user value*/
-  UString user_value;
+  uUnicodeString user_value;
 };
 
 /**
@@ -31,34 +32,35 @@ class FileTypeImpl : public FileType
 {
   friend class HRCParserImpl;
   friend class TextParserImpl;
-public:
-  const String *getName() const;
-  const String *getGroup() const;
-  const String *getDescription() const;
 
-  void setName(const String *name_);
-  void setGroup(const String *group_);
-  void setDescription(const String *description_);
+ public:
+  const UnicodeString* getName() const;
+  const UnicodeString* getGroup() const;
+  const UnicodeString* getDescription() const;
 
-  const String *getParamValue(const String &name) const;
-  const String *getParamDefaultValue(const String &name) const;
-  const String *getParamUserValue(const String &name) const;
-  const String *getParamDescription(const String &name) const;
-  int getParamValueInt(const String &name, int def) const;
+  void setName(const UnicodeString* name_);
+  void setGroup(const UnicodeString* group_);
+  void setDescription(const UnicodeString* description_);
 
-  void setParamValue(const String &name, const String *value);
-  void setParamDefaultValue(const String &name, const String *value);
-  void setParamUserValue(const String &name, const String *value);
-  void setParamDescription(const String &name, const String *value);
+  const UnicodeString* getParamValue(const UnicodeString& name) const;
+  const UnicodeString* getParamDefaultValue(const UnicodeString& name) const;
+  const UnicodeString* getParamUserValue(const UnicodeString& name) const;
+  const UnicodeString* getParamDescription(const UnicodeString& name) const;
+  int getParamValueInt(const UnicodeString& name, int def) const;
 
-  std::vector<SString> enumParams() const;
+  void setParamValue(const UnicodeString& name, const UnicodeString* value);
+  void setParamDefaultValue(const UnicodeString& name, const UnicodeString* value);
+  void setParamUserValue(const UnicodeString& name, const UnicodeString* value);
+  void setParamDescription(const UnicodeString& name, const UnicodeString* value);
+
+  std::vector<UnicodeString> enumParams() const;
   size_t getParamCount() const;
   size_t getParamUserValueCount() const;
 
-  TypeParameter* addParam(const String *name);
-  void removeParamValue(const String &name);
+  TypeParameter* addParam(const UnicodeString* name);
+  void removeParamValue(const UnicodeString& name);
 
-  Scheme *getBaseScheme();
+  Scheme* getBaseScheme();
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -71,8 +73,9 @@ public:
    *        for example). If null, skipped.
    * @return Computed total filetype priority.
    */
-  double getPriority(const String *fileName, const String *fileContent) const;
-protected:
+  double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
+
+ protected:
   /// is prototype component loaded
   bool protoLoaded;
   /// is type component loaded
@@ -84,44 +87,49 @@ protected:
   /// is this IS loading was started
   bool input_source_loading;
 
-  UString name;
-  UString group;
-  UString description;
+  uUnicodeString name;
+  uUnicodeString group;
+  uUnicodeString description;
   bool isPackage;
-  HRCParserImpl *hrcParser;
-  SchemeImpl *baseScheme;
+  HRCParserImpl* hrcParser;
+  SchemeImpl* baseScheme;
 
   std::vector<FileTypeChooser*> chooserVector;
-  std::unordered_map<SString, TypeParameter*> paramsHash;
-  std::vector<UString> importVector;
+  std::unordered_map<UnicodeString, TypeParameter*> paramsHash;
+  std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
 
-  FileTypeImpl(HRCParserImpl *hrcParser);
+  FileTypeImpl(HRCParserImpl* hrcParser);
   ~FileTypeImpl();
 };
 
-inline const String* FileTypeImpl::getName() const{
+inline const UnicodeString* FileTypeImpl::getName() const
+{
   return name.get();
 }
 
-inline const String* FileTypeImpl::getGroup() const{
+inline const UnicodeString* FileTypeImpl::getGroup() const
+{
   return group.get();
 }
 
-inline const String* FileTypeImpl::getDescription() const{
+inline const UnicodeString* FileTypeImpl::getDescription() const
+{
   return description.get();
 }
 
-inline void FileTypeImpl::setName(const String *name_) {
-  name.reset(new SString(name_));
+inline void FileTypeImpl::setName(const UnicodeString* name_)
+{
+  name.reset(new UnicodeString(*name_));
 }
 
-inline void FileTypeImpl::setGroup(const String *group_) {
-  group.reset(new SString(group_));
+inline void FileTypeImpl::setGroup(const UnicodeString* group_)
+{
+  group.reset(new UnicodeString(*group_));
 }
 
-inline void FileTypeImpl::setDescription(const String *description_) {
-  description.reset(new SString(description_));
+inline void FileTypeImpl::setDescription(const UnicodeString* description_)
+{
+  description.reset(new UnicodeString(*description_));
 }
 #endif
-

@@ -24,9 +24,9 @@ public:
 
 
   void loadSource(XmlInputSource* is);
-  FileType* getFileType(const String* name);
+  FileType* getFileType(const UnicodeString* name);
   FileType* enumerateFileTypes(int index);
-  FileType* chooseFileType(const String* fileName, const String* firstLine, int typeNo = 0);
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
   size_t getFileTypesCount();
 
   size_t getRegionCount();
@@ -41,7 +41,7 @@ protected:
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
-  std::unordered_map<SString, FileTypeImpl*> fileTypeHash;
+  std::unordered_map<UnicodeString, FileTypeImpl*> fileTypeHash;
   // types, not packages
   std::vector<FileTypeImpl*>    fileTypeVector;
 
@@ -89,7 +89,7 @@ protected:
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
-  String* qualifyOwnName(const String* name);
+  UnicodeString* qualifyOwnName(const UnicodeString* name);
   bool checkNameExist(const String* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors);
   String* qualifyForeignName(const String* name, QualifyNameType qntype, bool logErrors);
 

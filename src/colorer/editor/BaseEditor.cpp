@@ -1,4 +1,5 @@
 #include <colorer/editor/BaseEditor.h>
+#include <colorer/common/UnicodeLogger.h>
 
 #define IDLE_PARSE(time) (100+time*4)
 
@@ -117,7 +118,7 @@ void BaseEditor::remapLRS(bool recreate)
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  spdlog::debug("[BaseEditor] setFileType: {0}", ftype->getName()->getChars());
+  spdlog::debug("[BaseEditor] setFileType: {0}", *ftype->getName());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
@@ -125,7 +126,7 @@ void BaseEditor::setFileType(FileType* ftype)
 
 FileType* BaseEditor::setFileType(const String& fileType)
 {
-  currentFileType = hrcParser->getFileType(&fileType);
+  currentFileType = hrcParser->getFileType(&UStr::to_unistr(&fileType));
   setFileType(currentFileType);
   return currentFileType;
 }
@@ -147,10 +148,10 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
       break;
     }
   }
-  currentFileType = hrcParser->chooseFileType(fileName, &textStart);
+  currentFileType = hrcParser->chooseFileType(&UStr::to_unistr(fileName), &UStr::to_unistr(&textStart));
 
-  int chooseStrNext = currentFileType->getParamValueInt(CString("firstlines"), chooseStr);
-  int chooseLenNext = currentFileType->getParamValueInt(CString("firstlinebytes"), chooseLen);
+  int chooseStrNext = currentFileType->getParamValueInt("firstlines", chooseStr);
+  int chooseLenNext = currentFileType->getParamValueInt("firstlinebytes", chooseLen);
 
   if (chooseStrNext != chooseStr || chooseLenNext != chooseLen) {
     currentFileType = chooseFileTypeCh(fileName, chooseStrNext, chooseLenNext);
@@ -161,15 +162,15 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
 FileType* BaseEditor::chooseFileType(const String* fileName)
 {
   if (lineSource == nullptr) {
-    currentFileType = hrcParser->chooseFileType(fileName, nullptr);
+    currentFileType = hrcParser->chooseFileType(&UStr::to_unistr(fileName), nullptr);
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
-    CString ds_def = CString("default");
+    UnicodeString ds_def = UnicodeString("default");
     FileType* def = hrcParser->getFileType(&ds_def);
     if (def) {
-      chooseStr = def->getParamValueInt(CString("firstlines"), chooseStr);
-      chooseLen = def->getParamValueInt(CString("firstlinebytes"), chooseLen);
+      chooseStr = def->getParamValueInt("firstlines", chooseStr);
+      chooseLen = def->getParamValueInt("firstlinebytes", chooseLen);
     }
 
     currentFileType = chooseFileTypeCh(fileName, chooseStr, chooseLen);
