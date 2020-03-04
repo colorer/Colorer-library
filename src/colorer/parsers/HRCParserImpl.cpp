@@ -424,7 +424,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
 
   UnicodeString* baseSchemeName = qualifyOwnName(type->getName());
   if (baseSchemeName != nullptr) {
-    auto sh = schemeHash.find(&UStr::to_string(baseSchemeName));
+    auto sh = schemeHash.find(*baseSchemeName);
     type->baseScheme = sh == schemeHash.end() ? nullptr : sh->second;
   }
   delete baseSchemeName;
@@ -482,9 +482,9 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   if (qname1 == nullptr) {
     return;
   }
-  CString d_regionparent = CString(regionParent);
-  String* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QNT_DEFINE, true);
-  if (regionNamesHash.find(&UStr::to_string(qname1)) != regionNamesHash.end()) {
+  UnicodeString d_regionparent = UnicodeString(regionParent);
+  UnicodeString* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QNT_DEFINE, true);
+  if (regionNamesHash.find(*qname1) != regionNamesHash.end()) {
     spdlog::warn("Duplicate region '{0}' definition in type '{1}'", *qname1, *parseType->getName());
     delete qname1;
     delete qname2;
@@ -492,9 +492,9 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   UnicodeString regiondescr = UnicodeString(regionDescr);
-  const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), (int)regionNamesVector.size());
+  const Region* region = new Region(qname1, &regiondescr, getRegion(&UStr::to_string(qname2)), (int)regionNamesVector.size());
   regionNamesVector.push_back(region);
-  std::pair<SString, const Region*> pp(UStr::to_string(qname1), region);
+  std::pair<UnicodeString, const Region*> pp(*qname1, region);
   regionNamesHash.emplace(pp);
 
   delete qname1;
@@ -510,11 +510,11 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
     return;
   }
   UnicodeString dentityName = UnicodeString(entityName);
-  CString dentityValue = CString(entityValue);
+  UnicodeString dentityValue = UnicodeString(entityValue);
   UnicodeString* qname1 = qualifyOwnName(&dentityName);
-  String* qname2 = useEntities(&dentityValue);
+  UnicodeString* qname2 = useEntities(&dentityValue);
   if (qname1 != nullptr && qname2 != nullptr) {
-    std::pair<SString, String*> pp(UStr::to_string(qname1), qname2);
+    std::pair<UnicodeString, UnicodeString*> pp(*qname1, qname2);
     schemeEntitiesHash.emplace(pp);
     delete qname1;
   }
@@ -540,18 +540,18 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
     spdlog::error("bad scheme name in type '{0}'", *parseType->name.get());
     return;
   }
-  if (schemeHash.find(UStr::to_string(qSchemeName)) != schemeHash.end() ||
-      disabledSchemes.find(UStr::to_string(qSchemeName)) != disabledSchemes.end()) {
+  if (schemeHash.find(*qSchemeName) != schemeHash.end() ||
+      disabledSchemes.find(*qSchemeName) != disabledSchemes.end()) {
     spdlog::error("duplicate scheme name '{0}'", *qSchemeName);
     delete qSchemeName;
     return;
   }
 
-  auto* scheme = new SchemeImpl(&UStr::to_string(qSchemeName));
+  auto* scheme = new SchemeImpl(qSchemeName);
   delete qSchemeName;
   scheme->fileType = parseType;
 
-  std::pair<SString, SchemeImpl*> pp(scheme->getName(), scheme);
+  std::pair<UnicodeString, SchemeImpl*> pp(*scheme->getName(), scheme);
   schemeHash.emplace(pp);
   const XMLCh* condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh* condUnless = elem->getAttribute(hrcSchemeAttrUnless);
@@ -601,20 +601,20 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
 {
   const XMLCh* nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
   if (*nqSchemeName == '\0') {
-    spdlog::error("empty scheme name in inheritance operator in scheme '{0}'", scheme->schemeName->getChars());
+    spdlog::error("empty scheme name in inheritance operator in scheme '{0}'", *scheme->schemeName.get());
     return;
   }
   auto* scheme_node = new SchemeNode();
   scheme_node->type = SchemeNode::SNT_INHERIT;
-  scheme_node->schemeName = std::make_unique<SString>(CString(nqSchemeName));
-  CString dnqSchemeName = CString(nqSchemeName);
-  String* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
+  scheme_node->schemeName = std::make_unique<UnicodeString>(UnicodeString(nqSchemeName));
+  UnicodeString dnqSchemeName = UnicodeString(nqSchemeName);
+  UnicodeString* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
   if (schemeName == nullptr) {
     //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with '"+scheme->schemeName+"'");
     //        delete next;
     //        continue;
   } else {
-    scheme_node->scheme = schemeHash.find(schemeName)->second;
+    scheme_node->scheme = schemeHash.find(*schemeName)->second;
   }
   if (schemeName != nullptr) {
     scheme_node->schemeName.reset(schemeName);
@@ -627,11 +627,11 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
         const XMLCh* x_schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
         const XMLCh* x_substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
         if (*x_schemeName == '\0' || *x_substName == '\0') {
-          spdlog::error("bad virtualize attributes in scheme '{0}'", scheme->schemeName->getChars());
+          spdlog::error("bad virtualize attributes in scheme '{0}'", *scheme->schemeName.get());
           continue;
         }
-        CString d_schemeName = CString(x_schemeName);
-        CString d_substName = CString(x_substName);
+        UnicodeString d_schemeName = UnicodeString(x_schemeName);
+        UnicodeString d_substName = UnicodeString(x_substName);
         scheme_node->virtualEntryVector.push_back(new VirtualEntry(&d_schemeName, &d_substName));
       }
     }
@@ -660,18 +660,18 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
     }
   }
   if (matchParam == nullptr) {
-    spdlog::error("no 'match' in regexp in scheme '{0}'", scheme->schemeName->getChars());
+    spdlog::error("no 'match' in regexp in scheme '{0}'", *scheme->schemeName.get());
     return;
   }
-  CString dmatchParam = CString(matchParam);
-  String* entMatchParam = useEntities(&dmatchParam);
+  UnicodeString dmatchParam = UnicodeString(matchParam);
+  UnicodeString* entMatchParam = useEntities(&dmatchParam);
   auto* scheme_node = new SchemeNode();
   CString dhrcRegexpAttrPriority = CString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = CString("low").equals(&dhrcRegexpAttrPriority);
   scheme_node->type = SchemeNode::SNT_RE;
-  scheme_node->start = std::make_unique<CRegExp>(entMatchParam);
+  scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(entMatchParam));
   if (!scheme_node->start || !scheme_node->start->isOk())
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", entMatchParam->getChars(), scheme->schemeName->getChars());
+    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *entMatchParam, *scheme->schemeName.get());
   delete entMatchParam;
   scheme_node->start->setPositionMoves(false);
   scheme_node->end = nullptr;
@@ -730,30 +730,30 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
     }
   }
 
-  String* startParam;
-  String* endParam;
-  CString dsParam = CString(sParam);
+  UnicodeString* startParam;
+  UnicodeString* endParam;
+  UnicodeString dsParam = UnicodeString(sParam);
   if (!(startParam = useEntities(&dsParam))) {
-    spdlog::error("'start' block attribute not found in scheme '{0}'", scheme->schemeName->getChars());
+    spdlog::error("'start' block attribute not found in scheme '{0}'", *scheme->schemeName.get());
     delete startParam;
     return;
   }
-  CString deParam = CString(eParam);
+  UnicodeString deParam = UnicodeString(eParam);
   if (!(endParam = useEntities(&deParam))) {
-    spdlog::error("'end' block attribute not found in scheme '{0}'", scheme->schemeName->getChars());
+    spdlog::error("'end' block attribute not found in scheme '{0}'",  *scheme->schemeName.get());
     delete startParam;
     delete endParam;
     return;
   }
   const XMLCh* schemeName = elem->getAttribute(hrcBlockAttrScheme);
   if (*schemeName == '\0') {
-    spdlog::error("block with bad scheme attribute in scheme '{0}'", scheme->schemeName->getChars());
+    spdlog::error("block with bad scheme attribute in scheme '{0}'",  *scheme->schemeName.get());
     delete startParam;
     delete endParam;
     return;
   }
   auto* scheme_node = new SchemeNode();
-  scheme_node->schemeName = std::make_unique<SString>(CString(schemeName));
+  scheme_node->schemeName = std::make_unique<UnicodeString>(UnicodeString(schemeName));
   CString attr_pr = CString(elem->getAttribute(hrcBlockAttrPriority));
   CString attr_cpr = CString(elem->getAttribute(hrcBlockAttrContentPriority));
   CString attr_ireg = CString(elem->getAttribute(hrcBlockAttrInnerRegion));
@@ -761,17 +761,17 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme_node->lowContentPriority = CString("low").equals(&attr_cpr);
   scheme_node->innerRegion = CString("yes").equals(&attr_ireg);
   scheme_node->type = SchemeNode::SNT_SCHEME;
-  scheme_node->start = std::make_unique<CRegExp>(startParam);
+  scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(startParam));
   scheme_node->start->setPositionMoves(false);
   if (!scheme_node->start->isOk()) {
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", startParam->getChars(), scheme->schemeName->getChars());
+    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *startParam, *scheme->schemeName.get());
   }
   scheme_node->end = std::make_unique<CRegExp>();
   scheme_node->end->setPositionMoves(true);
   scheme_node->end->setBackRE(scheme_node->start.get());
-  scheme_node->end->setRE(endParam);
+  scheme_node->end->setRE(&UStr::to_string(endParam));
   if (!scheme_node->end->isOk()) {
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", endParam->getChars(), scheme->schemeName->getChars());
+    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *endParam, *scheme->schemeName.get());
   }
   delete startParam;
   delete endParam;
@@ -800,11 +800,11 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
 
   scheme_node->worddiv = nullptr;
   if (*worddiv != '\0') {
-    CString dworddiv = CString(worddiv);
-    String* entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr));
+    UnicodeString dworddiv = UnicodeString(worddiv);
+    UnicodeString* entWordDiv = useEntities(&dworddiv);
+    scheme_node->worddiv.reset(CharacterClass::createCharClass(UStr::to_string(entWordDiv), 0, nullptr));
     if (scheme_node->worddiv == nullptr) {
-      spdlog::error("fault compiling worddiv regexp '{0}' in scheme '{1}'", entWordDiv->getChars(), scheme->schemeName->getChars());
+      spdlog::error("fault compiling worddiv regexp '{0}' in scheme '{1}'", *entWordDiv, *scheme->schemeName.get());
     }
     delete entWordDiv;
   }
@@ -952,11 +952,11 @@ void HRCParserImpl::updateLinks()
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes.at(sni);
         if (snode->schemeName != nullptr && (snode->type == SchemeNode::SNT_SCHEME || snode->type == SchemeNode::SNT_INHERIT) && snode->scheme == nullptr) {
-          String* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
+          UnicodeString* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
           if (schemeName != nullptr) {
-            snode->scheme = schemeHash.find(schemeName)->second;
+            snode->scheme = schemeHash.find(*schemeName)->second;
           } else {
-            spdlog::error("cannot resolve scheme name '{0}' in scheme '{1}'", snode->schemeName->getChars(), scheme->schemeName->getChars());
+            spdlog::error("cannot resolve scheme name '{0}' in scheme '{1}'", *snode->schemeName,  *scheme->schemeName.get());
           }
           delete schemeName;
           snode->schemeName.reset();
@@ -964,21 +964,21 @@ void HRCParserImpl::updateLinks()
         if (snode->type == SchemeNode::SNT_INHERIT) {
           for (auto vt : snode->virtualEntryVector) {
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
-              String* vsn = qualifyForeignName(vt->virtSchemeName.get(), QNT_SCHEME, true);
+              UnicodeString* vsn = qualifyForeignName(vt->virtSchemeName.get(), QNT_SCHEME, true);
               if (vsn) {
-                vt->virtScheme = schemeHash.find(vsn)->second;
+                vt->virtScheme = schemeHash.find(*vsn)->second;
               } else {
-                spdlog::error("cannot virtualize scheme '{0}' in scheme '{1}'", vt->virtSchemeName->getChars(), scheme->schemeName->getChars());
+                spdlog::error("cannot virtualize scheme '{0}' in scheme '{1}'", *vt->virtSchemeName.get(),  *scheme->schemeName.get());
               }
               delete vsn;
               vt->virtSchemeName.reset();
             }
             if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
-              String* vsn = qualifyForeignName(vt->substSchemeName.get(), QNT_SCHEME, true);
+              UnicodeString* vsn = qualifyForeignName(vt->substSchemeName.get(), QNT_SCHEME, true);
               if (vsn) {
-                vt->substScheme = schemeHash.find(vsn)->second;
+                vt->substScheme = schemeHash.find(*vsn)->second;
               } else {
-                spdlog::error("cannot virtualize using subst-scheme scheme '{0}' in scheme '{1}'", vt->substSchemeName->getChars(), scheme->schemeName->getChars());
+                spdlog::error("cannot virtualize using subst-scheme scheme '{0}' in scheme '{1}'", *vt->substSchemeName.get(),  *scheme->schemeName.get());
               }
               delete vsn;
               vt->substSchemeName.reset();
@@ -1017,33 +1017,33 @@ UnicodeString* HRCParserImpl::qualifyOwnName(const UnicodeString* name)
   }
 }
 
-bool HRCParserImpl::checkNameExist(const String* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors)
+bool HRCParserImpl::checkNameExist(const UnicodeString* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors)
 {
-  if (qntype == QNT_DEFINE && regionNamesHash.find(name) == regionNamesHash.end()) {
+  if (qntype == QNT_DEFINE && regionNamesHash.find(*name) == regionNamesHash.end()) {
     if (logErrors)
-      spdlog::error("region '{0}', referenced in type '{1}', is not defined", name->getChars(), *parseType->name.get());
+      spdlog::error("region '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
     return false;
-  } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(name) == schemeEntitiesHash.end()) {
+  } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
     if (logErrors)
-      spdlog::error("entity '{0}', referenced in type '{1}', is not defined", name->getChars(), *parseType->name.get());
+      spdlog::error("entity '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
     return false;
-  } else if (qntype == QNT_SCHEME && schemeHash.find(name) == schemeHash.end()) {
+  } else if (qntype == QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
     if (logErrors)
-      spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", name->getChars(), *parseType->name.get());
+      spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
     return false;
   }
   return true;
 }
 
-String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qntype, bool logErrors)
+UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors)
 {
   if (name == nullptr) {
     return nullptr;
   }
   size_t colon = name->indexOf(':');
   if (colon != String::npos) { // qualified name
-    CString prefix(name, 0, colon);
-    auto ft = fileTypeHash.find(UStr::to_unistr(&prefix));
+    UnicodeString prefix(*name, 0, colon);
+    auto ft = fileTypeHash.find(prefix);
     FileTypeImpl* prefType = nullptr;
     if (ft != fileTypeHash.end()) {
       prefType = ft->second;
@@ -1051,14 +1051,14 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
 
     if (prefType == nullptr) {
       if (logErrors) {
-        spdlog::error("type name qualifer in '{0}' doesn't match any type", name->getChars());
+        spdlog::error("type name qualifer in '{0}' doesn't match any type", *name);
       }
       return nullptr;
     } else if (!prefType->type_loaded) {
       loadFileType(prefType);
     }
     if (prefType == parseType || prefType->type_loaded) {
-      return checkNameExist(name, prefType, qntype, logErrors) ? (new SString(name)) : nullptr;
+      return checkNameExist(name, prefType, qntype, logErrors) ? (new UnicodeString(*name)) : nullptr;
     }
   } else { // unqualified name
     for (int idx = -1; parseType != nullptr && idx < static_cast<int>(parseType->importVector.size()); idx++) {
@@ -1071,21 +1071,21 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
         loadFileType(importer);
       }
 
-      auto* qname = new SString(UStr::to_string(tname));
-      qname->append(CString(":")).append(name);
+      auto* qname = new UnicodeString(*tname);
+      qname->append(":").append(*name);
       if (checkNameExist(qname, importer, qntype, false)) {
         return qname;
       }
       delete qname;
     }
     if (logErrors) {
-      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", name->getChars(), XStr(current_input_source->getInputSource()->getSystemId()).get_char());
+      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name, XStr(current_input_source->getInputSource()->getSystemId()).get_char());
     }
   }
   return nullptr;
 }
 
-String* HRCParserImpl::useEntities(const String* name)
+UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
 {
   int copypos = 0;
   size_t epos = 0;
@@ -1093,7 +1093,7 @@ String* HRCParserImpl::useEntities(const String* name)
   if (!name) {
     return nullptr;
   }
-  auto* newname = new SString();
+  auto* newname = new UnicodeString();
 
   while (true) {
     epos = name->indexOf('%', epos);
@@ -1110,25 +1110,25 @@ String* HRCParserImpl::useEntities(const String* name)
       epos = name->length();
       break;
     }
-    CString enname(name, epos + 1, elpos - epos - 1);
+    UnicodeString enname(*name, epos + 1, elpos - epos - 1);
 
-    String* qEnName = qualifyForeignName(&enname, QNT_ENTITY, true);
-    const String* enval = nullptr;
+    UnicodeString* qEnName = qualifyForeignName(&enname, QNT_ENTITY, true);
+    const UnicodeString* enval = nullptr;
     if (qEnName != nullptr) {
-      enval = schemeEntitiesHash.find(qEnName)->second;
+      enval = schemeEntitiesHash.find(*qEnName)->second;
       delete qEnName;
     }
     if (enval == nullptr) {
       epos++;
       continue;
     }
-    newname->append(CString(name, copypos, epos - copypos));
-    newname->append(enval);
+    newname->append(UnicodeString(*name, copypos, epos - copypos));
+    newname->append(*enval);
     epos = elpos + 1;
     copypos = epos;
   }
   if (epos > copypos) {
-    newname->append(CString(name, copypos, epos - copypos));
+    newname->append(UnicodeString(*name, copypos, epos - copypos));
   }
   return newname;
 }
@@ -1139,11 +1139,11 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
     return nullptr;
   }
   const Region* reg;
-  String* qname = qualifyForeignName(name, QNT_DEFINE, logErrors);
+  UnicodeString* qname = qualifyForeignName(&UStr::to_unistr(name), QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
   }
-  auto reg_ = regionNamesHash.find(qname);
+  auto reg_ = regionNamesHash.find(*qname);
   if (reg_ != regionNamesHash.end()) {
     reg = reg_->second;
   } else {

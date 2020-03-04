@@ -14,6 +14,7 @@ UnicodeString UStr::to_unistr(int number)
 
 SString UStr::to_string(const UnicodeString* str)
 {
+  if (!str) return SString();
   auto len = str->length();
   std::unique_ptr<UChar[]> out_s(new UChar[len + 1]);
   str->extract(0, len, out_s.get());

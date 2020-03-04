@@ -27,7 +27,7 @@ public:
 
   SchemeNodeType type;
 
-  UString schemeName;
+  uUnicodeString schemeName;
   SchemeImpl* scheme;
 
   VirtualEntryVector virtualEntryVector;

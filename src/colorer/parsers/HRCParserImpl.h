@@ -45,12 +45,12 @@ protected:
   // types, not packages
   std::vector<FileTypeImpl*>    fileTypeVector;
 
-  std::unordered_map<SString, SchemeImpl*>   schemeHash;
-  std::unordered_map<SString, int> disabledSchemes;
+  std::unordered_map<UnicodeString, SchemeImpl*>   schemeHash;
+  std::unordered_map<UnicodeString, int> disabledSchemes;
 
   std::vector<const Region*> regionNamesVector;
-  std::unordered_map<SString, const Region*> regionNamesHash;
-  std::unordered_map<SString, String*> schemeEntitiesHash;
+  std::unordered_map<UnicodeString, const Region*> regionNamesHash;
+  std::unordered_map<UnicodeString, UnicodeString*> schemeEntitiesHash;
 
   String* versionName;
 
@@ -90,11 +90,11 @@ protected:
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
   UnicodeString* qualifyOwnName(const UnicodeString* name);
-  bool checkNameExist(const String* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors);
-  String* qualifyForeignName(const String* name, QualifyNameType qntype, bool logErrors);
+  bool checkNameExist(const UnicodeString* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors);
+  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors);
 
   void updateLinks();
-  String* useEntities(const String* name);
+  UnicodeString* useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const String& tag);
   const Region* getNCRegion(const String* name, bool logErrors);
 };

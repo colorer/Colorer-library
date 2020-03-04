@@ -19,7 +19,7 @@ class SchemeImpl : public Scheme
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const String* getName() const
+  const UnicodeString* getName() const
   {
     return schemeName.get();
   }
@@ -31,13 +31,13 @@ public:
 
 
 protected:
-  UString schemeName;
+  uUnicodeString schemeName;
   std::vector<SchemeNode*> nodes;
   FileTypeImpl* fileType;
 
-  SchemeImpl(const String* sn)
+  SchemeImpl(const UnicodeString* sn)
   {
-    schemeName.reset(new SString(sn));
+    schemeName.reset(new UnicodeString(*sn));
     fileType = nullptr;
   }
 
