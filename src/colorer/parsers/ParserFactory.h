@@ -52,14 +52,14 @@ public:
   /**
    * Enumerates all declared hrd classes
    */
-  std::vector<SString> enumHRDClasses();
+  std::vector<UnicodeString> enumHRDClasses();
 
   /**
    * Enumerates all declared hrd instances of specified class
    */
-  std::vector<const HRDNode*> enumHRDInstances(const String &classID);
+  std::vector<const HRDNode*> enumHRDInstances(const UnicodeString &classID);
 
-  const HRDNode* getHRDNode(const String &classID, const String &nameID);
+  const HRDNode* getHRDNode(const UnicodeString &classID, const UnicodeString &nameID);
   /**
    * Creates and loads HRCParser instance from catalog.xml file.
    * This method can detect directory entries, and sequentally load their
@@ -82,7 +82,7 @@ public:
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  StyledHRDMapper* createStyledMapper(const String* classID, const String* nameID);
+  StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
    * It uses 'text' class by default.
@@ -90,9 +90,9 @@ public:
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  TextHRDMapper* createTextMapper(const String* nameID);
+  TextHRDMapper* createTextMapper(const UnicodeString* nameID);
 
-  size_t countHRD(const String &classID);
+  size_t countHRD(const UnicodeString &classID);
 
   /**
   * @param catalog_path Path to catalog.xml file. If null,
@@ -112,7 +112,7 @@ private:
 
   SString base_catalog_path;
   std::vector<SString> hrc_locations;
-  std::unordered_map<SString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
+  std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
 
   HRCParser* hrc_parser;
 

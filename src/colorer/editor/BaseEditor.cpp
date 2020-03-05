@@ -88,7 +88,7 @@ void BaseEditor::setRegionMapper(const String* hrdClass, const String* hrdName)
   if (internalRM) {
     delete regionMapper;
   }
-  regionMapper = parserFactory->createStyledMapper(hrdClass, hrdName);
+  regionMapper = parserFactory->createStyledMapper(&UStr::to_unistr(hrdClass), &UStr::to_unistr(hrdName));
   internalRM = true;
   remapLRS(false);
 }

@@ -249,9 +249,9 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
 
     int cr;
     if (node->kwList->matchCase) {
-      cr = node->kwList->kwList[pos].keyword->compareTo(DString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->compare(UStr::to_unistr(&DString(*str, gx, kwlen)));
     } else {
-      cr = node->kwList->kwList[pos].keyword->compareToIgnoreCase(DString(*str, gx, kwlen));
+      cr = node->kwList->kwList[pos].keyword->caseCompare(UStr::to_unistr(&DString(*str, gx, kwlen)),0);
     }
 
     if (cr == 0 && right - left == 1) {

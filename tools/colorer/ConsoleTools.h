@@ -64,7 +64,7 @@ public:
   /// Optional path to base catalog.xml
   void setCatalogPath(const String &str);
   /// Optional HRD instance name, used to perform parsing
-  void setHRDName(const String &str);
+  void setHRDName(const UnicodeString &str);
   /// Sets linking datasource into this filename
   void setLinkSource(const String &str);
   /// If true, result file will have line numbers before each line
@@ -127,7 +127,7 @@ private:
 
   std::unique_ptr<String> typeDescription;
   std::unique_ptr<String> catalogPath;
-  std::unique_ptr<String> hrdName;
+  std::unique_ptr<UnicodeString> hrdName;
   std::unique_ptr<String> outputFileName;
   std::unique_ptr<String> inputFileName;
 

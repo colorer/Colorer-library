@@ -5,6 +5,7 @@
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlTagDefs.h>
+#include <colorer/common/UnicodeLogger.h>
 
 void CatalogParser::parse(const String* path)
 {
@@ -112,9 +113,9 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   }
 
   auto hrd_node = std::make_unique<HRDNode>();
-  hrd_node->hrd_class = SString(xhrd_class);
-  hrd_node->hrd_name = SString(xhrd_name);
-  hrd_node->hrd_description = SString(xhrd_desc);
+  hrd_node->hrd_class = UnicodeString(xhrd_class);
+  hrd_node->hrd_name = UnicodeString(xhrd_name);
+  hrd_node->hrd_description = UnicodeString(xhrd_desc);
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -122,8 +123,8 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
         auto* subelem = static_cast<xercesc::DOMElement*>(node);
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
-          hrd_node->hrd_location.emplace_back(SString(CString(attr_value)));
-          spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+          hrd_node->hrd_location.emplace_back(UnicodeString(attr_value));
+          spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(), hrd_node->hrd_class, hrd_node->hrd_name);
         } else {
           spdlog::warn("found hrd with empty location. skip it location.");
         }
@@ -134,7 +135,7 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   if (!hrd_node->hrd_location.empty()) {
     return hrd_node;
   } else {
-    spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+    spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class, hrd_node->hrd_name);
     return nullptr;
   }
 }

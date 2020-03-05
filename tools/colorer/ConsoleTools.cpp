@@ -102,9 +102,9 @@ void ConsoleTools::setCatalogPath(const String &str)
 #endif
 }
 
-void ConsoleTools::setHRDName(const String &str)
+void ConsoleTools::setHRDName(const UnicodeString &str)
 {
-  hrdName.reset(new SString(str));
+  hrdName.reset(new UnicodeString(str));
 }
 
 void ConsoleTools::setLinkSource(const String &str)
@@ -308,7 +308,7 @@ void ConsoleTools::profile(int loopCount)
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
   CString dcons = CString("console");
-  baseEditor.setRegionMapper(&dcons, hrdName.get());
+  baseEditor.setRegionMapper(&dcons, &UStr::to_string(hrdName.get()));
   FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
@@ -337,7 +337,7 @@ void ConsoleTools::viewFile()
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
     CString dcons = CString("console");
-    baseEditor.setRegionMapper(&dcons, hrdName.get());
+    baseEditor.setRegionMapper(&dcons, &UStr::to_string(hrdName.get()));
     FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
@@ -401,7 +401,7 @@ void ConsoleTools::genOutput(bool useTokens)
     RegionMapper* mapper = nullptr;
     if (!useTokens) {
       try {
-        CString drgb = CString("rgb");
+        UnicodeString drgb = UnicodeString("rgb");
         mapper = pf.createStyledMapper(&drgb, hrdName.get());
       } catch (ParserFactoryException &) {
         useMarkup = true;

@@ -212,7 +212,7 @@ const char* ParserFactory::getVersion()
   return "Colorer-take5 Library be5 28 May 2006";
 }
 
-size_t ParserFactory::countHRD(const String &classID)
+size_t ParserFactory::countHRD(const UnicodeString &classID)
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
@@ -221,9 +221,9 @@ size_t ParserFactory::countHRD(const String &classID)
   return hash->second->size();
 }
 
-std::vector<SString> ParserFactory::enumHRDClasses()
+std::vector<UnicodeString> ParserFactory::enumHRDClasses()
 {
-  std::vector<SString> result;
+  std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
   for (auto & hrd_node : hrd_nodes) {
     result.push_back(hrd_node.first);
@@ -231,7 +231,7 @@ std::vector<SString> ParserFactory::enumHRDClasses()
   return result;
 }
 
-std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const String &classID)
+std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const UnicodeString &classID)
 {
   auto hash = hrd_nodes.find(classID);
   std::vector<const HRDNode*> result;
@@ -242,18 +242,18 @@ std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const String &classI
   return result;
 }
 
-const HRDNode* ParserFactory::getHRDNode(const String &classID, const String &nameID)
+const HRDNode* ParserFactory::getHRDNode(const UnicodeString &classID, const UnicodeString &nameID)
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
-    throw ParserFactoryException("can't find HRDClass '" + UStr::to_unistr(&classID) + "'");
+    throw ParserFactoryException("can't find HRDClass '" + classID + "'");
   }
   for (auto & p : *hash->second) {
-    if (nameID.compareTo(p.get()->hrd_name) == 0) {
+    if (nameID.compare(p.get()->hrd_name) == 0) {
       return p.get();
     }
   }
-  throw ParserFactoryException("can't find HRDName '" + UStr::to_unistr(&nameID) + "'");
+  throw ParserFactoryException("can't find HRDName '" + nameID + "'");
 }
 
 HRCParser* ParserFactory::getHRCParser() const
@@ -266,23 +266,23 @@ TextParser* ParserFactory::createTextParser()
   return new TextParserImpl();
 }
 
-StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const String* nameID)
+StyledHRDMapper* ParserFactory::createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID)
 {
-  const String* class_id;
-  const CString class_default("rgb");
+  const UnicodeString* class_id;
+  const UnicodeString class_default("rgb");
   if (classID == nullptr) {
     class_id = &class_default;
   } else {
     class_id = classID;
   }
 
-  const String* name_id;
-  const CString name_default("default");
-  CString name_env;
+  const UnicodeString* name_id;
+  const UnicodeString name_default("default");
+  UnicodeString name_env;
   if (nameID == nullptr) {
     char* hrd = getenv("COLORER5HRD");
     if (hrd != nullptr) {
-      name_env = CString(hrd);
+      name_env = UnicodeString(hrd);
       name_id = &name_env;
     } else {
       name_id = &name_default;
@@ -298,7 +298,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
     if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
+        dfis = XmlInputSource::newInstance(UStr::to_string(&idx).getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd:");
@@ -309,13 +309,13 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
   return mapper;
 }
 
-TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
+TextHRDMapper* ParserFactory::createTextMapper(const UnicodeString* nameID)
 {
   // fixed class 'text'
-  CString d_text = CString("text");
+  UnicodeString d_text = UnicodeString("text");
 
-  const String* name_id;
-  const CString name_default("default");
+  const UnicodeString* name_id;
+  const UnicodeString name_default("default");
   if (nameID == nullptr) {
     name_id = &name_default;
   } else {
@@ -329,7 +329,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
     if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
+        dfis = XmlInputSource::newInstance(UStr::to_string(&idx).getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd: ");

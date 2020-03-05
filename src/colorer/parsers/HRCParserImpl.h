@@ -33,7 +33,7 @@ public:
   const Region* getRegion(int id);
   const Region* getRegion(const String* name);
 
-  const String* getVersion();
+  const UnicodeString* getVersion();
 
 protected:
   friend class FileTypeImpl;
@@ -52,7 +52,7 @@ protected:
   std::unordered_map<UnicodeString, const Region*> regionNamesHash;
   std::unordered_map<UnicodeString, UnicodeString*> schemeEntitiesHash;
 
-  String* versionName;
+  UnicodeString* versionName;
 
   FileTypeImpl* parseProtoType;
   FileTypeImpl* parseType;

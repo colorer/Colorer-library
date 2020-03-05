@@ -11,7 +11,7 @@
     @ingroup colorer_parsers
 */
 struct KeywordInfo {
-  std::unique_ptr<const SString> keyword;
+  std::unique_ptr<const UnicodeString> keyword;
   const Region* region;
   bool isSymbol;
   int  ssShorter;

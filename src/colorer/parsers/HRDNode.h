@@ -13,10 +13,10 @@ public:
     hrd_location.clear();
   }
 
-  SString hrd_class;
-  SString hrd_name;
-  SString hrd_description;
-  std::vector<SString> hrd_location;
+  UnicodeString hrd_class;
+  UnicodeString hrd_name;
+  UnicodeString hrd_description;
+  std::vector<UnicodeString> hrd_location;
 };
 
 #endif //_COLORER_HRDNODE_H_

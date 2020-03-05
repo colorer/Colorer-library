@@ -16,12 +16,12 @@ KeywordList::~KeywordList()
 
 int kwCompare(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->compareTo(*((KeywordInfo*)e2)->keyword);
+  return ((KeywordInfo*)e1)->keyword->compare(*((KeywordInfo*)e2)->keyword.get());
 }
 
 int kwCompareI(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->compareToIgnoreCase(*((KeywordInfo*)e2)->keyword);
+  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword.get(),0);
 }
 
 void KeywordList::sortList()
@@ -52,7 +52,7 @@ void KeywordList::substrIndex()
         break;
       }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          CString(kwList[i].keyword.get(), 0, kwList[ii].keyword->length()).equals(kwList[ii].keyword.get())) {
+          UnicodeString(*kwList[i].keyword.get(), 0, kwList[ii].keyword->length()).compare(*kwList[ii].keyword.get())==0) {
         kwList[i].ssShorter = ii;
         break;
       }

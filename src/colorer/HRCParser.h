@@ -69,7 +69,7 @@ public:
       Usually this is the 'version' attribute of 'hrc' element
       of the first loaded HRC file.
   */
-  virtual const String *getVersion() = 0;
+  virtual const UnicodeString *getVersion() = 0;
 
   virtual ~HRCParser(){};
 protected:

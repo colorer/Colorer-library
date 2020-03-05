@@ -178,7 +178,7 @@ const Region* HRCParserImpl::getRegion(const String* name)
   return getNCRegion(name, false); // regionNamesHash.get(name);
 }
 
-const String* HRCParserImpl::getVersion()
+const UnicodeString* HRCParserImpl::getVersion()
 {
   return versionName;
 }
@@ -209,7 +209,7 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
                              UnicodeString(is->getInputSource()->getSystemId()));
   }
   if (versionName == nullptr) {
-    versionName = new CString(root->getAttribute(hrcHrcAttrVersion));
+    versionName = new UnicodeString(root->getAttribute(hrcHrcAttrVersion));
   }
 
   bool globalUpdateStarted = false;
@@ -666,8 +666,8 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
   UnicodeString dmatchParam = UnicodeString(matchParam);
   UnicodeString* entMatchParam = useEntities(&dmatchParam);
   auto* scheme_node = new SchemeNode();
-  CString dhrcRegexpAttrPriority = CString(elem->getAttribute(hrcRegexpAttrPriority));
-  scheme_node->lowPriority = CString("low").equals(&dhrcRegexpAttrPriority);
+  UnicodeString dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
+  scheme_node->lowPriority = UnicodeString("low").compare(dhrcRegexpAttrPriority)==0;
   scheme_node->type = SchemeNode::SNT_RE;
   scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(entMatchParam));
   if (!scheme_node->start || !scheme_node->start->isOk())
@@ -754,12 +754,12 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   }
   auto* scheme_node = new SchemeNode();
   scheme_node->schemeName = std::make_unique<UnicodeString>(UnicodeString(schemeName));
-  CString attr_pr = CString(elem->getAttribute(hrcBlockAttrPriority));
-  CString attr_cpr = CString(elem->getAttribute(hrcBlockAttrContentPriority));
-  CString attr_ireg = CString(elem->getAttribute(hrcBlockAttrInnerRegion));
-  scheme_node->lowPriority = CString("low").equals(&attr_pr);
-  scheme_node->lowContentPriority = CString("low").equals(&attr_cpr);
-  scheme_node->innerRegion = CString("yes").equals(&attr_ireg);
+  UnicodeString attr_pr = UnicodeString(elem->getAttribute(hrcBlockAttrPriority));
+  UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
+  UnicodeString attr_ireg = UnicodeString(elem->getAttribute(hrcBlockAttrInnerRegion));
+  scheme_node->lowPriority = UnicodeString("low").compare(attr_pr)==0;
+  scheme_node->lowContentPriority = UnicodeString("low").compare(attr_cpr)==0;
+  scheme_node->innerRegion = UnicodeString("yes").compare(attr_ireg)==0;
   scheme_node->type = SchemeNode::SNT_SCHEME;
   scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(startParam));
   scheme_node->start->setPositionMoves(false);
@@ -860,7 +860,7 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, cons
   }
 
   int pos = scheme_node->kwList->num;
-  scheme_node->kwList->kwList[pos].keyword = std::make_unique<SString>(CString(param));
+  scheme_node->kwList->kwList[pos].keyword = std::make_unique<UnicodeString>(UnicodeString(param));
   scheme_node->kwList->kwList[pos].region = rgn;
   scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
   scheme_node->kwList->kwList[pos].ssShorter = -1;
@@ -1041,7 +1041,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
     return nullptr;
   }
   size_t colon = name->indexOf(':');
-  if (colon != String::npos) { // qualified name
+  if (colon != -1) { // qualified name
     UnicodeString prefix(*name, 0, colon);
     auto ft = fileTypeHash.find(prefix);
     FileTypeImpl* prefType = nullptr;
@@ -1097,7 +1097,7 @@ UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
 
   while (true) {
     epos = name->indexOf('%', epos);
-    if (epos == String::npos) {
+    if (epos == -1) {
       epos = name->length();
       break;
     }
@@ -1106,7 +1106,7 @@ UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
       continue;
     }
     size_t elpos = name->indexOf(';', epos);
-    if (elpos == String::npos) {
+    if (elpos == -1) {
       epos = name->length();
       break;
     }
