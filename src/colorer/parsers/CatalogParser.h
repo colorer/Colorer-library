@@ -13,10 +13,10 @@ public:
   CatalogParser() {};
   ~CatalogParser() {};
 
-  void parse(const String* path);
+  void parse(const UnicodeString* path);
   static std::unique_ptr<HRDNode> parseHRDSetsChild(const xercesc::DOMElement* elem);
 
-  std::vector<SString> hrc_locations;
+  std::vector<UnicodeString> hrc_locations;
   std::list<std::unique_ptr<HRDNode>> hrd_nodes;
 private:
 

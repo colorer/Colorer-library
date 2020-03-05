@@ -88,7 +88,7 @@ void ConsoleTools::setOutputEncoding(const String &str)
   }
 }
 
-void ConsoleTools::setCatalogPath(const String &str)
+void ConsoleTools::setCatalogPath(const UnicodeString &str)
 {
 #if defined _WIN32
   // replace the environment variables to their values
@@ -98,7 +98,7 @@ void ConsoleTools::setCatalogPath(const String &str)
   catalogPath.reset(new SString(temp));
   delete[] temp;
 #else
-  catalogPath.reset(new SString(str));
+  catalogPath.reset(new UnicodeString(str));
 #endif
 }
 

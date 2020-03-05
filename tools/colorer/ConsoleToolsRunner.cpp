@@ -242,7 +242,7 @@ void initConsoleTools(ConsoleTools &ct)
     ct.setInputFileName(*settings.input_file);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(*settings.catalog);
+    ct.setCatalogPath(UStr::to_unistr(settings.catalog.get()));
   }
   if (settings.link_sources) {
     ct.setLinkSource(*settings.link_sources);

@@ -99,19 +99,19 @@ public:
   *        standard search method is used.
   * @throw ParserFactoryException If can't load specified catalog.
   */
-  void loadCatalog(const String* catalog_path);
+  void loadCatalog(const UnicodeString* catalog_path);
   void addHrd(std::unique_ptr<HRDNode> hrd);
 private:
 
-  SString searchCatalog() const;
-  void getPossibleCatalogPaths(std::vector<SString> &paths) const;
+  UnicodeString searchCatalog() const;
+  void getPossibleCatalogPaths(std::vector<UnicodeString> &paths) const;
 
-  void parseCatalog(const SString &catalog_path);
+  void parseCatalog(const UnicodeString &catalog_path);
 
-  void loadHrc(const String* hrc_path, const String* base_path) const;
+  void loadHrc(const UnicodeString* hrc_path, const UnicodeString* base_path) const;
 
-  SString base_catalog_path;
-  std::vector<SString> hrc_locations;
+  UnicodeString base_catalog_path;
+  std::vector<UnicodeString> hrc_locations;
   std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
 
   HRCParser* hrc_parser;

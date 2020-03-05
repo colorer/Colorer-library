@@ -62,7 +62,7 @@ public:
   /// Output Characters Encoding
   void setOutputEncoding(const String &str);
   /// Optional path to base catalog.xml
-  void setCatalogPath(const String &str);
+  void setCatalogPath(const UnicodeString &str);
   /// Optional HRD instance name, used to perform parsing
   void setHRDName(const UnicodeString &str);
   /// Sets linking datasource into this filename
@@ -126,7 +126,7 @@ private:
   std::unique_ptr<String> outputEncoding;
 
   std::unique_ptr<String> typeDescription;
-  std::unique_ptr<String> catalogPath;
+  std::unique_ptr<UnicodeString> catalogPath;
   std::unique_ptr<UnicodeString> hrdName;
   std::unique_ptr<String> outputFileName;
   std::unique_ptr<String> inputFileName;

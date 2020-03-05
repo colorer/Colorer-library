@@ -7,7 +7,7 @@
 #include <colorer/xml/XmlTagDefs.h>
 #include <colorer/common/UnicodeLogger.h>
 
-void CatalogParser::parse(const String* path)
+void CatalogParser::parse(const UnicodeString* path)
 {
   spdlog::debug("begin parse catalog.xml");
   hrc_locations.clear();
@@ -20,7 +20,7 @@ void CatalogParser::parse(const String* path)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  uXmlInputSource catalogXIS = XmlInputSource::newInstance(path->getWChars(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource catalogXIS = XmlInputSource::newInstance(UStr::to_string(path).getWChars(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
     throw CatalogParserException("Error reading catalog.xml.");
@@ -70,8 +70,8 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMElement* elem)
       if (xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
-          hrc_locations.emplace_back(SString(attr_value));
-          spdlog::debug("add hrc location: '{0}'" , hrc_locations.back().getChars());
+          hrc_locations.emplace_back(UnicodeString(attr_value));
+          spdlog::debug("add hrc location: '{0}'" , hrc_locations.back());
         } else {
           spdlog::warn("found hrc with empty location. skip it location.");
         }
