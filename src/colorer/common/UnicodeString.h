@@ -3,6 +3,7 @@
 
 #include <unicode/unistr.h>
 #include <memory>
+#include <xercesc/util/XMLString.hpp>
 
 typedef icu_63::UnicodeString UnicodeString;
 typedef std::unique_ptr<UnicodeString> uUnicodeString;
@@ -16,6 +17,8 @@ class UStr
   static UnicodeString to_unistr(const String* str);
   static UnicodeString to_unistr(int number);
   static SString to_string(const UnicodeString* str);
+  static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
+  static std::string to_stdstr(const UnicodeString* str);
 };
 
 namespace std {

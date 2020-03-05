@@ -1,8 +1,9 @@
 #ifndef _COLORER_XSTR_H_
 #define _COLORER_XSTR_H_
 
-#include <ostream>
+#include <colorer/common/UnicodeString.h>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <xercesc/util/XMLString.hpp>
 

@@ -34,10 +34,10 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-UString XmlInputSource::getAbsolutePath(const String* basePath, const String* relPath)
+uUnicodeString XmlInputSource::getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
-  int root_pos = basePath->lastIndexOf('/');
-  int root_pos2 = basePath->lastIndexOf('\\');
+  auto root_pos = basePath->lastIndexOf('/');
+  auto root_pos2 = basePath->lastIndexOf('\\');
   if (root_pos2 > root_pos) {
     root_pos = root_pos2;
   }
@@ -46,9 +46,9 @@ UString XmlInputSource::getAbsolutePath(const String* basePath, const String* re
   } else {
     root_pos++;
   }
-  std::unique_ptr<SString> newPath(new SString());
-  newPath->append(CString(basePath, 0, root_pos)).append(relPath);
-  return std::move(newPath);
+  std::unique_ptr<UnicodeString> newPath(new UnicodeString());
+  newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
+  return newPath;
 }
 
 XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
@@ -67,38 +67,38 @@ XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
 #endif
 }
 
-bool XmlInputSource::isRelative(const String* path)
+bool XmlInputSource::isRelative(const UnicodeString* path)
 {
-  if (path->indexOf(':') != String::npos && path->indexOf(':') < 10) return false;
+  if (path->indexOf(':') != -1 && path->indexOf(':') < 10) return false;
   if (path->indexOf('/') == 0 || path->indexOf('\\') == 0) return false;
   return true;
 }
 
-UString XmlInputSource::getClearPath(const String* basePath, const String* relPath)
+uUnicodeString XmlInputSource::getClearPath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
-  UString clear_path(new SString(relPath));
-  if (relPath->indexOf(CString("%")) != String::npos) {
-    XMLCh* e_path = ExpandEnvironment(clear_path.get()->getWChars());
-    clear_path.reset(new SString(CString(e_path)));
+  uUnicodeString clear_path(new UnicodeString(*relPath));
+  if (relPath->indexOf("%") != -1) {
+    XMLCh* e_path = ExpandEnvironment(UStr::to_xmlch(clear_path.get()).get());
+    clear_path.reset(new UnicodeString(e_path));
     delete[] e_path;
   }
   if (isRelative(clear_path.get())) {
     clear_path = std::move(getAbsolutePath(basePath, clear_path.get()));
-    if (clear_path->startsWith(CString("file://"))) {
-      clear_path.reset(new SString(clear_path.get(), 7, -1));
+    if (clear_path->startsWith("file://")) {
+      clear_path.reset(new UnicodeString(*clear_path.get(), 7, -1));
     }
   }
   return clear_path;
 }
 
-bool XmlInputSource::isDirectory(const String* path)
+bool XmlInputSource::isDirectory(const UnicodeString* path)
 {
   bool is_dir = false;
 #ifdef _WIN32
   // stat on win_xp and vc2015 have bug.
   DWORD dwAttrs = GetFileAttributesW(path->getWChars());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
-    throw Exception(SString("Can't get info for file/path: ") + path);
+    throw Exception("Can't get info for file/path: " + *path);
   }
   else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
     is_dir = true;
@@ -106,10 +106,10 @@ bool XmlInputSource::isDirectory(const String* path)
 #else
 
   struct stat st;
-  int ret = stat(path->getChars(), &st);
+  int ret = stat(UStr::to_stdstr(path).c_str(), &st);
 
   if (ret == -1) {
-    throw Exception("Can't get info for file/path: " +  UStr::to_unistr(path));
+    throw Exception("Can't get info for file/path: " +  *path);
   }
   else if ((st.st_mode & S_IFDIR)) {
     is_dir = true;
@@ -120,7 +120,7 @@ bool XmlInputSource::isDirectory(const String* path)
 }
 
 #ifdef _WIN32
-void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> &files)
+void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString> &files)
 {
   WIN32_FIND_DATAW ffd;
   HANDLE dir = FindFirstFileW((SString(relPath) + "\\*.*").getWChars(), &ffd);
@@ -139,16 +139,16 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
 #endif
 
 #ifdef __unix__
-void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> &files)
+void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString> &files)
 {
-  DIR* dir = opendir(relPath->getChars());
+  DIR* dir = opendir(UStr::to_stdstr(relPath).c_str());
   if (dir != nullptr) {
     dirent* dire;
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
-      stat((SString(relPath) + "/" + dire->d_name).getChars(), &st);
+      stat(UStr::to_stdstr(&UnicodeString(*relPath + "/" + dire->d_name)).c_str(), &st);
       if (!(st.st_mode & S_IFDIR)) {
-        files.push_back(SString(relPath) + "/" + dire->d_name);
+        files.push_back(UnicodeString(*relPath) + "/" + dire->d_name);
       }
     }
   }

@@ -160,15 +160,15 @@ void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
   for (auto location : hrc_locations) {
     try {
       spdlog::debug("try load '{0}'", location);
-      auto clear_path = XmlInputSource::getClearPath(&UStr::to_string(&base_catalog_path), &UStr::to_string(&location));
+      auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
       if (XmlInputSource::isDirectory(clear_path.get())) {
-        std::vector<SString> paths;
+        std::vector<UnicodeString> paths;
         XmlInputSource::getFileFromDir(clear_path.get(), paths);
         for (auto files : paths) {
-          loadHrc(&UStr::to_unistr(&files), &base_catalog_path);
+          loadHrc(&files, &base_catalog_path);
         }
       } else {
-        loadHrc(&UStr::to_unistr(clear_path.get()), &base_catalog_path);
+        loadHrc(clear_path.get(), &base_catalog_path);
       }
     } catch (const Exception &e) {
       spdlog::error("{0}", e.what());

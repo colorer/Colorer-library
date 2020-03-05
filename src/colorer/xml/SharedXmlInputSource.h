@@ -23,7 +23,7 @@ private:
   SharedXmlInputSource(uXmlInputSource &source);
   ~SharedXmlInputSource();
 
-  static std::unordered_map<SString, SharedXmlInputSource*>* isHash;
+  static std::unordered_map<UnicodeString, SharedXmlInputSource*>* isHash;
 
   uXmlInputSource input_source;
   int ref_count;

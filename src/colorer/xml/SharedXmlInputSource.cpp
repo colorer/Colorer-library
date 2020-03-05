@@ -1,7 +1,7 @@
 #include <colorer/xml/SharedXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 
-std::unordered_map<SString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
+std::unordered_map<UnicodeString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
 
 int SharedXmlInputSource::addref()
 {
@@ -30,9 +30,9 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  CString d_id = CString(input_source->getInputSource()->getSystemId());
+  UnicodeString d_id = UnicodeString(input_source->getInputSource()->getSystemId());
   //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
-  isHash->erase(&d_id);
+  isHash->erase(d_id);
   if (isHash->size() == 0) {
     delete isHash;
     isHash = nullptr;
@@ -44,10 +44,10 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
   uXmlInputSource tempis = XmlInputSource::newInstance(path, base);
 
   if (isHash == nullptr) {
-    isHash = new std::unordered_map<SString, SharedXmlInputSource*>();
+    isHash = new std::unordered_map<UnicodeString, SharedXmlInputSource*>();
   }
 
-  CString d_id = CString(tempis->getInputSource()->getSystemId());
+  UnicodeString d_id = UnicodeString(tempis->getInputSource()->getSystemId());
   auto s = isHash->find(d_id);
   if (s != isHash->end()) {
     SharedXmlInputSource* sis = s->second;
@@ -55,7 +55,7 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     return sis;
   } else {
     auto* sis = new SharedXmlInputSource(tempis);
-    isHash->insert(std::make_pair(CString(sis->getInputSource()->getSystemId()), sis));
+    isHash->insert(std::make_pair(UnicodeString(sis->getInputSource()->getSystemId()), sis));
     return sis;
   }
 }
