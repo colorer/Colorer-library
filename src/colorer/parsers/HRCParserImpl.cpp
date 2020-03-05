@@ -170,7 +170,7 @@ const Region* HRCParserImpl::getRegion(int id)
   return regionNamesVector[id];
 }
 
-const Region* HRCParserImpl::getRegion(const String* name)
+const Region* HRCParserImpl::getRegion(const UnicodeString* name)
 {
   if (name == nullptr) {
     return nullptr;
@@ -492,7 +492,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   UnicodeString regiondescr = UnicodeString(regionDescr);
-  const Region* region = new Region(qname1, &regiondescr, getRegion(&UStr::to_string(qname2)), (int)regionNamesVector.size());
+  const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), (int)regionNamesVector.size());
   regionNamesVector.push_back(region);
   std::pair<UnicodeString, const Region*> pp(*qname1, region);
   regionNamesHash.emplace(pp);
@@ -785,16 +785,17 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
 
 void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
-  const Region* brgn = getNCRegion(elem, CString("region"));
+  XMLCh rg_tmpl[7] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
+  const Region* brgn = getNCRegion(elem, rg_tmpl);
   if (brgn == nullptr) {
     return;
   }
 
   auto* scheme_node = new SchemeNode();
-  CString dhrcKeywordsAttrIgnorecase = CString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
-  CString dhrcKeywordsAttrPriority = CString(elem->getAttribute(hrcKeywordsAttrPriority));
-  bool isCase = !CString("yes").equals(&dhrcKeywordsAttrIgnorecase);
-  scheme_node->lowPriority = !CString("normal").equals(&dhrcKeywordsAttrPriority);
+  UnicodeString dhrcKeywordsAttrIgnorecase = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
+  UnicodeString dhrcKeywordsAttrPriority = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
+  bool isCase = !UnicodeString("yes").compare(dhrcKeywordsAttrIgnorecase)==0;
+  scheme_node->lowPriority = !UnicodeString("normal").compare(dhrcKeywordsAttrPriority)==0;
 
   const XMLCh* worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
 
@@ -856,7 +857,7 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, cons
   const Region* rgn = brgn;
   const XMLCh* reg = elem->getAttribute(hrcWordAttrRegion);
   if (*reg != '\0') {
-    rgn = getNCRegion(elem, CString(hrcWordAttrRegion));
+    rgn = getNCRegion(elem, hrcWordAttrRegion);
   }
 
   int pos = scheme_node->kwList->num;
@@ -896,29 +897,29 @@ int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
 
 void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
 {
-  static char rg_tmpl[8] = "region\0";
+  XMLCh rg_tmpl[8] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull};
 
   if (el) {
     if (node->region == nullptr) {
-      node->region = getNCRegion(el, CString("region"));
+      node->region = getNCRegion(el, rg_tmpl);
     }
 
     for (int i = 0; i < REGIONS_NUM; i++) {
-      rg_tmpl[6] = (i < 0xA ? i : i + 7 + 32) + '0';
+      rg_tmpl[6] = static_cast<XMLCh>((i < 0xA ? i : i + 39) + '0');
 
       if (st) {
-        node->regions[i] = getNCRegion(el, CString(rg_tmpl));
+        node->regions[i] = getNCRegion(el, rg_tmpl);
       } else {
-        node->regione[i] = getNCRegion(el, CString(rg_tmpl));
+        node->regione[i] = getNCRegion(el, rg_tmpl);
       }
     }
   }
 
   for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
     if (st) {
-      node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
+      node->regionsn[i] = getNCRegion(&UStr::to_unistr(node->start->getBracketName(i)), false);
     } else {
-      node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
+      node->regionen[i] = getNCRegion(&UStr::to_unistr(node->end->getBracketName(i)), false);
     }
   }
 }
@@ -926,15 +927,15 @@ void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
 void HRCParserImpl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
 {
   int i;
-  static char rg_tmpl[9] = "region\0\0";
+  XMLCh rg_tmpl[9] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull, chNull};
 
-  node->region = getNCRegion(el, CString("region"));
+  node->region = getNCRegion(el, rg_tmpl);
   for (i = 0; i < REGIONS_NUM; i++) {
     rg_tmpl[6] = '0';
-    rg_tmpl[7] = (i < 0xA ? i : i + 7 + 32) + '0';
-    node->regions[i] = getNCRegion(el, CString(rg_tmpl));
+    rg_tmpl[7] =static_cast<XMLCh>((i < 0xA ? i : i + 39) + '0');
+    node->regions[i] = getNCRegion(el, rg_tmpl);
     rg_tmpl[6] = '1';
-    node->regione[i] = getNCRegion(el, CString(rg_tmpl));
+    node->regione[i] = getNCRegion(el, rg_tmpl);
   }
 }
 
@@ -1133,13 +1134,13 @@ UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
   return newname;
 }
 
-const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
+const Region* HRCParserImpl::getNCRegion(const UnicodeString* name, bool logErrors)
 {
-  if (name == nullptr) {
+  if (name == nullptr || name->isEmpty()) {
     return nullptr;
   }
   const Region* reg;
-  UnicodeString* qname = qualifyForeignName(&UStr::to_unistr(name), QNT_DEFINE, logErrors);
+  UnicodeString* qname = qualifyForeignName(name, QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
   }
@@ -1164,13 +1165,13 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   return reg;
 }
 
-const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const String &tag)
+const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const XMLCh*tag)
 {
-  const XMLCh* par = el->getAttribute(tag.getWChars());
+  const XMLCh* par = el->getAttribute(tag);
   if (*par == '\0') {
     return nullptr;
   }
-  CString dpar = CString(par);
+  UnicodeString dpar = UnicodeString(par);
   return getNCRegion(&dpar, true);
 }
 

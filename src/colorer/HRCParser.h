@@ -63,7 +63,7 @@ public:
   /** Returns region by name
       @note Also loads referred type, if it is not yet loaded.
   */
-  virtual const Region *getRegion(const String *name) = 0;
+  virtual const Region *getRegion(const UnicodeString *name) = 0;
 
   /** HRC base version.
       Usually this is the 'version' attribute of 'hrc' element

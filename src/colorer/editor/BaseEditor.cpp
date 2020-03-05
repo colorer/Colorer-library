@@ -37,11 +37,11 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
   breakParse = false;
   validationProcess = false;
 
-  CString def_text = CString("def:Text");
-  CString def_syntax = CString("def:Syntax");
-  CString def_special = CString("def:Special");
-  CString def_pstart = CString("def:PairStart");
-  CString def_pend = CString("def:PairEnd");
+  UnicodeString def_text = UnicodeString("def:Text");
+  UnicodeString def_syntax = UnicodeString("def:Syntax");
+  UnicodeString def_special = UnicodeString("def:Special");
+  UnicodeString def_pstart = UnicodeString("def:PairStart");
+  UnicodeString def_pend = UnicodeString("def:PairEnd");
   def_Text = hrcParser->getRegion(&def_text);
   def_Syntax = hrcParser->getRegion(&def_syntax);
   def_Special = hrcParser->getRegion(&def_special);

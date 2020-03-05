@@ -4,7 +4,7 @@
 
 UnicodeString UStr::to_unistr(const String* str)
 {
-  return UnicodeString(str->getWChars());
+  return str? UnicodeString(str->getWChars()):UnicodeString();
 }
 
 UnicodeString UStr::to_unistr(int number)

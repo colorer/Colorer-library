@@ -31,7 +31,7 @@ public:
 
   size_t getRegionCount();
   const Region* getRegion(int id);
-  const Region* getRegion(const String* name);
+  const Region* getRegion(const UnicodeString* name);
 
   const UnicodeString* getVersion();
 
@@ -95,8 +95,8 @@ protected:
 
   void updateLinks();
   UnicodeString* useEntities(const UnicodeString* name);
-  const Region* getNCRegion(const xercesc::DOMElement* elem, const String& tag);
-  const Region* getNCRegion(const String* name, bool logErrors);
+  const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
+  const Region* getNCRegion(const UnicodeString* name, bool logErrors);
 };
 
 #include<colorer/parsers/FileTypeImpl.h>
