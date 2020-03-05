@@ -20,7 +20,7 @@ public:
       @param lineRegions Linked list of LineRegion structures.
              Only region references are used there.
   */
-  static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->region == nullptr) continue;
@@ -68,7 +68,7 @@ public:
       @param line Line of text
       @param lineRegions Linked list of LineRegion structures
   */
-  static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->rdef == nullptr) continue;
@@ -101,7 +101,7 @@ public:
       @param line Line of text
       @param lineRegions Linked list of LineRegion structures
   */
-  static void htmlRGBWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<SString, String*> *docLinkHash, String *line, LineRegion *lineRegions){
+  static void htmlRGBWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, String *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->rdef == nullptr) continue;
@@ -156,24 +156,24 @@ public:
     writer->write(CString("</span>"));
   }
 
-  static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
-    String *url = nullptr;
+  static void writeHref(Writer *writer, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
+    UnicodeString *url = nullptr;
     if (scheme != nullptr){
-      auto it_url = docLinkHash->find(&(SString(token).append(CString("--")).append(UStr::to_string(scheme->getName()))));
+      auto it_url = docLinkHash->find(UStr::to_unistr(&token).append("--").append(*scheme->getName()));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
       }
     }
     if (url == nullptr){
-      auto it_url = docLinkHash->find(&token);
+      auto it_url = docLinkHash->find(UStr::to_unistr(&token));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
       }
     }
     if (url != nullptr){
-      if (start) writer->write(SString("<a href='")+url+CString("'>"));
+      if (start) writer->write(SString("<a href='")+UStr::to_string(url)+CString("'>"));
       else writer->write(CString("</a>"));
     }
   }

@@ -52,39 +52,39 @@ void ConsoleTools::addLineNumbers(bool add)
   lineNumbers = add;
 }
 
-void ConsoleTools::setTypeDescription(const String &str)
+void ConsoleTools::setTypeDescription(const UnicodeString &str)
 {
-  typeDescription.reset(new SString(str));
+  typeDescription.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setInputFileName(const String &str)
+void ConsoleTools::setInputFileName(const UnicodeString &str)
 {
-  inputFileName.reset(new SString(str));
+  inputFileName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setOutputFileName(const String &str)
+void ConsoleTools::setOutputFileName(const UnicodeString &str)
 {
-  outputFileName.reset(new SString(str));
+  outputFileName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setInputEncoding(const String &str)
+void ConsoleTools::setInputEncoding(const UnicodeString &str)
 {
-  inputEncoding.reset(new SString(str));
-  inputEncodingIndex = Encodings::getEncodingIndex(inputEncoding->getChars());
+  inputEncoding.reset(new UnicodeString(str));
+  inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
   if (inputEncodingIndex == -1) {
-    throw Exception("Unknown input encoding: " + UStr::to_unistr(inputEncoding.get()));
+    throw Exception("Unknown input encoding: " + *inputEncoding.get());
   }
   if (outputEncoding == nullptr) {
     outputEncodingIndex = inputEncodingIndex;
   }
 }
 
-void ConsoleTools::setOutputEncoding(const String &str)
+void ConsoleTools::setOutputEncoding(const UnicodeString &str)
 {
-  outputEncoding.reset(new SString(str));
-  outputEncodingIndex = Encodings::getEncodingIndex(outputEncoding->getChars());
+  outputEncoding.reset(new UnicodeString(str));
+  outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());
   if (outputEncodingIndex == -1) {
-    throw Exception("Unknown output encoding: " + UStr::to_unistr(outputEncoding.get()));
+    throw Exception("Unknown output encoding: " + *outputEncoding.get());
   }
 }
 
@@ -107,7 +107,7 @@ void ConsoleTools::setHRDName(const UnicodeString &str)
   hrdName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setLinkSource(const String &str)
+void ConsoleTools::setLinkSource(const UnicodeString &str)
 {
   const XMLCh kTagDoclinks[] = {chLatin_d, chLatin_o, chLatin_k, chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
   const XMLCh kTagLinks[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
@@ -118,7 +118,7 @@ void ConsoleTools::setLinkSource(const String &str)
   const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
   const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
 
-  uXmlInputSource linkSource = XmlInputSource::newInstance(str.getWChars(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource linkSource = XmlInputSource::newInstance(UStr::to_xmlch(&str).get(), static_cast<XMLCh*>(nullptr));
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   xml_parser.setErrorHandler(&error_handler);
@@ -149,12 +149,12 @@ void ConsoleTools::setLinkSource(const String &str)
           const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
           const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
           const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
-          SString fullURL;
+          UnicodeString fullURL;
           if (*url != '\0') {
-            fullURL.append(CString(url));
+            fullURL.append(UnicodeString(url));
           }
           if (*l_url != '\0') {
-            fullURL.append(CString(l_url));
+            fullURL.append(UnicodeString(l_url));
           }
           if (*l_scheme == '\0') {
             l_scheme = scheme;
@@ -162,12 +162,12 @@ void ConsoleTools::setLinkSource(const String &str)
           if (*token == '\0') {
             continue;
           }
-          String* tok = new CString(token);
-          SString hkey(tok);
+          UnicodeString* tok = new UnicodeString(token);
+          UnicodeString hkey(*tok);
           if (*l_scheme != '\0') {
-            hkey.append(CString("--")).append(CString(l_scheme));
+            hkey.append("--").append(UnicodeString(l_scheme));
           }
-          std::pair<SString, String*> pair_url(&hkey, new SString(&fullURL));
+          std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
           docLinkHash.emplace(pair_url);
           delete tok;
         }
@@ -254,11 +254,11 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         }
         if (type->getDescription() != nullptr &&
             type->getDescription()->length() >= typeDescription->length() &&
-            CString(UStr::to_string(type->getDescription()), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription.get(),0)) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            CString(UStr::to_string(type->getName()), 0, typeDescription->length()).equalsIgnoreCase(typeDescription.get())) {
+            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription.get(),0)) {
           break;
         }
         type = nullptr;
@@ -281,15 +281,15 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
       }
     }
 
-	CString fnpath(inputFileName.get());
-	int slash_idx = fnpath.lastIndexOf('\\');
+	UnicodeString fnpath(*inputFileName.get());
+	auto slash_idx = fnpath.lastIndexOf('\\');
 
 	if (slash_idx == -1) {
 		slash_idx = fnpath.lastIndexOf('/');
 	}
-	std::unique_ptr<String> file_name (new SString(fnpath, slash_idx + 1));
+	std::unique_ptr<UnicodeString> file_name (new UnicodeString(fnpath, slash_idx + 1));
 
-    type = hrcParser->chooseFileType(&UStr::to_unistr(file_name.get()), &UStr::to_unistr(&textStart), 0);
+    type = hrcParser->chooseFileType(file_name.get(), &UStr::to_unistr(&textStart), 0);
   }
   return type;
 }
@@ -303,7 +303,7 @@ void ConsoleTools::profile(int loopCount)
   pf.loadCatalog(catalogPath.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
-  textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+  textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
@@ -329,7 +329,7 @@ void ConsoleTools::viewFile()
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+    textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -362,19 +362,19 @@ void ConsoleTools::viewFile()
 
 void ConsoleTools::forward()
 {
-  colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
+  colorer::InputSource* fis = colorer::InputSource::newInstance(&UStr::to_string(inputFileName.get()));
   const byte* stream = fis->openStream();
   CString eStream(stream, fis->length(), inputEncodingIndex);
 
   Writer* outputFile;
   try {
     if (outputFileName != nullptr) {
-      outputFile = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
+      outputFile = new FileWriter(&UStr::to_string(outputFileName.get()), outputEncodingIndex, bomOutput);
     } else {
       outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
     }
   } catch (Exception &e) {
-    fprintf(stderr, "can't open file '%s' for writing:", outputFileName->getChars());
+    fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
     fprintf(stderr, "%s", e.what());
     return;
   }
@@ -390,7 +390,7 @@ void ConsoleTools::genOutput(bool useTokens)
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+    textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -428,7 +428,7 @@ void ConsoleTools::genOutput(bool useTokens)
     Writer* commonWriter;
     try {
       if (outputFileName != nullptr) {
-        commonWriter = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
+        commonWriter = new FileWriter(&UStr::to_string(outputFileName.get()), outputEncodingIndex, bomOutput);
       } else {
         commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
       }
@@ -438,7 +438,7 @@ void ConsoleTools::genOutput(bool useTokens)
         escapedWriter = commonWriter;
       }
     } catch (Exception &e) {
-      fprintf(stderr, "can't open file '%s' for writing:\n", outputFileName->getChars());
+      fprintf(stderr, "can't open file '%s' for writing:\n", UStr::to_stdstr(outputFileName.get()).c_str());
       fprintf(stderr, "%s", e.what());
       return;
     }

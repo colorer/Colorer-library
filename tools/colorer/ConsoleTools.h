@@ -52,21 +52,21 @@ public:
   void setHtmlWrapping(bool use);
 
   /// Alternative HRC type description for type selection
-  void setTypeDescription(const String &str);
+  void setTypeDescription(const UnicodeString &str);
   /// File name, used as input source. Could be URL.
-  void setInputFileName(const String &str);
+  void setInputFileName(const UnicodeString &str);
   /// Optional file name, used for output
-  void setOutputFileName(const String &str);
+  void setOutputFileName(const UnicodeString &str);
   /// Input Characters Encoding
-  void setInputEncoding(const String &str);
+  void setInputEncoding(const UnicodeString &str);
   /// Output Characters Encoding
-  void setOutputEncoding(const String &str);
+  void setOutputEncoding(const UnicodeString &str);
   /// Optional path to base catalog.xml
   void setCatalogPath(const UnicodeString &str);
   /// Optional HRD instance name, used to perform parsing
   void setHRDName(const UnicodeString &str);
   /// Sets linking datasource into this filename
-  void setLinkSource(const String &str);
+  void setLinkSource(const UnicodeString &str);
   /// If true, result file will have line numbers before each line
   void addLineNumbers(bool add);
 
@@ -122,16 +122,16 @@ private:
 
   int inputEncodingIndex;
   int outputEncodingIndex;
-  std::unique_ptr<String> inputEncoding;
-  std::unique_ptr<String> outputEncoding;
+  std::unique_ptr<UnicodeString> inputEncoding;
+  std::unique_ptr<UnicodeString> outputEncoding;
 
-  std::unique_ptr<String> typeDescription;
+  std::unique_ptr<UnicodeString> typeDescription;
   std::unique_ptr<UnicodeString> catalogPath;
   std::unique_ptr<UnicodeString> hrdName;
-  std::unique_ptr<String> outputFileName;
-  std::unique_ptr<String> inputFileName;
+  std::unique_ptr<UnicodeString> outputFileName;
+  std::unique_ptr<UnicodeString> inputFileName;
 
-  std::unordered_map<SString, String*> docLinkHash;
+  std::unordered_map<UnicodeString, UnicodeString*> docLinkHash;
 };
 
 #endif

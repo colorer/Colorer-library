@@ -15,14 +15,14 @@ enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
 
 struct setting {
   JobType job = JT_NOTHING;
-  std::unique_ptr<SString> catalog;
-  std::unique_ptr<SString> input_file;
-  std::unique_ptr<SString> output_file;
-  std::unique_ptr<SString> link_sources;
-  std::unique_ptr<SString> input_encoding;
-  std::unique_ptr<SString> output_encoding;
-  std::unique_ptr<SString> type_desc;
-  std::unique_ptr<SString> hrd_name;
+  std::unique_ptr<UnicodeString> catalog;
+  std::unique_ptr<UnicodeString> input_file;
+  std::unique_ptr<UnicodeString> output_file;
+  std::unique_ptr<UnicodeString> link_sources;
+  std::unique_ptr<UnicodeString> input_encoding;
+  std::unique_ptr<UnicodeString> output_encoding;
+  std::unique_ptr<UnicodeString> type_desc;
+  std::unique_ptr<UnicodeString> hrd_name;
   std::string log_file_prefix = "consoletools";
   std::string log_file_dir = "./";
   std::string log_level = "off";
@@ -40,7 +40,7 @@ void readArgs(int argc, char* argv[])
 
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
-      settings.input_file = std::make_unique<SString>(CString(argv[i]));
+      settings.input_file = std::make_unique<UnicodeString>(argv[i]);
       continue;
     }
 
@@ -73,9 +73,9 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.link_sources = std::make_unique<SString>(CString(argv[i] + 3));
+        settings.link_sources = std::make_unique<UnicodeString>(argv[i] + 3);
       } else {
-        settings.link_sources = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.link_sources = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
@@ -116,54 +116,54 @@ void readArgs(int argc, char* argv[])
 
     if (argv[i][1] == 't' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.type_desc = std::make_unique<SString>(CString(argv[i] + 2));
+        settings.type_desc = std::make_unique<UnicodeString>(argv[i] + 2);
       } else {
-        settings.type_desc = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.type_desc = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'o' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.output_file = std::make_unique<SString>(CString(argv[i] + 2));
+        settings.output_file = std::make_unique<UnicodeString>(argv[i] + 2);
       } else {
-        settings.output_file = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.output_file = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'i' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.hrd_name = std::make_unique<SString>(CString(argv[i] + 2));
+        settings.hrd_name = std::make_unique<UnicodeString>(argv[i] + 2);
       } else {
-        settings.hrd_name = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.hrd_name = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
-        settings.catalog = std::make_unique<SString>(CString(argv[i] + 2));
+        settings.catalog = std::make_unique<UnicodeString>(argv[i] + 2);
       } else {
-        settings.catalog = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.catalog = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.input_encoding = std::make_unique<SString>(CString(argv[i] + 3));
+        settings.input_encoding = std::make_unique<UnicodeString>(argv[i] + 3);
       } else {
-        settings.input_encoding = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.input_encoding = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
     }
     if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
-        settings.output_encoding = std::make_unique<SString>(CString(argv[i] + 3));
+        settings.output_encoding = std::make_unique<UnicodeString>(argv[i] + 3);
       } else {
-        settings.output_encoding = std::make_unique<SString>(CString(argv[i + 1]));
+        settings.output_encoding = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
       continue;
@@ -242,7 +242,7 @@ void initConsoleTools(ConsoleTools &ct)
     ct.setInputFileName(*settings.input_file);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(UStr::to_unistr(settings.catalog.get()));
+    ct.setCatalogPath(*settings.catalog.get());
   }
   if (settings.link_sources) {
     ct.setLinkSource(*settings.link_sources);
