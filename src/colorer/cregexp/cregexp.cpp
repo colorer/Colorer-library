@@ -272,7 +272,7 @@ SRegInfo *next, *temp;
               delete br_name;
               return EERROR;
             }
-            next->param0 = backRE->getBracketNo(br_name);
+            next->param0 = backRE->getBracketNo(&UStr::to_unistr(br_name));
             blen = br_name->length();
             delete br_name;
             if (next->param0 == -1) return ESYNTAX;
@@ -288,7 +288,7 @@ SRegInfo *next, *temp;
           if (br_name == nullptr) return ESYNTAX;
           blen = br_name->length();
 #ifndef NAMED_MATCHES_IN_HASH
-          next->param0 = getBracketNo(br_name);
+          next->param0 = getBracketNo(&UStr::to_unistr(br_name));
           delete br_name;
           if (next->param0 == -1) return ESYNTAX;
 #else
@@ -463,7 +463,7 @@ SRegInfo *next, *temp;
         namedBracket = true;
         String *s_curly = UnicodeTools::getCurlyContent(expr, i+2);
         if (s_curly == nullptr) return EBRACKETS;
-        SString *br_name = new SString(s_curly);
+        UnicodeString *br_name = new UnicodeString(UStr::to_unistr(s_curly));
         delete s_curly;
         int blen = br_name->length();
         if (blen == 0){
@@ -1402,13 +1402,13 @@ bool CRegExp::setPositionMoves(bool moves)
 }
 
 #ifndef NAMED_MATCHES_IN_HASH
-int CRegExp::getBracketNo(const String *brname)
+int CRegExp::getBracketNo(const UnicodeString *brname)
 {
   for(int brn = 0; brn < cnMatch; brn++)
-    if (brname->equalsIgnoreCase(brnames[brn])) return brn;
+    if (brname->caseCompare(*brnames[brn],0)==0) return brn;
   return -1;
 }
-String *CRegExp::getBracketName(int no)
+UnicodeString *CRegExp::getBracketName(int no)
 {
   if (no >= cnMatch) return 0;
   return brnames[no];

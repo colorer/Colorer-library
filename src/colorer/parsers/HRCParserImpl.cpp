@@ -1,6 +1,5 @@
 #include <memory>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <cmath>
 #include <cstdio>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
@@ -12,6 +11,8 @@
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/Character.h>
 #include <colorer/common/UnicodeLogger.h>
+#include <xercesc/util/NumberFormatException.hpp>
+#include <xercesc/util/XMLDouble.hpp>
 
 HRCParserImpl::HRCParserImpl():
   versionName(nullptr), parseProtoType(nullptr), parseType(nullptr), current_input_source(nullptr),
@@ -352,18 +353,32 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
-  CString dmatch = CString(match);
-  auto* matchRE = new CRegExp(&dmatch);
+  UnicodeString dmatch = UnicodeString(match);
+  auto* matchRE = new CRegExp(&UStr::to_string(&dmatch));
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
-    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch.getChars(), *parseProtoType->name.get());
+    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *parseProtoType->name.get());
     delete matchRE;
     return;
   }
   FileTypeChooser::ChooserType ctype = xercesc::XMLString::equals(elem->getNodeName() , hrcTagFilename) ? FileTypeChooser::ChooserType::CT_FILENAME : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype ? 1 : 2;
-  CString weight = CString(elem->getAttribute(hrcFilenameAttrWeight));
-  UnicodeTools::getNumber(&weight, &prior);
+  const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
+  if (weight[0] != '\0') {
+    try {
+      auto w = new xercesc::XMLDouble(weight);
+      prior = w->getValue();
+      if (prior < 0) {
+        spdlog::warn("Weight must be greater than 0. Current value {0}. Default value will be used. Current file {1}.", prior,
+                     *XStr(current_input_source->getInputSource()->getSystemId()).get_stdstr());
+      }
+      delete w;
+    } catch (xercesc::NumberFormatException& toCatch) {
+      spdlog::warn("Weight '{0}' is not valid for the prototype '{1}'. Message: {2}. Default value will be used. Current file {3}.",
+                   *XStr(weight).get_stdstr(), *parseProtoType->getName(), *XStr(toCatch.getMessage()).get_stdstr(),
+                   *XStr(current_input_source->getInputSource()->getSystemId()).get_stdstr());
+    }
+  }
   auto* ftc = new FileTypeChooser(ctype, prior, matchRE);
   parseProtoType->chooserVector.push_back(ftc);
 }
@@ -917,9 +932,9 @@ void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
 
   for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
     if (st) {
-      node->regionsn[i] = getNCRegion(&UStr::to_unistr(node->start->getBracketName(i)), false);
+      node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
     } else {
-      node->regionen[i] = getNCRegion(&UStr::to_unistr(node->end->getBracketName(i)), false);
+      node->regionen[i] = getNCRegion(node->end->getBracketName(i), false);
     }
   }
 }

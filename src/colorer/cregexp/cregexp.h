@@ -276,11 +276,11 @@ public:
   /**
     Returns count of named brackets.
   */
-  int getBracketNo(const String *brname);
+  int getBracketNo(const UnicodeString *brname);
   /**
     Returns named bracked name by it's index.
   */
-  String *getBracketName(int no);
+  UnicodeString *getBracketName(int no);
 #ifdef COLORERMODE
   bool setBackRE(CRegExp *bkre);
   /**
@@ -332,7 +332,7 @@ private:
   SMatches *matches;
   int cMatch;
 #if !defined NAMED_MATCHES_IN_HASH
-  String* brnames[NAMED_MATCHES_NUM];
+  UnicodeString* brnames[NAMED_MATCHES_NUM];
   int cnMatch;
 #else
   SMatchHash *namedMatches;
