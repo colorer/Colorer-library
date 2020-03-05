@@ -1041,7 +1041,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
   if (name == nullptr) {
     return nullptr;
   }
-  size_t colon = name->indexOf(':');
+  auto colon = name->indexOf(':');
   if (colon != -1) { // qualified name
     UnicodeString prefix(*name, 0, colon);
     auto ft = fileTypeHash.find(prefix);
@@ -1089,7 +1089,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
 UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
 {
   int copypos = 0;
-  size_t epos = 0;
+  int32_t epos = 0;
 
   if (!name) {
     return nullptr;
@@ -1106,7 +1106,7 @@ UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
       epos++;
       continue;
     }
-    size_t elpos = name->indexOf(';', epos);
+    auto elpos = name->indexOf(';', epos);
     if (elpos == -1) {
       epos = name->length();
       break;

@@ -29,7 +29,7 @@ void CatalogParser::parse(const UnicodeString* path)
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
   if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw CatalogParserException("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " + UStr::to_unistr(path));
+    throw CatalogParserException("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " + *path);
   }
 
   parseCatalogBlock(elem);

@@ -447,7 +447,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(CString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->start_text);
+        commonWriter->write(UStr::to_string(TextRegion::cast(rd)->start_text));
       } else {
         commonWriter->write(CString("<html><body style='"));
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
@@ -457,7 +457,7 @@ void ConsoleTools::genOutput(bool useTokens)
 
     if (copyrightHeader) {
       commonWriter->write(CString("Created with colorer-take5 library. Type '"));
-      commonWriter->write(type->getName());
+      commonWriter->write(UStr::to_string(type->getName()));
       commonWriter->write(CString("'\n\n"));
     }
 
@@ -490,7 +490,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write(CString("</pre></body></html>\n"));
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->end_text);
+        commonWriter->write(UStr::to_string(TextRegion::cast(rd)->end_text));
       } else {
         commonWriter->write(CString("</pre></body></html>\n"));
       }
