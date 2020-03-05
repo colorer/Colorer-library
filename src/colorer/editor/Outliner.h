@@ -57,10 +57,10 @@ public:
 
   void startParsing(size_t lno);
   void endParsing(size_t lno);
-  void clearLine(size_t lno, String* line);
-  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void clearLine(size_t lno, UnicodeString* line);
+  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region);
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
   void modifyEvent(size_t topLine);
 
 protected:

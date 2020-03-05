@@ -307,8 +307,8 @@ void ConsoleTools::profile(int loopCount)
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
-  CString dcons = CString("console");
-  baseEditor.setRegionMapper(&dcons, &UStr::to_string(hrdName.get()));
+  UnicodeString dcons = UnicodeString("console");
+  baseEditor.setRegionMapper(&dcons, hrdName.get());
   FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
@@ -336,8 +336,8 @@ void ConsoleTools::viewFile()
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
-    CString dcons = CString("console");
-    baseEditor.setRegionMapper(&dcons, &UStr::to_string(hrdName.get()));
+    UnicodeString dcons = UnicodeString("console");
+    baseEditor.setRegionMapper(&dcons, hrdName.get());
     FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify

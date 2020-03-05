@@ -73,10 +73,10 @@ class LineRegionsSupport : public RegionHandler
    * RegionHandler implementation
    */
   void startParsing(size_t lno) override;
-  void clearLine(size_t lno, String* line) override;
-  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region) override;
-  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
-  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void clearLine(size_t lno, UnicodeString* line) override;
+  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) override;
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
 
  protected:
   /**

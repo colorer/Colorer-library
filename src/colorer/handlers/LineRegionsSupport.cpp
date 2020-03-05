@@ -97,7 +97,7 @@ void LineRegionsSupport::startParsing(size_t lno)
   schemeStack.push_back(&background);
 }
 
-void LineRegionsSupport::clearLine(size_t lno, String* line)
+void LineRegionsSupport::clearLine(size_t lno, UnicodeString* line)
 {
   if (!checkLine(lno)) {
     return;
@@ -118,7 +118,7 @@ void LineRegionsSupport::clearLine(size_t lno, String* line)
   flowBackground = lfirst;
 }
 
-void LineRegionsSupport::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
+void LineRegionsSupport::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region)
 {
   // ignoring out of cached interval lines
   if (!checkLine(lno)) {
@@ -145,7 +145,7 @@ void LineRegionsSupport::addRegion(size_t lno, String* line, int sx, int ex, con
   addLineRegion(lno, lnew);
 }
 
-void LineRegionsSupport::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void LineRegionsSupport::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   LineRegion* lr = new LineRegion();
   lr->region = region;
@@ -176,7 +176,7 @@ void LineRegionsSupport::enterScheme(size_t lno, String* line, int sx, int ex, c
   }
 }
 
-void LineRegionsSupport::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void LineRegionsSupport::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   const Region* scheme_region = schemeStack.back()->region;
   delete schemeStack.back();

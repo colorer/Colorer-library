@@ -83,12 +83,12 @@ void BaseEditor::setRegionMapper(RegionMapper* rs)
   remapLRS(false);
 }
 
-void BaseEditor::setRegionMapper(const String* hrdClass, const String* hrdName)
+void BaseEditor::setRegionMapper(const UnicodeString* hrdClass, const UnicodeString* hrdName)
 {
   if (internalRM) {
     delete regionMapper;
   }
-  regionMapper = parserFactory->createStyledMapper(&UStr::to_unistr(hrdClass), &UStr::to_unistr(hrdName));
+  regionMapper = parserFactory->createStyledMapper(hrdClass, hrdName);
   internalRM = true;
   remapLRS(false);
 }
@@ -124,15 +124,15 @@ void BaseEditor::setFileType(FileType* ftype)
   invalidLine = 0;
 }
 
-FileType* BaseEditor::setFileType(const String& fileType)
+FileType* BaseEditor::setFileType(const UnicodeString& fileType)
 {
-  currentFileType = hrcParser->getFileType(&UStr::to_unistr(&fileType));
+  currentFileType = hrcParser->getFileType(&fileType);
   setFileType(currentFileType);
   return currentFileType;
 }
 
 
-FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen)
+FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen)
 {
   SString textStart;
   int totalLength = 0;
@@ -148,7 +148,7 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
       break;
     }
   }
-  currentFileType = hrcParser->chooseFileType(&UStr::to_unistr(fileName), &UStr::to_unistr(&textStart));
+  currentFileType = hrcParser->chooseFileType(fileName, &UStr::to_unistr(&textStart));
 
   int chooseStrNext = currentFileType->getParamValueInt("firstlines", chooseStr);
   int chooseLenNext = currentFileType->getParamValueInt("firstlinebytes", chooseLen);
@@ -159,10 +159,10 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
   return currentFileType;
 }
 
-FileType* BaseEditor::chooseFileType(const String* fileName)
+FileType* BaseEditor::chooseFileType(const UnicodeString* fileName)
 {
   if (lineSource == nullptr) {
-    currentFileType = hrcParser->chooseFileType(&UStr::to_unistr(fileName), nullptr);
+    currentFileType = hrcParser->chooseFileType(fileName, nullptr);
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
@@ -536,7 +536,7 @@ void BaseEditor::endParsing(size_t lno)
   }
 }
 
-void BaseEditor::clearLine(size_t lno, String* line)
+void BaseEditor::clearLine(size_t lno, UnicodeString* line)
 {
   lrSupport->clearLine(lno, line);
   for (auto & regionHandler : regionHandlers) {
@@ -544,7 +544,7 @@ void BaseEditor::clearLine(size_t lno, String* line)
   }
 }
 
-void BaseEditor::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
+void BaseEditor::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region)
 {
   lrSupport->addRegion(lno, line, sx, ex, region);
   for (auto & regionHandler : regionHandlers) {
@@ -552,7 +552,7 @@ void BaseEditor::addRegion(size_t lno, String* line, int sx, int ex, const Regio
   }
 }
 
-void BaseEditor::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
   for (auto & regionHandler : regionHandlers) {
@@ -560,7 +560,7 @@ void BaseEditor::enterScheme(size_t lno, String* line, int sx, int ex, const Reg
   }
 }
 
-void BaseEditor::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
   for (auto & regionHandler : regionHandlers) {

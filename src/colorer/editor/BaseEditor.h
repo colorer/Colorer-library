@@ -59,7 +59,7 @@ public:
    * @param hrdClass Class of RegionMapper instance
    * @param hrdName  Name of RegionMapper instance
    */
-  void setRegionMapper(const String* hrdClass, const String* hrdName);
+  void setRegionMapper(const UnicodeString* hrdClass, const UnicodeString* hrdName);
 
   /**
    * Specifies number of lines, for which parser
@@ -80,12 +80,12 @@ public:
    * Initial HRC type, used for parse processing.
    * If changed during processing, all text information is invalidated.
    */
-  FileType* setFileType(const String& fileType);
+  FileType* setFileType(const UnicodeString& fileType);
   /**
    * Tries to choose appropriate file type from HRC database
    * using passed fileName and first line of text (if available through lineSource)
    */
-  FileType* chooseFileType(const String* fileName);
+  FileType* chooseFileType(const UnicodeString* fileName);
 
   /**
    * Returns currently used HRC file type
@@ -234,16 +234,16 @@ public:
 
   void startParsing(size_t lno);
   void endParsing(size_t lno);
-  void clearLine(size_t lno, String* line);
-  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void clearLine(size_t lno, UnicodeString* line);
+  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region);
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
 
   bool haveInvalidLine();
 
 private:
 
-  FileType* chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen);
+  FileType* chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen);
 
   HRCParser* hrcParser;
   TextParser* textParser;

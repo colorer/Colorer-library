@@ -41,7 +41,7 @@ public:
       structure of this line before adding new one.
       @param lno Line number
   */
-  virtual void clearLine(size_t lno, String* line) {};
+  virtual void clearLine(size_t lno, UnicodeString* line) {};
 
   /** Informs handler about lexical region in line.
       This is a basic method, wich transfer information from
@@ -52,7 +52,7 @@ public:
       @param ex End X position of region in line
       @param region Region information
   */
-  virtual void addRegion(size_t lno, String* line, int sx, int ex, const Region* region) = 0;
+  virtual void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) = 0;
 
   /** Informs handler about entering into specified scheme.
       Parameter <code>region</code> is used to specify
@@ -65,7 +65,7 @@ public:
       @param region Scheme Region information (background)
       @param scheme Additional Scheme information
   */
-  virtual void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
+  virtual void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
   /** Informs handler about leaveing specified scheme.
       Parameter <code>region</code> is used to specify
@@ -80,7 +80,7 @@ public:
       @param region Scheme Region information (background)
       @param scheme Additional Scheme information
   */
-  virtual void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
+  virtual void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
 protected:
   RegionHandler() {};

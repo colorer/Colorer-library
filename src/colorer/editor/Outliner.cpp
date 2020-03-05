@@ -75,12 +75,12 @@ void Outliner::endParsing(size_t lno)
   curLevel = 0;
 }
 
-void Outliner::clearLine(size_t lno, String* line)
+void Outliner::clearLine(size_t lno, UnicodeString* line)
 {
   lineIsEmpty = true;
 }
 
-void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region* region)
+void Outliner::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region)
 {
   if (lno < modifiedLine) {
     return;
@@ -89,26 +89,26 @@ void Outliner::addRegion(size_t lno, String* line, int sx, int ex, const Region*
     return;
   }
 
-  String* itemLabel = new CString(line, sx, ex - sx);
+  UnicodeString* itemLabel = new UnicodeString(*line, sx, ex - sx);
 
   if (lineIsEmpty) {
     outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
   } else {
     OutlineItem* thisItem = outline.back();
     if (thisItem->token != nullptr && thisItem->lno == lno) {
-      thisItem->token->append(itemLabel);
+      thisItem->token->append(*itemLabel);
     }
   }
   delete itemLabel;
   lineIsEmpty = false;
 }
 
-void Outliner::enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   curLevel++;
 }
 
-void Outliner::leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   curLevel--;
 }
