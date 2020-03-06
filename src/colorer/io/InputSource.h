@@ -13,7 +13,7 @@ namespace colorer {
   public:
     /** Current stream location
     */
-    virtual const String *getLocation() const = 0;
+    virtual const UnicodeString *getLocation() const = 0;
 
     /** Opens stream and returns array of readed bytes.
     @throw InputSourceException If some IO-errors occurs.
@@ -34,7 +34,7 @@ namespace colorer {
     @param path Could be relative file location, absolute
     file, http uri, jar uri.
     */
-    static InputSource *newInstance(const String *path);
+    static InputSource *newInstance(const UnicodeString *path);
 
     /** Statically creates instance of InputSource object,
     possibly based on parent source stream.
@@ -42,7 +42,7 @@ namespace colorer {
     @param path Could be relative file location, absolute
     file, http uri, jar uri.
     */
-    static InputSource *newInstance(const String *path, InputSource *base);
+    static InputSource *newInstance(const UnicodeString *path, InputSource *base);
 
     /** Returns new String, created from linking of
     @c basePath and @c relPath parameters.
@@ -50,17 +50,17 @@ namespace colorer {
     @param relPath Relative path, used to append to basePath
     and construct new path. Can be @b absolute
     */
-    static String *getAbsolutePath(const String*basePath, const String*relPath);
+    static UnicodeString *getAbsolutePath(const UnicodeString*basePath, const UnicodeString*relPath);
 
     /** Checks, if passed path relative or not.
     */
-    static bool isRelative(const String *path);
+    static bool isRelative(const UnicodeString *path);
 
     /** Creates inherited InputSource with the same type
     relatively to the current.
     @param relPath Relative URI part.
     */
-    virtual InputSource *createRelative(const String *relPath){ return nullptr;};
+    virtual InputSource *createRelative(const UnicodeString *relPath){ return nullptr;};
 
     virtual ~InputSource(){};
   protected:
@@ -79,7 +79,7 @@ namespace colorer {
 
     virtual ~MultipleInputSource(){};
   protected:
-    MultipleInputSource(const String *basePath){};
+    MultipleInputSource(const UnicodeString *basePath){};
   };
 }
 #endif

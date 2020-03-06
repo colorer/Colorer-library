@@ -11,12 +11,12 @@
 #define DWORD_PTR DWORD
 #endif
 
-HTTPInputSource::HTTPInputSource(const String* basePath, HTTPInputSource* base)
+HTTPInputSource::HTTPInputSource(const UnicodeString* basePath, HTTPInputSource* base)
 {
   if (isRelative(basePath) && base != nullptr) {
     baseLocation = getAbsolutePath(base->getLocation(), basePath);
   } else {
-    baseLocation = new SString(basePath);
+    baseLocation = new UnicodeString(*basePath);
   }
   stream = nullptr;
 }
@@ -27,12 +27,12 @@ HTTPInputSource::~HTTPInputSource()
   delete[] stream;
 }
 
-colorer::InputSource* HTTPInputSource::createRelative(const String* relPath)
+colorer::InputSource* HTTPInputSource::createRelative(const UnicodeString* relPath)
 {
   return new HTTPInputSource(relPath, this);
 }
 
-const String* HTTPInputSource::getLocation() const
+const UnicodeString* HTTPInputSource::getLocation() const
 {
   return baseLocation;
 }
@@ -40,7 +40,7 @@ const String* HTTPInputSource::getLocation() const
 const byte* HTTPInputSource::openStream()
 {
   if (stream != nullptr) {
-    throw InputSourceException("openStream(): source stream already opened: '" +  UStr::to_unistr(baseLocation) + "'");
+    throw InputSourceException("openStream(): source stream already opened: '" +  *baseLocation + "'");
   }
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE

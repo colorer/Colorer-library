@@ -9,18 +9,18 @@
 class FileInputSource : public colorer::InputSource
 {
 public:
-  FileInputSource(const String *basePath, FileInputSource *base);
+  FileInputSource(const UnicodeString *basePath, FileInputSource *base);
   ~FileInputSource();
 
-  const String *getLocation() const;
+  const UnicodeString *getLocation() const;
 
   const byte *openStream();
   void closeStream();
   int length() const;
 protected:
-  colorer::InputSource *createRelative(const String *relPath);
+  colorer::InputSource *createRelative(const UnicodeString *relPath);
 
-  String *baseLocation;
+  UnicodeString *baseLocation;
   byte *stream;
   int len;
 };

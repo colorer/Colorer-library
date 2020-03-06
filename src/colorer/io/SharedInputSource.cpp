@@ -1,6 +1,6 @@
 #include<colorer/io/SharedInputSource.h>
 
-std::unordered_map<SString, SharedInputSource*>* SharedInputSource::isHash = nullptr;
+std::unordered_map<UnicodeString, SharedInputSource*>* SharedInputSource::isHash = nullptr;
 
 SharedInputSource::SharedInputSource(InputSource* source)
 {
@@ -11,7 +11,7 @@ SharedInputSource::SharedInputSource(InputSource* source)
 
 SharedInputSource::~SharedInputSource()
 {
-  isHash->erase(is->getLocation());
+  isHash->erase(*is->getLocation());
   if (isHash->size() == 0) {
     delete isHash;
     isHash = nullptr;
@@ -20,23 +20,23 @@ SharedInputSource::~SharedInputSource()
 }
 
 
-SharedInputSource* SharedInputSource::getInputSource(const String* path, InputSource* base)
+SharedInputSource* SharedInputSource::getInputSource(const UnicodeString* path, InputSource* base)
 {
   InputSource* tempis = InputSource::newInstance(path, base);
 
   if (isHash == nullptr) {
-    isHash = new std::unordered_map<SString, SharedInputSource*>();
+    isHash = new std::unordered_map<UnicodeString, SharedInputSource*>();
   }
 
   SharedInputSource* sis = nullptr;
-  auto s = isHash->find(tempis->getLocation());
+  auto s = isHash->find(*tempis->getLocation());
   if (s != isHash->end()) {
     sis = s->second;
   }
 
   if (sis == nullptr) {
     sis = new SharedInputSource(tempis);
-    std::pair<SString, SharedInputSource*> pp(tempis->getLocation(), sis);
+    std::pair<UnicodeString, SharedInputSource*> pp(*tempis->getLocation(), sis);
     isHash->emplace(pp);
 
     return sis;

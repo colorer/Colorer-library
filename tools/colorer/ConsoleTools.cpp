@@ -362,7 +362,7 @@ void ConsoleTools::viewFile()
 
 void ConsoleTools::forward()
 {
-  colorer::InputSource* fis = colorer::InputSource::newInstance(&UStr::to_string(inputFileName.get()));
+  colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
   CString eStream(stream, fis->length(), inputEncodingIndex);
 

@@ -48,7 +48,7 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
     }
   } else {
     this->fileName = new SString(fileName_);
-    colorer::InputSource* is = colorer::InputSource::newInstance(fileName_);
+    colorer::InputSource* is = colorer::InputSource::newInstance(&UStr::to_unistr(fileName_));
 
     const byte* data;
     try {

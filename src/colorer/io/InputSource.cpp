@@ -13,32 +13,32 @@
 
 using namespace colorer;
 
-String *InputSource::getAbsolutePath(const String*basePath, const String*relPath){
+UnicodeString *InputSource::getAbsolutePath(const UnicodeString*basePath, const UnicodeString*relPath){
   int root_pos = basePath->lastIndexOf('/');
   int root_pos2 = basePath->lastIndexOf('\\');
   if (root_pos2 > root_pos) root_pos = root_pos2;
   if (root_pos == -1) root_pos = 0;
   else root_pos++;
-  SString *newPath = new SString();
-  newPath->append(CString(basePath, 0, root_pos)).append(relPath);
+  UnicodeString *newPath = new UnicodeString();
+  newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
   return newPath;
 }
 
-InputSource *InputSource::newInstance(const String *path){
+InputSource *InputSource::newInstance(const UnicodeString *path){
   return newInstance(path, nullptr);
 }
 
-InputSource *InputSource::newInstance(const String *path, InputSource *base){
+InputSource *InputSource::newInstance(const UnicodeString *path, InputSource *base){
   if (path == nullptr){
     throw InputSourceException("InputSource::newInstance: path is nullptr");
   }
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-  if (path->startsWith(CString("http://"))){
+  if (path->startsWith("http://")){
     return new HTTPInputSource(path, nullptr);
   }
 #endif
 #if COLORER_FEATURE_JARINPUTSOURCE
-  if (path->startsWith(CString("jar:"))){
+  if (path->startsWith("jar:")){
     return new JARInputSource(path, base);
   }
 #endif
@@ -50,8 +50,8 @@ InputSource *InputSource::newInstance(const String *path, InputSource *base){
   return new FileInputSource(path, nullptr);
 }
 
-bool InputSource::isRelative(const String *path){
-  if (path->indexOf(':') != String::npos && path->indexOf(':') < 10) return false;
+bool InputSource::isRelative(const UnicodeString *path){
+  if (path->indexOf(':') != -1 && path->indexOf(':') < 10) return false;
   if (path->indexOf('/') == 0 || path->indexOf('\\') == 0) return false;
   return true;
 }
