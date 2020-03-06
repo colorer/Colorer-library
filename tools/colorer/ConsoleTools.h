@@ -17,9 +17,9 @@ public:
   void write(wchar c)
   {
     if (c == '&') {
-      writer->write(CString("&amp;"));
+      writer->write("&amp;");
     } else if (c == '<') {
-      writer->write(CString("&lt;"));
+      writer->write("&lt;");
     } else {
       writer->write(c);
     }

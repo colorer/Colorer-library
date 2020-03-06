@@ -24,21 +24,21 @@ public:
       @param inputEncoding Input file encoding.
       @param tab2spaces Points, if we have to convert all tabs in file into spaces.
   */
-  void loadFile(const String* fileName, const String* inputEncoding, bool tab2spaces);
+  void loadFile(const UnicodeString* fileName, const UnicodeString* inputEncoding, bool tab2spaces);
   /** Returns loaded file name.
   */
-  const String* getFileName();
+  const UnicodeString* getFileName();
   /** Returns total lines count in text. */
   size_t getLineCount();
 
-  SString* getLine(size_t lno) override;
+  UnicodeString* getLine(size_t lno) override;
 protected:
   /** Frees loaded file lines.
   */
   void freeFile();
 private:
-  std::vector<SString*> lines;
-  SString* fileName;
+  std::vector<UnicodeString *> lines;
+  UnicodeString* fileName;
   void replaceTabs(size_t lno);
 
 };

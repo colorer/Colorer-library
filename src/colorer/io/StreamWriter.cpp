@@ -2,7 +2,7 @@
 #include <colorer/Common.h>
 #include <colorer/unicode/Encodings.h>
 #include <colorer/io/StreamWriter.h>
-
+#include <unicode/ustring.h>
 
 StreamWriter::StreamWriter(){}
 
@@ -29,8 +29,12 @@ StreamWriter::~StreamWriter(){
 
 void StreamWriter::write(wchar c){
   byte buf[8];
-  int bufLen = Encodings::toBytes(encodingIndex, c, buf);
-  for(int pos = 0; pos < bufLen; pos++)
+  int32_t len = 0;
+  UErrorCode err = U_ZERO_ERROR;
+  u_strToUTF8(buf, 8, &len, &c, 1, &err);
+  //TODO encoding
+  //int bufLen = Encodings::toBytes(encodingIndex, c, buf);
+  for(int pos = 0; pos < len; pos++)
     putc(buf[pos], file);
 }
 

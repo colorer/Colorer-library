@@ -81,28 +81,26 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
 */
 void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write(CString("<?xml version=\"1.0\"?>\n\
-<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
-<hrd>\n"));
+  writer->write("<?xml version=\"1.0\"?>\n<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n<hrd>\n");
   for (const auto& regionDefine : regionDefines) {
     const StyledRegion* rdef = StyledRegion::cast(regionDefine.second);
     char temporary[256];
-    writer->write(SString("  <define name='") + UStr::to_string(&regionDefine.first) + "'");
+    writer->write("  <define name='" + regionDefine.first + "'");
     if (rdef->bfore) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
-      writer->write(CString(temporary));
+      writer->write(temporary);
     }
     if (rdef->bback) {
       sprintf(temporary, " back=\"#%06x\"", rdef->back);
-      writer->write(CString(temporary));
+      writer->write(temporary);
     }
     if (rdef->style) {
       sprintf(temporary, " style=\"#%06x\"", rdef->style);
-      writer->write(CString(temporary));
+      writer->write(temporary);
     }
-    writer->write(CString("/>\n"));
+    writer->write("/>\n");
   }
-  writer->write(CString("\n</hrd>\n"));
+  writer->write("\n</hrd>\n");
 }
 
 /** Adds or replaces region definition */

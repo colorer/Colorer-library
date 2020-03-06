@@ -94,27 +94,25 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 */
 void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write(CString("<?xml version=\"1.0\"?>\n\
-<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n\
-<hrd>\n"));
+  writer->write("<?xml version=\"1.0\"?>\n<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n<hrd>\n");
   for (const auto & regionDefine : regionDefines) {
     const TextRegion* rdef = TextRegion::cast(regionDefine.second);
-    writer->write(SString("  <define name='") + UStr::to_string(&regionDefine.first) + "'");
+    writer->write("  <define name='" + regionDefine.first + "'");
     if (rdef->start_text != nullptr) {
-      writer->write(SString(" start_text='") + UStr::to_string(rdef->start_text) + "'");
+      writer->write(" start_text='" + *rdef->start_text + "'");
     }
     if (rdef->end_text != nullptr) {
-      writer->write(SString(" end_text='") + UStr::to_string(rdef->end_text) + "'");
+      writer->write(" end_text='" + *rdef->end_text + "'");
     }
     if (rdef->start_back != nullptr) {
-      writer->write(SString(" start_back='") + UStr::to_string(rdef->start_back) + "'");
+      writer->write(" start_back='" + *rdef->start_back + "'");
     }
     if (rdef->end_back != nullptr) {
-      writer->write(SString(" end_back='") + UStr::to_string(rdef->end_back) + "'");
+      writer->write(" end_back='" + *rdef->end_back + "'");
     }
-    writer->write(CString("/>\n"));
+    writer->write("/>\n");
   }
-  writer->write(CString("\n</hrd>\n"));
+  writer->write("\n</hrd>\n");
 }
 
 /** Adds or replaces region definition */

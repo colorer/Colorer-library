@@ -38,7 +38,7 @@ public:
    * @param lno Requested line number
    * @return Unicode string, enwrapped into String class.
    */
-  virtual SString* getLine(size_t lno) = 0;
+  virtual UnicodeString* getLine(size_t lno) = 0;
 protected:
   LineSource() {};
   virtual ~LineSource() {};

@@ -221,13 +221,13 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         break;
       }
       if (useNames) {
-        writer->write(UStr::to_string(type->getName()) + "\n");
+        writer->write(*type->getName() + "\n");
       } else {
         if (type->getGroup() != nullptr) {
-          writer->write(UStr::to_string(type->getGroup()) + ": ");
+          writer->write(*type->getGroup() + ": ");
         }
-        writer->write(UStr::to_string(type->getDescription()));
-        writer->write(CString("\n"));
+        writer->write(type->getDescription());
+        writer->write("\n");
       }
 
       if (load) {
@@ -245,7 +245,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
 {
   FileType* type = nullptr;
   if (typeDescription != nullptr) {
-    type = hrcParser->getFileType(&UStr::to_unistr(typeDescription.get()));
+    type = hrcParser->getFileType(typeDescription.get());
     if (type == nullptr) {
       for (int idx = 0;; idx++) {
         type = hrcParser->enumerateFileTypes(idx);
@@ -266,15 +266,15 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
     }
   }
   if (typeDescription == nullptr || type == nullptr) {
-    SString textStart;
+    UnicodeString textStart;
     int totalLength = 0;
     for (int i = 0; i < 4; i++) {
-      String* iLine = lineSource->getLine(i);
+      UnicodeString* iLine = lineSource->getLine(i);
       if (iLine == nullptr) {
         break;
       }
-      textStart.append(iLine);
-      textStart.append(CString("\n"));
+      textStart.append(*iLine);
+      textStart.append("\n");
       totalLength += iLine->length();
       if (totalLength > 500) {
         break;
@@ -289,7 +289,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
 	}
 	std::unique_ptr<UnicodeString> file_name (new UnicodeString(fnpath, slash_idx + 1));
 
-    type = hrcParser->chooseFileType(file_name.get(), &UStr::to_unistr(&textStart), 0);
+    type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
   }
   return type;
 }
@@ -303,7 +303,7 @@ void ConsoleTools::profile(int loopCount)
   pf.loadCatalog(catalogPath.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
-  textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
+  textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
@@ -329,7 +329,7 @@ void ConsoleTools::viewFile()
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
+    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -364,12 +364,13 @@ void ConsoleTools::forward()
 {
   colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
-  CString eStream(stream, fis->length(), inputEncodingIndex);
+  //CString eStream(stream, fis->length(), inputEncodingIndex);
+  UnicodeString eStream((char*)stream, fis->length());
 
   Writer* outputFile;
   try {
     if (outputFileName != nullptr) {
-      outputFile = new FileWriter(&UStr::to_string(outputFileName.get()), outputEncodingIndex, bomOutput);
+      outputFile = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
     } else {
       outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
     }
@@ -390,7 +391,7 @@ void ConsoleTools::genOutput(bool useTokens)
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(&UStr::to_string(inputFileName.get()), &UStr::to_string(inputEncoding.get()), true);
+    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -428,7 +429,7 @@ void ConsoleTools::genOutput(bool useTokens)
     Writer* commonWriter;
     try {
       if (outputFileName != nullptr) {
-        commonWriter = new FileWriter(&UStr::to_string(outputFileName.get()), outputEncodingIndex, bomOutput);
+        commonWriter = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
       } else {
         commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
       }
@@ -444,21 +445,21 @@ void ConsoleTools::genOutput(bool useTokens)
     }
 
     if (htmlWrapping && useTokens) {
-      commonWriter->write(CString("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n"));
+      commonWriter->write("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n");
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(UStr::to_string(TextRegion::cast(rd)->start_text));
+        commonWriter->write(TextRegion::cast(rd)->start_text);
       } else {
-        commonWriter->write(CString("<html><body style='"));
+        commonWriter->write("<html><body style='");
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
-        commonWriter->write(CString("'><pre>\n"));
+        commonWriter->write("'><pre>\n");
       }
     }
 
     if (copyrightHeader) {
-      commonWriter->write(CString("Created with colorer-take5 library. Type '"));
-      commonWriter->write(UStr::to_string(type->getName()));
-      commonWriter->write(CString("'\n\n"));
+      commonWriter->write("Created with colorer-take5 library. Type '");
+      commonWriter->write(type->getName());
+      commonWriter->write("'\n\n");
     }
 
     int lni = 0;
@@ -473,8 +474,8 @@ void ConsoleTools::genOutput(bool useTokens)
         for (lni = iwidth; lni < lwidth; lni++) {
           commonWriter->write(0x0020);
         }
-        commonWriter->write(SString(i));
-        commonWriter->write(CString(": "));
+        commonWriter->write(UStr::to_unistr(i));
+        commonWriter->write(": ");
       }
       if (useTokens) {
         ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
@@ -483,16 +484,16 @@ void ConsoleTools::genOutput(bool useTokens)
       } else {
         ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }
-      commonWriter->write(CString("\n"));
+      commonWriter->write("\n");
     }
 
     if (htmlWrapping && useTokens) {
-      commonWriter->write(CString("</pre></body></html>\n"));
+      commonWriter->write("</pre></body></html>\n");
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(UStr::to_string(TextRegion::cast(rd)->end_text));
+        commonWriter->write(TextRegion::cast(rd)->end_text);
       } else {
-        commonWriter->write(CString("</pre></body></html>\n"));
+        commonWriter->write("</pre></body></html>\n");
       }
     }
 

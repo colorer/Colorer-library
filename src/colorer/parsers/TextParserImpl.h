@@ -29,7 +29,7 @@ public:
   void clearCache();
 
 private:
-  SString* str;
+  UnicodeString* str;
   int stackLevel;
   int gx, gy, gy2, len;
   int clearLine, endLine, schemeStart;

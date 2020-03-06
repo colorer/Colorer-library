@@ -128,9 +128,9 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<UnicodeString> &paths) c
   if (home_path != nullptr) {
     try {
       TextLinesStore tls;
-      tls.loadFile(&SString(home_path).append(CString("/.colorer5catalog")), nullptr, false);
+      tls.loadFile(&UnicodeString(home_path).append("/.colorer5catalog"), nullptr, false);
       if (tls.getLineCount() > 0) {
-        paths.emplace_back(UnicodeString(UStr::to_unistr(tls.getLine(0))));
+        paths.emplace_back(*tls.getLine(0));
       }
     } catch (InputSourceException &) { //-V565
       // it`s ok. the error is not interesting

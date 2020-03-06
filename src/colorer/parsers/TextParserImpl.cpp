@@ -249,9 +249,9 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
 
     int cr;
     if (node->kwList->matchCase) {
-      cr = node->kwList->kwList[pos].keyword->compare(UStr::to_unistr(&DString(*str, gx, kwlen)));
+      cr = node->kwList->kwList[pos].keyword->compare(UnicodeString(*str, gx, kwlen));
     } else {
-      cr = node->kwList->kwList[pos].keyword->caseCompare(UStr::to_unistr(&DString(*str, gx, kwlen)),0);
+      cr = node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen),0);
     }
 
     if (cr == 0 && right - left == 1) {
@@ -347,7 +347,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         break;
 
       case SchemeNode::SNT_RE:
-        if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
+        if (!schemeNode->start->parse(&UStr::to_string(str), gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
         CTRACE(spdlog::trace("[TextParserImpl] RE matched. gx={0}", gx));
@@ -369,7 +369,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         if (!schemeNode->scheme) {
           break;
         }
-        if (!schemeNode->start->parse(str, gx,
+        if (!schemeNode->start->parse(&UStr::to_string(str), gx,
                                       schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
@@ -382,7 +382,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           ssubst = schemeNode->scheme;
         }
 
-        auto* backLine = new SString(str);
+        auto* backLine = new UnicodeString(*str);
         if (updateCache) {
           ResF = forward;
           ResP = parent;
@@ -417,8 +417,8 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         int o_schemeStart = schemeStart;
         SMatches o_matchend = matchend;
         SMatches* o_match;
-        CString* o_str;
-        schemeNode->end->getBackTrace((const String**)&o_str, &o_match);
+        UnicodeString* o_str;
+        schemeNode->end->getBackTrace((const UnicodeString**)&o_str, &o_match);
 
         baseScheme = ssubst;
         schemeStart = gx;
@@ -494,7 +494,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       if (str == nullptr) {
         throw Exception("null String passed into the parser: " + UStr::to_unistr(gy));
       }
-      regionHandler->clearLine(gy, &UStr::to_unistr(str));
+      regionHandler->clearLine(gy, str);
     }
     // hack to include invisible regions in start of block
     // when parsing with cache information
@@ -511,7 +511,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
     // searches for the end of parent block
     int res = 0;
     if (root_end_re) {
-      res = root_end_re->parse(str, gx, len, &matchend, schemeStart);
+      res = root_end_re->parse(&UStr::to_string(str), gx, len, &matchend, schemeStart);
     }
     if (!res) {
       matchend.s[0] = matchend.e[0] = len;

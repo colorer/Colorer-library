@@ -134,21 +134,21 @@ FileType* BaseEditor::setFileType(const UnicodeString& fileType)
 
 FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen)
 {
-  SString textStart;
+  UnicodeString textStart;
   int totalLength = 0;
   for (int i = 0; i < chooseStr; i++) {
-    String* iLine = lineSource->getLine(i);
+    UnicodeString* iLine = lineSource->getLine(i);
     if (iLine == nullptr) {
       break;
     }
-    textStart.append(iLine);
-    textStart.append(CString("\n"));
+    textStart.append(*iLine);
+    textStart.append("\n");
     totalLength += iLine->length();
     if (totalLength > chooseLen) {
       break;
     }
   }
-  currentFileType = hrcParser->chooseFileType(fileName, &UStr::to_unistr(&textStart));
+  currentFileType = hrcParser->chooseFileType(fileName, &textStart);
 
   int chooseStrNext = currentFileType->getParamValueInt("firstlines", chooseStr);
   int chooseLenNext = currentFileType->getParamValueInt("firstlinebytes", chooseLen);

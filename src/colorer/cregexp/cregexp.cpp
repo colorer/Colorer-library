@@ -1421,13 +1421,13 @@ bool CRegExp::setBackRE(CRegExp *bkre)
   this->backRE = bkre;
   return true;
 }
-bool CRegExp::setBackTrace(const String *str, SMatches *trace)
+bool CRegExp::setBackTrace(const UnicodeString *str, SMatches *trace)
 {
   backTrace = trace;
   backStr = str;
   return true;
 }
-bool CRegExp::getBackTrace(const String **str, SMatches **trace)
+bool CRegExp::getBackTrace(const UnicodeString **str, SMatches **trace)
 {
   *str = backStr;
   *trace = backTrace;
