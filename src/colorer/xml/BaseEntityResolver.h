@@ -7,9 +7,9 @@
 class BaseEntityResolver : public xercesc::XMLEntityResolver
 {
 public:
-    BaseEntityResolver(){};
-    ~BaseEntityResolver() {};
-    xercesc::InputSource* resolveEntity(xercesc::XMLResourceIdentifier* resourceIdentifier);
+    BaseEntityResolver()= default;;
+    ~BaseEntityResolver() override = default;;
+    xercesc::InputSource* resolveEntity(xercesc::XMLResourceIdentifier* resourceIdentifier) override;
 };
 
 #endif

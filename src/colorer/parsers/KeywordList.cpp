@@ -1,12 +1,14 @@
 #include <colorer/parsers/KeywordList.h>
 
+#include <memory>
+
 KeywordList::KeywordList()
 {
   num = 0;
   matchCase = false;
   minKeywordLength = 0;
   kwList = nullptr;
-  firstChar.reset(new CharacterClass());
+  firstChar = std::make_unique<CharacterClass>();
 }
 
 KeywordList::~KeywordList()
@@ -16,12 +18,12 @@ KeywordList::~KeywordList()
 
 int kwCompare(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->compare(*((KeywordInfo*)e2)->keyword.get());
+  return ((KeywordInfo*)e1)->keyword->compare(*((KeywordInfo*)e2)->keyword);
 }
 
 int kwCompareI(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword.get(),0);
+  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword,0);
 }
 
 void KeywordList::sortList()
@@ -52,7 +54,7 @@ void KeywordList::substrIndex()
         break;
       }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          UnicodeString(*kwList[i].keyword.get(), 0, kwList[ii].keyword->length()).compare(*kwList[ii].keyword.get())==0) {
+          UnicodeString(*kwList[i].keyword, 0, kwList[ii].keyword->length()).compare(*kwList[ii].keyword)==0) {
         kwList[i].ssShorter = ii;
         break;
       }

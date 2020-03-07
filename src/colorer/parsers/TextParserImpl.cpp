@@ -303,7 +303,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 {
   int i, re_result;
   SchemeImpl* ssubst = nullptr;
-  SMatches match;
+  SMatches match{};
   ParseCache* OldCacheF = nullptr;
   ParseCache* OldCacheP = nullptr;
   ParseCache* ResF = nullptr;

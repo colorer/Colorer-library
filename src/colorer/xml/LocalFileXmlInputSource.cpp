@@ -15,8 +15,7 @@ LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh*
 }
 
 LocalFileXmlInputSource::~LocalFileXmlInputSource()
-{
-}
+= default;
 
 xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
 {

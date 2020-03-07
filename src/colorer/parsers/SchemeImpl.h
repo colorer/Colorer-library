@@ -1,6 +1,7 @@
 #ifndef _COLORER_HRCPARSERPELPERS_H_
 #define _COLORER_HRCPARSERPELPERS_H_
 
+#include <memory>
 #include <vector>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/Scheme.h>
@@ -19,12 +20,12 @@ class SchemeImpl : public Scheme
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const UnicodeString* getName() const
+  const UnicodeString* getName() const override
   {
     return schemeName.get();
   }
 
-  FileType* getFileType() const
+  FileType* getFileType() const override
   {
     return (FileType*)fileType;
   }
@@ -35,13 +36,13 @@ protected:
   std::vector<SchemeNode*> nodes;
   FileTypeImpl* fileType;
 
-  SchemeImpl(const UnicodeString* sn)
+  explicit SchemeImpl(const UnicodeString* sn)
   {
-    schemeName.reset(new UnicodeString(*sn));
+    schemeName = std::make_unique<UnicodeString>(*sn);
     fileType = nullptr;
   }
 
-  ~SchemeImpl()
+  ~SchemeImpl() override
   {
     for (auto it : nodes) {
       delete it;

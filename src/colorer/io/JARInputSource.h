@@ -17,17 +17,17 @@ public:
       @param base source, used to resolving relative URIs
   */
   JARInputSource(const UnicodeString *basePath, colorer::InputSource *base);
-  ~JARInputSource();
+  ~JARInputSource() override;
 
-  const UnicodeString *getLocation() const;
+  const UnicodeString *getLocation() const override;
 
-  const byte *openStream();
-  void closeStream();
-  int length() const;
+  const byte *openStream() override;
+  void closeStream() override;
+  int length() const override;
 protected:
   SharedInputSource *getShared() const { return sharedIS; };
   const UnicodeString *getInJarLocation() const { return inJarLocation; };
-  colorer::InputSource *createRelative(const UnicodeString *relPath);
+  colorer::InputSource *createRelative(const UnicodeString *relPath) override;
   JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool faked);
 private:
   UnicodeString *baseLocation;

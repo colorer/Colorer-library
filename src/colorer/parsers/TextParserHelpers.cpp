@@ -91,7 +91,7 @@ void VTList::deltree()
 bool VTList::push(SchemeNode* node)
 {
   VTList* newitem;
-  if (!node || node->virtualEntryVector.size() == 0) {
+  if (!node || node->virtualEntryVector.empty()) {
     return false;
   }
   newitem = new VTList();

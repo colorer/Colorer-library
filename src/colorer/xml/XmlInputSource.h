@@ -46,7 +46,7 @@ public:
     return nullptr;
   }
 
-  virtual ~XmlInputSource() {};
+  virtual ~XmlInputSource() = default;;
 
   static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
   static XMLCh* ExpandEnvironment(const XMLCh* path);
@@ -54,14 +54,14 @@ public:
   static uUnicodeString getClearPath(const UnicodeString* basePath, const UnicodeString* relPath);
   static bool isDirectory(const UnicodeString* path);
   static void getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files);
-protected:
-  XmlInputSource() {};
 
-private:
   XmlInputSource(XmlInputSource const &) = delete;
   XmlInputSource &operator=(XmlInputSource const &) = delete;
   XmlInputSource(XmlInputSource &&) = delete;
   XmlInputSource &operator=(XmlInputSource &&) = delete;
+protected:
+  XmlInputSource() = default;;
+
 };
 
 

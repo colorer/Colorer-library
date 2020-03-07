@@ -1,9 +1,9 @@
-#include<stdio.h>
-#include<string.h>
+#include<cstdio>
+#include<cstring>
 #include<sys/stat.h>
 #include<sys/timeb.h>
 #include<fcntl.h>
-#include<time.h>
+#include<ctime>
 
 #if defined _WIN32
 #include<io.h>
@@ -43,7 +43,7 @@ FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource 
   delete[] temp;
 #endif
   if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith("/")){
-    UnicodeString *n_baseLocation = new UnicodeString();
+    auto *n_baseLocation = new UnicodeString();
     n_baseLocation->append("/").append(*baseLocation);
     delete baseLocation;
     baseLocation = n_baseLocation;
@@ -73,7 +73,7 @@ const byte *FileInputSource::openStream()
 #endif
   if (source == -1)
     throw InputSourceException("Can't open file '" + *baseLocation+"'");
-  struct stat st;
+  struct stat st{};
   fstat(source, &st);
   len = st.st_size;
 

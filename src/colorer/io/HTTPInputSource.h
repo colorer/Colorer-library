@@ -17,15 +17,15 @@ public:
       @param base Parent input source, to use as base url for relative URLs.
   */
   HTTPInputSource(const UnicodeString *basePath, HTTPInputSource *base);
-  ~HTTPInputSource();
+  ~HTTPInputSource() override;
 
-  const UnicodeString *getLocation() const;
+  const UnicodeString *getLocation() const override;
 
-  const byte *openStream();
-  void closeStream();
-  int length() const;
+  const byte *openStream() override;
+  void closeStream() override;
+  int length() const override;
 protected:
-  colorer::InputSource *createRelative(const UnicodeString *relPath);
+  colorer::InputSource *createRelative(const UnicodeString *relPath) override;
 private:
   UnicodeString *baseLocation;
   byte *stream;

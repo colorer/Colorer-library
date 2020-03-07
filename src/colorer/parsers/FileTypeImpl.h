@@ -3,6 +3,7 @@
 
 #include <colorer/parsers/FileTypeChooser.h>
 #include <colorer/parsers/HRCParserImpl.h>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -11,7 +12,7 @@ class TypeParameter
 {
  public:
   TypeParameter() : name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
-  ~TypeParameter() {}
+  ~TypeParameter() = default;
 
   /* parameter name*/
   uUnicodeString name;
@@ -34,33 +35,33 @@ class FileTypeImpl : public FileType
   friend class TextParserImpl;
 
  public:
-  const UnicodeString* getName() const;
-  const UnicodeString* getGroup() const;
-  const UnicodeString* getDescription() const;
+  const UnicodeString* getName() const override;
+  const UnicodeString* getGroup() const override;
+  const UnicodeString* getDescription() const override;
 
   void setName(const UnicodeString* name_);
   void setGroup(const UnicodeString* group_);
   void setDescription(const UnicodeString* description_);
 
-  const UnicodeString* getParamValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const;
+  const UnicodeString* getParamValue(const UnicodeString& name_) const override;
+  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const override;
   const UnicodeString* getParamUserValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamDescription(const UnicodeString& name_) const;
-  int getParamValueInt(const UnicodeString& name, int def) const;
+  const UnicodeString* getParamDescription(const UnicodeString& name_) const override;
+  int getParamValueInt(const UnicodeString& name, int def) const override;
 
-  void setParamValue(const UnicodeString& name_, const UnicodeString* value);
+  void setParamValue(const UnicodeString& name_, const UnicodeString* value) override;
   void setParamDefaultValue(const UnicodeString& name_, const UnicodeString* value);
   void setParamUserValue(const UnicodeString& name_, const UnicodeString* value);
   void setParamDescription(const UnicodeString& name_, const UnicodeString* value);
 
-  std::vector<UnicodeString> enumParams() const;
+  std::vector<UnicodeString> enumParams() const override;
   size_t getParamCount() const;
   size_t getParamUserValueCount() const;
 
   TypeParameter* addParam(const UnicodeString* name_);
   void removeParamValue(const UnicodeString& name_);
 
-  Scheme* getBaseScheme();
+  Scheme* getBaseScheme() override;
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -99,8 +100,8 @@ class FileTypeImpl : public FileType
   std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
 
-  FileTypeImpl(HRCParserImpl* hrcParser);
-  ~FileTypeImpl();
+  explicit FileTypeImpl(HRCParserImpl* hrcParser);
+  ~FileTypeImpl() override;
 };
 
 inline const UnicodeString* FileTypeImpl::getName() const
@@ -120,16 +121,16 @@ inline const UnicodeString* FileTypeImpl::getDescription() const
 
 inline void FileTypeImpl::setName(const UnicodeString* name_)
 {
-  name.reset(new UnicodeString(*name_));
+  name = std::make_unique<UnicodeString>(*name_);
 }
 
 inline void FileTypeImpl::setGroup(const UnicodeString* group_)
 {
-  group.reset(new UnicodeString(*group_));
+  group = std::make_unique<UnicodeString>(*group_);
 }
 
 inline void FileTypeImpl::setDescription(const UnicodeString* description_)
 {
-  description.reset(new UnicodeString(*description_));
+  description = std::make_unique<UnicodeString>(*description_);
 }
 #endif

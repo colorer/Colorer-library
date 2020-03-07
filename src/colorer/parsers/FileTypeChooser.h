@@ -19,7 +19,7 @@ public:
   */
   FileTypeChooser(ChooserType type, double prior, CRegExp* re);
   /** Default destructor */
-  ~FileTypeChooser() {};
+  ~FileTypeChooser() = default;;
   /** Returns type of chooser */
   bool isFileName() const;
   /** Returns type of chooser */

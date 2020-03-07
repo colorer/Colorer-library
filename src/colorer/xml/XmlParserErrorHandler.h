@@ -13,9 +13,8 @@ public:
   {
   }
 
-  ~XmlParserErrorHandler()
-  {
-  }
+  ~XmlParserErrorHandler() override
+  = default;
 
   void warning(const xercesc::SAXParseException &toCatch) override;
   void error(const xercesc::SAXParseException &toCatch) override;

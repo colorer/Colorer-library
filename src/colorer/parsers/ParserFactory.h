@@ -101,6 +101,9 @@ public:
   */
   void loadCatalog(const UnicodeString* catalog_path);
   void addHrd(std::unique_ptr<HRDNode> hrd);
+
+  ParserFactory(const ParserFactory &) = delete;
+  void operator=(const ParserFactory &) = delete;
 private:
 
   UnicodeString searchCatalog() const;
@@ -116,8 +119,6 @@ private:
 
   HRCParser* hrc_parser;
 
-  ParserFactory(const ParserFactory &) = delete;
-  void operator=(const ParserFactory &) = delete;
 };
 
 #endif

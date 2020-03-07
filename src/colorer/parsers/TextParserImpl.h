@@ -17,16 +17,16 @@ class TextParserImpl : public TextParser
 {
 public:
   TextParserImpl();
-  ~TextParserImpl();
+  ~TextParserImpl() override;
 
-  void setFileType(FileType* type);
+  void setFileType(FileType* type) override;
 
-  void setLineSource(LineSource* lh);
-  void setRegionHandler(RegionHandler* rh);
+  void setLineSource(LineSource* lh) override;
+  void setRegionHandler(RegionHandler* rh) override;
 
-  int  parse(int from, int num, TextParseMode mode);
-  void breakParse();
-  void clearCache();
+  int  parse(int from, int num, TextParseMode mode) override;
+  void breakParse() override;
+  void clearCache() override;
 
 private:
   UnicodeString* str;

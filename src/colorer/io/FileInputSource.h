@@ -10,15 +10,15 @@ class FileInputSource : public colorer::InputSource
 {
 public:
   FileInputSource(const UnicodeString *basePath, FileInputSource *base);
-  ~FileInputSource();
+  ~FileInputSource() override;
 
-  const UnicodeString *getLocation() const;
+  const UnicodeString *getLocation() const override;
 
-  const byte *openStream();
-  void closeStream();
-  int length() const;
+  const byte *openStream() override;
+  void closeStream() override;
+  int length() const override;
 protected:
-  colorer::InputSource *createRelative(const UnicodeString *relPath);
+  colorer::InputSource *createRelative(const UnicodeString *relPath) override;
 
   UnicodeString *baseLocation;
   byte *stream;

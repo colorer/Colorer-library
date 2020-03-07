@@ -62,9 +62,9 @@ namespace colorer {
     */
     virtual InputSource *createRelative(const UnicodeString *relPath){ return nullptr;};
 
-    virtual ~InputSource(){};
+    virtual ~InputSource()= default;;
   protected:
-    InputSource(){};
+    InputSource()= default;;
   };
 
 
@@ -77,9 +77,9 @@ namespace colorer {
     virtual InputSource *nextInput() const = 0;
     virtual const String *getLocation() const = 0;
 
-    virtual ~MultipleInputSource(){};
+    virtual ~MultipleInputSource()= default;;
   protected:
-    MultipleInputSource(const UnicodeString *basePath){};
+    explicit MultipleInputSource(const UnicodeString *basePath){};
   };
 }
 #endif

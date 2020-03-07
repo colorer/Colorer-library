@@ -29,7 +29,7 @@ public:
    *        text data in line-separated form. Can't be null.
    */
   BaseEditor(ParserFactory* pf, LineSource* lineSource);
-  ~BaseEditor();
+  ~BaseEditor() override;
 
   /**
    * This method informs handler about internal form of
@@ -232,12 +232,12 @@ public:
   /** Basic HRC region mapping */
   const RegionDefine* rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
 
-  void startParsing(size_t lno);
-  void endParsing(size_t lno);
-  void clearLine(size_t lno, UnicodeString* line);
-  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region);
-  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void startParsing(size_t lno) override;
+  void endParsing(size_t lno) override;
+  void clearLine(size_t lno, UnicodeString* line) override;
+  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) override;
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
 
   bool haveInvalidLine();
 

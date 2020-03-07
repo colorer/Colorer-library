@@ -250,7 +250,7 @@ const HRDNode* ParserFactory::getHRDNode(const UnicodeString &classID, const Uni
     throw ParserFactoryException("can't find HRDClass '" + classID + "'");
   }
   for (auto & p : *hash->second) {
-    if (nameID.compare(p.get()->hrd_name) == 0) {
+    if (nameID.compare(p->hrd_name) == 0) {
       return p.get();
     }
   }

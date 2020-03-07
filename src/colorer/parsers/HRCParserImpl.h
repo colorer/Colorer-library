@@ -20,20 +20,20 @@ class HRCParserImpl : public HRCParser
 {
 public:
   HRCParserImpl();
-  ~HRCParserImpl();
+  ~HRCParserImpl() override;
 
 
-  void loadSource(XmlInputSource* is);
-  FileType* getFileType(const UnicodeString* name);
-  FileType* enumerateFileTypes(int index);
-  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
-  size_t getFileTypesCount();
+  void loadSource(XmlInputSource* is) override;
+  FileType* getFileType(const UnicodeString* name) override;
+  FileType* enumerateFileTypes(int index) override;
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) override;
+  size_t getFileTypesCount() override;
 
-  size_t getRegionCount();
-  const Region* getRegion(int id);
-  const Region* getRegion(const UnicodeString* name);
+  size_t getRegionCount() override;
+  const Region* getRegion(int id) override;
+  const Region* getRegion(const UnicodeString* name) override;
 
-  const UnicodeString* getVersion();
+  const UnicodeString* getVersion() override;
 
 protected:
   friend class FileTypeImpl;

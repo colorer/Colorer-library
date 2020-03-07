@@ -20,7 +20,7 @@ public:
   XMLSize_t getSize() const;
   XMLByte* getSrc() const;
 private:
-  SharedXmlInputSource(uXmlInputSource &source);
+  explicit SharedXmlInputSource(uXmlInputSource &source);
   ~SharedXmlInputSource();
 
   static std::unordered_map<UnicodeString, SharedXmlInputSource*>* isHash;
