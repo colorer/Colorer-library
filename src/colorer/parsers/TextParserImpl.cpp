@@ -1,6 +1,4 @@
 #include <colorer/parsers/TextParserImpl.h>
-#include <colorer/unicode/Character.h>
-#include <colorer/unicode/DString.h>
 
 TextParserImpl::TextParserImpl()
 {

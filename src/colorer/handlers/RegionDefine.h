@@ -63,7 +63,6 @@ class RegionDefine
 
   /** Default Destructor */
   virtual ~RegionDefine() = default;
-  ;
 };
 
 #endif

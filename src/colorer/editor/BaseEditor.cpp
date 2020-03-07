@@ -1,18 +1,18 @@
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/common/UnicodeLogger.h>
 
-#define IDLE_PARSE(time) (100+time*4)
+#define IDLE_PARSE(time) (100+(time)*4)
 
 const int CHOOSE_STR = 4;
 const int CHOOSE_LEN = 200 * CHOOSE_STR;
 
-BaseEditor::BaseEditor(ParserFactory* parserFactory, LineSource* lineSource)
+BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
 {
-  if (parserFactory == nullptr || lineSource == nullptr) {
+  if (parserFactory_ == nullptr || lineSource_ == nullptr) {
     throw Exception("Bad BaseEditor constructor parameters");
   }
-  this->parserFactory = parserFactory;
-  this->lineSource = lineSource;
+  parserFactory = parserFactory_;
+  lineSource = lineSource_;
 
   hrcParser = parserFactory->getHRCParser();
   textParser = parserFactory->createTextParser();
@@ -57,7 +57,7 @@ BaseEditor::~BaseEditor()
 {
   textParser->breakParse();
   breakParse = true;
-  while (validationProcess); /// @todo wait until validation is finished
+  while (validationProcess){}; /// @todo wait until validation is finished
   if (internalRM) {
     delete regionMapper;
   }
@@ -399,11 +399,11 @@ void BaseEditor::modifyLineEvent(int line)
   // changedLine = topLine;!!!
 }
 
-void BaseEditor::visibleTextEvent(int wStart, int wSize)
+void BaseEditor::visibleTextEvent(int wStart_, int wSize_)
 {
-  spdlog::debug("[BaseEditor] visibleTextEvent: {0}-{1}", wStart, wSize);
-  this->wStart = wStart;
-  this->wSize = wSize;
+  spdlog::debug("[BaseEditor] visibleTextEvent: {0}-{1}", wStart_, wSize_);
+  wStart = wStart_;
+  wSize = wSize_;
 }
 
 void BaseEditor::lineCountEvent(int newLineCount)

@@ -18,8 +18,8 @@ public:
   */
   virtual FileType* getFileType() const = 0;
 protected:
-  Scheme() = default;;
-  virtual ~Scheme() = default;;
+  Scheme() = default;
+  virtual ~Scheme() = default;
 };
 
 #endif

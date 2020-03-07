@@ -1,6 +1,5 @@
 #include <memory>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <cstdio>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/xml/XmlParserErrorHandler.h>

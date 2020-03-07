@@ -16,9 +16,7 @@ class RegionMapperImpl : public RegionMapper
 {
  public:
   RegionMapperImpl() = default;
-  ;
   ~RegionMapperImpl() override = default;
-  ;
 
   /** Loads region defines from @c is InputSource
    */

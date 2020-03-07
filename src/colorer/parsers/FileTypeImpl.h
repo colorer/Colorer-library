@@ -42,23 +42,23 @@ class FileTypeImpl : public FileType
   void setGroup(const UnicodeString* group_);
   void setDescription(const UnicodeString* description_);
 
-  const UnicodeString* getParamValue(const UnicodeString& name) const;
-  const UnicodeString* getParamDefaultValue(const UnicodeString& name) const;
-  const UnicodeString* getParamUserValue(const UnicodeString& name) const;
-  const UnicodeString* getParamDescription(const UnicodeString& name) const;
+  const UnicodeString* getParamValue(const UnicodeString& name_) const;
+  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const;
+  const UnicodeString* getParamUserValue(const UnicodeString& name_) const;
+  const UnicodeString* getParamDescription(const UnicodeString& name_) const;
   int getParamValueInt(const UnicodeString& name, int def) const;
 
-  void setParamValue(const UnicodeString& name, const UnicodeString* value);
-  void setParamDefaultValue(const UnicodeString& name, const UnicodeString* value);
-  void setParamUserValue(const UnicodeString& name, const UnicodeString* value);
-  void setParamDescription(const UnicodeString& name, const UnicodeString* value);
+  void setParamValue(const UnicodeString& name_, const UnicodeString* value);
+  void setParamDefaultValue(const UnicodeString& name_, const UnicodeString* value);
+  void setParamUserValue(const UnicodeString& name_, const UnicodeString* value);
+  void setParamDescription(const UnicodeString& name_, const UnicodeString* value);
 
   std::vector<UnicodeString> enumParams() const;
   size_t getParamCount() const;
   size_t getParamUserValueCount() const;
 
-  TypeParameter* addParam(const UnicodeString* name);
-  void removeParamValue(const UnicodeString& name);
+  TypeParameter* addParam(const UnicodeString* name_);
+  void removeParamValue(const UnicodeString& name_);
 
   Scheme* getBaseScheme();
   /**
