@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(colorer_lib CXX C)
 
 #====================================================
@@ -96,14 +96,14 @@ set(SRC_COLORER
 # common flags
 #====================================================
 set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
-if(WIN32)
-  set(COLORER_DEF ${COLORER_DEF} -D_WIN32)
-endif(WIN32)
-if(MSVC)
+if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(COLORER_DEF ${COLORER_DEF} -DWIN32)
+endif ()
+if (MSVC)
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-endif()
+endif ()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # defaut for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
@@ -111,34 +111,27 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
   # set only new flags
   set(FLAGS_CXX_DEFAULT -fpermissive -Wall)
-  set(FLAGS_RELEASE)
-  set(FLAGS_DEBUG)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(FLAGS_CXX_RELEASE)
+  set(FLAGS_CXX_DEBUG)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+
   # defaut for msvc
-  # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS /W3
+  # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS
   # CMAKE_C_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_C_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
-  # CMAKE_CXX_FLAGS= /DWIN32 /D_WINDOWS /W3 /GR /EHsc
+  # CMAKE_CXX_FLAGS= /DWIN32 /D_WINDOWS /GR /EHsc
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
-  # set all flags and clean default, because Visual Studio project don`t overwrite default parameters
-  # https://stackoverflow.com/questions/45995784/how-to-set-compiler-options-with-cmake-in-visual-studio-2017
-  set(FLAGS_C_DEFAULT /DWIN32 /D_WINDOWS /W3)
-  set(FLAGS_C_RELEASE /MT /O2 /Ob2 /DNDEBUG)
-  set(FLAGS_C_DEBUG /MTd /Zi /Ob0 /Od /RTC1)
-  set(FLAGS_CXX_DEFAULT /DWIN32 /D_WINDOWS /W3 /GR /EHsc)
-  set(FLAGS_CXX_RELEASE /MT /O2 /Ob2 /DNDEBUG)
-  set(FLAGS_CXX_DEBUG /MTd /Zi /Ob0 /Od /RTC1)
+  set(FLAGS_C_DEFAULT)
+  set(FLAGS_C_RELEASE /W3)
+  set(FLAGS_C_DEBUG /W4)
+  set(FLAGS_CXX_DEFAULT /W3)
+  set(FLAGS_CXX_RELEASE /W4)
+  set(FLAGS_CXX_DEBUG)
 
-  set(CMAKE_C_FLAGS "")
-  set(CMAKE_C_FLAGS_DEBUG "")
-  set(CMAKE_C_FLAGS_RELEASE "")
-  set(CMAKE_CXX_FLAGS "")
-  set(CMAKE_CXX_FLAGS_RELEASE "")
-  set(CMAKE_CXX_FLAGS_DEBUG "")
-endif()
+endif ()
 
 #====================================================
 # build
@@ -161,7 +154,7 @@ target_link_libraries(colorer_lib
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     )
@@ -172,33 +165,33 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
 set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>
       )
-else()
+else ()
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_RELEASE}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>
       )
-endif()
+endif ()
 
 set_target_properties(colorer_lib PROPERTIES OUTPUT_NAME "colorer")
-if(MSVC)
+if (MSVC)
   set_target_properties(colorer_lib PROPERTIES DEBUG_POSTFIX "d")
-endif()
+endif ()
 
 #====================================================
 # test
 #====================================================
 
 # static analyze
-if(COLORER_PVS_STUDIO_CHECK)
+if (COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
-endif()
+endif ()

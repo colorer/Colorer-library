@@ -13,7 +13,7 @@ TextConsoleViewer::~TextConsoleViewer(){}
 
 void TextConsoleViewer::view()
 {
-#ifdef _WIN32
+#ifdef WIN32
 int topline, leftpos;
 leftpos = topline = 0;
 INPUT_RECORD ir;

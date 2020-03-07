@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(consoletools)
 
 #====================================================
@@ -17,17 +17,12 @@ endif(WIN32)
 #====================================================
 
 #inherit compile optionsfrom library
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set(CMAKE_CXX_FLAGS "")
-  set(CMAKE_CXX_FLAGS_RELEASE "")
-  set(CMAKE_CXX_FLAGS_DEBUG "")
-endif ()
 
 add_executable(consoletools ${SRC_CPP})
 target_link_libraries(consoletools PRIVATE colorer_lib)
 set_target_properties(consoletools PROPERTIES OUTPUT_NAME "colorer")
 set_target_properties(consoletools PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     )

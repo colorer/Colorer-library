@@ -1,7 +1,7 @@
 #include <colorer/io/HTTPInputSource.h>
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #include <wininet.h>
 #endif
@@ -44,7 +44,7 @@ const byte* HTTPInputSource::openStream()
   }
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-#ifdef _WIN32
+#ifdef WIN32
   const int blockSize = 0x1000;
   std::vector<byte*> streamVector;
   std::vector<int> streamSizeVector;

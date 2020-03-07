@@ -4,7 +4,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#ifdef _WIN32
+#ifdef WIN32
 #include <io.h>
 #include <windows.h>
 #endif
@@ -68,7 +68,7 @@ UnicodeString ParserFactory::searchCatalog() const
   return right_path;
 }
 
-#ifdef _WIN32
+#ifdef WIN32
 void ParserFactory::getPossibleCatalogPaths(std::vector<UnicodeString> &paths) const
 {
   // image_path/  image_path/..

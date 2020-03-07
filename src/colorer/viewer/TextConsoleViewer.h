@@ -1,7 +1,7 @@
 #ifndef _COLORER_TEXTVIEWER_H_
 #define _COLORER_TEXTVIEWER_H_
 
-#ifdef _WIN32
+#ifdef WIN32
 #include<windows.h>
 #endif
 

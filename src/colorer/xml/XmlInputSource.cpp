@@ -7,7 +7,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#ifdef _WIN32
+#ifdef WIN32
 #include <io.h>
 #include <windows.h>
 #endif
@@ -53,7 +53,7 @@ uUnicodeString XmlInputSource::getAbsolutePath(const UnicodeString* basePath, co
 
 XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
 {
-#ifdef _WIN32
+#ifdef WIN32
   size_t i = ExpandEnvironmentStringsW(path, nullptr, 0);
   XMLCh* temp = new XMLCh[i];
   ExpandEnvironmentStringsW(path, temp, static_cast<DWORD>(i));
@@ -94,7 +94,7 @@ uUnicodeString XmlInputSource::getClearPath(const UnicodeString* basePath, const
 bool XmlInputSource::isDirectory(const UnicodeString* path)
 {
   bool is_dir = false;
-#ifdef _WIN32
+#ifdef WIN32
   // stat on win_xp and vc2015 have bug.
   DWORD dwAttrs = GetFileAttributes(UStr::to_stdstr(path).c_str());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
@@ -119,7 +119,7 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
   return is_dir;
 }
 
-#ifdef _WIN32
+#ifdef WIN32
 void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString> &files)
 {
   WIN32_FIND_DATA ffd;

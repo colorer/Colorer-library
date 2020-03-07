@@ -4,7 +4,7 @@
 #include<fcntl.h>
 #include<ctime>
 
-#if defined _WIN32
+#if defined WIN32
 #include<io.h>
 #include<windows.h>
 #endif
@@ -32,7 +32,7 @@ FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource 
       baseLocation = new UnicodeString(*basePath);
     prefix = false;
   }
-#if defined _WIN32
+#if defined WIN32
    // replace the environment variables to their values
   size_t i=ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(),nullptr,0);
   char *temp = new char[i];
@@ -65,7 +65,7 @@ const UnicodeString *FileInputSource::getLocation() const{
 const byte *FileInputSource::openStream()
 {
   if (stream != nullptr) throw InputSourceException("openStream(): source stream already opened: '" + *baseLocation+"'");
-#if defined _WIN32
+#if defined WIN32
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #else
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);

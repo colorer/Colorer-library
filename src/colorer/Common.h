@@ -10,6 +10,5 @@ typedef unsigned char byte;
 #include <colorer/Exception.h>
 #include <colorer/common/UnicodeString.h>
 
-
 #endif
 
