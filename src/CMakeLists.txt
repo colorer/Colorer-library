@@ -43,6 +43,7 @@ set(SRC_COLORER
     ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
     ${PARSERS}/SchemeNode.cpp ${PARSERS}/SchemeNode.h
     ${PARSERS}/VirtualEntry.h
+    ${PARSERS}/XmlTagDefs.h
     ${VIEWER}/ParsedLineWriter.h
     ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
     ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
@@ -76,7 +77,6 @@ set(SRC_COLORER
     ${XML}/LocalFileXmlInputSource.h ${XML}/LocalFileXmlInputSource.cpp
     ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
     ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
-    ${XML}/XmlTagDefs.h
     ${XML}/XStr.cpp ${XML}/XStr.h
     ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
     ${UNICODE}/Character.h ${UNICODE}/Character.cpp

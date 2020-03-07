@@ -1,7 +1,7 @@
 #include <colorer/handlers/StyledHRDMapper.h>
+#include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <colorer/xml/XmlTagDefs.h>
 #include <cstdio>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -54,14 +54,14 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
         }
 
         int val = 0;
-        CString dhrdAssignAttrFore = CString(subelem->getAttribute(hrdAssignAttrFore));
+        CString dhrdAssignAttrFore = CString((wchar*)subelem->getAttribute(hrdAssignAttrFore));
         bool bfore = UnicodeTools::getNumber(&dhrdAssignAttrFore, &val);
         int fore = val;
-        CString dhrdAssignAttrBack = CString(subelem->getAttribute(hrdAssignAttrBack));
+        CString dhrdAssignAttrBack = CString((wchar*)subelem->getAttribute(hrdAssignAttrBack));
         bool bback = UnicodeTools::getNumber(&dhrdAssignAttrBack, &val);
         int back = val;
         int style = 0;
-        CString dhrdAssignAttrStyle = CString(subelem->getAttribute(hrdAssignAttrStyle));
+        CString dhrdAssignAttrStyle = CString((wchar*)subelem->getAttribute(hrdAssignAttrStyle));
         if (UnicodeTools::getNumber(&dhrdAssignAttrStyle, &val)) {
           style = val;
         }

@@ -1,15 +1,15 @@
+#include <colorer/common/UnicodeLogger.h>
+#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/SchemeImpl.h>
+#include <colorer/parsers/XmlTagDefs.h>
+#include <colorer/unicode/Character.h>
+#include <colorer/unicode/UnicodeTools.h>
+#include <colorer/xml/BaseEntityResolver.h>
+#include <colorer/xml/XStr.h>
+#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
 #include <memory>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <colorer/parsers/SchemeImpl.h>
-#include <colorer/parsers/HRCParserImpl.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
-#include <colorer/xml/XmlInputSource.h>
-#include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XmlTagDefs.h>
-#include <colorer/xml/XStr.h>
-#include <colorer/unicode/UnicodeTools.h>
-#include <colorer/unicode/Character.h>
-#include <colorer/common/UnicodeLogger.h>
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>
 

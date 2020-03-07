@@ -1,6 +1,6 @@
 #include <colorer/handlers/TextHRDMapper.h>
+#include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <colorer/xml/XmlTagDefs.h>
 #include <cstdio>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>

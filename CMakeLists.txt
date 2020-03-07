@@ -70,11 +70,7 @@ endif ()
 #====================================================
 # xercesc
 #====================================================
-if (WIN32)
-  set(XMLCH_TYPE "wchar_t")
-else ()
-  set(XMLCH_TYPE "char16_t")
-endif ()
+set(XMLCH_TYPE "char16_t")
 set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
