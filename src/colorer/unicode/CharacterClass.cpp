@@ -4,6 +4,7 @@
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/x_charcategory_names.h>
 #include <colorer/unicode/x_charcategory2.h>
+#include <colorer/unicode/SString.h>
 
 /// macro - number of elements in array
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(*(a)))
@@ -25,10 +26,11 @@ CharacterClass::~CharacterClass()
   Extensions (comparing to Perl):
   inner class substraction [{L}-[{Lu}]], addition [{L}[1234]], intersection [{L}&[{Lu}]]
 */
-CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int* retPos)
+CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, int pos, int* retPos)
 {
-  if (ccs[pos] != '[') return nullptr;
+  if (ccs_[pos] != '[') return nullptr;
 
+  SString ccs = UStr::to_string(&ccs_);
   CharacterClass* cc = new CharacterClass();
   CharacterClass cc_temp;
   bool inverse = false;
@@ -129,7 +131,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // substract -[class]
     if (pos + 1 < ccs.length() && ccs[pos] == '-' && ccs[pos + 1] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos + 1, &retEnd);
+      CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos + 1, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
         return nullptr;
@@ -147,7 +149,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // intersect &&[class]
     if (pos + 2 < ccs.length() && ccs[pos] == '&' && ccs[pos + 1] == '&' && ccs[pos + 2] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos + 2, &retEnd);
+      CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos + 2, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
         return nullptr;
@@ -165,7 +167,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // add [class]
     if (ccs[pos] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos, &retEnd);
+      CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos, &retEnd);
       if (scc == nullptr) {
         delete cc;
         return nullptr;

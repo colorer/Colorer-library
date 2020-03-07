@@ -256,7 +256,7 @@ public:
   /**
     Constructs regular expression and compile it with @c text pattern.
   */
-  CRegExp(const String *text);
+  CRegExp(const UnicodeString *text);
   ~CRegExp();
 
   /**
@@ -296,7 +296,7 @@ public:
     Compiles specified regular expression and drops all
     previous structures.
   */
-  bool setRE(const String *re);
+  bool setRE(const UnicodeString *re);
 #ifdef NAMED_MATCHES_IN_HASH
   /** Runs RE parser against input string @c str
   */
@@ -307,10 +307,10 @@ public:
 #else
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, SMatches *mtch);
+  bool parse(const UnicodeString *str, SMatches *mtch);
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, int pos, int eol, SMatches *mtch, int soscheme = 0, int moves = -1);
+  bool parse(const UnicodeString *str, int pos, int eol, SMatches *mtch, int soscheme = 0, int moves = -1);
 #endif
 
 private:
@@ -326,7 +326,7 @@ private:
   int schemeStart;
 #endif
   bool startChange, endChange;
-  const String *global_pattern;
+  std::unique_ptr<SString> global_pattern;
   int end;
 
   SMatches *matches;
@@ -339,8 +339,8 @@ private:
 #endif
 
   void init();
-  EError setRELow(const String &re);
-  EError setStructs(SRegInfo *&, const String &expr, int &endPos);
+  EError setRELow(const UnicodeString &re);
+  EError setStructs(SRegInfo *&, const UnicodeString &expr, int &endPos);
 
   void optimize();
   bool quickCheck(int toParse);

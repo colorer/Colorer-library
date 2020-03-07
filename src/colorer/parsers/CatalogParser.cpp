@@ -20,7 +20,7 @@ void CatalogParser::parse(const UnicodeString* path)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  uXmlInputSource catalogXIS = XmlInputSource::newInstance(UStr::to_string(path).getWChars(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource catalogXIS = XmlInputSource::newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
     throw CatalogParserException("Error reading catalog.xml.");

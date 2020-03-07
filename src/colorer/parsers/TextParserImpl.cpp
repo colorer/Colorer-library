@@ -159,15 +159,15 @@ void TextParserImpl::addRegion(int lno, int sx, int ex, const Region* region)
   if (sx == -1 || region == nullptr) {
     return;
   }
-  regionHandler->addRegion(lno, &UStr::to_unistr(str), sx, ex, region);
+  regionHandler->addRegion(lno, str, sx, ex, region);
 }
 void TextParserImpl::enterScheme(int lno, int sx, int ex, const Region* region)
 {
-  regionHandler->enterScheme(lno, &UStr::to_unistr(str), sx, ex, region, baseScheme);
+  regionHandler->enterScheme(lno, str, sx, ex, region, baseScheme);
 }
 void TextParserImpl::leaveScheme(int lno, int sx, int ex, const Region* region)
 {
-  regionHandler->leaveScheme(lno, &UStr::to_unistr(str), sx, ex, region, baseScheme);
+  regionHandler->leaveScheme(lno, str, sx, ex, region, baseScheme);
   if (region != nullptr) {
     picked = region;
   }
@@ -347,7 +347,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         break;
 
       case SchemeNode::SNT_RE:
-        if (!schemeNode->start->parse(&UStr::to_string(str), gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
+        if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
         CTRACE(spdlog::trace("[TextParserImpl] RE matched. gx={0}", gx));
@@ -369,7 +369,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         if (!schemeNode->scheme) {
           break;
         }
-        if (!schemeNode->start->parse(&UStr::to_string(str), gx,
+        if (!schemeNode->start->parse(str, gx,
                                       schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
@@ -511,7 +511,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
     // searches for the end of parent block
     int res = 0;
     if (root_end_re) {
-      res = root_end_re->parse(&UStr::to_string(str), gx, len, &matchend, schemeStart);
+      res = root_end_re->parse(str, gx, len, &matchend, schemeStart);
     }
     if (!res) {
       matchend.s[0] = matchend.e[0] = len;

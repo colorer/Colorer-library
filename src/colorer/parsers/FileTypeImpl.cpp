@@ -2,6 +2,7 @@
 #include <colorer/unicode/UnicodeTools.h>
 
 #include <memory>
+#include <colorer/unicode/SString.h>
 
 FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser): name(nullptr), group(nullptr), description(nullptr)
 {
@@ -131,9 +132,9 @@ double FileTypeImpl::getPriority(const UnicodeString *fileName, const UnicodeStr
   SMatches match;
   double cur_prior = 0;
   for(auto ftc : chooserVector){
-    if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(&UStr::to_string(fileName), &match))
+    if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
       cur_prior += ftc->getPriority();
-    if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(&UStr::to_string(fileContent), &match))
+    if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))
       cur_prior += ftc->getPriority();
   }
   return cur_prior;

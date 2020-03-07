@@ -2,6 +2,7 @@
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/Character.h>
+#include <colorer/unicode/SString.h>
 
 StackElem *RegExpStack;
 int RegExpStack_Size;
@@ -64,7 +65,7 @@ CRegExp::CRegExp()
 {
   init();
 }
-CRegExp::CRegExp(const String *text)
+CRegExp::CRegExp(const UnicodeString *text)
 {
   init();
   if (text) setRE(text);
@@ -78,7 +79,7 @@ CRegExp::~CRegExp()
 #endif
 }
 
-EError CRegExp::setRELow(const String &expr)
+EError CRegExp::setRELow(const UnicodeString &expr)
 {
   int len = expr.length();
   if (!len) return EERROR;
@@ -123,7 +124,7 @@ EError CRegExp::setRELow(const String &expr)
   tree_root->param0 = cMatch++;
 
   int endPos;
-  EError err = setStructs(tree_root->un.param, CString(&expr, start, len), endPos);
+  EError err = setStructs(tree_root->un.param, UnicodeString(expr, start, len), endPos);
   if (endPos != len) err = EBRACKETS;
 
   if (err) return err;
@@ -163,10 +164,11 @@ SRegInfo *next = tree_root;
   }
 }
 
-EError CRegExp::setStructs(SRegInfo *&re, const String &expr, int &retPos)
+EError CRegExp::setStructs(SRegInfo *&re, const UnicodeString &expr_, int &retPos)
 {
 SRegInfo *next, *temp;
 
+SString expr=UStr::to_string(&expr_);
   retPos = 0;
   if (!expr.length()) return EOK;
   retPos = -1;
@@ -509,7 +511,7 @@ SRegInfo *next, *temp;
       next->un.param = new SRegInfo;
       next->un.param->parent = next;
       int endPos;
-      EError err = setStructs(next->un.param, CString(&expr, i), endPos);
+      EError err = setStructs(next->un.param, UnicodeString(expr_, i), endPos);
       if (endPos == expr.length()-i) return EBRACKETS;
       if (err) return err;
       i += endPos;
@@ -519,7 +521,7 @@ SRegInfo *next, *temp;
     // [] [^]
     if (expr[i] == '['){
       int endPos;
-      CharacterClass *cc = CharacterClass::createCharClass(expr, i, &endPos);
+      CharacterClass *cc = CharacterClass::createCharClass(expr_, i, &endPos);
       if (cc == nullptr) return EENUM;
 //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
       next->op = ReEnum;
@@ -1329,7 +1331,7 @@ inline bool CRegExp::parseRE(int pos)
   return false;
 }
 
-bool CRegExp::parse(const String *str, int pos, int eol, SMatches *mtch
+bool CRegExp::parse(const UnicodeString *str, int pos, int eol, SMatches *mtch
 #ifdef NAMED_MATCHES_IN_HASH
 , PMatchHash nmtch
 #endif
@@ -1340,7 +1342,7 @@ bool CRegExp::parse(const String *str, int pos, int eol, SMatches *mtch
 #ifdef COLORERMODE
   schemeStart = soScheme;
 #endif
-  global_pattern = str;
+  global_pattern = std::make_unique<SString>(UStr::to_string(str));
   end = eol;
   matches = mtch;
 #ifdef NAMED_MATCHES_IN_HASH
@@ -1351,14 +1353,14 @@ bool CRegExp::parse(const String *str, int pos, int eol, SMatches *mtch
   return result;
 }
 
-bool CRegExp::parse(const String *str, SMatches *mtch
+bool CRegExp::parse(const UnicodeString *str, SMatches *mtch
 #ifdef NAMED_MATCHES_IN_HASH
 ,PMatchHash nmtch
 #endif
 )
 {
   end = str->length();
-  global_pattern = str;
+  global_pattern = std::make_unique<SString>(UStr::to_string(str));
 #ifdef COLORERMODE
   schemeStart = 0;
 #endif
@@ -1372,7 +1374,7 @@ bool CRegExp::parse(const String *str, SMatches *mtch
 /////////////////////////////////////////////////////////////////
 // other methods
 
-bool CRegExp::setRE(const String *re)
+bool CRegExp::setRE(const UnicodeString *re)
 {
   error = EERROR;
 #ifdef NAMED_MATCHES_IN_HASH

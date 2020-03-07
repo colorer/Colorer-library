@@ -189,14 +189,14 @@ void ConsoleTools::RETest()
     printf("\nregexp:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    CString dtext = CString(text);
+    UnicodeString dtext = UnicodeString(text);
     if (!re->setRE(&dtext)) {
       continue;
     }
     printf("exprn:");
     fgets(text, sizeof(text), stdin);
     strtok(text, "\r\n");
-    dtext = CString(text);
+    dtext = UnicodeString(text);
     res = re->parse(&dtext, &match);
     printf("%s\nmatch:  ", res ? "ok" : "error");
     for (int i = 0; i < match.cMatch; i++) {

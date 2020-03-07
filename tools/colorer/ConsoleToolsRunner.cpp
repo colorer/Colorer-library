@@ -260,7 +260,7 @@ void initConsoleTools(ConsoleTools &ct)
     ct.setTypeDescription(*settings.type_desc);
   }
   if (settings.hrd_name) {
-    ct.setHRDName(UStr::to_unistr(settings.hrd_name.get()));
+    ct.setHRDName(*settings.hrd_name.get());
   }
   ct.addLineNumbers(settings.line_numbers);
   ct.setCopyrightHeader(settings.copyright);

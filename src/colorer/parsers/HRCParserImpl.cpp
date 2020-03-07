@@ -354,7 +354,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
   UnicodeString dmatch = UnicodeString(match);
-  auto* matchRE = new CRegExp(&UStr::to_string(&dmatch));
+  auto* matchRE = new CRegExp(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
     spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *parseProtoType->name.get());
@@ -684,7 +684,7 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
   UnicodeString dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = UnicodeString("low").compare(dhrcRegexpAttrPriority)==0;
   scheme_node->type = SchemeNode::SNT_RE;
-  scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(entMatchParam));
+  scheme_node->start = std::make_unique<CRegExp>(entMatchParam);
   if (!scheme_node->start || !scheme_node->start->isOk())
     spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *entMatchParam, *scheme->schemeName.get());
   delete entMatchParam;
@@ -776,7 +776,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme_node->lowContentPriority = UnicodeString("low").compare(attr_cpr)==0;
   scheme_node->innerRegion = UnicodeString("yes").compare(attr_ireg)==0;
   scheme_node->type = SchemeNode::SNT_SCHEME;
-  scheme_node->start = std::make_unique<CRegExp>(&UStr::to_string(startParam));
+  scheme_node->start = std::make_unique<CRegExp>(startParam);
   scheme_node->start->setPositionMoves(false);
   if (!scheme_node->start->isOk()) {
     spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *startParam, *scheme->schemeName.get());
@@ -784,7 +784,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme_node->end = std::make_unique<CRegExp>();
   scheme_node->end->setPositionMoves(true);
   scheme_node->end->setBackRE(scheme_node->start.get());
-  scheme_node->end->setRE(&UStr::to_string(endParam));
+  scheme_node->end->setRE(endParam);
   if (!scheme_node->end->isOk()) {
     spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *endParam, *scheme->schemeName.get());
   }
@@ -818,7 +818,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   if (*worddiv != '\0') {
     UnicodeString dworddiv = UnicodeString(worddiv);
     UnicodeString* entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv.reset(CharacterClass::createCharClass(UStr::to_string(entWordDiv), 0, nullptr));
+    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr));
     if (scheme_node->worddiv == nullptr) {
       spdlog::error("fault compiling worddiv regexp '{0}' in scheme '{1}'", *entWordDiv, *scheme->schemeName.get());
     }

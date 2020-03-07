@@ -123,7 +123,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path)
   if (ret <= 0) {
     delete mf;
     unzClose(fid);
-    throw InputSourceException("Can't read current file in JAR content: '" + *path + "' (" + UStr::to_unistr(ret) + ")");
+    throw InputSourceException("Can't read current file in JAR content: '" + *path + "' (" + ret + ")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {

@@ -49,7 +49,7 @@ UnicodeString ParserFactory::searchCatalog() const
     try {
       spdlog::debug("test path '{0}'", path);
 
-      uXmlInputSource catalog = XmlInputSource::newInstance(UStr::to_string(&path).getWChars(), static_cast<XMLCh*>(nullptr));
+      uXmlInputSource catalog = XmlInputSource::newInstance(UStr::to_xmlch(&path).get(), static_cast<XMLCh*>(nullptr));
 
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
       right_path = UnicodeString(catalog->getInputSource()->getSystemId());
@@ -180,7 +180,7 @@ void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
 
 void ParserFactory::loadHrc(const UnicodeString* hrc_path, const UnicodeString* base_path) const
 {
-  uXmlInputSource dfis = XmlInputSource::newInstance(UStr::to_string(hrc_path).getWChars(), UStr::to_string(base_path).getWChars());
+  uXmlInputSource dfis = XmlInputSource::newInstance(UStr::to_xmlch(hrc_path).get(), UStr::to_xmlch(base_path).get());
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception &e) {
@@ -299,7 +299,7 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const UnicodeString* classID,
     if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_string(&idx).getWChars(), UStr::to_string(&base_catalog_path).getWChars());
+        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd:");
@@ -330,7 +330,7 @@ TextHRDMapper* ParserFactory::createTextMapper(const UnicodeString* nameID)
     if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_string(&idx).getWChars(), UStr::to_string(&base_catalog_path).getWChars());
+        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd: ");
