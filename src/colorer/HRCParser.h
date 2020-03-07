@@ -71,9 +71,9 @@ public:
   */
   virtual const UnicodeString *getVersion() = 0;
 
-  virtual ~HRCParser(){};
+  virtual ~HRCParser()= default;
 protected:
-  HRCParser(){};
+  HRCParser()= default;
 };
 
 

@@ -81,8 +81,8 @@ class FileType
   virtual void setParamValue(const UnicodeString& name, const UnicodeString* value) = 0;
 
  protected:
-  FileType() {};
-  virtual ~FileType() {};
+  FileType() = default;
+  virtual ~FileType() = default;
 };
 
 #endif

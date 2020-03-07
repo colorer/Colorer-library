@@ -83,8 +83,8 @@ public:
   virtual void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
 protected:
-  RegionHandler() {};
-  virtual ~RegionHandler() {};
+  RegionHandler() = default;
+  virtual ~RegionHandler() = default;
 };
 
 #endif

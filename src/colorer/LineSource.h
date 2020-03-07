@@ -40,8 +40,8 @@ public:
    */
   virtual UnicodeString* getLine(size_t lno) = 0;
 protected:
-  LineSource() {};
-  virtual ~LineSource() {};
+  LineSource() = default;
+  virtual ~LineSource() = default;
 };
 
 #endif

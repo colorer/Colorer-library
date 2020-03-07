@@ -90,9 +90,9 @@ public:
    */
   virtual void clearCache() = 0;
 
-  virtual ~TextParser() {};
+  virtual ~TextParser() = default;
 protected:
-  TextParser() {};
+  TextParser() = default;
 };
 
 #endif

@@ -35,7 +35,7 @@ public:
 
       const Region *region = l1->region;
       while(region != nullptr){
-        UnicodeString token = region->getName()->findAndReplace(":","-").findAndReplace(".","-");
+        UnicodeString token = UnicodeString(*region->getName()).findAndReplace(":","-").findAndReplace(".","-");
         markupWriter->write(token);
         region = region->getParent();
         if (region != nullptr){
@@ -156,7 +156,7 @@ public:
   static void writeHref(Writer *writer, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, const Scheme *scheme, const UnicodeString &token, bool start){
     UnicodeString *url = nullptr;
     if (scheme != nullptr){
-      auto it_url = docLinkHash->find(token.append("--").append(*scheme->getName()));
+      auto it_url = docLinkHash->find(UnicodeString(token).append("--").append(*scheme->getName()));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
