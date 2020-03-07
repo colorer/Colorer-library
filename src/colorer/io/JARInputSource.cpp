@@ -10,7 +10,7 @@ JARInputSource::JARInputSource(const UnicodeString *basePath, InputSource *base)
   int ex_idx = basePath->lastIndexOf('!');
   if (ex_idx == -1) throw InputSourceException("Bad jar uri format: " + *basePath);
 
-  inJarLocation = new UnicodeString(*basePath, ex_idx+1, -1);
+  inJarLocation = new UnicodeString(*basePath, ex_idx+1);
 
   UnicodeString bpath = UnicodeString(*basePath, 4, ex_idx-4);
   sharedIS = SharedInputSource::getInputSource(&bpath, base);

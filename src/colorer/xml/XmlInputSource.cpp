@@ -85,7 +85,7 @@ uUnicodeString XmlInputSource::getClearPath(const UnicodeString* basePath, const
   if (isRelative(clear_path.get())) {
     clear_path = std::move(getAbsolutePath(basePath, clear_path.get()));
     if (clear_path->startsWith("file://")) {
-      clear_path.reset(new UnicodeString(*clear_path.get(), 7, -1));
+      clear_path.reset(new UnicodeString(*clear_path.get(), 7));
     }
   }
   return clear_path;
@@ -96,7 +96,7 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
   bool is_dir = false;
 #ifdef _WIN32
   // stat on win_xp and vc2015 have bug.
-  DWORD dwAttrs = GetFileAttributesW(path->getWChars());
+  DWORD dwAttrs = GetFileAttributes(UStr::to_stdstr(path).c_str());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
     throw Exception("Can't get info for file/path: " + *path);
   }
@@ -122,14 +122,14 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
 #ifdef _WIN32
 void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString> &files)
 {
-  WIN32_FIND_DATAW ffd;
-  HANDLE dir = FindFirstFileW((SString(relPath) + "\\*.*").getWChars(), &ffd);
+  WIN32_FIND_DATA ffd;
+  HANDLE dir = FindFirstFile(UStr::to_stdstr(&UnicodeString(UnicodeString(*relPath) + UnicodeString("\\*.*"))).c_str(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        files.push_back(SString(relPath) + "\\" + SString(ffd.cFileName));
+        files.push_back(UnicodeString(*relPath) + "\\" + UnicodeString(ffd.cFileName));
       }
-      if (FindNextFileW(dir, &ffd) == FALSE) {
+      if (FindNextFile(dir, &ffd) == FALSE) {
         break;
       }
     }

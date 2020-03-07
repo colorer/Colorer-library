@@ -28,7 +28,7 @@ std::unique_ptr<XMLCh[]> UStr::to_xmlch(const UnicodeString * str)
   // XMLCh and UChar are the same size
   if (str) {
     auto len = str->length();
-    std::unique_ptr<UChar[]> out_s(new UChar[len + 1]);
+    std::unique_ptr<XMLCh[]> out_s(new XMLCh[len + 1]);
     str->extract(0, len, out_s.get());
     out_s[len] = 0;
 

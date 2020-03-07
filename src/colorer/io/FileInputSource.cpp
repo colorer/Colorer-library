@@ -1,4 +1,3 @@
-#include<cstdio>
 #include<cstring>
 #include<sys/stat.h>
 #include<sys/timeb.h>
@@ -21,11 +20,11 @@
 FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource *base){
   bool prefix = true;
   if (basePath->startsWith("file://")){
-    baseLocation = new UnicodeString(*basePath, 7, -1);
+    baseLocation = new UnicodeString(*basePath, 7);
   }else if (basePath->startsWith("file:/")){
-    baseLocation = new UnicodeString(*basePath, 6, -1);
+    baseLocation = new UnicodeString(*basePath, 6);
   }else if (basePath->startsWith("file:")){
-    baseLocation = new UnicodeString(*basePath, 5, -1);
+    baseLocation = new UnicodeString(*basePath, 5);
   }else{
     if (isRelative(basePath) && base != nullptr)
       baseLocation = getAbsolutePath(base->getLocation(), basePath);
@@ -35,11 +34,11 @@ FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource 
   }
 #if defined _WIN32
    // replace the environment variables to their values
-  size_t i=ExpandEnvironmentStringsW(baseLocation->getWChars(),nullptr,0);
-  wchar_t *temp = new wchar_t[i];
-  ExpandEnvironmentStringsW(baseLocation->getWChars(),temp,static_cast<DWORD>(i));
+  size_t i=ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(),nullptr,0);
+  char *temp = new char[i];
+  ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(),temp,static_cast<DWORD>(i));
   delete baseLocation;
-  baseLocation = new SString(temp);
+  baseLocation = new UnicodeString(temp);
   delete[] temp;
 #endif
   if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith("/")){
@@ -67,7 +66,7 @@ const byte *FileInputSource::openStream()
 {
   if (stream != nullptr) throw InputSourceException("openStream(): source stream already opened: '" + *baseLocation+"'");
 #if defined _WIN32
-  int source = _wopen(baseLocation->getWChars(), O_BINARY);
+  int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #else
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #endif

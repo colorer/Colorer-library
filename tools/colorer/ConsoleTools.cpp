@@ -92,10 +92,10 @@ void ConsoleTools::setCatalogPath(const UnicodeString &str)
 {
 #if defined _WIN32
   // replace the environment variables to their values
-  size_t i = ExpandEnvironmentStringsW(str.getWChars(), nullptr, 0);
-  wchar_t* temp = new wchar_t[i];
-  ExpandEnvironmentStringsW(str.getWChars(), temp, static_cast<DWORD>(i));
-  catalogPath.reset(new SString(temp));
+  size_t i = ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), nullptr, 0);
+  char* temp = new char[i];
+  ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), temp, static_cast<DWORD>(i));
+  catalogPath.reset(new UnicodeString(temp));
   delete[] temp;
 #else
   catalogPath.reset(new UnicodeString(str));

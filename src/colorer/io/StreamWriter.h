@@ -18,7 +18,7 @@ public:
   */
   StreamWriter(FILE *fstream, int encoding, bool useBOM);
   ~StreamWriter();
-  void write(wchar c);
+  void write(UChar c);
 protected:
   StreamWriter();
   void init(FILE *fstream, int encoding, bool useBOM);

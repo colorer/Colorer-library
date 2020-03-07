@@ -49,18 +49,18 @@ INPUT_RECORD ir;
       }
 
       if (i >= textLinesStore->getLineCount()) continue;
-      CString iLine = textLinesStore->getLine(i);
+      auto iLine = textLinesStore->getLine(i);
 
       for(li = 0; li < csbi.dwSize.X; li++){
-        if (leftpos+li >= iLine.length()) break;
-        buffer[Y*csbi.dwSize.X + li].Char.UnicodeChar = iLine[leftpos+li];
+        if (leftpos+li >= iLine->length()) break;
+        buffer[Y*csbi.dwSize.X + li].Char.UnicodeChar = (*iLine)[leftpos+li];
         if (unc_fault)
-          buffer[Y*csbi.dwSize.X + li].Char.AsciiChar = Encodings::toChar(encoding, iLine[leftpos+li]);
+          buffer[Y*csbi.dwSize.X + li].Char.AsciiChar = Encodings::toChar(encoding, (*iLine)[leftpos+li]);
       }
       for(LineRegion *l1 = baseEditor->getLineRegions(i); l1 != nullptr; l1 = l1->next){
         if (l1->special || l1->rdef == nullptr) continue;
         int end = l1->end;
-        if (end == -1) end = iLine.length();
+        if (end == -1) end = iLine->length();
         int X = l1->start - leftpos;
         int len = end - l1->start;
         if (X < 0){

@@ -14,7 +14,7 @@ public:
   {
     this->writer = writer;
   };
-  void write(wchar c)
+  void write(UChar c)
   {
     if (c == '&') {
       writer->write("&amp;");

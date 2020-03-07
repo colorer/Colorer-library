@@ -69,7 +69,7 @@ UnicodeString ParserFactory::searchCatalog() const
 }
 
 #ifdef _WIN32
-void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
+void ParserFactory::getPossibleCatalogPaths(std::vector<UnicodeString> &paths) const
 {
   // image_path/  image_path/..
   HMODULE hmod = GetModuleHandle(nullptr);
@@ -77,13 +77,13 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
     wchar_t cname[MAX_PATH];
     int len = GetModuleFileNameW(hmod, cname, MAX_PATH);
     if (len > 0) {
-      CString module(cname, 0, len - 1);
+      UnicodeString module(cname, 0, len - 1);
       int pos[2];
       pos[0] = module.lastIndexOf('\\');
       pos[1] = module.lastIndexOf('\\', pos[0]);
       for (int idx = 0; idx < 2; idx++)
         if (pos[idx] >= 0) {
-          paths.emplace_back(SString(CString(module, 0, pos[idx])).append(CString("\\catalog.xml")));
+          paths.emplace_back(UnicodeString(UnicodeString(module, 0, pos[idx])).append("\\catalog.xml"));
         }
     }
   }
@@ -91,7 +91,7 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   // %COLORER5CATALOG%
   char* colorer5_catalog = getenv("COLORER5CATALOG");
   if (colorer5_catalog) {
-    paths.emplace_back(SString(colorer5_catalog));
+    paths.emplace_back(UnicodeString(colorer5_catalog));
   }
 
   // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
@@ -99,12 +99,12 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<SString> &paths) const
   char* home_path = getenv("HOMEPATH");
   if (home_drive && home_path) {
     try {
-      SString d = SString(home_drive).append(CString(home_path)).append(CString("/.colorer5catalog"));
-      if (_access(d.getChars(), 0) != -1) {
+      UnicodeString d = UnicodeString(home_drive).append(UnicodeString(home_path)).append(UnicodeString("/.colorer5catalog"));
+      if (_access(UStr::to_stdstr(&d).c_str(), 0) != -1) {
         TextLinesStore tls;
         tls.loadFile(&d, nullptr, false);
         if (tls.getLineCount() > 0) {
-          paths.emplace_back(SString(tls.getLine(0)));
+          paths.emplace_back(UnicodeString(*tls.getLine(0)));
         }
       }
     } catch (InputSourceException &) { //-V565

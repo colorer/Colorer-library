@@ -6,7 +6,7 @@
 
 namespace fmt {
 template <>
-struct formatter<icu_63::UnicodeString>
+struct formatter<icu::UnicodeString>
 {
   template <typename ParseContext>
   constexpr auto parse(ParseContext& ctx)
@@ -15,7 +15,7 @@ struct formatter<icu_63::UnicodeString>
   }
 
   template <typename FormatContext>
-  auto format(const icu_63::UnicodeString& p, FormatContext& ctx)
+  auto format(const icu::UnicodeString& p, FormatContext& ctx)
   {
     std::string result8;
     p.toUTF8String(result8);

@@ -20,7 +20,7 @@ public:
   /** Writes @c num characters of string, starting at @c from position */
   virtual void write(const UnicodeString *string, int from, int num);
   /** Writes single character */
-  virtual void write(wchar c) = 0;
+  virtual void write(UChar c) = 0;
 protected:
   Writer(){};
 };

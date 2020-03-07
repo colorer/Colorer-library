@@ -5,7 +5,7 @@
 #include <memory>
 #include <xercesc/util/XMLString.hpp>
 
-typedef icu_63::UnicodeString UnicodeString;
+typedef icu::UnicodeString UnicodeString;
 typedef std::unique_ptr<UnicodeString> uUnicodeString;
 
 class String;
@@ -25,18 +25,18 @@ namespace std {
 // Specializations for unordered containers
 
 template <>
-struct hash<icu_63::UnicodeString>
+struct hash<icu::UnicodeString>
 {
-  size_t operator()(const icu_63::UnicodeString& value) const
+  size_t operator()(const icu::UnicodeString& value) const
   {
     return static_cast<std::size_t>(value.hashCode());
   }
 };
 
 template <>
-struct equal_to<icu_63::UnicodeString>
+struct equal_to<icu::UnicodeString>
 {
-  bool operator()(const icu_63::UnicodeString& u1, const icu_63::UnicodeString& u2) const
+  bool operator()(const icu::UnicodeString& u1, const icu::UnicodeString& u2) const
   {
     return u1.compare(u2) == 0;
   }

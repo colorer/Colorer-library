@@ -27,8 +27,8 @@ StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool useBOM = true)
 StreamWriter::~StreamWriter(){
 }
 
-void StreamWriter::write(wchar c){
-  byte buf[8];
+void StreamWriter::write(UChar c){
+  char buf[8];
   int32_t len = 0;
   UErrorCode err = U_ZERO_ERROR;
   u_strToUTF8(buf, 8, &len, &c, 1, &err);

@@ -32,7 +32,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
     xercesc::XMLString::subString(bpath.get(), path, 4, path_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
 
-    in_jar_location.reset(new UnicodeString(UnicodeString(path), path_idx + 1, -1));
+    in_jar_location = std::make_unique<UnicodeString>(UnicodeString(path), path_idx + 1);
 
   } else if (base != nullptr && xercesc::XMLString::startsWith(base, kJar)) {
 
@@ -45,7 +45,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
     xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
 
-    uUnicodeString in_base(new UnicodeString(UnicodeString(base), base_idx + 1, -1));
+    uUnicodeString in_base(new UnicodeString(UnicodeString(base), base_idx + 1));
     UnicodeString d_path = UnicodeString(path);
     in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
 
