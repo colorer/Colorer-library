@@ -4,91 +4,81 @@ project(colorer_lib CXX C)
 #====================================================
 # colorer
 #====================================================
-set(COLORER ./colorer)
-set(EDITOR ./colorer/editor)
-set(HANDLERS ./colorer/handlers)
-set(PARSERS ./colorer/parsers)
-set(VIEWER ./colorer/viewer)
-set(COMMON ./colorer/common)
-set(IO ./colorer/io)
-set(REGEXP ./colorer/cregexp)
-set(XML ./colorer/xml)
-set(UNICODE ./colorer/unicode)
-
 set(SRC_COLORER
-    ${EDITOR}/BaseEditor.cpp ${EDITOR}/BaseEditor.h
-    ${EDITOR}/EditorListener.h ${EDITOR}/OutlineItem.h
-    ${EDITOR}/Outliner.cpp ${EDITOR}/Outliner.h
-    ${EDITOR}/PairMatch.h
-    ${HANDLERS}/LineRegionsSupport.cpp ${HANDLERS}/LineRegionsSupport.h
-    ${HANDLERS}/LineRegionsCompactSupport.cpp ${HANDLERS}/LineRegionsCompactSupport.h
-    ${HANDLERS}/RegionMapperImpl.cpp ${HANDLERS}/RegionMapperImpl.h
-    ${HANDLERS}/StyledHRDMapper.h ${HANDLERS}/StyledHRDMapper.cpp
-    ${HANDLERS}/TextHRDMapper.h ${HANDLERS}/TextHRDMapper.cpp
-    ${HANDLERS}/LineRegion.h
-    ${HANDLERS}/RegionDefine.h
-    ${HANDLERS}/RegionMapper.h
-    ${HANDLERS}/StyledRegion.h
-    ${HANDLERS}/TextRegion.h
-    ${PARSERS}/CatalogParser.cpp ${PARSERS}/CatalogParser.h
-    ${PARSERS}/HRDNode.h
-    ${PARSERS}/HRCParserImpl.cpp ${PARSERS}/HRCParserImpl.h
-    ${PARSERS}/TextParserImpl.cpp ${PARSERS}/TextParserImpl.h
-    ${PARSERS}/FileTypeImpl.h ${PARSERS}/FileTypeImpl.cpp
-    ${PARSERS}/FileTypeChooser.h
-    ${PARSERS}/KeywordList.h ${PARSERS}/KeywordList.cpp
-    ${PARSERS}/SchemeImpl.h
-    ${PARSERS}/TextParserHelpers.cpp ${PARSERS}/TextParserHelpers.h
-    ${PARSERS}/ParserFactory.cpp
-    ${PARSERS}/ParserFactory.h ${PARSERS}/ParserFactoryException.h
-    ${PARSERS}/SchemeNode.cpp ${PARSERS}/SchemeNode.h
-    ${PARSERS}/VirtualEntry.h
-    ${PARSERS}/XmlTagDefs.h
-    ${VIEWER}/ParsedLineWriter.h
-    ${VIEWER}/TextConsoleViewer.cpp ${VIEWER}/TextConsoleViewer.h
-    ${VIEWER}/TextLinesStore.cpp ${VIEWER}/TextLinesStore.h
-    ${COLORER}/Common.h
-    ${COLORER}/Exception.h
-    ${COLORER}/FileType.h
-    ${COLORER}/HRCParser.h
-    ${COLORER}/LineSource.h
-    ${COLORER}/Region.h
-    ${COLORER}/RegionHandler.h
-    ${COLORER}/Scheme.h
-    ${COLORER}/TextParser.h
-    ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
-    ${COMMON}/Exception.cpp
-    ${COMMON}/Features.h
-    ${COMMON}/UnicodeLogger.h
-    ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
-    ${IO}/FileWriter.h ${IO}/FileWriter.cpp
-    ${IO}/InputSource.cpp ${IO}/InputSource.h
-    ${IO}/JARInputSource.h ${IO}/JARInputSource.cpp
-    ${IO}/SharedInputSource.h ${IO}/SharedInputSource.cpp
-    ${IO}/Writer.cpp ${IO}/Writer.h
-    ${IO}/HTTPInputSource.cpp ${IO}/HTTPInputSource.h
-    ${IO}/MemoryFile.h ${IO}/MemoryFile.cpp
-    ${IO}/StreamWriter.cpp ${IO}/StreamWriter.h
-    ${REGEXP}/cregexp.cpp ${REGEXP}/cregexp.h
-    ${XML}/XmlParserErrorHandler.cpp ${XML}/XmlParserErrorHandler.h
-    ${XML}/XmlInputSource.cpp ${XML}/XmlInputSource.h
-    ${XML}/BaseEntityResolver.cpp ${XML}/BaseEntityResolver.h
-    ${XML}/LocalFileXmlInputSource.h ${XML}/LocalFileXmlInputSource.cpp
-    ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
-    ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
-    ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
-    ${UNICODE}/Character.h ${UNICODE}/Character.cpp
-    ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
-    ${UNICODE}/CString.cpp ${UNICODE}/CString.h
-    ${UNICODE}/DString.h
-    ${UNICODE}/Encodings.h ${UNICODE}/Encodings.cpp
-    ${UNICODE}/String.cpp ${UNICODE}/String.h
-    ${UNICODE}/SString.cpp ${UNICODE}/SString.h
-    ${UNICODE}/UnicodeTools.cpp ${UNICODE}/UnicodeTools.h
-    ${UNICODE}/x_charcategory.h ${UNICODE}/x_defines.h
-    ${UNICODE}/x_charcategory2.h ${UNICODE}/x_encodings.h
-    ${UNICODE}/x_charcategory_names.h ${UNICODE}/x_tables.h
-    colorer/common/UStr.cpp colorer/common/UStr.h)
+    colorer/Common.h
+    colorer/Exception.h
+    colorer/FileType.h
+    colorer/HRCParser.h
+    colorer/LineSource.h
+    colorer/Region.h
+    colorer/RegionHandler.h
+    colorer/Scheme.h
+    colorer/TextParser.h
+    colorer/common/Colorer.h colorer/common/Colorer.cpp
+    colorer/common/Exception.cpp
+    colorer/common/Features.h
+    colorer/common/UStr.cpp colorer/common/UStr.h
+    colorer/common/UnicodeLogger.h
+    colorer/common/UnicodeStringContainer.h
+    colorer/cregexp/cregexp.cpp colorer/cregexp/cregexp.h
+    colorer/editor/BaseEditor.cpp colorer/editor/BaseEditor.h
+    colorer/editor/EditorListener.h colorer/editor/OutlineItem.h
+    colorer/editor/Outliner.cpp colorer/editor/Outliner.h
+    colorer/editor/PairMatch.h
+    colorer/handlers/LineRegion.h
+    colorer/handlers/LineRegionsCompactSupport.cpp colorer/handlers/LineRegionsCompactSupport.h
+    colorer/handlers/LineRegionsSupport.cpp colorer/handlers/LineRegionsSupport.h
+    colorer/handlers/RegionDefine.h
+    colorer/handlers/RegionMapper.h
+    colorer/handlers/RegionMapperImpl.cpp colorer/handlers/RegionMapperImpl.h
+    colorer/handlers/StyledHRDMapper.h colorer/handlers/StyledHRDMapper.cpp
+    colorer/handlers/StyledRegion.h
+    colorer/handlers/TextHRDMapper.h colorer/handlers/TextHRDMapper.cpp
+    colorer/handlers/TextRegion.h
+    colorer/io/FileInputSource.cpp colorer/io/FileInputSource.h
+    colorer/io/FileWriter.h colorer/io/FileWriter.cpp
+    colorer/io/HTTPInputSource.cpp colorer/io/HTTPInputSource.h
+    colorer/io/InputSource.cpp colorer/io/InputSource.h
+    colorer/io/JARInputSource.h colorer/io/JARInputSource.cpp
+    colorer/io/MemoryFile.h colorer/io/MemoryFile.cpp
+    colorer/io/SharedInputSource.h colorer/io/SharedInputSource.cpp
+    colorer/io/StreamWriter.cpp colorer/io/StreamWriter.h
+    colorer/io/Writer.cpp colorer/io/Writer.h
+    colorer/parsers/CatalogParser.cpp colorer/parsers/CatalogParser.h
+    colorer/parsers/FileTypeChooser.h
+    colorer/parsers/FileTypeImpl.h colorer/parsers/FileTypeImpl.cpp
+    colorer/parsers/HRCParserImpl.cpp colorer/parsers/HRCParserImpl.h
+    colorer/parsers/HRDNode.h
+    colorer/parsers/KeywordList.h colorer/parsers/KeywordList.cpp
+    colorer/parsers/ParserFactory.cpp
+    colorer/parsers/ParserFactory.h colorer/parsers/ParserFactoryException.h
+    colorer/parsers/SchemeImpl.h
+    colorer/parsers/SchemeNode.cpp colorer/parsers/SchemeNode.h
+    colorer/parsers/TextParserHelpers.cpp colorer/parsers/TextParserHelpers.h
+    colorer/parsers/TextParserImpl.cpp colorer/parsers/TextParserImpl.h
+    colorer/parsers/VirtualEntry.h
+    colorer/parsers/XmlTagDefs.h
+    colorer/unicode/BitArray.cpp colorer/unicode/BitArray.h
+    colorer/unicode/CString.cpp colorer/unicode/CString.h
+    colorer/unicode/Character.h colorer/unicode/Character.cpp
+    colorer/unicode/CharacterClass.cpp colorer/unicode/CharacterClass.h
+    colorer/unicode/DString.h
+    colorer/unicode/Encodings.h colorer/unicode/Encodings.cpp
+    colorer/unicode/SString.cpp colorer/unicode/SString.h
+    colorer/unicode/String.cpp colorer/unicode/String.h
+    colorer/unicode/UnicodeTools.cpp colorer/unicode/UnicodeTools.h
+    colorer/unicode/x_charcategory.h colorer/unicode/x_defines.h
+    colorer/unicode/x_charcategory2.h colorer/unicode/x_encodings.h
+    colorer/unicode/x_charcategory_names.h colorer/unicode/x_tables.h
+    colorer/viewer/ParsedLineWriter.h
+    colorer/viewer/TextConsoleViewer.cpp colorer/viewer/TextConsoleViewer.h
+    colorer/viewer/TextLinesStore.cpp colorer/viewer/TextLinesStore.h
+    colorer/xml/BaseEntityResolver.cpp colorer/xml/BaseEntityResolver.h
+    colorer/xml/LocalFileXmlInputSource.h colorer/xml/LocalFileXmlInputSource.cpp
+    colorer/xml/SharedXmlInputSource.cpp colorer/xml/SharedXmlInputSource.h
+    colorer/xml/XmlInputSource.cpp colorer/xml/XmlInputSource.h
+    colorer/xml/XmlParserErrorHandler.cpp colorer/xml/XmlParserErrorHandler.h
+    colorer/xml/ZipXmlInputSource.cpp colorer/xml/ZipXmlInputSource.h)
 
 #====================================================
 # common flags
@@ -102,7 +92,7 @@ if (MSVC)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  # defaut for gcc
+  # default for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
   # CMAKE_CXX_FLAGS_RELEASE= -O3 -DNDEBUG
@@ -113,7 +103,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(FLAGS_CXX_DEBUG)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
-  # defaut for msvc
+  # default for msvc
   # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS
   # CMAKE_C_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_C_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
