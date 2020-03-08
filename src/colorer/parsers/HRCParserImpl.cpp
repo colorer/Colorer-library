@@ -3,7 +3,6 @@
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/unicode/Character.h>
-#include <colorer/unicode/UnicodeTools.h>
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>

@@ -69,6 +69,7 @@ int FileTypeImpl::getParamValueInt(const UnicodeString& name_, int def) const
     val = std::stoi(param_str, nullptr);
   } catch (std::exception&) {
     val = def;
+    spdlog::error("Error parse param {0} with value {1} to integer number", name_, param_str);
   }
   return val;
 }
