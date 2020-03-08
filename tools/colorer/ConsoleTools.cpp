@@ -1,19 +1,20 @@
-#include <time.h>
-#include <colorer/parsers/ParserFactory.h>
+#include "ConsoleTools.h"
+#include <colorer/common/UStr.h>
+#include <colorer/cregexp/cregexp.h>
 #include <colorer/editor/BaseEditor.h>
-#include <colorer/viewer/TextLinesStore.h>
-#include <colorer/viewer/ParsedLineWriter.h>
-#include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/parsers/ParserFactoryException.h>
 #include <colorer/io/FileWriter.h>
 #include <colorer/io/InputSource.h>
-#include <colorer/cregexp/cregexp.h>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <colorer/xml/XmlParserErrorHandler.h>
-#include <colorer/xml/XmlInputSource.h>
+#include <colorer/parsers/ParserFactory.h>
+#include <colorer/parsers/ParserFactoryException.h>
 #include <colorer/unicode/Encodings.h>
-#include "ConsoleTools.h"
+#include <colorer/viewer/ParsedLineWriter.h>
+#include <colorer/viewer/TextConsoleViewer.h>
+#include <colorer/viewer/TextLinesStore.h>
+#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/XmlParserErrorHandler.h>
+#include <time.h>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
 
 using namespace xercesc;
 

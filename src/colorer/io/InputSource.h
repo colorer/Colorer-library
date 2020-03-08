@@ -1,7 +1,10 @@
 #ifndef _COLORER_INPUTSOURCE_H_
 #define _COLORER_INPUTSOURCE_H_
 
-#include<colorer/Common.h>
+#include <colorer/Common.h>
+#include <colorer/Exception.h>
+#include <colorer/unicode/String.h>
+
 namespace colorer {
   /** Abstract byte input source.
   Supports derivation of input source,

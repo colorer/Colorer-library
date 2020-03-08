@@ -1,7 +1,8 @@
-#include <string.h>
+#include <cstring>
 #include <colorer/unicode/CString.h>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/Encodings.h>
+#include <colorer/common/UStr.h>
 
 StringIndexOutOfBoundsException::StringIndexOutOfBoundsException(const UnicodeString &msg) noexcept : Exception("[StringIndexOutOfBoundsException] " + msg)
 {

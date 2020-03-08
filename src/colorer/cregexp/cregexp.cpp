@@ -1,8 +1,9 @@
-#include <string.h>
+#include <cstring>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/Character.h>
 #include <colorer/unicode/SString.h>
+#include <colorer/common/UStr.h>
 
 StackElem *RegExpStack;
 int RegExpStack_Size;

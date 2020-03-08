@@ -1,9 +1,9 @@
-#include <cstdio>
-#include <cstring>
-#include <colorer/viewer/TextLinesStore.h>
+#include <colorer/Exception.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/unicode/Encodings.h>
-#include <colorer/common/UnicodeLogger.h>
+#include <colorer/viewer/TextLinesStore.h>
+#include <cstdio>
+#include <cstring>
 
 void TextLinesStore::replaceTabs(size_t lno)
 {

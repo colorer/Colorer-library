@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <cstdlib>
 #ifdef __unix__
 #include <dirent.h>
@@ -9,21 +8,17 @@
 #include <windows.h>
 #endif
 
+#include <colorer/common/UStr.h>
+#include <colorer/common/UnicodeLogger.h>
+#include <colorer/parsers/CatalogParser.h>
+#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/ParserFactory.h>
+#include <colorer/parsers/ParserFactoryException.h>
+#include <colorer/parsers/TextParserImpl.h>
+#include <colorer/viewer/TextLinesStore.h>
+#include <colorer/xml/XmlInputSource.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
-
-#include <colorer/parsers/ParserFactory.h>
-#include <colorer/parsers/CatalogParser.h>
-#include <colorer/viewer/TextLinesStore.h>
-#include <colorer/parsers/HRCParserImpl.h>
-#include <colorer/parsers/TextParserImpl.h>
-#include <colorer/parsers/ParserFactoryException.h>
-
-#include <colorer/xml/XmlInputSource.h>
-#include <colorer/xml/XStr.h>
-#include "ParserFactory.h"
-#include <colorer/common/UnicodeLogger.h>
-
 
 ParserFactory::ParserFactory(): hrc_parser(new HRCParserImpl())
 {
@@ -183,8 +178,8 @@ void ParserFactory::loadHrc(const UnicodeString* hrc_path, const UnicodeString* 
   uXmlInputSource dfis = XmlInputSource::newInstance(UStr::to_xmlch(hrc_path).get(), UStr::to_xmlch(base_path).get());
   try {
     hrc_parser->loadSource(dfis.get());
-  } catch (Exception &e) {
-    spdlog::error("Can't load hrc: {0}", XStr(dfis->getInputSource()->getSystemId()).get_char());
+  } catch (Exception& e) {
+    spdlog::error("Can't load hrc: {0}", UStr::to_stdstr(dfis->getInputSource()->getSystemId()));
     spdlog::error("{0}", e.what());
   }
 }

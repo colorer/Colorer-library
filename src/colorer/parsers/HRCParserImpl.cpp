@@ -1,11 +1,10 @@
-#include <colorer/common/UnicodeLogger.h>
+#include <colorer/common/UStr.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/unicode/Character.h>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XStr.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <memory>
@@ -100,13 +99,13 @@ void HRCParserImpl::loadFileType(FileType* filetype)
     spdlog::error("Can't open source stream: {0}", e.what());
     thisType->load_broken = true;
   } catch (HRCParserException &e) {
-    spdlog::error("{0} [{1}]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
     thisType->load_broken = true;
   } catch (Exception &e) {
-    spdlog::error("{0} [{1}]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
     thisType->load_broken = true;
   } catch (...) {
-    spdlog::error("Unknown exception while loading {0}", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    spdlog::error("Unknown exception while loading {0}", UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
     thisType->load_broken = true;
   }
 
@@ -189,7 +188,7 @@ const UnicodeString* HRCParserImpl::getVersion()
 
 void HRCParserImpl::parseHRC(XmlInputSource* is)
 {
-  spdlog::debug("begin parse '{0}'", *XStr(is->getInputSource()->getSystemId()).get_stdstr());
+  spdlog::debug("begin parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
@@ -226,7 +225,7 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
     updateStarted = false;
   }
 
-  spdlog::debug("end parse '{0}'", *XStr(is->getInputSource()->getSystemId()).get_stdstr());
+  spdlog::debug("end parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
 }
 
 void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
@@ -265,7 +264,7 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
       // not read anotation
       return;
     }
-    spdlog::warn("Unused element '{0}'. Current file {1}.", *XStr(elem->getNodeName()).get_stdstr() , *XStr(current_input_source->getInputSource()->getSystemId()).get_stdstr());
+    spdlog::warn("Unused element '{0}'. Current file {1}.", UStr::to_stdstr(elem->getNodeName()) , UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
   }
 }
 
@@ -348,7 +347,7 @@ void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement* elem)
 void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
 {
   if (elem->getFirstChild() == nullptr || elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE) {
-    spdlog::warn("Bad '{0}' element in prototype '{1}'", XStr(elem->getNodeName()).get_char(), *parseProtoType->name.get());
+    spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()), *parseProtoType->name.get());
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
@@ -369,13 +368,13 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
       prior = w->getValue();
       if (prior < 0) {
         spdlog::warn("Weight must be greater than 0. Current value {0}. Default value will be used. Current file {1}.", prior,
-                     *XStr(current_input_source->getInputSource()->getSystemId()).get_stdstr());
+                     UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
       }
       delete w;
     } catch (xercesc::NumberFormatException& toCatch) {
       spdlog::warn("Weight '{0}' is not valid for the prototype '{1}'. Message: {2}. Default value will be used. Current file {3}.",
-                   *XStr(weight).get_stdstr(), *parseProtoType->getName(), *XStr(toCatch.getMessage()).get_stdstr(),
-                   *XStr(current_input_source->getInputSource()->getSystemId()).get_stdstr());
+                   UStr::to_stdstr(weight), *parseProtoType->getName(), UStr::to_stdstr(toCatch.getMessage()),
+                   UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
     }
   }
   auto* ftc = new FileTypeChooser(ctype, prior, matchRE);
@@ -426,7 +425,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   }
   FileTypeImpl* type = type_ref->second;
   if (type->type_loaded) {
-    spdlog::warn("type '{0}' is already loaded", XStr(typeName).get_char());
+    spdlog::warn("type '{0}' is already loaded", UStr::to_stdstr(typeName));
     return;
   }
   type->type_loaded = true;
@@ -443,7 +442,7 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   }
   delete baseSchemeName;
   if (type->baseScheme == nullptr && !type->isPackage) {
-    spdlog::warn("type '{0}' has no default scheme", XStr(typeName).get_char());
+    spdlog::warn("type '{0}' has no default scheme", UStr::to_stdstr(typeName));
   }
   type->loadDone = true;
   parseType = o_parseType;
@@ -1094,7 +1093,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
       delete qname;
     }
     if (logErrors) {
-      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name, XStr(current_input_source->getInputSource()->getSystemId()).get_char());
+      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name, UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
     }
   }
   return nullptr;

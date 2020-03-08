@@ -1,3 +1,4 @@
+
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/unicode/UnicodeTools.h>

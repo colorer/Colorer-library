@@ -1,8 +1,8 @@
-#include <cstdio>
-#include <colorer/Common.h>
-#include <colorer/unicode/Encodings.h>
+#include <colorer/Exception.h>
 #include <colorer/io/StreamWriter.h>
+#include <colorer/unicode/Encodings.h>
 #include <unicode/ustring.h>
+#include <cstdio>
 
 StreamWriter::StreamWriter()= default;
 

@@ -16,6 +16,7 @@
 #endif
 
 #include<colorer/io/FileInputSource.h>
+#include <colorer/common/UStr.h>
 
 FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource *base){
   bool prefix = true;

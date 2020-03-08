@@ -59,8 +59,7 @@ set(SRC_COLORER
     ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
     ${COMMON}/Exception.cpp
     ${COMMON}/Features.h
-    ${COMMON}/UnicodeString.h ${COMMON}/UnicodeString.cpp
-    ${COMMON}//UnicodeLogger.h
+    ${COMMON}/UnicodeLogger.h
     ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
     ${IO}/FileWriter.h ${IO}/FileWriter.cpp
     ${IO}/InputSource.cpp ${IO}/InputSource.h
@@ -77,7 +76,6 @@ set(SRC_COLORER
     ${XML}/LocalFileXmlInputSource.h ${XML}/LocalFileXmlInputSource.cpp
     ${XML}/SharedXmlInputSource.cpp ${XML}/SharedXmlInputSource.h
     ${XML}/ZipXmlInputSource.cpp ${XML}/ZipXmlInputSource.h
-    ${XML}/XStr.cpp ${XML}/XStr.h
     ${UNICODE}/BitArray.cpp ${UNICODE}/BitArray.h
     ${UNICODE}/Character.h ${UNICODE}/Character.cpp
     ${UNICODE}/CharacterClass.cpp ${UNICODE}/CharacterClass.h
@@ -90,7 +88,7 @@ set(SRC_COLORER
     ${UNICODE}/x_charcategory.h ${UNICODE}/x_defines.h
     ${UNICODE}/x_charcategory2.h ${UNICODE}/x_encodings.h
     ${UNICODE}/x_charcategory_names.h ${UNICODE}/x_tables.h
-    )
+    colorer/common/UStr.cpp colorer/common/UStr.h)
 
 #====================================================
 # common flags

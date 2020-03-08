@@ -1,3 +1,4 @@
+#include <colorer/common/UStr.h>
 #include <colorer/common/UnicodeLogger.h>
 #include <colorer/parsers/CatalogParser.h>
 #include <colorer/parsers/XmlTagDefs.h>

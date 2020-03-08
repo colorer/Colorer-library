@@ -1,3 +1,4 @@
+#include <colorer/common/UStr.h>
 #include <colorer/parsers/FileTypeImpl.h>
 
 FileTypeImpl::FileTypeImpl(HRCParserImpl* hrcParser) : name(nullptr), group(nullptr), description(nullptr)
