@@ -102,3 +102,11 @@ option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 if (COLORER_TOOLS_BUILD)
   add_subdirectory(./tools/colorer)
 endif ()
+
+#====================================================
+# unit tests
+#====================================================
+find_package(GTest)
+if (${GTEST_FOUND})
+  add_subdirectory(./tests/unit)
+endif ()
