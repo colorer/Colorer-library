@@ -9,9 +9,9 @@
 
 class CatalogParser
 {
-public:
-  CatalogParser() = default;;
-  ~CatalogParser() = default;;
+ public:
+  CatalogParser() = default;
+  ~CatalogParser() = default;
 
   void parse(const UnicodeString* path);
   static std::unique_ptr<HRDNode> parseHRDSetsChild(const xercesc::DOMElement* elem);

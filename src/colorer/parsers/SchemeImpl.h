@@ -20,12 +20,12 @@ class SchemeImpl : public Scheme
   friend class HRCParserImpl;
   friend class TextParserImpl;
 public:
-  const UnicodeString* getName() const override
+  [[nodiscard]] const UnicodeString* getName() const override
   {
     return schemeName.get();
   }
 
-  FileType* getFileType() const override
+  [[nodiscard]] FileType* getFileType() const override
   {
     return (FileType*)fileType;
   }

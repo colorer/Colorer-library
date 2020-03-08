@@ -81,9 +81,9 @@ void ParserFactory::getPossibleCatalogPaths(std::vector<UnicodeString> &paths) c
       int pos[2];
       pos[0] = module.lastIndexOf('\\');
       pos[1] = module.lastIndexOf('\\', pos[0]);
-      for (int idx = 0; idx < 2; idx++)
-        if (pos[idx] >= 0) {
-          paths.emplace_back(UnicodeString(UnicodeString(module, 0, pos[idx])).append("\\catalog.xml"));
+      for (int po : pos)
+        if (po >= 0) {
+          paths.emplace_back(UnicodeString(UnicodeString(module, 0, po)).append("\\catalog.xml"));
         }
     }
   }
@@ -157,14 +157,14 @@ void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
 
   parseCatalog(base_catalog_path);
   spdlog::debug("begin load hrc files");
-  for (auto location : hrc_locations) {
+  for (const auto& location : hrc_locations) {
     try {
       spdlog::debug("try load '{0}'", location);
       auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
       if (XmlInputSource::isDirectory(clear_path.get())) {
         std::vector<UnicodeString> paths;
         XmlInputSource::getFileFromDir(clear_path.get(), paths);
-        for (auto files : paths) {
+        for (const auto& files : paths) {
           loadHrc(&files, &base_catalog_path);
         }
       } else {

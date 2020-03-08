@@ -4,7 +4,7 @@
 #include <colorer/io/StreamWriter.h>
 #include <unicode/ustring.h>
 
-StreamWriter::StreamWriter(){}
+StreamWriter::StreamWriter()= default;
 
 void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
   
@@ -24,8 +24,7 @@ StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool useBOM = true)
   init(fstream, encoding, useBOM);
 }
 
-StreamWriter::~StreamWriter(){
-}
+StreamWriter::~StreamWriter()= default;
 
 void StreamWriter::write(UChar c){
   char buf[8];

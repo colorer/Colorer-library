@@ -12,11 +12,11 @@ public:
   FileInputSource(const UnicodeString *basePath, FileInputSource *base);
   ~FileInputSource() override;
 
-  const UnicodeString *getLocation() const override;
+  [[nodiscard]] const UnicodeString *getLocation() const override;
 
   const byte *openStream() override;
   void closeStream() override;
-  int length() const override;
+  [[nodiscard]] int length() const override;
 protected:
   colorer::InputSource *createRelative(const UnicodeString *relPath) override;
 

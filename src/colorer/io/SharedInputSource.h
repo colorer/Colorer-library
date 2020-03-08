@@ -48,30 +48,30 @@ public:
     return stream;
   }
 
-  const UnicodeString* getLocation() const
+  [[nodiscard]] const UnicodeString* getLocation() const override
   {
     return is->getLocation();
   }
 
-  const byte* openStream()
+  const byte* openStream() override
   {
     return is->openStream();
   }
 
-  void closeStream()
+  void closeStream() override
   {
     is->closeStream();
   }
 
-  int length() const
+  [[nodiscard]] int length() const override
   {
     return is->length();
   }
 
 private:
 
-  SharedInputSource(colorer::InputSource* source);
-  ~SharedInputSource();
+  explicit SharedInputSource(colorer::InputSource* source);
+  ~SharedInputSource() override;
 
   static std::unordered_map<UnicodeString, SharedInputSource*>* isHash;
 

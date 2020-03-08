@@ -10,7 +10,7 @@
 */
 class Writer{
 public:
-  virtual ~Writer(){};
+  virtual ~Writer()= default;
   /** Writes string */
   virtual void write(const UnicodeString &string);
   /** Writes string */
@@ -22,7 +22,7 @@ public:
   /** Writes single character */
   virtual void write(UChar c) = 0;
 protected:
-  Writer(){};
+  Writer()= default;
 };
 
 #endif

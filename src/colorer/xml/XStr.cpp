@@ -30,8 +30,7 @@ XStr::XStr(const std::string* toTranscode)
 }
 
 XStr::~XStr()
-{
-}
+= default;
 
 std::ostream &operator<<(std::ostream &stream, const XStr &x)
 {

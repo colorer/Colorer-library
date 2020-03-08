@@ -1,7 +1,7 @@
 #ifndef _COLORER_STREAMWRITER_H_
 #define _COLORER_STREAMWRITER_H_
 
-#include<stdio.h>
+#include<cstdio>
 #include<colorer/io/Writer.h>
 
 /** Writes data into operating system output stream.
@@ -17,8 +17,8 @@ public:
              Unicode Byte Order Mark character.
   */
   StreamWriter(FILE *fstream, int encoding, bool useBOM);
-  ~StreamWriter();
-  void write(UChar c);
+  ~StreamWriter() override;
+  void write(UChar c) override;
 protected:
   StreamWriter();
   void init(FILE *fstream, int encoding, bool useBOM);

@@ -24,7 +24,7 @@ class Exception : public std::exception
 
   /** Returns exception message
    */
-  const char* what() const noexcept override;
+  [[nodiscard]] const char* what() const noexcept override;
 
  protected:
   /** Internal message container

@@ -33,7 +33,7 @@ SharedXmlInputSource::~SharedXmlInputSource()
   UnicodeString d_id = UnicodeString(input_source->getInputSource()->getSystemId());
   //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
   isHash->erase(d_id);
-  if (isHash->size() == 0) {
+  if (isHash->empty()) {
     delete isHash;
     isHash = nullptr;
   }

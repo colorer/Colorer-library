@@ -1,6 +1,6 @@
 #include <colorer/viewer/TextConsoleViewer.h>
 #include <colorer/unicode/Encodings.h>
-#include <stdio.h>
+#include <cstdio>
 
 TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int background, int encoding){
   textLinesStore = ts;
@@ -9,7 +9,8 @@ TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int bac
   this->encoding = encoding;
   this->background = background;
 }
-TextConsoleViewer::~TextConsoleViewer(){}
+
+TextConsoleViewer::~TextConsoleViewer()= default;
 
 void TextConsoleViewer::view()
 {
@@ -18,13 +19,13 @@ int topline, leftpos;
 leftpos = topline = 0;
 INPUT_RECORD ir;
 
-  HANDLE hConI = CreateFileW(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+  HANDLE hConI = CreateFileW(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
   if (hConI == INVALID_HANDLE_VALUE) return;
   SetConsoleMode(hConI, ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT);
 
   CONSOLE_SCREEN_BUFFER_INFO csbi;
 
-  HANDLE hCon = CreateConsoleScreenBuffer(GENERIC_WRITE|GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, CONSOLE_TEXTMODE_BUFFER, 0);
+  HANDLE hCon = CreateConsoleScreenBuffer(GENERIC_WRITE|GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, nullptr, CONSOLE_TEXTMODE_BUFFER, nullptr);
   SetConsoleActiveScreenBuffer(hCon);
   GetConsoleScreenBufferInfo(hCon, &csbi);
   CONSOLE_CURSOR_INFO cci;

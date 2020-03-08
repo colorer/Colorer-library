@@ -109,7 +109,7 @@ void LineRegionsSupport::clearLine(size_t lno, UnicodeString* line)
     delete ln;
     ln = lnn;
   }
-  LineRegion* lfirst = new LineRegion(*schemeStack.back());
+  auto* lfirst = new LineRegion(*schemeStack.back());
   lfirst->start = 0;
   lfirst->end = -1;
   lfirst->next = nullptr;
@@ -124,7 +124,7 @@ void LineRegionsSupport::addRegion(size_t lno, UnicodeString* line, int sx, int 
   if (!checkLine(lno)) {
     return;
   }
-  LineRegion* lnew = new LineRegion();
+  auto* lnew = new LineRegion();
   lnew->start = sx;
   lnew->end = ex;
   lnew->region = region;
@@ -147,7 +147,7 @@ void LineRegionsSupport::addRegion(size_t lno, UnicodeString* line, int sx, int 
 
 void LineRegionsSupport::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
-  LineRegion* lr = new LineRegion();
+  auto* lr = new LineRegion();
   lr->region = region;
   lr->scheme = scheme;
   lr->start = sx;
@@ -169,7 +169,7 @@ void LineRegionsSupport::enterScheme(size_t lno, UnicodeString* line, int sx, in
   }
   // we must skip transparent regions
   if (lr->region != nullptr) {
-    LineRegion* lr_add = new LineRegion(*lr);
+    auto* lr_add = new LineRegion(*lr);
     flowBackground->end = lr_add->start;
     flowBackground = lr_add;
     addLineRegion(lno, lr_add);
@@ -187,7 +187,7 @@ void LineRegionsSupport::leaveScheme(size_t lno, UnicodeString* line, int sx, in
   }
   // we have to skip transparent regions
   if (scheme_region != nullptr) {
-    LineRegion* lr = new LineRegion(*schemeStack.back());
+    auto* lr = new LineRegion(*schemeStack.back());
     lr->start = ex;
     lr->end = -1;
     flowBackground->end = lr->start;

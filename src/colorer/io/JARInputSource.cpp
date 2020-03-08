@@ -63,7 +63,7 @@ const byte *JARInputSource::openStream()
   if (stream != nullptr)
     throw InputSourceException("openStream(): source stream already opened: '"+ *baseLocation+"'");
 
-  MemoryFile *mf = new MemoryFile;
+  auto *mf = new MemoryFile;
   mf->stream = sharedIS->getStream();
   mf->length = sharedIS->length();
   zlib_filefunc_def zlib_ff;
@@ -71,7 +71,7 @@ const byte *JARInputSource::openStream()
 
   unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
-  if (fid == 0) {
+  if (fid == nullptr) {
 	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't locate file in JAR content: '"+ *inJarLocation+"'");

@@ -102,7 +102,7 @@ class StyledRegion : public RegionDefine
     type = rd->type;
   }
 
-  RegionDefine* clone() const override
+  [[nodiscard]] RegionDefine* clone() const override
   {
     RegionDefine* rd = new StyledRegion(*this);
     return rd;

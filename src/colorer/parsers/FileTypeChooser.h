@@ -19,15 +19,15 @@ public:
   */
   FileTypeChooser(ChooserType type, double prior, CRegExp* re);
   /** Default destructor */
-  ~FileTypeChooser() = default;;
+  ~FileTypeChooser() = default;
   /** Returns type of chooser */
-  bool isFileName() const;
+  [[nodiscard]] bool isFileName() const;
   /** Returns type of chooser */
-  bool isFileContent() const;
+  [[nodiscard]] bool isFileContent() const;
   /** Returns chooser priority */
-  double getPriority() const;
+  [[nodiscard]] double getPriority() const;
   /** Returns associated regular expression */
-  CRegExp* getRE() const;
+  [[nodiscard]] CRegExp* getRE() const;
 private:
   std::unique_ptr<CRegExp> reg_matcher;
   ChooserType type;

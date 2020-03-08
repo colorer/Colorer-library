@@ -109,12 +109,12 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       }
-      if (docLinkHash->size() > 0)
+      if (!docLinkHash->empty())
         writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start), true);
       writeStart(markupWriter, l1->styled());
       textWriter->write(line, pos, end - l1->start);
       writeEnd(markupWriter, l1->styled());
-      if (docLinkHash->size() > 0)
+      if (!docLinkHash->empty())
         writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start), false);
       pos += end - l1->start;
     }

@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/CString.h>
 #include <colorer/unicode/DString.h>

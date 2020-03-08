@@ -100,7 +100,7 @@ class TextRegion : public RegionDefine
     type = rd->type;
   }
 
-  RegionDefine* clone() const override
+  [[nodiscard]] RegionDefine* clone() const override
   {
     RegionDefine* rd = new TextRegion(*this);
     return rd;

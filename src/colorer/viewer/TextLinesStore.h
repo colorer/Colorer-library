@@ -17,7 +17,7 @@ public:
   /** Empty constructor. Does nothing.
   */
   TextLinesStore();
-  ~TextLinesStore();
+  ~TextLinesStore() override;
 
   /** Loads specified file into vector of strings.
       @param fileName File to load.

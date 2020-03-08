@@ -67,7 +67,7 @@ class LineRegionsSupport : public RegionHandler
    * Returns LineRegion object for @c lno line number.
    * This object is linked with all other stored @c LineRegion objects
    */
-  LineRegion* getLineRegions(size_t lno) const;
+  [[nodiscard]] LineRegion* getLineRegions(size_t lno) const;
 
   /**
    * RegionHandler implementation
@@ -83,8 +83,8 @@ class LineRegionsSupport : public RegionHandler
    * Behaviour is redefined in derived classes
    */
   virtual void addLineRegion(size_t lno, LineRegion* lr);
-  size_t getLineIndex(size_t lno) const;
-  bool checkLine(size_t lno) const;
+  [[nodiscard]] size_t getLineIndex(size_t lno) const;
+  [[nodiscard]] bool checkLine(size_t lno) const;
 
   std::vector<LineRegion*> lineRegions;
   std::vector<LineRegion*> schemeStack;

@@ -16,18 +16,18 @@ class FileType
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  virtual const UnicodeString* getName() const = 0;
+  [[nodiscard]] virtual const UnicodeString* getName() const = 0;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  virtual const UnicodeString* getGroup() const = 0;
+  [[nodiscard]] virtual const UnicodeString* getGroup() const = 0;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  virtual const UnicodeString* getDescription() const = 0;
+  [[nodiscard]] virtual const UnicodeString* getDescription() const = 0;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.
@@ -40,9 +40,9 @@ class FileType
       @return Parameter name with index <code>idx</code> or <code>null</code>
       if index is too large.
   */
-  virtual std::vector<UnicodeString> enumParams() const = 0;
+  [[nodiscard]] virtual std::vector<UnicodeString> enumParams() const = 0;
 
-  virtual const UnicodeString* getParamDescription(const UnicodeString& name) const = 0;
+  [[nodiscard]] virtual const UnicodeString* getParamDescription(const UnicodeString& name) const = 0;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -59,8 +59,8 @@ class FileType
       @param name Parameter's name
       @return Value (changed or default) of this parameter
   */
-  virtual const UnicodeString* getParamValue(const UnicodeString& name) const = 0;
-  virtual int getParamValueInt(const UnicodeString& name, int def) const = 0;
+  [[nodiscard]] virtual const UnicodeString* getParamValue(const UnicodeString& name) const = 0;
+  [[nodiscard]] virtual int getParamValueInt(const UnicodeString& name, int def) const = 0;
 
   /** Returns parameter's default value of this file type.
       Default values are the values, explicitly pointed with
@@ -68,7 +68,7 @@ class FileType
       @param name Parameter's name
       @return Default value of this parameter
   */
-  virtual const UnicodeString* getParamDefaultValue(const UnicodeString& name) const = 0;
+  [[nodiscard]] virtual const UnicodeString* getParamDefaultValue(const UnicodeString& name) const = 0;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC

@@ -79,7 +79,6 @@ protected:
 
   void addScheme(const xercesc::DOMElement* elem);
   void parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  void addSchemeNodes(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);

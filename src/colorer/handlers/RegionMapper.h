@@ -21,7 +21,7 @@ class RegionMapper
   /**
    * Searches mapped region define value with qualified name @c name.
    */
-  virtual const RegionDefine* getRegionDefine(const UnicodeString& name) const = 0;
+  [[nodiscard]] virtual const RegionDefine* getRegionDefine(const UnicodeString& name) const = 0;
 
   virtual ~RegionMapper() = default;
 

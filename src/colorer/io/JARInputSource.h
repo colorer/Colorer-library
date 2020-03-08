@@ -19,14 +19,14 @@ public:
   JARInputSource(const UnicodeString *basePath, colorer::InputSource *base);
   ~JARInputSource() override;
 
-  const UnicodeString *getLocation() const override;
+  [[nodiscard]] const UnicodeString *getLocation() const override;
 
   const byte *openStream() override;
   void closeStream() override;
-  int length() const override;
+  [[nodiscard]] int length() const override;
 protected:
-  SharedInputSource *getShared() const { return sharedIS; };
-  const UnicodeString *getInJarLocation() const { return inJarLocation; };
+  [[nodiscard]] SharedInputSource *getShared() const { return sharedIS; };
+  [[nodiscard]] const UnicodeString *getInJarLocation() const { return inJarLocation; };
   colorer::InputSource *createRelative(const UnicodeString *relPath) override;
   JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool faked);
 private:

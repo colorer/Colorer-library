@@ -19,7 +19,7 @@ UnicodeString *InputSource::getAbsolutePath(const UnicodeString*basePath, const 
   if (root_pos2 > root_pos) root_pos = root_pos2;
   if (root_pos == -1) root_pos = 0;
   else root_pos++;
-  UnicodeString *newPath = new UnicodeString();
+  auto *newPath = new UnicodeString();
   newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
   return newPath;
 }

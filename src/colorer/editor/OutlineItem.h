@@ -34,13 +34,12 @@ public:
     lno(lno_), pos(pos_), level(level_), token(nullptr), region(region_)
   {
     if (token_ != nullptr) {
-      token.reset(new UnicodeString(*token_));
+      token = std::make_unique<UnicodeString>(*token_);
     }
   }
 
   ~OutlineItem()
-  {
-  }
+  = default;
 };
 
 #endif

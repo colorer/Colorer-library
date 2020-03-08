@@ -16,19 +16,19 @@ class XStr
 {
 public:
   XStr(const XMLCh* const toTranscode);
-  XStr(const std::string &toTranscode);
-  XStr(const std::string* toTranscode);
+  explicit XStr(const std::string &toTranscode);
+  explicit XStr(const std::string* toTranscode);
   ~XStr();
 
-  const char* get_char() const;
-  const std::string* get_stdstr() const;
-  const XMLCh* get_xmlchar() const;
+  [[nodiscard]] const char* get_char() const;
+  [[nodiscard]] const std::string* get_stdstr() const;
+  [[nodiscard]] const XMLCh* get_xmlchar() const;
 
-private:
   XStr(XStr const &) = delete;
   XStr &operator=(XStr const &) = delete;
   XStr(XStr &&) = delete;
   XStr &operator=(XStr &&) = delete;
+private:
 
   friend std::ostream &operator<<(std::ostream &stream, const XStr &x);
 

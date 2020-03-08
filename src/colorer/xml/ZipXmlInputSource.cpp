@@ -84,7 +84,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path)
   : mPos(0), mBoundary(0), stream(nullptr), len(0)
 {
-  MemoryFile* mf = new MemoryFile;
+  auto* mf = new MemoryFile;
   mf->stream = src;
   mf->length = size;
   zlib_filefunc_def zlib_ff;
@@ -156,7 +156,6 @@ const XMLCh* UnZip::getContentType() const
 }
 
 UnZip::~UnZip()
-{
-}
+= default;
 
 

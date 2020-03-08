@@ -59,7 +59,7 @@ class RegionDefine
    * Clones current region and creates it's duplicate.
    * To be implemented in subclasses.
    */
-  virtual RegionDefine* clone() const = 0;
+  [[nodiscard]] virtual RegionDefine* clone() const = 0;
 
   /** Default Destructor */
   virtual ~RegionDefine() = default;

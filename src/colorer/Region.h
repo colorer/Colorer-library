@@ -17,22 +17,22 @@ class Region
 {
 public:
   /** Full Qualified region name (<code>def:Text</code> for example) */
-  virtual const UnicodeString* getName() const
+  [[nodiscard]] virtual const UnicodeString* getName() const
   {
     return name;
   }
   /** Region description */
-  virtual const UnicodeString* getDescription() const
+  [[nodiscard]] virtual const UnicodeString* getDescription() const
   {
     return description;
   }
   /** Direct region ancestor (parent) */
-  virtual const Region* getParent() const
+  [[nodiscard]] virtual const Region* getParent() const
   {
     return parent;
   }
   /** Quick access region id (incrementable) */
-  virtual int getID() const
+  [[nodiscard]] virtual int getID() const
   {
     return id;
   }

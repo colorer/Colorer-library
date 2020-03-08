@@ -7,7 +7,7 @@
 class HRDNode
 {
 public:
-  HRDNode() = default;;
+  HRDNode() = default;
   ~HRDNode()
   {
     hrd_location.clear();

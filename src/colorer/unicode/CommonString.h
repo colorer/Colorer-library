@@ -1,7 +1,7 @@
 #ifndef _COLORER_COMMONSTRING_H_
 #define _COLORER_COMMONSTRING_H_
 
-#include <wchar.h>
+#include <cwchar>
 
 /// default unicode char definition
 #ifndef WCHAR_MAX

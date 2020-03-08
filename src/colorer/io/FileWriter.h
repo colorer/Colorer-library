@@ -10,13 +10,13 @@ class FileWriter : public StreamWriter{
 public:
   /** @param fileName File name, used to write data to.
   */
-  FileWriter(const UnicodeString *fileName);
+  explicit FileWriter(const UnicodeString *fileName);
   /** @param fileName File name, used to write data to.
       @param encoding Output encoding.
       @param useBOM If true, BOM (Byte Order Mark) is written first.
   */
   FileWriter(const UnicodeString *fileName, int encoding, bool useBOM);
-  ~FileWriter();
+  ~FileWriter() override;
 protected:
 };
 

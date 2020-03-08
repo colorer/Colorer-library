@@ -64,7 +64,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
   if (ladd != lstart && ladd->prev && (ladd->prev->end > ladd->start || ladd->prev->end == -1)) {
     // our region breaks previous region into two parts
     if ((ladd->prev->end > ladd->end || ladd->prev->end == -1) && ladd->end != -1) {
-      LineRegion* ln1 = new LineRegion(*ladd->prev);
+      auto* ln1 = new LineRegion(*ladd->prev);
       ln1->prev = ladd;
       ln1->next = ladd->next;
       if (ladd->next) {

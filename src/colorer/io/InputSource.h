@@ -13,7 +13,7 @@ namespace colorer {
   public:
     /** Current stream location
     */
-    virtual const UnicodeString *getLocation() const = 0;
+    [[nodiscard]] virtual const UnicodeString *getLocation() const = 0;
 
     /** Opens stream and returns array of readed bytes.
     @throw InputSourceException If some IO-errors occurs.
@@ -27,7 +27,7 @@ namespace colorer {
     /** Return length of opened stream
     @throw InputSourceException If stream is closed.
     */
-    virtual int length() const = 0;
+    [[nodiscard]] virtual int length() const = 0;
 
     /** Tries statically create instance of InputSource object,
     according to passed @c path string.
@@ -62,9 +62,9 @@ namespace colorer {
     */
     virtual InputSource *createRelative(const UnicodeString *relPath){ return nullptr;};
 
-    virtual ~InputSource()= default;;
+    virtual ~InputSource()= default;
   protected:
-    InputSource()= default;;
+    InputSource()= default;
   };
 
 
@@ -73,11 +73,11 @@ namespace colorer {
   */
   class MultipleInputSource{
   public:
-    virtual bool hasMoreInput() const = 0;
-    virtual InputSource *nextInput() const = 0;
-    virtual const String *getLocation() const = 0;
+    [[nodiscard]] virtual bool hasMoreInput() const = 0;
+    [[nodiscard]] virtual InputSource *nextInput() const = 0;
+    [[nodiscard]] virtual const String *getLocation() const = 0;
 
-    virtual ~MultipleInputSource()= default;;
+    virtual ~MultipleInputSource()= default;
   protected:
     explicit MultipleInputSource(const UnicodeString *basePath){};
   };

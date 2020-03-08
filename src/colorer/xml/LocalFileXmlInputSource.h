@@ -11,8 +11,8 @@ class LocalFileXmlInputSource : public XmlInputSource
 {
 public:
   LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base);
-  ~LocalFileXmlInputSource();
-  xercesc::BinInputStream* makeStream() const override;
+  ~LocalFileXmlInputSource() override;
+  [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
   uXmlInputSource createRelative(const XMLCh* relPath) const override;
   xercesc::InputSource* getInputSource() override;
 

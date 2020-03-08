@@ -21,7 +21,7 @@ public:
     substSchemeName.reset(new UnicodeString(*subst));
   }
 
-  ~VirtualEntry() {}
+  ~VirtualEntry() = default;
 
 
 };

@@ -220,7 +220,6 @@ void TextParserImpl::fillInvisibleSchemes(ParseCache* ch)
   /* Fills output stream with valid "pseudo" enterScheme */
   fillInvisibleSchemes(ch->parent);
   enterScheme(gy, 0, 0, ch->clender->region);
-  return;
 }
 
 int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hilen)
