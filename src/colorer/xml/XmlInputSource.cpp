@@ -124,7 +124,8 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
 void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files)
 {
   WIN32_FIND_DATA ffd;
-  HANDLE dir = FindFirstFile(UStr::to_stdstr(&UnicodeString(UnicodeString(*relPath) + UnicodeString("\\*.*"))).c_str(), &ffd);
+  UnicodeString s= UnicodeString(UnicodeString(*relPath) + UnicodeString("\\*.*"));
+  HANDLE dir = FindFirstFile(UStr::to_stdstr(&s).c_str(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
       if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {

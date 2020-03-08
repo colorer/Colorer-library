@@ -144,7 +144,7 @@ FileType* HRCParserImpl::getFileType(const UnicodeString* name)
   return fileTypeHash.find(*name)->second;
 }
 
-FileType* HRCParserImpl::enumerateFileTypes(int index)
+FileType* HRCParserImpl::enumerateFileTypes(unsigned int index)
 {
   if (index < fileTypeVector.size()) {
     return fileTypeVector[index];
@@ -162,9 +162,9 @@ size_t HRCParserImpl::getRegionCount()
   return regionNamesVector.size();
 }
 
-const Region* HRCParserImpl::getRegion(int id)
+const Region* HRCParserImpl::getRegion(unsigned int id)
 {
-  if (id < 0 || id >= regionNamesVector.size()) {
+  if (id >= regionNamesVector.size()) {
     return nullptr;
   }
   return regionNamesVector[id];
@@ -506,7 +506,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   UnicodeString regiondescr = UnicodeString(regionDescr);
-  const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), (int)regionNamesVector.size());
+  const Region* region = new Region(qname1, &regiondescr, getRegion(qname2), regionNamesVector.size());
   regionNamesVector.push_back(region);
   std::pair<UnicodeString, const Region*> pp(*qname1, region);
   regionNamesHash.emplace(pp);

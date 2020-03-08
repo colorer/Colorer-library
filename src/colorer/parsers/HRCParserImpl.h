@@ -25,12 +25,12 @@ public:
 
   void loadSource(XmlInputSource* is) override;
   FileType* getFileType(const UnicodeString* name) override;
-  FileType* enumerateFileTypes(int index) override;
+  FileType* enumerateFileTypes(unsigned int index) override;
   FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) override;
   size_t getFileTypesCount() override;
 
   size_t getRegionCount() override;
-  const Region* getRegion(int id) override;
+  const Region* getRegion(unsigned int id) override;
   const Region* getRegion(const UnicodeString* name) override;
 
   const UnicodeString* getVersion() override;

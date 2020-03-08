@@ -35,7 +35,7 @@ public:
       @param index index of type.
       @return Requested type, or null, if #index is too big
   */
-  virtual FileType *enumerateFileTypes(int index) = 0;
+  virtual FileType *enumerateFileTypes(unsigned int index) = 0;
 
   /** @param name Requested type name.
       @return File type, or null, there are no type with specified name.
@@ -59,7 +59,7 @@ public:
   virtual size_t getRegionCount() = 0;
   /** Returns region by internal id
   */
-  virtual const Region *getRegion(int id) = 0;
+  virtual const Region *getRegion(unsigned int id) = 0;
   /** Returns region by name
       @note Also loads referred type, if it is not yet loaded.
   */
