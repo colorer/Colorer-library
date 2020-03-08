@@ -4,15 +4,14 @@
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/io/FileWriter.h>
 #include <colorer/io/InputSource.h>
-#include <colorer/parsers/ParserFactory.h>
-#include <colorer/parsers/ParserFactoryException.h>
+#include <colorer/ParserFactory.h>
 #include <colorer/unicode/Encodings.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <time.h>
+#include <ctime>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 

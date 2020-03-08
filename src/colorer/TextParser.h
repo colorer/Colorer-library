@@ -6,30 +6,6 @@
 #include <colorer/RegionHandler.h>
 
 /**
- * List of available parse modes
- * @ingroup colorer
- */
-enum TextParseMode {
-  /**
-   * Parser will start execution from the root
-   * document's scheme, no cache information will be used
-   */
-  TPM_CACHE_OFF,
-  /**
-   * Parser will use internal cache information to make
-   * initial text positioning and guarantee syntax structure validness.
-   * The text structure will not be dropped and cache tree will remain the same.
-   */
-  TPM_CACHE_READ,
-  /**
-   * Allows parser not only read cache information, but also update
-   * it during parse process.
-   * Also causes all cached data from starting parse position to be dropped.
-   */
-  TPM_CACHE_UPDATE
-};
-
-/**
  * Basic lexical/syntax parser interface.
  * This class provides interface to lexical text parsing abilities of
  * the Colorer library.
@@ -45,7 +21,30 @@ enum TextParseMode {
  */
 class TextParser
 {
-public:
+ public:
+  /**
+   * List of available parse modes
+   * @ingroup colorer
+   */
+  enum TextParseMode {
+    /**
+     * Parser will start execution from the root
+     * document's scheme, no cache information will be used
+     */
+    TPM_CACHE_OFF,
+    /**
+     * Parser will use internal cache information to make
+     * initial text positioning and guarantee syntax structure validness.
+     * The text structure will not be dropped and cache tree will remain the same.
+     */
+    TPM_CACHE_READ,
+    /**
+     * Allows parser not only read cache information, but also update
+     * it during parse process.
+     * Also causes all cached data from starting parse position to be dropped.
+     */
+    TPM_CACHE_UPDATE
+  };
 
   /**
    * Sets root scheme (filetype) of the text to parse.
@@ -91,10 +90,9 @@ public:
   virtual void clearCache() = 0;
 
   virtual ~TextParser() = default;
-protected:
+
+ protected:
   TextParser() = default;
 };
 
 #endif
-
-

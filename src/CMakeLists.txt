@@ -10,6 +10,7 @@ set(SRC_COLORER
     colorer/FileType.h
     colorer/HRCParser.h
     colorer/LineSource.h
+    colorer/ParserFactory.h colorer/parsers/ParserFactory.cpp
     colorer/Region.h
     colorer/RegionHandler.h
     colorer/Scheme.h
@@ -50,8 +51,8 @@ set(SRC_COLORER
     colorer/parsers/HRCParserImpl.cpp colorer/parsers/HRCParserImpl.h
     colorer/parsers/HRDNode.h
     colorer/parsers/KeywordList.h colorer/parsers/KeywordList.cpp
-    colorer/parsers/ParserFactory.cpp
-    colorer/parsers/ParserFactory.h colorer/parsers/ParserFactoryException.h
+    colorer/parsers/ParserFactoryImpl.cpp
+    colorer/parsers/ParserFactoryImpl.h
     colorer/parsers/SchemeImpl.h
     colorer/parsers/SchemeNode.cpp colorer/parsers/SchemeNode.h
     colorer/parsers/TextParserHelpers.cpp colorer/parsers/TextParserHelpers.h
@@ -78,7 +79,8 @@ set(SRC_COLORER
     colorer/xml/SharedXmlInputSource.cpp colorer/xml/SharedXmlInputSource.h
     colorer/xml/XmlInputSource.cpp colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp colorer/xml/XmlParserErrorHandler.h
-    colorer/xml/ZipXmlInputSource.cpp colorer/xml/ZipXmlInputSource.h)
+    colorer/xml/ZipXmlInputSource.cpp colorer/xml/ZipXmlInputSource.h
+    )
 
 #====================================================
 # common flags

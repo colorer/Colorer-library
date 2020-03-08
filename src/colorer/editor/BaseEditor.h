@@ -1,11 +1,13 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
-#include <colorer/parsers/ParserFactory.h>
-#include <colorer/handlers/LineRegionsSupport.h>
-#include <colorer/handlers/LineRegionsCompactSupport.h>
 #include <colorer/editor/EditorListener.h>
 #include <colorer/editor/PairMatch.h>
+#include <colorer/handlers/LineRegionsCompactSupport.h>
+#include <colorer/handlers/LineRegionsSupport.h>
+#include <colorer/ParserFactory.h>
+#include <colorer/LineSource.h>
+#include <colorer/TextParser.h>
 
 /**
  * Base Editor functionality.
