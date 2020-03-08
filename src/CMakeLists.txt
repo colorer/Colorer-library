@@ -80,7 +80,7 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.cpp colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp colorer/xml/XmlParserErrorHandler.h
     colorer/xml/ZipXmlInputSource.cpp colorer/xml/ZipXmlInputSource.h
-    )
+    colorer/parsers/TextParser.cpp)
 
 #====================================================
 # common flags

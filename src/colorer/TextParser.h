@@ -13,7 +13,7 @@
  * It uses LineSource interface as a source of input data, and
  * RegionHandler as interface to transfer results of text parse process.
  *
- * Process of syntax parsing supports internal caching algorithim,
+ * Process of syntax parsing supports internal caching algorithm,
  * which allows to store internal parser state and reparse text
  * only partially (on change, on request).
  *
@@ -46,23 +46,24 @@ class TextParser
     TPM_CACHE_UPDATE
   };
 
+  TextParser();
   /**
    * Sets root scheme (filetype) of the text to parse.
    * @param type FileType, which contains reference to
    * it's baseScheme. If parameter is null, there will
    * be no any kind of parse over the text.
    */
-  virtual void setFileType(FileType* type) = 0;
+  void setFileType(FileType* type);
 
   /**
    * Installs LineSource, used as an input of text to parse
    */
-  virtual void setLineSource(LineSource* lh) = 0;
+  void setLineSource(LineSource* lh);
 
   /**
    * RegionHandler, used as output stream for parsed tree.
    */
-  virtual void setRegionHandler(RegionHandler* rh) = 0;
+  void setRegionHandler(RegionHandler* rh);
 
   /**
    * Performs cachable text parse.
@@ -74,7 +75,7 @@ class TextParser
    * @param num   Number of lines to parse
    * @param mode  Parsing mode.
    */
-  virtual int parse(int from, int num, TextParseMode mode) = 0;
+  int parse(int from, int num, TextParseMode mode);
 
   /**
    * Performs break of parsing process from external thread.
@@ -82,17 +83,19 @@ class TextParser
    * in some editor system implementations, where editor
    * can detect background changes in highlighted text.
    */
-  virtual void breakParse() = 0;
+  void breakParse();
 
   /**
    * Clears internal cached text tree stucture
    */
-  virtual void clearCache() = 0;
+  void clearCache();
 
-  virtual ~TextParser() = default;
+  ~TextParser() = default;
 
- protected:
-  TextParser() = default;
+ private:
+  class Impl;
+
+  std::unique_ptr<Impl> pimpl;
 };
 
-#endif
+#endif //_COLORER_TEXTPARSER_H_

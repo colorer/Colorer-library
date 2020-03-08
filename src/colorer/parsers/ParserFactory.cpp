@@ -1,9 +1,6 @@
-#include <colorer/ParserFactory.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
 
 ParserFactory::ParserFactory() : pimpl(new ParserFactory::Impl()) {}
-
-ParserFactory::~ParserFactory() = default;
 
 void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
 {

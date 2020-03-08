@@ -13,7 +13,7 @@
 #include <colorer/parsers/CatalogParser.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
-#include <colorer/parsers/TextParserImpl.h>
+#include <colorer/TextParser.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -258,7 +258,7 @@ HRCParser* ParserFactory::Impl::getHRCParser() const
 
 TextParser* ParserFactory::Impl::createTextParser()
 {
-  return new TextParserImpl();
+  return new TextParser();
 }
 
 StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID)

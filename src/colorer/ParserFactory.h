@@ -17,7 +17,7 @@ class ParserFactory
    * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
   ParserFactory();
-  ~ParserFactory();
+  ~ParserFactory() = default;
 
   /**
    * @param catalog_path Path to catalog.xml file. If null,

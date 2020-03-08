@@ -13,20 +13,18 @@
  * text in a target editor system.
  * @ingroup colorer_parsers
  */
-class TextParserImpl : public TextParser
+class TextParser::Impl
 {
 public:
-  TextParserImpl();
-  ~TextParserImpl() override;
+  Impl();
+  ~Impl();
 
-  void setFileType(FileType* type) override;
-
-  void setLineSource(LineSource* lh) override;
-  void setRegionHandler(RegionHandler* rh) override;
-
-  int  parse(int from, int num, TextParseMode mode) override;
-  void breakParse() override;
-  void clearCache() override;
+  void setFileType(FileType* type);
+  void setLineSource(LineSource* lh);
+  void setRegionHandler(RegionHandler* rh);
+  int  parse(int from, int num, TextParseMode mode);
+  void breakParse();
+  void clearCache();
 
 private:
   UnicodeString* str;

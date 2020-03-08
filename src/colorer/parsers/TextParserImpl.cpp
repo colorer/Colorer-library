@@ -1,7 +1,7 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/TextParserImpl.h>
 
-TextParserImpl::TextParserImpl()
+TextParser::Impl::Impl()
 {
   CTRACE(spdlog::trace("[TextParserImpl] constructor"));
   cache = new ParseCache();
@@ -13,13 +13,13 @@ TextParserImpl::TextParserImpl()
   memset(&matchend, 0, sizeof(SMatches));
 }
 
-TextParserImpl::~TextParserImpl()
+TextParser::Impl::~Impl()
 {
   clearCache();
   delete cache;
 }
 
-void TextParserImpl::setFileType(FileType* type)
+void TextParser::Impl::setFileType(FileType* type)
 {
   baseScheme = nullptr;
   if (type != nullptr) {
@@ -28,17 +28,17 @@ void TextParserImpl::setFileType(FileType* type)
   clearCache();
 }
 
-void TextParserImpl::setLineSource(LineSource* lh)
+void TextParser::Impl::setLineSource(LineSource* lh)
 {
   lineSource = lh;
 }
 
-void TextParserImpl::setRegionHandler(RegionHandler* rh)
+void TextParser::Impl::setRegionHandler(RegionHandler* rh)
 {
   regionHandler = rh;
 }
 
-int TextParserImpl::parse(int from, int num, TextParseMode mode)
+int TextParser::Impl::parse(int from, int num, TextParseMode mode)
 {
   gx = 0;
   gy = from;
@@ -131,7 +131,7 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
   return endLine;
 }
 
-void TextParserImpl::clearCache()
+void TextParser::Impl::clearCache()
 {
   ParseCache* tmp, *tmp2;
   tmp = cache->next;
@@ -148,23 +148,23 @@ void TextParserImpl::clearCache()
   cache->children = cache->parent = cache->next = nullptr;
 }
 
-void TextParserImpl::breakParse()
+void TextParser::Impl::breakParse()
 {
   breakParsing = true;
 }
 
-void TextParserImpl::addRegion(int lno, int sx, int ex, const Region* region)
+void TextParser::Impl::addRegion(int lno, int sx, int ex, const Region* region)
 {
   if (sx == -1 || region == nullptr) {
     return;
   }
   regionHandler->addRegion(lno, str, sx, ex, region);
 }
-void TextParserImpl::enterScheme(int lno, int sx, int ex, const Region* region)
+void TextParser::Impl::enterScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->enterScheme(lno, str, sx, ex, region, baseScheme);
 }
-void TextParserImpl::leaveScheme(int lno, int sx, int ex, const Region* region)
+void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->leaveScheme(lno, str, sx, ex, region, baseScheme);
   if (region != nullptr) {
@@ -173,7 +173,7 @@ void TextParserImpl::leaveScheme(int lno, int sx, int ex, const Region* region)
 }
 
 
-void TextParserImpl::enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
 {
   int i;
 
@@ -193,7 +193,7 @@ void TextParserImpl::enterScheme(int lno, SMatches* match, const SchemeNode* sch
   }
 }
 
-void TextParserImpl::leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
 {
   int i;
 
@@ -213,7 +213,7 @@ void TextParserImpl::leaveScheme(int lno, SMatches* match, const SchemeNode* sch
   }
 }
 
-void TextParserImpl::fillInvisibleSchemes(ParseCache* ch)
+void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)
 {
   if (!ch->parent || ch == cache) {
     return;
@@ -223,7 +223,7 @@ void TextParserImpl::fillInvisibleSchemes(ParseCache* ch)
   enterScheme(gy, 0, 0, ch->clender->region);
 }
 
-int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hilen)
+int TextParser::Impl::searchKW(const SchemeNode* node, int no, int lowlen, int hilen)
 {
   if (!node->kwList->num) {
     return MATCH_NOTHING;
@@ -299,7 +299,7 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
   return MATCH_NOTHING;
 }
 
-int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
+int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 {
   int i, re_result;
   SchemeImpl* ssubst = nullptr;
@@ -472,7 +472,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
   return MATCH_NOTHING;
 }
 
-bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
+bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
 {
   len = -1;
 
