@@ -29,18 +29,19 @@ class HRCParser
       real type load must be performed before using with #loadType() method
       @param is InputSource stream of HRC file
   */
-  virtual void loadSource(XmlInputSource* is) = 0;
+  void loadSource(XmlInputSource* is);
+  void loadFileType(FileType* filetype);
 
   /** Enumerates sequentially all prototypes
       @param index index of type.
       @return Requested type, or null, if #index is too big
   */
-  virtual FileType* enumerateFileTypes(unsigned int index) = 0;
+  FileType* enumerateFileTypes(unsigned int index);
 
   /** @param name Requested type name.
       @return File type, or null, there are no type with specified name.
   */
-  virtual FileType* getFileType(const UnicodeString* name) = 0;
+  FileType* getFileType(const UnicodeString* name);
 
   /** Searches and returns the best type for specified file.
       This method uses fileName and firstLine parameters
@@ -50,31 +51,28 @@ class HRCParser
       @param typeNo Sequential number of type, if more than one type
                     satisfy these input parameters.
   */
-  virtual FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) = 0;
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
 
-  virtual size_t getFileTypesCount() = 0;
+  size_t getFileTypesCount();
 
   /** Total number of declared regions
    */
-  virtual size_t getRegionCount() = 0;
+  size_t getRegionCount();
   /** Returns region by internal id
    */
-  virtual const Region* getRegion(unsigned int id) = 0;
+  const Region* getRegion(unsigned int id);
   /** Returns region by name
       @note Also loads referred type, if it is not yet loaded.
   */
-  virtual const Region* getRegion(const UnicodeString* name) = 0;
+  const Region* getRegion(const UnicodeString* name);
 
-  /** HRC base version.
-      Usually this is the 'version' attribute of 'hrc' element
-      of the first loaded HRC file.
-  */
-  virtual const UnicodeString* getVersion() = 0;
+  ~HRCParser() = default;
+  HRCParser();
 
-  virtual ~HRCParser() = default;
+ private:
+  class Impl;
 
- protected:
-  HRCParser() = default;
+  std::unique_ptr<Impl> pimpl;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include <colorer/common/UStr.h>
+#include <colorer/parsers/FileTypeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/XmlTagDefs.h>
@@ -11,7 +12,7 @@
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>
 
-HRCParserImpl::HRCParserImpl():
+HRCParser::Impl::Impl():
   versionName(nullptr), parseProtoType(nullptr), parseType(nullptr), current_input_source(nullptr),
   structureChanged(false), updateStarted(false)
 {
@@ -22,7 +23,7 @@ HRCParserImpl::HRCParserImpl():
   schemeHash.reserve(4000);
 }
 
-HRCParserImpl::~HRCParserImpl()
+HRCParser::Impl::~Impl()
 {
   for (const auto& it : fileTypeHash) {
     delete it.second;
@@ -43,7 +44,7 @@ HRCParserImpl::~HRCParserImpl()
   delete versionName;
 }
 
-void HRCParserImpl::loadSource(XmlInputSource* is)
+void HRCParser::Impl::loadSource(XmlInputSource* is)
 {
   if (!is) {
     throw HRCParserException("Can't open stream - 'null' is bad stream.");
@@ -60,7 +61,7 @@ void HRCParserImpl::loadSource(XmlInputSource* is)
   current_input_source = istemp;
 }
 
-void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
+void HRCParser::Impl::unloadFileType(FileType* filetype)
 {
   bool loop = true;
   while (loop) {
@@ -83,41 +84,41 @@ void HRCParserImpl::unloadFileType(FileTypeImpl* filetype)
   delete filetype;
 }
 
-void HRCParserImpl::loadFileType(FileType* filetype)
+void HRCParser::Impl::loadFileType(FileType* filetype)
 {
-  auto* thisType = static_cast<FileTypeImpl*>(filetype);
-  if (thisType == nullptr || thisType->type_loaded || thisType->input_source_loading || thisType->load_broken) {
+  auto* thisType = filetype;
+  if (thisType == nullptr || filetype->pimpl->type_loaded || thisType->pimpl->input_source_loading || thisType->pimpl->load_broken) {
     return;
   }
 
-  thisType->input_source_loading = true;
+  thisType->pimpl->input_source_loading = true;
 
   try {
-    loadSource(thisType->inputSource.get());
+    loadSource(thisType->pimpl->inputSource.get());
   } catch (InputSourceException &e) {
     spdlog::error("Can't open source stream: {0}", e.what());
-    thisType->load_broken = true;
+    thisType->pimpl->load_broken = true;
   } catch (HRCParserException &e) {
-    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
-    thisType->load_broken = true;
+    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    thisType->pimpl->load_broken = true;
   } catch (Exception &e) {
-    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
-    thisType->load_broken = true;
+    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    thisType->pimpl->load_broken = true;
   } catch (...) {
-    spdlog::error("Unknown exception while loading {0}", UStr::to_stdstr(thisType->inputSource->getInputSource()->getSystemId()));
-    thisType->load_broken = true;
+    spdlog::error("Unknown exception while loading {0}", UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    thisType->pimpl->load_broken = true;
   }
 
-  thisType->input_source_loading = false;
+  thisType->pimpl->input_source_loading = false;
 }
 
-FileType* HRCParserImpl::chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo)
+FileType* HRCParser::Impl::chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo)
 {
-  FileTypeImpl* best = nullptr;
+  FileType* best = nullptr;
   double max_prior = 0;
   const double DELTA = 1e-6;
   for (auto ret : fileTypeVector) {
-    double prior = ret->getPriority(fileName, firstLine);
+    double prior = ret->pimpl->getPriority(fileName, firstLine);
 
     if (typeNo > 0 && (prior - max_prior < DELTA)) {
       best = ret;
@@ -134,7 +135,7 @@ FileType* HRCParserImpl::chooseFileType(const UnicodeString* fileName, const Uni
   return best;
 }
 
-FileType* HRCParserImpl::getFileType(const UnicodeString* name)
+FileType* HRCParser::Impl::getFileType(const UnicodeString* name)
 {
   if (name == nullptr) {
     return nullptr;
@@ -142,7 +143,7 @@ FileType* HRCParserImpl::getFileType(const UnicodeString* name)
   return fileTypeHash.find(*name)->second;
 }
 
-FileType* HRCParserImpl::enumerateFileTypes(unsigned int index)
+FileType* HRCParser::Impl::enumerateFileTypes(unsigned int index)
 {
   if (index < fileTypeVector.size()) {
     return fileTypeVector[index];
@@ -150,17 +151,17 @@ FileType* HRCParserImpl::enumerateFileTypes(unsigned int index)
   return nullptr;
 }
 
-size_t HRCParserImpl::getFileTypesCount()
+size_t HRCParser::Impl::getFileTypesCount()
 {
   return fileTypeVector.size();
 }
 
-size_t HRCParserImpl::getRegionCount()
+size_t HRCParser::Impl::getRegionCount()
 {
   return regionNamesVector.size();
 }
 
-const Region* HRCParserImpl::getRegion(unsigned int id)
+const Region* HRCParser::Impl::getRegion(unsigned int id)
 {
   if (id >= regionNamesVector.size()) {
     return nullptr;
@@ -168,7 +169,7 @@ const Region* HRCParserImpl::getRegion(unsigned int id)
   return regionNamesVector[id];
 }
 
-const Region* HRCParserImpl::getRegion(const UnicodeString* name)
+const Region* HRCParser::Impl::getRegion(const UnicodeString* name)
 {
   if (name == nullptr) {
     return nullptr;
@@ -176,16 +177,10 @@ const Region* HRCParserImpl::getRegion(const UnicodeString* name)
   return getNCRegion(name, false); // regionNamesHash.get(name);
 }
 
-const UnicodeString* HRCParserImpl::getVersion()
-{
-  return versionName;
-}
-
-
 // protected methods
 
 
-void HRCParserImpl::parseHRC(XmlInputSource* is)
+void HRCParser::Impl::parseHRC(XmlInputSource* is)
 {
   spdlog::debug("begin parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
   xercesc::XercesDOMParser xml_parser;
@@ -227,7 +222,7 @@ void HRCParserImpl::parseHRC(XmlInputSource* is)
   spdlog::debug("end parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
 }
 
-void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -244,7 +239,7 @@ void HRCParserImpl::parseHrcBlock(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseHrcBlockElements(const xercesc::DOMElement* elem)
 {
   if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype)) {
@@ -267,7 +262,7 @@ void HRCParserImpl::parseHrcBlockElements(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addPrototype(const xercesc::DOMElement* elem)
 {
   const XMLCh* typeName = elem->getAttribute(hrcPrototypeAttrName);
   const XMLCh* typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
@@ -279,7 +274,7 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
   if (typeDescription == nullptr) {
     typeDescription = typeName;
   }
-  FileTypeImpl* f = nullptr;
+  FileType* f = nullptr;
   UnicodeString tname = UnicodeString(typeName);
   auto ft = fileTypeHash.find(tname);
   if (ft != fileTypeHash.end()) {
@@ -290,28 +285,28 @@ void HRCParserImpl::addPrototype(const xercesc::DOMElement* elem)
     spdlog::warn("Duplicate prototype '{0}'", tname);
     //  return;
   }
-  auto* type = new FileTypeImpl(this);
-  type->name = std::make_unique<UnicodeString>(UnicodeString(typeName));
-  type->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
+  auto* type = new FileType();
+  type->pimpl->name = std::make_unique<UnicodeString>(UnicodeString(typeName));
+  type->pimpl->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
   if (typeGroup != nullptr) {
-    type->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
+    type->pimpl->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
   }
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
-    type->isPackage = true;
+    type->pimpl->isPackage = true;
   }
   parseProtoType = type;
   parsePrototypeBlock(elem);
 
-  type->protoLoaded = true;
-  std::pair<UnicodeString, FileTypeImpl*> pp(*type->getName(), type);
+  type->pimpl->protoLoaded = true;
+  std::pair<UnicodeString, FileType*> pp(*type->getName(), type);
   fileTypeHash.emplace(pp);
 
-  if (!type->isPackage) {
+  if (!type->pimpl->isPackage) {
     fileTypeVector.push_back(type);
   }
 }
 
-void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -333,20 +328,20 @@ void HRCParserImpl::parsePrototypeBlock(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::addPrototypeLocation(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addPrototypeLocation(const xercesc::DOMElement* elem)
 {
   const XMLCh* locationLink = elem->getAttribute(hrcLocationAttrLink);
   if (*locationLink == '\0') {
-    spdlog::error("Bad 'location' link attribute in prototype '{0}'", *parseProtoType->name.get());
+    spdlog::error("Bad 'location' link attribute in prototype '{0}'", *parseProtoType->pimpl->name.get());
     return;
   }
-  parseProtoType->inputSource = XmlInputSource::newInstance(locationLink, current_input_source);
+  parseProtoType->pimpl->inputSource = XmlInputSource::newInstance(locationLink, current_input_source);
 }
 
-void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
 {
   if (elem->getFirstChild() == nullptr || elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE) {
-    spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()), *parseProtoType->name.get());
+    spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()), *parseProtoType->pimpl->name.get());
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*)elem->getFirstChild())->getData();
@@ -354,7 +349,7 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   auto* matchRE = new CRegExp(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
-    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *parseProtoType->name.get());
+    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *parseProtoType->pimpl->name.get());
     delete matchRE;
     return;
   }
@@ -377,10 +372,10 @@ void HRCParserImpl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
     }
   }
   auto* ftc = new FileTypeChooser(ctype, prior, matchRE);
-  parseProtoType->chooserVector.push_back(ftc);
+  parseProtoType->pimpl->chooserVector.push_back(ftc);
 }
 
-void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addPrototypeParameters(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -394,7 +389,7 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
           continue;
         }
         UnicodeString d_name = UnicodeString(name);
-        TypeParameter* tp = parseProtoType->addParam(&d_name);
+        TypeParameter* tp = parseProtoType->pimpl->addParam(&d_name);
         tp->default_value = std::make_unique<UnicodeString>(UnicodeString(value));
         if (*descr != '\0') {
           tp->description = std::make_unique<UnicodeString>(UnicodeString(descr));
@@ -408,7 +403,7 @@ void HRCParserImpl::addPrototypeParameters(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::addType(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addType(const xercesc::DOMElement* elem)
 {
   const XMLCh* typeName = elem->getAttribute(hrcTypeAttrName);
 
@@ -422,14 +417,14 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
     spdlog::error("type '%s' without prototype", d_name);
     return;
   }
-  FileTypeImpl* type = type_ref->second;
-  if (type->type_loaded) {
+  FileType* type = type_ref->second;
+  if (type->pimpl->type_loaded) {
     spdlog::warn("type '{0}' is already loaded", UStr::to_stdstr(typeName));
     return;
   }
-  type->type_loaded = true;
+  type->pimpl->type_loaded = true;
 
-  FileTypeImpl* o_parseType = parseType;
+  FileType* o_parseType = parseType;
   parseType = type;
 
   parseTypeBlock(elem);
@@ -437,17 +432,17 @@ void HRCParserImpl::addType(const xercesc::DOMElement* elem)
   UnicodeString* baseSchemeName = qualifyOwnName(type->getName());
   if (baseSchemeName != nullptr) {
     auto sh = schemeHash.find(*baseSchemeName);
-    type->baseScheme = sh == schemeHash.end() ? nullptr : sh->second;
+    type->pimpl->baseScheme = sh == schemeHash.end() ? nullptr : sh->second;
   }
   delete baseSchemeName;
-  if (type->baseScheme == nullptr && !type->isPackage) {
+  if (type->pimpl->baseScheme == nullptr && !type->pimpl->isPackage) {
     spdlog::warn("type '{0}' has no default scheme", UStr::to_stdstr(typeName));
   }
-  type->loadDone = true;
+  type->pimpl->loadDone = true;
   parseType = o_parseType;
 }
 
-void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseTypeBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -480,7 +475,7 @@ void HRCParserImpl::parseTypeBlock(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addTypeRegion(const xercesc::DOMElement* elem)
 {
   const XMLCh* regionName = elem->getAttribute(hrcRegionAttrName);
   const XMLCh* regionParent = elem->getAttribute(hrcRegionAttrParent);
@@ -513,7 +508,7 @@ void HRCParserImpl::addTypeRegion(const xercesc::DOMElement* elem)
   delete qname2;
 }
 
-void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addTypeEntity(const xercesc::DOMElement* elem)
 {
   const XMLCh* entityName  = elem->getAttribute(hrcEntityAttrName);
   const XMLCh* entityValue = elem->getAttribute(hrcEntityAttrValue);
@@ -532,24 +527,24 @@ void HRCParserImpl::addTypeEntity(const xercesc::DOMElement* elem)
   }
 }
 
-void HRCParserImpl::addTypeImport(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addTypeImport(const xercesc::DOMElement* elem)
 {
   const XMLCh* typeParam = elem->getAttribute(hrcImportAttrType);
   UnicodeString typeparam = UnicodeString(typeParam);
   if (*typeParam == '\0' || fileTypeHash.find(typeparam) == fileTypeHash.end()) {
-    spdlog::error("Import with bad '{0}' attribute in type '{1}'", typeparam, *parseType->name.get());
+    spdlog::error("Import with bad '{0}' attribute in type '{1}'", typeparam, *parseType->pimpl->name.get());
     return;
   }
-  parseType->importVector.emplace_back(new UnicodeString(typeParam));
+  parseType->pimpl->importVector.emplace_back(new UnicodeString(typeParam));
 }
 
-void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addScheme(const xercesc::DOMElement* elem)
 {
   const XMLCh* schemeName = elem->getAttribute(hrcSchemeAttrName);
   UnicodeString dschemeName = UnicodeString(schemeName);
   UnicodeString* qSchemeName = qualifyOwnName(*schemeName != '\0' ? &dschemeName : nullptr);
   if (qSchemeName == nullptr) {
-    spdlog::error("bad scheme name in type '{0}'", *parseType->name.get());
+    spdlog::error("bad scheme name in type '{0}'", *parseType->pimpl->name.get());
     return;
   }
   if (schemeHash.find(*qSchemeName) != schemeHash.end() ||
@@ -577,7 +572,7 @@ void HRCParserImpl::addScheme(const xercesc::DOMElement* elem)
   parseSchemeBlock(scheme, elem);
 }
 
-void HRCParserImpl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -609,7 +604,7 @@ void HRCParserImpl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMEleme
   }
 }
 
-void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
   if (*nqSchemeName == '\0') {
@@ -651,7 +646,7 @@ void HRCParserImpl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEleme
   scheme->nodes.push_back(scheme_node);
 }
 
-void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* matchParam = elem->getAttribute(hrcRegexpAttrMatch);
   if (*matchParam == '\0') {
@@ -696,7 +691,7 @@ void HRCParserImpl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElemen
   scheme->nodes.push_back(scheme_node);
 }
 
-void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* sParam = elem->getAttribute(hrcBlockAttrStart);
   const XMLCh* eParam = elem->getAttribute(hrcBlockAttrEnd);
@@ -795,7 +790,7 @@ void HRCParserImpl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement
   scheme->nodes.push_back(scheme_node);
 }
 
-void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   XMLCh rg_tmpl[7] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
   const Region* brgn = getNCRegion(elem, rg_tmpl);
@@ -849,7 +844,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   scheme->nodes.push_back(scheme_node);
 }
 
-void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem)
+void HRCParser::Impl::addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem)
 {
   int type = 0;
   if (xercesc::XMLString::equals(elem->getNodeName() , hrcTagWord)) {
@@ -889,7 +884,7 @@ void HRCParserImpl::addKeyword(SchemeNode* scheme_node, const Region* brgn, cons
   }
 }
 
-int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
+int HRCParser::Impl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
 {
   int result = 0;
   for (xercesc::DOMNode* keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()) {
@@ -907,7 +902,7 @@ int HRCParserImpl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
   return result;
 }
 
-void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
+void HRCParser::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
 {
   XMLCh rg_tmpl[8] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull};
 
@@ -936,7 +931,7 @@ void HRCParserImpl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
   }
 }
 
-void HRCParserImpl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
+void HRCParser::Impl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
 {
   int i;
   XMLCh rg_tmpl[9] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull, chNull};
@@ -951,16 +946,16 @@ void HRCParserImpl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement
   }
 }
 
-void HRCParserImpl::updateLinks()
+void HRCParser::Impl::updateLinks()
 {
   while (structureChanged) {
     structureChanged = false;
     for (auto scheme_it = schemeHash.begin(); scheme_it != schemeHash.end(); ++scheme_it) {
       SchemeImpl* scheme = scheme_it->second;
-      if (!scheme->fileType->loadDone) {
+      if (!scheme->fileType->pimpl->loadDone) {
         continue;
       }
-      FileTypeImpl* old_parseType = parseType;
+      FileType* old_parseType = parseType;
       parseType = scheme->fileType;
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes.at(sni);
@@ -1007,15 +1002,15 @@ void HRCParserImpl::updateLinks()
   }
 }
 
-UnicodeString* HRCParserImpl::qualifyOwnName(const UnicodeString* name)
+UnicodeString* HRCParser::Impl::qualifyOwnName(const UnicodeString* name)
 {
   if (name == nullptr) {
     return nullptr;
   }
   auto colon = name->indexOf(':');
   if (colon != -1) {
-    if (parseType && UnicodeString(*name, 0, colon) != *parseType->name) {
-      spdlog::error("type name qualifer in '{0}' doesn't match type '{1}'", *name, *parseType->name.get());
+    if (parseType && UnicodeString(*name, 0, colon) != *parseType->pimpl->name) {
+      spdlog::error("type name qualifer in '{0}' doesn't match type '{1}'", *name, *parseType->pimpl->name.get());
       return nullptr;
     } else {
       return new UnicodeString(*name);
@@ -1030,25 +1025,25 @@ UnicodeString* HRCParserImpl::qualifyOwnName(const UnicodeString* name)
   }
 }
 
-bool HRCParserImpl::checkNameExist(const UnicodeString* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors)
+bool HRCParser::Impl::checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype, bool logErrors)
 {
   if (qntype == QNT_DEFINE && regionNamesHash.find(*name) == regionNamesHash.end()) {
     if (logErrors)
-      spdlog::error("region '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
+      spdlog::error("region '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
   } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
     if (logErrors)
-      spdlog::error("entity '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
+      spdlog::error("entity '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
   } else if (qntype == QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
     if (logErrors)
-      spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", *name, *parseType->name.get());
+      spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
   }
   return true;
 }
 
-UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors)
+UnicodeString* HRCParser::Impl::qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors)
 {
   if (name == nullptr) {
     return nullptr;
@@ -1057,7 +1052,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
   if (colon != -1) { // qualified name
     UnicodeString prefix(*name, 0, colon);
     auto ft = fileTypeHash.find(prefix);
-    FileTypeImpl* prefType = nullptr;
+    FileType* prefType = nullptr;
     if (ft != fileTypeHash.end()) {
       prefType = ft->second;
     }
@@ -1067,20 +1062,20 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
         spdlog::error("type name qualifer in '{0}' doesn't match any type", *name);
       }
       return nullptr;
-    } else if (!prefType->type_loaded) {
+    } else if (!prefType->pimpl->type_loaded) {
       loadFileType(prefType);
     }
-    if (prefType == parseType || prefType->type_loaded) {
+    if (prefType == parseType || prefType->pimpl->type_loaded) {
       return checkNameExist(name, prefType, qntype, logErrors) ? (new UnicodeString(*name)) : nullptr;
     }
   } else { // unqualified name
-    for (int idx = -1; parseType != nullptr && idx < static_cast<int>(parseType->importVector.size()); idx++) {
+    for (int idx = -1; parseType != nullptr && idx < static_cast<int>(parseType->pimpl->importVector.size()); idx++) {
       const UnicodeString* tname = parseType->getName();
       if (idx > -1) {
-        tname = parseType->importVector.at(idx).get();
+        tname = parseType->pimpl->importVector.at(idx).get();
       }
-      FileTypeImpl* importer = fileTypeHash.find(*tname)->second;
-      if (!importer->type_loaded) {
+      FileType* importer = fileTypeHash.find(*tname)->second;
+      if (!importer->pimpl->type_loaded) {
         loadFileType(importer);
       }
 
@@ -1098,7 +1093,7 @@ UnicodeString* HRCParserImpl::qualifyForeignName(const UnicodeString* name, Qual
   return nullptr;
 }
 
-UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
+UnicodeString* HRCParser::Impl::useEntities(const UnicodeString* name)
 {
   int copypos = 0;
   int32_t epos = 0;
@@ -1146,7 +1141,7 @@ UnicodeString* HRCParserImpl::useEntities(const UnicodeString* name)
   return newname;
 }
 
-const Region* HRCParserImpl::getNCRegion(const UnicodeString* name, bool logErrors)
+const Region* HRCParser::Impl::getNCRegion(const UnicodeString* name, bool logErrors)
 {
   if (name == nullptr || name->isEmpty()) {
     return nullptr;
@@ -1177,7 +1172,7 @@ const Region* HRCParserImpl::getNCRegion(const UnicodeString* name, bool logErro
   return reg;
 }
 
-const Region* HRCParserImpl::getNCRegion(const xercesc::DOMElement* el, const XMLCh*tag)
+const Region* HRCParser::Impl::getNCRegion(const xercesc::DOMElement* el, const XMLCh*tag)
 {
   const XMLCh* par = el->getAttribute(tag);
   if (*par == '\0') {

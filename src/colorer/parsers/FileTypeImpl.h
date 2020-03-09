@@ -1,8 +1,10 @@
 #ifndef _COLORER_FILETYPEIMPL_H_
 #define _COLORER_FILETYPEIMPL_H_
 
+#include <colorer/FileType.h>
+#include <colorer/HRCParser.h>
 #include <colorer/parsers/FileTypeChooser.h>
-#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/SchemeImpl.h>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -29,39 +31,39 @@ class TypeParameter
  * Contains different attributes of HRC file type.
  * @ingroup colorer_parsers
  */
-class FileTypeImpl : public FileType
+class FileType::Impl
 {
-  friend class HRCParserImpl;
-  friend class TextParserImpl;
-
  public:
-  const UnicodeString* getName() const override;
-  const UnicodeString* getGroup() const override;
-  const UnicodeString* getDescription() const override;
+  Impl();
+  ~Impl();
+
+  const UnicodeString* getName() const;
+  const UnicodeString* getGroup() const;
+  const UnicodeString* getDescription() const;
 
   void setName(const UnicodeString* name_);
   void setGroup(const UnicodeString* group_);
   void setDescription(const UnicodeString* description_);
 
-  const UnicodeString* getParamValue(const UnicodeString& name_) const override;
-  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const override;
+  const UnicodeString* getParamValue(const UnicodeString& name_) const;
+  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const;
   const UnicodeString* getParamUserValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamDescription(const UnicodeString& name_) const override;
-  int getParamValueInt(const UnicodeString& name, int def) const override;
+  const UnicodeString* getParamDescription(const UnicodeString& name_) const;
+  int getParamValueInt(const UnicodeString& name, int def) const;
 
-  void setParamValue(const UnicodeString& name_, const UnicodeString* value) override;
+  void setParamValue(const UnicodeString& name_, const UnicodeString* value);
   void setParamDefaultValue(const UnicodeString& name_, const UnicodeString* value);
   void setParamUserValue(const UnicodeString& name_, const UnicodeString* value);
   void setParamDescription(const UnicodeString& name_, const UnicodeString* value);
 
-  std::vector<UnicodeString> enumParams() const override;
+  std::vector<UnicodeString> enumParams() const;
   size_t getParamCount() const;
   size_t getParamUserValueCount() const;
 
   TypeParameter* addParam(const UnicodeString* name_);
   void removeParamValue(const UnicodeString& name_);
 
-  Scheme* getBaseScheme() override;
+  Scheme* getBaseScheme();
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -76,7 +78,6 @@ class FileTypeImpl : public FileType
    */
   double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
 
- protected:
   /// is prototype component loaded
   bool protoLoaded;
   /// is type component loaded
@@ -92,44 +93,40 @@ class FileTypeImpl : public FileType
   uUnicodeString group;
   uUnicodeString description;
   bool isPackage;
-  HRCParserImpl* hrcParser;
   SchemeImpl* baseScheme;
 
   std::vector<FileTypeChooser*> chooserVector;
   std::unordered_map<UnicodeString, TypeParameter*> paramsHash;
   std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
-
-  explicit FileTypeImpl(HRCParserImpl* hrcParser);
-  ~FileTypeImpl() override;
 };
 
-inline const UnicodeString* FileTypeImpl::getName() const
+inline const UnicodeString* FileType::Impl::getName() const
 {
   return name.get();
 }
 
-inline const UnicodeString* FileTypeImpl::getGroup() const
+inline const UnicodeString* FileType::Impl::getGroup() const
 {
   return group.get();
 }
 
-inline const UnicodeString* FileTypeImpl::getDescription() const
+inline const UnicodeString* FileType::Impl::getDescription() const
 {
   return description.get();
 }
 
-inline void FileTypeImpl::setName(const UnicodeString* name_)
+inline void FileType::Impl::setName(const UnicodeString* name_)
 {
   name = std::make_unique<UnicodeString>(*name_);
 }
 
-inline void FileTypeImpl::setGroup(const UnicodeString* group_)
+inline void FileType::Impl::setGroup(const UnicodeString* group_)
 {
   group = std::make_unique<UnicodeString>(*group_);
 }
 
-inline void FileTypeImpl::setDescription(const UnicodeString* description_)
+inline void FileType::Impl::setDescription(const UnicodeString* description_)
 {
   description = std::make_unique<UnicodeString>(*description_);
 }

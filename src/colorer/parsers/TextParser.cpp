@@ -1,4 +1,5 @@
 #include <colorer/parsers/TextParserImpl.h>
+#include <colorer/parsers/FileTypeImpl.h>
 
 TextParser::TextParser() : pimpl(new TextParser::Impl()) {}
 

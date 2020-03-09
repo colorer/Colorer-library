@@ -121,6 +121,7 @@ void BaseEditor::setFileType(FileType* ftype)
 {
   spdlog::debug("[BaseEditor] setFileType: {0}", *ftype->getName());
   currentFileType = ftype;
+  hrcParser->loadFileType(ftype);
   textParser->setFileType(currentFileType);
   invalidLine = 0;
 }

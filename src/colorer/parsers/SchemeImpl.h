@@ -8,7 +8,7 @@
 #include <vector>
 #include <colorer/TextParser.h>
 
-class FileTypeImpl;
+class FileType;
 
 
 /** Scheme storage implementation.
@@ -17,7 +17,7 @@ class FileTypeImpl;
 */
 class SchemeImpl : public Scheme
 {
-  friend class HRCParserImpl;
+  friend class HRCParser;
   friend class TextParser;
 public:
   [[nodiscard]] const UnicodeString* getName() const override
@@ -34,7 +34,7 @@ public:
 protected:
   uUnicodeString schemeName;
   std::vector<SchemeNode*> nodes;
-  FileTypeImpl* fileType;
+  FileType* fileType;
 
   explicit SchemeImpl(const UnicodeString* sn)
   {

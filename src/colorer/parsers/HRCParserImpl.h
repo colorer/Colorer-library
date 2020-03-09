@@ -8,7 +8,7 @@
 #include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlInputSource.h>
 
-class FileTypeImpl;
+class FileType;
 
 /** Implementation of HRCParser.
     Reads and mantains HRC database of syntax rules,
@@ -16,34 +16,33 @@ class FileTypeImpl;
     realtime text syntax parsing.
     @ingroup colorer_parsers
 */
-class HRCParserImpl : public HRCParser
+class HRCParser::Impl
 {
 public:
-  HRCParserImpl();
-  ~HRCParserImpl() override;
+  Impl();
+  ~Impl();
 
 
-  void loadSource(XmlInputSource* is) override;
-  FileType* getFileType(const UnicodeString* name) override;
-  FileType* enumerateFileTypes(unsigned int index) override;
-  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) override;
-  size_t getFileTypesCount() override;
+  void loadSource(XmlInputSource* is) ;
+  void loadFileType(FileType* filetype);
+  FileType* getFileType(const UnicodeString* name) ;
+  FileType* enumerateFileTypes(unsigned int index) ;
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) ;
+  size_t getFileTypesCount() ;
 
-  size_t getRegionCount() override;
-  const Region* getRegion(unsigned int id) override;
-  const Region* getRegion(const UnicodeString* name) override;
-
-  const UnicodeString* getVersion() override;
+  size_t getRegionCount() ;
+  const Region* getRegion(unsigned int id) ;
+  const Region* getRegion(const UnicodeString* name) ;
 
 protected:
-  friend class FileTypeImpl;
+  friend class FileType;
 
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
-  std::unordered_map<UnicodeString, FileTypeImpl*> fileTypeHash;
+  std::unordered_map<UnicodeString, FileType*> fileTypeHash;
   // types, not packages
-  std::vector<FileTypeImpl*>    fileTypeVector;
+  std::vector<FileType*>    fileTypeVector;
 
   std::unordered_map<UnicodeString, SchemeImpl*>   schemeHash;
   std::unordered_map<UnicodeString, int> disabledSchemes;
@@ -54,14 +53,13 @@ protected:
 
   UnicodeString* versionName;
 
-  FileTypeImpl* parseProtoType;
-  FileTypeImpl* parseType;
+  FileType* parseProtoType;
+  FileType* parseType;
   XmlInputSource* current_input_source;
   bool structureChanged;
   bool updateStarted;
 
-  void loadFileType(FileType* filetype);
-  void unloadFileType(FileTypeImpl* filetype);
+  void unloadFileType(FileType* filetype);
 
   void parseHRC(XmlInputSource* is);
   void parseHrcBlock(const xercesc::DOMElement* elem);
@@ -89,7 +87,7 @@ protected:
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
   UnicodeString* qualifyOwnName(const UnicodeString* name);
-  bool checkNameExist(const UnicodeString* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors);
+  bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype, bool logErrors);
   UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors);
 
   void updateLinks();
@@ -98,7 +96,7 @@ protected:
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
 };
 
-#include<colorer/parsers/FileTypeImpl.h>
+#include<colorer/FileType.h>
 
 #endif
 

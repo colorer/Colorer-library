@@ -1,8 +1,8 @@
 #ifndef _COLORER_TEXTPARSERIMPL_H_
 #define _COLORER_TEXTPARSERIMPL_H_
 
-#include<colorer/TextParser.h>
-#include<colorer/parsers/TextParserHelpers.h>
+#include <colorer/TextParser.h>
+#include <colorer/parsers/TextParserHelpers.h>
 
 #define MAX_RECURSION_LEVEL 100
 
@@ -15,18 +15,18 @@
  */
 class TextParser::Impl
 {
-public:
+ public:
   Impl();
   ~Impl();
 
   void setFileType(FileType* type);
   void setLineSource(LineSource* lh);
   void setRegionHandler(RegionHandler* rh);
-  int  parse(int from, int num, TextParseMode mode);
+  int parse(int from, int num, TextParseMode mode);
   void breakParse();
   void clearCache();
 
-private:
+ private:
   UnicodeString* str;
   int stackLevel;
   int gx, gy, gy2, len;
@@ -39,10 +39,10 @@ private:
   const Region* picked;
 
   ParseCache* cache;
-  ParseCache* parent, *forward;
+  ParseCache *parent, *forward;
 
   int cachedLineNo;
-  ParseCache* cachedParent, *cachedForward;
+  ParseCache *cachedParent, *cachedForward;
 
   SMatches matchend;
   VTList* vtlist;
@@ -63,6 +63,3 @@ private:
 };
 
 #endif
-
-
-

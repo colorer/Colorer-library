@@ -19,7 +19,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
-ParserFactory::Impl::Impl(): hrc_parser(new HRCParserImpl())
+ParserFactory::Impl::Impl(): hrc_parser(new HRCParser())
 {
   RegExpStack = nullptr;
   RegExpStack_Size = 0;

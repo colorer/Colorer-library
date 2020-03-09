@@ -11,38 +11,40 @@
  */
 class FileType
 {
+  friend class HRCParser;
+  friend class TextParser;
  public:
   /**
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  [[nodiscard]] virtual const UnicodeString* getName() const = 0;
+  [[nodiscard]] const UnicodeString* getName() const;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  [[nodiscard]] virtual const UnicodeString* getGroup() const = 0;
+  [[nodiscard]] const UnicodeString* getGroup() const;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  [[nodiscard]] virtual const UnicodeString* getDescription() const = 0;
+  [[nodiscard]] const UnicodeString* getDescription() const;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.
       If this FileType object is not yet loaded, it is loaded with this call.
       @return File type base scheme, to be used as root scheme of text parsing.
   */
-  virtual Scheme* getBaseScheme() = 0;
+  Scheme* getBaseScheme();
 
   /** Enumerates all available parameters, defined in this file type.
       @return Parameter name with index <code>idx</code> or <code>null</code>
       if index is too large.
   */
-  [[nodiscard]] virtual std::vector<UnicodeString> enumParams() const = 0;
+  [[nodiscard]] std::vector<UnicodeString> enumParams() const;
 
-  [[nodiscard]] virtual const UnicodeString* getParamDescription(const UnicodeString& name) const = 0;
+  [[nodiscard]] const UnicodeString* getParamDescription(const UnicodeString& name) const;
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -59,8 +61,8 @@ class FileType
       @param name Parameter's name
       @return Value (changed or default) of this parameter
   */
-  [[nodiscard]] virtual const UnicodeString* getParamValue(const UnicodeString& name) const = 0;
-  [[nodiscard]] virtual int getParamValueInt(const UnicodeString& name, int def) const = 0;
+  [[nodiscard]] const UnicodeString* getParamValue(const UnicodeString& name) const;
+  [[nodiscard]] int getParamValueInt(const UnicodeString& name, int def) const;
 
   /** Returns parameter's default value of this file type.
       Default values are the values, explicitly pointed with
@@ -68,7 +70,7 @@ class FileType
       @param name Parameter's name
       @return Default value of this parameter
   */
-  [[nodiscard]] virtual const UnicodeString* getParamDefaultValue(const UnicodeString& name) const = 0;
+  [[nodiscard]] const UnicodeString* getParamDefaultValue(const UnicodeString& name) const;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC
@@ -78,11 +80,16 @@ class FileType
       @param name Parameter's name
       @param value New value of this parameter.
   */
-  virtual void setParamValue(const UnicodeString& name, const UnicodeString* value) = 0;
+  void setParamValue(const UnicodeString& name, const UnicodeString* value);
 
- protected:
-  FileType() = default;
-  virtual ~FileType() = default;
+
+  FileType();
+  ~FileType()= default;
+
+ private:
+  class Impl;
+
+  std::unique_ptr<Impl> pimpl;
 };
 
 #endif
