@@ -226,32 +226,34 @@ void HRCParser::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* sub_elem = static_cast<xercesc::DOMElement*>(node);
-      parseHrcBlockElements(sub_elem);
+      auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(node);
+      if(sub_elem) {
+        parseHrcBlockElements(sub_elem);
+      }
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       for (xercesc::DOMNode* sub_node = node->getFirstChild(); sub_node != nullptr; sub_node = sub_node->getNextSibling()) {
-        auto* sub_elem = static_cast<xercesc::DOMElement*>(sub_node);
-        parseHrcBlockElements(sub_elem);
+        parseHrcBlockElements(sub_node);
       }
     }
   }
 }
 
-void HRCParser::Impl::parseHrcBlockElements(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseHrcBlockElements(xercesc::DOMNode* elem)
 {
   if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+    auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(elem);
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype)) {
-      addPrototype(elem);
+      addPrototype(sub_elem);
       return;
     }
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
-      addPrototype(elem);
+      addPrototype(sub_elem);
       return;
     }
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagType)) {
-      addType(elem);
+      addType(sub_elem);
       return;
     }
     if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
@@ -310,19 +312,21 @@ void HRCParser::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagLocation)) {
-        addPrototypeLocation(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
-          xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline)) {
-        addPrototypeDetectParam(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)) {
-        addPrototypeParameters(subelem);
-        continue;
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if(subelem) {
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagLocation)) {
+          addPrototypeLocation(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
+            xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline)) {
+          addPrototypeDetectParam(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)) {
+          addPrototypeParameters(subelem);
+          continue;
+        }
       }
     }
   }
@@ -375,12 +379,12 @@ void HRCParser::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   parseProtoType->pimpl->chooserVector.push_back(ftc);
 }
 
-void HRCParser::Impl::addPrototypeParameters(const xercesc::DOMElement* elem)
+void HRCParser::Impl::addPrototypeParameters(const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
         const XMLCh* name = subelem->getAttribute(hrcParamAttrName);
         const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
         const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
@@ -398,7 +402,7 @@ void HRCParser::Impl::addPrototypeParameters(const xercesc::DOMElement* elem)
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      addPrototypeParameters(static_cast<xercesc::DOMElement*>(node));
+      addPrototypeParameters(node);
     }
   }
 }
@@ -442,35 +446,37 @@ void HRCParser::Impl::addType(const xercesc::DOMElement* elem)
   parseType = o_parseType;
 }
 
-void HRCParser::Impl::parseTypeBlock(const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseTypeBlock(const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegion)) {
-        addTypeRegion(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagEntity)) {
-        addTypeEntity(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagImport)) {
-        addTypeImport(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagScheme)) {
-        addScheme(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
-        // not read anotation
-        continue;
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem) {
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegion)) {
+          addTypeRegion(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagEntity)) {
+          addTypeEntity(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagImport)) {
+          addTypeImport(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagScheme)) {
+          addScheme(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
+          // not read anotation
+          continue;
+        }
       }
     }
     // случай entity ссылки на другой файл
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseTypeBlock(static_cast<xercesc::DOMElement*>(node));
+      parseTypeBlock(node);
     }
   }
 }
@@ -572,34 +578,36 @@ void HRCParser::Impl::addScheme(const xercesc::DOMElement* elem)
   parseSchemeBlock(scheme, elem);
 }
 
-void HRCParser::Impl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
+void HRCParser::Impl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagInherit)) {
-        addSchemeInherit(scheme, subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegexp)) {
-        addSchemeRegexp(scheme, subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagBlock)) {
-        addSchemeBlock(scheme, subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagKeywords)) {
-        addSchemeKeywords(scheme, subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
-        // not read anotation
-        continue;
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if(subelem) {
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagInherit)) {
+          addSchemeInherit(scheme, subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagRegexp)) {
+          addSchemeRegexp(scheme, subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagBlock)) {
+          addSchemeBlock(scheme, subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagKeywords)) {
+          addSchemeKeywords(scheme, subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagAnnotation)) {
+          // not read anotation
+          continue;
+        }
       }
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseSchemeBlock(scheme, static_cast<xercesc::DOMElement*>(node));
+      parseSchemeBlock(scheme, node);
     }
   }
 }
@@ -629,8 +637,8 @@ void HRCParser::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEle
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName() , hrcTagVirtual)) {
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem && xercesc::XMLString::equals(subelem->getNodeName() , hrcTagVirtual)) {
         const XMLCh* x_schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
         const XMLCh* x_substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
         if (*x_schemeName == '\0' || *x_substName == '\0') {
@@ -701,7 +709,7 @@ void HRCParser::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMEleme
   for (xercesc::DOMNode* blkn = elem->getFirstChild(); blkn && !(*eParam != '\0' && *sParam != '\0'); blkn = blkn->getNextSibling()) {
     xercesc::DOMElement* blkel;
     if (blkn->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      blkel = static_cast<xercesc::DOMElement*>(blkn);
+      blkel = dynamic_cast<xercesc::DOMElement*>(blkn);
     } else {
       continue;
     }
@@ -801,8 +809,8 @@ void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMEl
   auto* scheme_node = new SchemeNode();
   UnicodeString dhrcKeywordsAttrIgnorecase = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
   UnicodeString dhrcKeywordsAttrPriority = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
-  bool isCase = !UnicodeString("yes").compare(dhrcKeywordsAttrIgnorecase)==0;
-  scheme_node->lowPriority = !UnicodeString("normal").compare(dhrcKeywordsAttrPriority)==0;
+  bool isCase = UnicodeString("yes").compare(dhrcKeywordsAttrIgnorecase) != 0;
+  scheme_node->lowPriority = UnicodeString("normal").compare(dhrcKeywordsAttrPriority) != 0;
 
   const XMLCh* worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
 
@@ -821,20 +829,19 @@ void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMEl
   scheme_node->kwList->num = getSchemeKeywordsCount(elem);
 
   scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
-  memset(scheme_node->kwList->kwList , 0, sizeof(KeywordInfo)*scheme_node->kwList->num);
   scheme_node->kwList->num = 0;
   scheme_node->kwList->matchCase = isCase;
   scheme_node->type = SchemeNode::SNT_KEYWORDS;
 
   for (xercesc::DOMNode* keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
     if (keywrd->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      addKeyword(scheme_node, brgn, static_cast<xercesc::DOMElement*>(keywrd));
+      addKeyword(scheme_node, brgn, dynamic_cast<xercesc::DOMElement*>(keywrd));
       continue;
     }
     if (keywrd->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       for (xercesc::DOMNode* keywrd2 = keywrd->getFirstChild(); keywrd2; keywrd2 = keywrd2->getNextSibling()) {
         if (keywrd2->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-          addKeyword(scheme_node, brgn, static_cast<xercesc::DOMElement*>(keywrd2));
+          addKeyword(scheme_node, brgn, dynamic_cast<xercesc::DOMElement*>(keywrd2));
         }
       }
     }
@@ -884,7 +891,7 @@ void HRCParser::Impl::addKeyword(SchemeNode* scheme_node, const Region* brgn, co
   }
 }
 
-int HRCParser::Impl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
+int HRCParser::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
 {
   int result = 0;
   for (xercesc::DOMNode* keywrd_count = elem->getFirstChild(); keywrd_count; keywrd_count = keywrd_count->getNextSibling()) {
@@ -896,7 +903,7 @@ int HRCParser::Impl::getSchemeKeywordsCount(const xercesc::DOMElement* elem)
       continue;
     }
     if (keywrd_count->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      result += getSchemeKeywordsCount(static_cast<xercesc::DOMElement*>(keywrd_count));
+      result += getSchemeKeywordsCount(keywrd_count);
     }
   }
   return result;

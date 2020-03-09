@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <colorer/common/Colorer.h>
+#include <cstdio>
+#include <cstdlib>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include "ConsoleTools.h"
@@ -339,8 +337,6 @@ int main(int argc, char* argv[])
       return -1;
     }
   }
-
-  auto colorer = std::unique_ptr<Colorer>(new Colorer);
 
   return workIt();
 }

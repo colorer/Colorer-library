@@ -5,12 +5,11 @@
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
 void CatalogParser::parse(const UnicodeString* path)
 {
-  spdlog::debug("begin parse catalog.xml");
+  spdlog::debug("start parse catalog.xml");
   hrc_locations.clear();
   hrd_nodes.clear();
 
@@ -21,6 +20,7 @@ void CatalogParser::parse(const UnicodeString* path)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
+
   uXmlInputSource catalogXIS = XmlInputSource::newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
@@ -38,41 +38,43 @@ void CatalogParser::parse(const UnicodeString* path)
   spdlog::debug("end parse catalog.xml");
 }
 
-void CatalogParser::parseCatalogBlock(const xercesc::DOMElement* elem)
+void CatalogParser::parseCatalogBlock(const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrcSets)) {
-        parseHrcSetsBlock(subelem);
-        continue;
-      }
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrdSets)) {
-        parseHrdSetsBlock(subelem);
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem) {
+        if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrcSets)) {
+          parseHrcSetsBlock(subelem);
+          continue;
+        }
+        if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrdSets)) {
+          parseHrdSetsBlock(node);
+        }
       }
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseCatalogBlock(static_cast<xercesc::DOMElement*>(node));
+      parseCatalogBlock(node);
     }
   }
 }
 
-void CatalogParser::parseHrcSetsBlock(const xercesc::DOMElement* elem)
+void CatalogParser::parseHrcSetsBlock(const xercesc::DOMNode* elem)
 {
   addHrcSetsLocation(elem);
 }
 
-void CatalogParser::addHrcSetsLocation(const xercesc::DOMElement* elem)
+void CatalogParser::addHrcSetsLocation(const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
           hrc_locations.emplace_back(UnicodeString(attr_value));
-          spdlog::debug("add hrc location: '{0}'" , hrc_locations.back());
+          spdlog::debug("add hrc location: '{0}'", hrc_locations.back());
         } else {
           spdlog::warn("found hrc with empty location. skip it location.");
         }
@@ -80,24 +82,25 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMElement* elem)
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      addHrcSetsLocation(static_cast<xercesc::DOMElement*>(node));
+      addHrcSetsLocation(node);
     }
   }
 }
 
-void CatalogParser::parseHrdSetsBlock(const xercesc::DOMElement* elem)
+void CatalogParser::parseHrdSetsBlock(const xercesc::DOMNode* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = static_cast<xercesc::DOMElement*>(node);
-      if (xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+      if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
         auto hrd = parseHRDSetsChild(subelem);
-        if (hrd) hrd_nodes.push_back(std::move(hrd));
+        if (hrd)
+          hrd_nodes.push_back(std::move(hrd));
       }
       continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      parseHrdSetsBlock(static_cast<xercesc::DOMElement*>(node));
+      parseHrdSetsBlock(node);
     }
   }
 }
@@ -121,13 +124,15 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       if (xercesc::XMLString::equals(node->getNodeName(), catTagLocation)) {
-        auto* subelem = static_cast<xercesc::DOMElement*>(node);
-        auto attr_value = subelem->getAttribute(catLocationAttrLink);
-        if (*attr_value != xercesc::chNull) {
-          hrd_node->hrd_location.emplace_back(UnicodeString(attr_value));
-          spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(), hrd_node->hrd_class, hrd_node->hrd_name);
-        } else {
-          spdlog::warn("found hrd with empty location. skip it location.");
+        auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
+        if (subelem) {
+          auto attr_value = subelem->getAttribute(catLocationAttrLink);
+          if (*attr_value != xercesc::chNull) {
+            hrd_node->hrd_location.emplace_back(UnicodeString(attr_value));
+            spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(), hrd_node->hrd_class, hrd_node->hrd_name);
+          } else {
+            spdlog::warn("found hrd with empty location. skip it location.");
+          }
         }
       }
     }

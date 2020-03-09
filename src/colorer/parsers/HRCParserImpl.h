@@ -63,25 +63,25 @@ protected:
 
   void parseHRC(XmlInputSource* is);
   void parseHrcBlock(const xercesc::DOMElement* elem);
-  void parseHrcBlockElements(const xercesc::DOMElement* elem);
+  void parseHrcBlockElements(xercesc::DOMNode* elem);
   void addPrototype(const xercesc::DOMElement* elem);
   void parsePrototypeBlock(const xercesc::DOMElement* elem);
   void addPrototypeLocation(const xercesc::DOMElement* elem);
   void addPrototypeDetectParam(const xercesc::DOMElement* elem);
-  void addPrototypeParameters(const xercesc::DOMElement* elem);
+  void addPrototypeParameters(const xercesc::DOMNode* elem);
   void addType(const xercesc::DOMElement* elem);
-  void parseTypeBlock(const xercesc::DOMElement* elem);
+  void parseTypeBlock(const xercesc::DOMNode* elem);
   void addTypeRegion(const xercesc::DOMElement* elem);
   void addTypeEntity(const xercesc::DOMElement* elem);
   void addTypeImport(const xercesc::DOMElement* elem);
 
   void addScheme(const xercesc::DOMElement* elem);
-  void parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
+  void parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMNode* elem);
   void addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  int getSchemeKeywordsCount(const xercesc::DOMElement* elem);
+  int getSchemeKeywordsCount(const xercesc::DOMNode* elem);
   void addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem);
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);

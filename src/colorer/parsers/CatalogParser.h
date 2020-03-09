@@ -26,10 +26,10 @@ class CatalogParser
   CatalogParser& operator=(CatalogParser&&) = delete;
 
  private:
-  void parseCatalogBlock(const xercesc::DOMElement* elem);
-  void parseHrcSetsBlock(const xercesc::DOMElement* elem);
-  void addHrcSetsLocation(const xercesc::DOMElement* elem);
-  void parseHrdSetsBlock(const xercesc::DOMElement* elem);
+  void parseCatalogBlock(const xercesc::DOMNode* elem);
+  void parseHrcSetsBlock(const xercesc::DOMNode* elem);
+  void addHrcSetsLocation(const xercesc::DOMNode* elem);
+  void parseHrdSetsBlock(const xercesc::DOMNode* elem);
 };
 
 class CatalogParserException : public Exception

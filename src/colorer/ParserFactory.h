@@ -8,6 +8,33 @@
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 
+/**
+ * Maintains catalog of HRC and HRD references.
+ * This class searches and loads <code>catalog.xml</code> file
+ * and creates HRCParser, StyledHRDMapper, TextHRDMapper and TextParser instances
+ * with information, loaded from specified sources.
+ *
+ * If no path were passed to it's constructor,
+ * it uses the next search order to find 'catalog.xml' file:
+ *
+ * - Windows systems:
+ *   - image_start_dir, image_start_dir\..\
+ *   - %COLORER5CATALOG%
+ *   - %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
+ *
+ * - unix/macos systems:
+ *   - $COLORER5CATALOG
+ *   - $HOME/.colorer5catalog
+ *   - $HOMEPATH/.colorer5catalog
+ *   - /usr/share/colorer/catalog.xml
+ *   - /usr/local/share/colorer/catalog.xml
+ *
+ * @note
+ *   - \%NAME%, \$NAME - Environment variable of the current process.
+ *   - image_start_dir - Directory, where current image was started.
+ *
+ * @ingroup colorer
+ */
 class ParserFactory
 {
  public:

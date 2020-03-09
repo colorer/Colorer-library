@@ -6,7 +6,7 @@
 
 class HRDNode
 {
-public:
+ public:
   HRDNode() = default;
   ~HRDNode()
   {
@@ -19,6 +19,4 @@ public:
   std::vector<UnicodeString> hrd_location;
 };
 
-#endif //_COLORER_HRDNODE_H_
-
-
+#endif  //_COLORER_HRDNODE_H_
