@@ -27,7 +27,7 @@ CharacterClass::~CharacterClass()
   Extensions (comparing to Perl):
   inner class substraction [{L}-[{Lu}]], addition [{L}[1234]], intersection [{L}&[{Lu}]]
 */
-CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, int pos, int* retPos)
+CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, unsigned int pos, unsigned int* retPos)
 {
   if (ccs_[pos] != '[') return nullptr;
 
@@ -131,7 +131,7 @@ CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, int p
     }
     // substract -[class]
     if (pos + 1 < ccs.length() && ccs[pos] == '-' && ccs[pos + 1] == '[') {
-      int retEnd;
+      unsigned int retEnd;
       CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos + 1, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
@@ -149,7 +149,7 @@ CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, int p
     }
     // intersect &&[class]
     if (pos + 2 < ccs.length() && ccs[pos] == '&' && ccs[pos + 1] == '&' && ccs[pos + 2] == '[') {
-      int retEnd;
+      unsigned int retEnd;
       CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos + 2, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
@@ -167,7 +167,7 @@ CharacterClass* CharacterClass::createCharClass(const UnicodeString &ccs_, int p
     }
     // add [class]
     if (ccs[pos] == '[') {
-      int retEnd;
+      unsigned int retEnd;
       CharacterClass* scc = createCharClass(UStr::to_unistr(&ccs), pos, &retEnd);
       if (scc == nullptr) {
         delete cc;
@@ -245,7 +245,7 @@ void CharacterClass::addCategory(ECharCategory cat)
 void CharacterClass::addCategory(const String &cat)
 {
   for (size_t pos = 0; pos < ARRAY_SIZE(char_category_names); pos++) {
-    int ci;
+    size_t ci;
     for (ci = 0; ci < cat.length() && cat[ci] == char_category_names[pos][ci]; ci++);
     if (ci == cat.length()) addCategory(ECharCategory(pos));
   }
@@ -274,7 +274,7 @@ void CharacterClass::clearCategory(ECharCategory cat)
 void CharacterClass::clearCategory(const String &cat)
 {
   for (size_t pos = 0; pos < ARRAY_SIZE(char_category_names); pos++) {
-    int ci;
+    size_t ci;
     for (ci = 0; ci < cat.length() && cat[ci] == char_category_names[pos][ci]; ci++);
     if (ci == cat.length()) clearCategory(ECharCategory(pos));
   }
