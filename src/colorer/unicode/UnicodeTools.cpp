@@ -1,5 +1,4 @@
-#include <math.h>
-#include <float.h>
+#include <cmath>
 #include <colorer/unicode/UnicodeTools.h>
 #include <colorer/unicode/Character.h>
 
@@ -177,7 +176,7 @@ int UnicodeTools::getHexNumber(const String* pstr)
 CString* UnicodeTools::getCurlyContent(const String &str, int pos)
 {
   if (str[pos] != '{') return nullptr;
-  int lpos;
+  size_t lpos;
   for (lpos = pos + 1; lpos < str.length(); lpos++) {
     if (str[lpos] == '}')
       break;
@@ -209,7 +208,7 @@ wchar UnicodeTools::getEscapedChar(const String &str, int pos, int &retPos)
       } else {
         CString dtmp = CString(&str, pos + 2, 2);
         int tmp = getHexNumber(&dtmp);
-        if (str.length() <= pos + 2 || tmp == -1) return BAD_WCHAR;
+        if (str.length()  - pos - 2<=0 || tmp == -1) return BAD_WCHAR;
         retPos += 2;
         return tmp;
       }
