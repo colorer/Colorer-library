@@ -454,7 +454,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     //layoutChanged = true;
   }
 
-  if (layoutChanged || 0 < firstLine - wStart ||  0 > firstLine + lrSize - wStart - wSize) {
+  if (layoutChanged || wStart < firstLine || wStart + wSize > firstLine + lrSize) {
     /*
      * visible area is shifted and line regions
      * should be rearranged according to
@@ -470,7 +470,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
       lrSupport->setFirstLine(newFirstLine);
     }
     /* Save time - already has the info in line cache */
-    if (!layoutChanged && firstLine - newFirstLine - wSize == 0) {
+    if (!layoutChanged && firstLine - newFirstLine == wSize) {
       parseTo -= wSize - 1;
     }
     firstLine = newFirstLine;

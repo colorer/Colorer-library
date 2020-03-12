@@ -40,7 +40,7 @@ INPUT_RECORD ir;
   bool unc_fault = false;
   do{
     int lline = csbi.dwSize.Y;
-    if (0 > textLinesStore->getLineCount() - topline - lline) lline = textLinesStore->getLineCount()-topline;
+    if (topline+lline > textLinesStore->getLineCount()) lline = textLinesStore->getLineCount()-topline;
     baseEditor->visibleTextEvent(topline, lline);
 
     for(int i = topline; i < topline + csbi.dwSize.Y; i++){
@@ -52,7 +52,7 @@ INPUT_RECORD ir;
         buffer[Y*csbi.dwSize.X + li].Attributes = background;
       }
 
-      if (0 >= textLinesStore->getLineCount() -i) continue;
+      if (i >= textLinesStore->getLineCount()) continue;
       auto iLine = textLinesStore->getLine(i);
 
       for(li = 0; li < csbi.dwSize.X; li++){
@@ -111,7 +111,7 @@ INPUT_RECORD ir;
             break;
           case 0xFF880000:
             topline += csbi.dwSize.Y;
-            if (0 > textLinesStore->getLineCount() - csbi.dwSize.Y - topline) topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
+            if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y) topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0) topline = 0;
             break;
         }
@@ -124,7 +124,7 @@ INPUT_RECORD ir;
             if (topline) topline--;
             break;
           case VK_DOWN:
-            if (topline+csbi.dwSize.Y - textLinesStore->getLineCount()<0) topline++;
+            if (topline+csbi.dwSize.Y < textLinesStore->getLineCount()) topline++;
             break;
           case VK_LEFT:
             leftpos--;
@@ -144,7 +144,7 @@ INPUT_RECORD ir;
           case VK_NEXT:
           case VK_SPACE:
             topline += csbi.dwSize.Y;
-            if (0 > textLinesStore->getLineCount() - csbi.dwSize.Y -topline) topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
+            if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y) topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0) topline = 0;
             break;
           case VK_HOME:
