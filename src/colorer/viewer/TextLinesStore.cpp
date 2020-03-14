@@ -8,9 +8,6 @@
 void TextLinesStore::replaceTabs(size_t lno)
 {
   lines.at(lno)->findAndReplace("\t", "    ");
-  /*SString* od = lines.at(lno)->replace(CString("\t"), CString("    "));
-  delete lines.at(lno);
-  lines.at(lno) = od;*/
 }
 
 TextLinesStore::TextLinesStore()

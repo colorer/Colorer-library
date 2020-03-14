@@ -1,7 +1,6 @@
 #ifndef _COLORER_ZIPINPUTSOURCE_H_
 #define _COLORER_ZIPINPUTSOURCE_H_
 
-#include <colorer/unicode/String.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <colorer/xml/SharedXmlInputSource.h>

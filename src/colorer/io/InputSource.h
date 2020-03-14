@@ -3,7 +3,6 @@
 
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
-#include <colorer/unicode/String.h>
 
 namespace colorer {
   /** Abstract byte input source.
@@ -78,7 +77,7 @@ namespace colorer {
   public:
     [[nodiscard]] virtual bool hasMoreInput() const = 0;
     [[nodiscard]] virtual InputSource *nextInput() const = 0;
-    [[nodiscard]] virtual const String *getLocation() const = 0;
+    [[nodiscard]] virtual const UnicodeString *getLocation() const = 0;
 
     virtual ~MultipleInputSource()= default;
   protected:

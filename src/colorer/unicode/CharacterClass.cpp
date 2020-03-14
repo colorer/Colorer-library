@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <cstring>
 #include <colorer/unicode/CharacterClass.h>
 #include <colorer/unicode/UnicodeTools.h>
