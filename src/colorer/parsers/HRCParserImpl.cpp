@@ -848,6 +848,7 @@ void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMEl
   }
   scheme_node->kwList->sortList();
   scheme_node->kwList->substrIndex();
+  scheme_node->kwList->firstChar->freeze();
   scheme->nodes.push_back(scheme_node);
 }
 
@@ -879,11 +880,11 @@ void HRCParser::Impl::addKeyword(SchemeNode* scheme_node, const Region* brgn, co
   scheme_node->kwList->kwList[pos].region = rgn;
   scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
   scheme_node->kwList->kwList[pos].ssShorter = -1;
-  scheme_node->kwList->firstChar->addChar(param[0]);
+  scheme_node->kwList->firstChar->add(param[0]);
   if (!scheme_node->kwList->matchCase) {
-    scheme_node->kwList->firstChar->addChar(Character::toLowerCase(param[0]));
-    scheme_node->kwList->firstChar->addChar(Character::toUpperCase(param[0]));
-    scheme_node->kwList->firstChar->addChar(Character::toTitleCase(param[0]));
+    scheme_node->kwList->firstChar->add(u_toupper(param[0]));
+    scheme_node->kwList->firstChar->add(u_tolower(param[0]));
+    scheme_node->kwList->firstChar->add(u_totitle(param[0]));
   }
   scheme_node->kwList->num++;
   if (scheme_node->kwList->minKeywordLength > scheme_node->kwList->kwList[pos].keyword->length()) {

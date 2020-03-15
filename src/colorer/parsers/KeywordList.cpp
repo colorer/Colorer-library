@@ -8,7 +8,7 @@ KeywordList::KeywordList()
   matchCase = false;
   minKeywordLength = 0;
   kwList = nullptr;
-  firstChar = std::make_unique<CharacterClass>();
+  firstChar = std::make_unique<icu::UnicodeSet>();
 }
 
 KeywordList::~KeywordList()

@@ -232,7 +232,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int no, int lowlen, int h
   if (node->kwList->minKeywordLength + gx > lowlen) {
     return MATCH_NOTHING;
   }
-  if (gx < lowlen && !node->kwList->firstChar->inClass((*str)[gx])) {
+  if (gx < lowlen && !node->kwList->firstChar->contains((*str)[gx])) {
     return MATCH_NOTHING;
   }
 
