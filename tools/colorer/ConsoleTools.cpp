@@ -231,7 +231,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
       }
 
       if (load) {
-        type->getBaseScheme();
+        hrcParser->loadFileType(type);
       }
     }
     delete writer;
