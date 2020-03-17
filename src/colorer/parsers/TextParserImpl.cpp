@@ -52,13 +52,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
 
   CTRACE(spdlog::trace("[TextParserImpl] parse from={0}, num={1}", from, num));
   /* Check for initial bad conditions */
-  if (regionHandler == nullptr) {
-    return from;
-  }
-  if (lineSource == nullptr) {
-    return from;
-  }
-  if (baseScheme == nullptr) {
+  if (!regionHandler || !lineSource || !baseScheme) {
     return from;
   }
 
@@ -160,10 +154,12 @@ void TextParser::Impl::addRegion(int lno, int sx, int ex, const Region* region)
   }
   regionHandler->addRegion(lno, str, sx, ex, region);
 }
+
 void TextParser::Impl::enterScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->enterScheme(lno, str, sx, ex, region, baseScheme);
 }
+
 void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->leaveScheme(lno, str, sx, ex, region, baseScheme);
@@ -172,45 +168,37 @@ void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region
   }
 }
 
-
 void TextParser::Impl::enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
 {
-  int i;
-
-  if (schemeNode->innerRegion == false) {
+  if (schemeNode->innerRegion) {
+    enterScheme(lno, match->e[0], match->e[0], schemeNode->region);
+  } else {
     enterScheme(lno, match->s[0], match->e[0], schemeNode->region);
   }
 
-  for (i = 0; i < match->cMatch; i++) {
+  for (int i = 0; i < match->cMatch; i++) {
     addRegion(lno, match->s[i], match->e[i], schemeNode->regions[i]);
   }
-  for (i = 0; i < match->cnMatch; i++) {
+  for (int i = 0; i < match->cnMatch; i++) {
     addRegion(lno, match->ns[i], match->ne[i], schemeNode->regionsn[i]);
-  }
-
-  if (schemeNode->innerRegion == true) {
-    enterScheme(lno, match->e[0], match->e[0], schemeNode->region);
   }
 }
 
 void TextParser::Impl::leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
 {
-  int i;
-
-  if (schemeNode->innerRegion == true) {
+  if (schemeNode->innerRegion) {
     leaveScheme(gy, match->s[0], match->s[0], schemeNode->region);
+  }else{
+    leaveScheme(gy, match->s[0], match->e[0], schemeNode->region);
   }
 
-  for (i = 0; i < match->cMatch; i++) {
+  for (int i = 0; i < match->cMatch; i++) {
     addRegion(gy, match->s[i], match->e[i], schemeNode->regione[i]);
   }
-  for (i = 0; i < match->cnMatch; i++) {
+  for (int i = 0; i < match->cnMatch; i++) {
     addRegion(gy, match->ns[i], match->ne[i], schemeNode->regionen[i]);
   }
 
-  if (schemeNode->innerRegion == false) {
-    leaveScheme(gy, match->s[0], match->e[0], schemeNode->region);
-  }
 }
 
 void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)

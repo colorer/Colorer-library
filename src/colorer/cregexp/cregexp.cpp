@@ -1200,10 +1200,10 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (!re->param0) {
               insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_RangeN_step2, &re->un.param, 0, toParse);
               continue;
-            }
-            // go into
-            if (re->param0)
+            }else {
+              // go into
               re->param0--;
+            }
             re = re->un.param;
             leftenter = true;
             continue;
@@ -1224,8 +1224,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
                 insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_RangeNM_step2, &re->un.param, 0, toParse);
                 continue;
               }
-            }
-            if (re->param0)
+            } else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1241,8 +1240,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (!re->param0) {
               insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_NGRangeN_step2, &re->next, &re, toParse);
               continue;
-            }
-            if (re->param0)
+            }else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1264,8 +1262,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
                 insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_NGRangeNM_step2, &re->next, &re, toParse);
                 continue;
               }
-            }
-            if (re->param0)
+            } else
               re->param0--;
             re = re->un.param;
             leftenter = true;

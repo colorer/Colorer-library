@@ -53,8 +53,8 @@ protected:
 
   UnicodeString* versionName;
 
-  FileType* parseProtoType;
-  FileType* parseType;
+  FileType* current_parse_prototype;
+  FileType* current_parse_type;
   XmlInputSource* current_input_source;
   bool structureChanged;
   bool updateStarted;
@@ -91,7 +91,7 @@ protected:
   UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors);
 
   void updateLinks();
-  UnicodeString* useEntities(const UnicodeString* name);
+  uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
 };
