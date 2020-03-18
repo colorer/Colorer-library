@@ -244,11 +244,11 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int no, int lowlen, int h
       bool badbound = false;
       if (!node->kwList->kwList[pos].isSymbol) {
         if (!node->worddiv) {
-          if (gx && (Character::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == '_')) {
+          if (gx && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == '_')) {
             badbound = true;
           }
           if (gx + kwlen < lowlen &&
-              (Character::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == '_')) {
+              (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == '_')) {
             badbound = true;
           }
         } else {

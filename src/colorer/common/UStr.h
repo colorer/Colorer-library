@@ -16,6 +16,16 @@ class UStr
   [[nodiscard]] static std::string to_stdstr(const XMLCh* str);
   [[nodiscard]] static SString to_string(const UnicodeString* str);
   [[nodiscard]] static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
+
+  static bool isLowerCase(UChar c);
+  static bool isUpperCase(UChar c);
+  static bool isLetter(UChar c);
+  static bool isLetterOrDigit(UChar c);
+  static bool isDigit(UChar c);
+  static bool isWhitespace(UChar c);
+
+  static UChar toLowerCase(UChar c);
+  static UChar toUpperCase(UChar c);
 };
 
 #endif  //COLORER_COMMON_USTR_H_

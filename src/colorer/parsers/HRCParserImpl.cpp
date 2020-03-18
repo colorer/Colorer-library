@@ -3,11 +3,9 @@
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/XmlTagDefs.h>
-#include <colorer/unicode/Character.h>
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <memory>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>

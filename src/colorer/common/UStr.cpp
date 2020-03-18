@@ -2,6 +2,7 @@
 #include <colorer/unicode/SString.h>
 #include <colorer/unicode/String.h>
 #include <unicode/ucnv.h>
+#include <unicode/uchar.h>
 
 UnicodeString UStr::to_unistr(const String* str)
 {
@@ -50,4 +51,44 @@ std::string UStr::to_stdstr(const XMLCh* str)
 {
   std::string _string = std::string(xercesc::XMLString::transcode(str));
   return _string;
+}
+
+bool UStr::isLowerCase(UChar c)
+{
+  return u_islower(c);
+}
+
+bool UStr::isUpperCase(UChar c)
+{
+  return u_isupper(c);
+}
+
+bool UStr::isLetter(UChar c)
+{
+  return u_isalpha(c);
+}
+
+bool UStr::isLetterOrDigit(UChar c)
+{
+  return u_isdigit(c) || u_isalpha(c);
+}
+
+bool UStr::isDigit(UChar c)
+{
+  return u_isdigit(c);
+}
+
+bool UStr::isWhitespace(UChar c)
+{
+  return u_isspace(c);
+}
+
+UChar UStr::toLowerCase(UChar c)
+{
+  return u_tolower(c);
+}
+
+UChar UStr::toUpperCase(UChar c)
+{
+  return u_toupper(c);
 }
