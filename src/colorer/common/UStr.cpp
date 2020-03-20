@@ -118,25 +118,27 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
       }
       return cc;
     }
-    /*if (ccs[pos] == '{') {
-      String* categ = UnicodeTools::getCurlyContent(ccs, pos);
+    if (ccs[pos] == '{') {
+      UnicodeString* categ = getCurlyContent(ccs, pos);
       if (categ == nullptr) {
         delete cc;
         return nullptr;
       }
-      if (*categ == CString("ALL")) cc->fill();
-      else if (*categ == CString("ASSIGNED")) cc->addCategory("");
-      else if (*categ == CString("UNASSIGNED")) {
+      /*if (*categ == "ALL") cc->add(icu::UnicodeSet::MIN_VALUE, icu::UnicodeSet::MAX_VALUE);
+      else if (*categ == "ASSIGNED") cc->addCategory("");
+      else if (*categ == "UNASSIGNED") {
         cc_temp.clear();
         cc_temp.addCategory("");
         cc->fill();
         cc->clearClass(cc_temp);
-      } else if (categ->length()) cc->addCategory(*categ);
+      } else */
+      if (categ->length())
+        cc->addAll(icu::UnicodeSet("\\p{" + *categ + "}", ec));
       pos += categ->length() + 1;
       delete categ;
       prev_char = BAD_WCHAR;
       continue;
-    }*/
+    }
     if (ccs[pos] == '\\' && pos + 1 < ccs.length()) {
       int retEnd;
       prev_char = BAD_WCHAR;
@@ -145,10 +147,10 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
           cc->addAll(icu::UnicodeSet("[:Nd:]", ec));
           break;
         case 'D':
-          cc->addAll(icu::UnicodeSet("[:^Nd:]", ec));
+          cc->addAll(icu::UnicodeSet(icu::UnicodeSet::MIN_VALUE, icu::UnicodeSet::MAX_VALUE).removeAll(icu::UnicodeSet("\\p{Nd}", ec)));
           break;
         case 'w':
-          cc->addAll(icu::UnicodeSet("[:L:][:Nd:]", ec)).add("_");
+          cc->addAll(icu::UnicodeSet("[:L:]", ec)).addAll(icu::UnicodeSet("\\p{Nd}", ec)).add("_");
           break;
         case 'W':
           cc->addAll(icu::UnicodeSet(icu::UnicodeSet::MIN_VALUE, icu::UnicodeSet::MAX_VALUE)
@@ -157,10 +159,11 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
               .remove("_");
           break;
         case 's':
-          cc->addAll(icu::UnicodeSet("[:Z:]\t\n\r\f", ec));
+          cc->addAll(icu::UnicodeSet("[:Z:]", ec)).addAll("\t\n\r\f");
           break;
         case 'S':
-          cc->addAll(icu::UnicodeSet("[^:Z:][^\t\n\r\f]", ec));
+          cc->addAll(icu::UnicodeSet(icu::UnicodeSet::MIN_VALUE, icu::UnicodeSet::MAX_VALUE).removeAll(icu::UnicodeSet("[:Z:]", ec)))
+              .removeAll("\t\n\r\f");
           break;
         case 'l':
           cc->addAll(icu::UnicodeSet("[:Ll:]", ec));
@@ -253,14 +256,16 @@ UChar UStr::getEscapedChar(const UnicodeString& str, int pos, int& retPos)
     retPos++;
     if (str[pos + 1] == 'x') {
       if (str[pos + 2] == '{') {
-        /* String* val = getCurlyContent(str, pos + 2);
-         if (val == nullptr) return BAD_WCHAR;
-         int tmp = getHexNumber(val);
-         int val_len = val->length();
-         delete val;
-         if (tmp < 0 || tmp > 0xFFFF) return BAD_WCHAR;
-         retPos += val_len + 2;
-         return tmp;*/
+        UnicodeString* val = getCurlyContent(str, pos + 2);
+        if (val == nullptr)
+          return BAD_WCHAR;
+        int tmp = getHexNumber(val);
+        int val_len = val->length();
+        delete val;
+        if (tmp < 0 || tmp > 0xFFFF)
+          return BAD_WCHAR;
+        retPos += val_len + 2;
+        return tmp;
       } else {
         UnicodeString dtmp = UnicodeString(str, pos + 2, 2);
         int tmp = getHexNumber(&dtmp);
@@ -299,4 +304,20 @@ int UStr::getHexNumber(const UnicodeString* pstr)
     r += 4;
   }
   return num;
+}
+
+UnicodeString* UStr::getCurlyContent(const UnicodeString& str, int pos)
+{
+  if (str[pos] != '{')
+    return nullptr;
+  int lpos;
+  for (lpos = pos + 1; lpos < str.length(); lpos++) {
+    if (str[lpos] == '}')
+      break;
+    if (!u_isgraph(str[lpos]))
+      return nullptr;
+  }
+  if (lpos == str.length())
+    return nullptr;
+  return new UnicodeString(str, pos + 1, lpos - pos - 1);
 }

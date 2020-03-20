@@ -559,7 +559,8 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
     // [] [^]
     if (expr[i] == '[') {
       unsigned int endPos;
-      CharacterClass* cc = CharacterClass::createCharClass(expr_, i, &endPos);
+      auto* cc = UStr::createCharClass(expr_, i, &endPos);
+      //spdlog::info("class {0}", UnicodeString(expr_,i,endPos-i+1));
       if (cc == nullptr)
         return EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
@@ -954,7 +955,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
             }
-            if (!re->un.charclass->inClass(pattern[toParse])) {
+            if (!re->un.charclass->contains(pattern[toParse])) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
             }
@@ -965,7 +966,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
             }
-            if (re->un.charclass->inClass(pattern[toParse])) {
+            if (re->un.charclass->contains(pattern[toParse])) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
             }

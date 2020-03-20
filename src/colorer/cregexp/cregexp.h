@@ -3,6 +3,8 @@
 
 #include<colorer/unicode/SString.h>
 #include<colorer/unicode/CharacterClass.h>
+#include <unicode/uniset.h>
+
 
 /**
     @addtogroup cregexp Regular Expressions
@@ -144,7 +146,7 @@ public:
     EMetaSymbols metaSymbol;
     wchar symbol;
     String *word;
-    CharacterClass *charclass;
+    icu::UnicodeSet *charclass;
     SRegInfo *param;
   }un;
 #if defined NAMED_MATCHES_IN_HASH
