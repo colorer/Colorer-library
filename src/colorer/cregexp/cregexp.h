@@ -1,10 +1,8 @@
 #ifndef __CREGEXP__
 #define __CREGEXP__
 
-#include<colorer/unicode/SString.h>
-#include<colorer/unicode/CharacterClass.h>
 #include <unicode/uniset.h>
-
+#include <colorer/Common.h>
 
 /**
     @addtogroup cregexp Regular Expressions
@@ -42,8 +40,8 @@ struct SMatch{
 // you can redefine this class
 typedef class SMatchHash{
 public:
-  SMatch *setItem(const String *name, SMatch &smatch){return nullptr;};
-  SMatch *getItem(const String *name){return nullptr;};
+  SMatch *setItem(const UnicodeString *name, SMatch &smatch){return nullptr;};
+  SMatch *getItem(const UnicodeString *name){return nullptr;};
 }*PMatchHash;
 #endif
 
@@ -144,13 +142,13 @@ public:
 
   union{
     EMetaSymbols metaSymbol;
-    wchar symbol;
-    String *word;
+    UChar symbol;
+    UnicodeString *word;
     icu::UnicodeSet *charclass;
     SRegInfo *param;
   }un;
 #if defined NAMED_MATCHES_IN_HASH
-  String *namedata;
+  UnicodeString *namedata;
 #endif
   SRegInfo *parent;
   SRegInfo *next;
@@ -302,10 +300,10 @@ public:
 #ifdef NAMED_MATCHES_IN_HASH
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, SMatches *mtch, SMatchHash *nmtch = nullptr);
+  bool parse(const UnicodeString *str, SMatches *mtch, SMatchHash *nmtch = nullptr);
   /** Runs RE parser against input string @c str
   */
-  bool parse(const String *str, int pos, int eol, SMatches *mtch, SMatchHash *nmtch = nullptr, int soscheme = 0, int moves = -1);
+  bool parse(const UnicodeString *str, int pos, int eol, SMatches *mtch, SMatchHash *nmtch = nullptr, int soscheme = 0, int moves = -1);
 #else
   /** Runs RE parser against input string @c str
   */
@@ -319,7 +317,7 @@ private:
   bool ignoreCase, extend, positionMoves, singleLine, multiLine;
   SRegInfo *tree_root;
   EError error;
-  wchar firstChar;
+  UChar firstChar;
   EMetaSymbols firstMetaChar;
 #ifdef COLORERMODE
   CRegExp *backRE;
@@ -328,7 +326,7 @@ private:
   int schemeStart;
 #endif
   bool startChange, endChange;
-  std::unique_ptr<SString> global_pattern;
+  std::unique_ptr<UnicodeString> global_pattern;
   int end;
 
   SMatches *matches;

@@ -13,5 +13,5 @@ typedef std::unique_ptr<UnicodeString> uUnicodeString;
 #include <colorer/common/Features.h>
 #include <colorer/common/UnicodeLogger.h>
 #include <spdlog/spdlog.h>
-
+#define BAD_WCHAR (0xFFFF)
 #endif

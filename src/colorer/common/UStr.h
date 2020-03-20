@@ -40,6 +40,7 @@ class UStr
   static UChar getEscapedChar(const UnicodeString &str, int pos, int &retPos);
   static int getHex(UChar c);
   static int getHexNumber(const UnicodeString* pstr);
+  static int getNumber(const UnicodeString* pstr);
   /** For '{name}'  returns 'name'
     Removes brackets and returns new dynamic string,
     based on passed string.

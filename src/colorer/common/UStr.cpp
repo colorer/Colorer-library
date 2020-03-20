@@ -321,3 +321,15 @@ UnicodeString* UStr::getCurlyContent(const UnicodeString& str, int pos)
     return nullptr;
   return new UnicodeString(str, pos + 1, lpos - pos - 1);
 }
+
+int UStr::getNumber(const UnicodeString* pstr)
+{
+  int r = 1, num = 0;
+  if (pstr == nullptr) return -1;
+  for (int i = pstr->length() - 1; i >= 0; i--) {
+    if ((*pstr)[i] > '9' || (*pstr)[i] < '0') return -1;
+    num += ((*pstr)[i] - 0x30) * r;
+    r *= 10;
+  }
+  return num;
+}

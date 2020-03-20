@@ -1,7 +1,5 @@
 #include <colorer/common/UStr.h>
 #include <colorer/cregexp/cregexp.h>
-#include <colorer/unicode/SString.h>
-#include <colorer/unicode/UnicodeTools.h>
 #include <cstring>
 
 StackElem* RegExpStack;
@@ -181,11 +179,10 @@ void CRegExp::optimize()
   }
 }
 
-EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPos)
+EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos)
 {
   SRegInfo *next, *temp;
 
-  SString expr = UStr::to_string(&expr_);
   retPos = 0;
   if (!expr.length())
     return EOK;
@@ -210,7 +207,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
     }
     // Escape symbol
     if (expr[i] == '\\') {
-      String* br_name;
+      UnicodeString* br_name;
       int blen;
       switch (expr[i + 1]) {
         case 'd':
@@ -282,20 +279,19 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
         case 'y':
         case 'Y':
           next->op = (expr[i + 1] == 'y' ? ReBkTrace : ReBkTraceN);
-          next->param0 = UnicodeTools::getHex(expr[i + 2]);
+          next->param0 = UStr::getHex(expr[i + 2]);
           if (next->param0 != -1) {
             i++;
           } else {
             next->op = (expr[i + 1] == 'y' ? ReBkTraceName : ReBkTraceNName);
-            br_name = UnicodeTools::getCurlyContent(expr, i + 2);
+            br_name = UStr::getCurlyContent(expr, i + 2);
             if (br_name == nullptr)
               return ESYNTAX;
             if (!backRE) {
               delete br_name;
               return EERROR;
             }
-            UnicodeString tmp_s = UStr::to_unistr(br_name);
-            next->param0 = backRE->getBracketNo(&tmp_s);
+            next->param0 = backRE->getBracketNo(br_name);
             blen = br_name->length();
             delete br_name;
             if (next->param0 == -1)
@@ -309,13 +305,12 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
         case 'p':  // \p{name}
         {
           next->op = ReBkBrackName;
-          br_name = UnicodeTools::getCurlyContent(expr, i + 2);
+          br_name = UStr::getCurlyContent(expr, i + 2);
           if (br_name == nullptr)
             return ESYNTAX;
           blen = br_name->length();
 #ifndef NAMED_MATCHES_IN_HASH
-          UnicodeString p = UStr::to_unistr(br_name);
-          next->param0 = getBracketNo(&p);
+          next->param0 = getBracketNo(br_name);
           delete br_name;
           if (next->param0 == -1)
             return ESYNTAX;
@@ -325,18 +320,18 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
             return EBRACKETS;
           }
           next->param0 = 0;
-          next->namedata = new SString(br_name);
+          next->namedata = new UnicodeString(br_name);
           delete br_name;
 #endif
           i += blen + 2;
         } break;
         default:
           next->op = ReBkBrack;
-          next->param0 = UnicodeTools::getHex(expr[i + 1]);
+          next->param0 = UStr::getHex(expr[i + 1]);
           if (next->param0 < 0 || next->param0 > 9) {
             int retEnd;
             next->op = ReSymb;
-            next->un.symbol = UnicodeTools::getEscapedChar(expr, i, retEnd);
+            next->un.symbol = UStr::getEscapedChar(expr, i, retEnd);
             if (next->un.symbol == BAD_WCHAR)
               return ESYNTAX;
             i = retEnd - 1;
@@ -376,13 +371,13 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
     if (expr.length() > i + 2) {
       if (expr[i] == '?' && expr[i + 1] == '#' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
         next->op = ReBehind;
-        next->param0 = UnicodeTools::getHex(expr[i + 2]);
+        next->param0 = UStr::getHex(expr[i + 2]);
         i += 2;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '~' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
         next->op = ReNBehind;
-        next->param0 = UnicodeTools::getHex(expr[i + 2]);
+        next->param0 = UStr::getHex(expr[i + 2]);
         i += 2;
         continue;
       }
@@ -465,11 +460,11 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
         return EBRACKETS;
       if (comma == -1)
         comma = en;
-      CString ds = CString(&expr, st, comma - st);
-      next->s = UnicodeTools::getNumber(&ds);
-      CString de = CString(&expr, comma + 1, en - comma - 1);
+      UnicodeString ds = UnicodeString(expr, st, comma - st);
+      next->s = UStr::getNumber(&ds);
+      UnicodeString de = UnicodeString(expr, comma + 1, en - comma - 1);
       if (comma != en)
-        next->e = UnicodeTools::getNumber(&de);
+        next->e = UStr::getNumber(&de);
       else
         next->e = next->s;
       if (next->e == -1)
@@ -497,10 +492,10 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
         // named bracket
         next->op = ReNamedBrackets;
         // namedBracket = true;
-        String* s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
+        UnicodeString* s_curly = UStr::getCurlyContent(expr, i + 2);
         if (s_curly == nullptr)
           return EBRACKETS;
-        UnicodeString* br_name = new UnicodeString(UStr::to_unistr(s_curly));
+        UnicodeString* br_name = new UnicodeString(*s_curly);
         delete s_curly;
         int blen = br_name->length();
         if (blen == 0) {
@@ -547,7 +542,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
       next->un.param = new SRegInfo;
       next->un.param->parent = next;
       int endPos;
-      EError err = setStructs(next->un.param, UnicodeString(expr_, i), endPos);
+      EError err = setStructs(next->un.param, UnicodeString(expr, i), endPos);
       if (expr.length() - i - endPos == 0)
         return EBRACKETS;
       if (err)
@@ -559,7 +554,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
     // [] [^]
     if (expr[i] == '[') {
       unsigned int endPos;
-      auto* cc = UStr::createCharClass(expr_, i, &endPos);
+      auto* cc = UStr::createCharClass(expr, i, &endPos);
       //spdlog::info("class {0}", UnicodeString(expr_,i,endPos-i+1));
       if (cc == nullptr)
         return EENUM;
@@ -591,7 +586,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
     if (wsize > 1) {
       reafterword = resymb;
       resymb = reword;
-      wchar* wcword = new wchar[wsize];
+      UChar* wcword = new UChar[wsize];
       for (int idx = 0; idx < wsize; idx++) {
         wcword[idx] = resymb->un.symbol;
         SRegInfo* retmp = resymb;
@@ -601,7 +596,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr_, int& retPo
           delete retmp;
       }
       reword->op = ReWord;
-      reword->un.word = new SString(CString(wcword, 0, wsize));
+      reword->un.word = new UnicodeString(wcword,  wsize);
       delete[] wcword;
       reword->next = reafterword;
       if (reafterword)
@@ -703,7 +698,7 @@ bool CRegExp::isNWordBoundary(int& toParse)
 
 bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
 {
-  const String& pattern = *global_pattern;
+  const UnicodeString& pattern = *global_pattern;
 
   switch (symb) {
     case ReAnyChr:
@@ -859,7 +854,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
   int i, sv, wlen;
   bool leftenter = true;
   bool br = false;
-  const String& pattern = *global_pattern;
+  const UnicodeString& pattern = *global_pattern;
   int action = -1;
 
   if (!re) {
@@ -931,7 +926,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (ignoreCase) {
-              if (!CString(&pattern, toParse, wlen).equalsIgnoreCase(re->un.word)) {
+              if (!UnicodeString(pattern, toParse, wlen).caseCompare(*re->un.word,0)==0) {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 continue;
               }
@@ -1434,7 +1429,7 @@ bool CRegExp::parse(const UnicodeString* str, int pos, int eol, SMatches* mtch
 #ifdef COLORERMODE
   schemeStart = soScheme;
 #endif
-  global_pattern = std::make_unique<SString>(UStr::to_string(str));
+  global_pattern = std::make_unique<UnicodeString>(*str);
   end = eol;
   matches = mtch;
 #ifdef NAMED_MATCHES_IN_HASH
@@ -1453,7 +1448,7 @@ bool CRegExp::parse(const UnicodeString* str, SMatches* mtch
 )
 {
   end = str->length();
-  global_pattern = std::make_unique<SString>(UStr::to_string(str));
+  global_pattern = std::make_unique<UnicodeString>(*str);
 #ifdef COLORERMODE
   schemeStart = 0;
 #endif
