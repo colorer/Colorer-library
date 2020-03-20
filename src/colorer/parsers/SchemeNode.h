@@ -32,7 +32,7 @@ public:
 
   VirtualEntryVector virtualEntryVector;
   std::unique_ptr<KeywordList> kwList;
-  std::unique_ptr<CharacterClass> worddiv;
+  std::unique_ptr<icu::UnicodeSet> worddiv;
 
   const Region* region;
   const Region* regions[REGIONS_NUM];

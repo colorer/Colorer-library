@@ -3,6 +3,7 @@
 
 #include <xercesc/util/XMLString.hpp>
 #include <colorer/Common.h>
+#include <unicode/uniset.h>
 
 class String;
 class SString;
@@ -26,6 +27,11 @@ class UStr
 
   static UChar toLowerCase(UChar c);
   static UChar toUpperCase(UChar c);
+
+  static icu::UnicodeSet* createCharClass(const UnicodeString &ccs, unsigned int pos, unsigned int* retPos);
+  static UChar getEscapedChar(const UnicodeString &str, int pos, int &retPos);
+  static int getHex(UChar c);
+  static int getHexNumber(const UnicodeString* pstr);
 };
 
 #endif  //COLORER_COMMON_USTR_H_

@@ -814,7 +814,7 @@ void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMEl
   if (*worddiv != '\0') {
     UnicodeString dworddiv = UnicodeString(worddiv);
     uUnicodeString entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv.get(), 0, nullptr));
+    scheme_node->worddiv.reset(UStr::createCharClass(*entWordDiv.get(), 0, nullptr));
     if (scheme_node->worddiv == nullptr) {
       spdlog::error("fault compiling worddiv regexp '{0}' in scheme '{1}'", *entWordDiv, *scheme->schemeName.get());
     }

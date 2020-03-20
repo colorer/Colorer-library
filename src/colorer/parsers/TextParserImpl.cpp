@@ -253,11 +253,11 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int no, int lowlen, int h
           }
         } else {
           // custom check for word bound
-          if (gx && !node->worddiv->inClass((*str)[gx - 1])) {
+          if (gx && !node->worddiv->contains((*str)[gx - 1])) {
             badbound = true;
           }
           if (gx + kwlen < lowlen &&
-              !node->worddiv->inClass((*str)[gx + kwlen])) {
+              !node->worddiv->contains((*str)[gx + kwlen])) {
             badbound = true;
           }
         }
