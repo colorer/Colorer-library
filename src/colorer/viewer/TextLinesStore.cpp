@@ -1,6 +1,5 @@
 #include <colorer/Exception.h>
 #include <colorer/io/InputSource.h>
-#include <colorer/unicode/Encodings.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <cstdio>
 #include <cstring>

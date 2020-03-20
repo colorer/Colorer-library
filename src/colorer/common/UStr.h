@@ -5,17 +5,12 @@
 #include <colorer/Common.h>
 #include <unicode/uniset.h>
 
-class String;
-class SString;
-
 class UStr
 {
  public:
-  [[nodiscard]] static UnicodeString to_unistr(const String* str);
   [[nodiscard]] static UnicodeString to_unistr(int number);
   [[nodiscard]] static std::string to_stdstr(const UnicodeString* str);
   [[nodiscard]] static std::string to_stdstr(const XMLCh* str);
-  [[nodiscard]] static SString to_string(const UnicodeString* str);
   [[nodiscard]] static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
 
   static bool isLowerCase(UChar c);

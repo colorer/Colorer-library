@@ -58,18 +58,6 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.cpp colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
     colorer/parsers/XmlTagDefs.h
-    colorer/unicode/BitArray.cpp colorer/unicode/BitArray.h
-    colorer/unicode/CString.cpp colorer/unicode/CString.h
-    colorer/unicode/Character.h colorer/unicode/Character.cpp
-    colorer/unicode/CharacterClass.cpp colorer/unicode/CharacterClass.h
-    colorer/unicode/DString.h
-    colorer/unicode/Encodings.h colorer/unicode/Encodings.cpp
-    colorer/unicode/SString.cpp colorer/unicode/SString.h
-    colorer/unicode/String.cpp colorer/unicode/String.h
-    colorer/unicode/UnicodeTools.cpp colorer/unicode/UnicodeTools.h
-    colorer/unicode/x_charcategory.h colorer/unicode/x_defines.h
-    colorer/unicode/x_charcategory2.h colorer/unicode/x_encodings.h
-    colorer/unicode/x_charcategory_names.h colorer/unicode/x_tables.h
     colorer/viewer/ParsedLineWriter.h
     colorer/viewer/TextConsoleViewer.cpp colorer/viewer/TextConsoleViewer.h
     colorer/viewer/TextLinesStore.cpp colorer/viewer/TextLinesStore.h

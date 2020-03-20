@@ -1,5 +1,4 @@
 #include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/unicode/Encodings.h>
 #include <cstdio>
 #ifdef __unix__
 #include <colorer/common/UStr.h>
@@ -8,7 +7,7 @@
 TextConsoleViewer::TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int background, int encoding){
   textLinesStore = ts;
   baseEditor = be;
-  if(encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
+  //if(encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
   this->encoding = encoding;
   this->background = background;
 }

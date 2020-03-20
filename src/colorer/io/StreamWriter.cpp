@@ -1,6 +1,5 @@
 #include <colorer/Exception.h>
 #include <colorer/io/StreamWriter.h>
-#include <colorer/unicode/Encodings.h>
 #include <unicode/ustring.h>
 #include <cstdio>
 
@@ -10,14 +9,15 @@ void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
   
   if (fstream == nullptr) throw Exception("Invalid stream");
   file = fstream;
-  if (encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
-  encodingIndex = encoding;
+//  if (encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
+  encodingIndex = 4;
   this->useBOM = useBOM;
   writeBOM();
 }
 
 void StreamWriter::writeBOM(){
-  if (useBOM && Encodings::isMultibyteEncoding(encodingIndex)) write(0xFEFF);
+  //if (useBOM && Encodings::isMultibyteEncoding(encodingIndex))
+  write(0xFEFF);
 }
 
 StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool useBOM = true){

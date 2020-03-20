@@ -5,7 +5,6 @@
 #include <colorer/io/FileWriter.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/ParserFactory.h>
-#include <colorer/unicode/Encodings.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
 #include <colorer/viewer/TextLinesStore.h>
@@ -70,22 +69,22 @@ void ConsoleTools::setOutputFileName(const UnicodeString &str)
 void ConsoleTools::setInputEncoding(const UnicodeString &str)
 {
   inputEncoding.reset(new UnicodeString(str));
-  inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
+  /*inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
   if (inputEncodingIndex == -1) {
     throw Exception("Unknown input encoding: " + *inputEncoding.get());
-  }
-  if (outputEncoding == nullptr) {
+  }*/
+ /* if (outputEncoding == nullptr) {
     outputEncodingIndex = inputEncodingIndex;
-  }
+  }*/
 }
 
 void ConsoleTools::setOutputEncoding(const UnicodeString &str)
 {
-  outputEncoding.reset(new UnicodeString(str));
+ /* outputEncoding.reset(new UnicodeString(str));
   outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());
   if (outputEncodingIndex == -1) {
     throw Exception("Unknown output encoding: " + *outputEncoding.get());
-  }
+  }*/
 }
 
 void ConsoleTools::setCatalogPath(const UnicodeString &str)
