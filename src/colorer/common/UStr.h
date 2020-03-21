@@ -23,7 +23,7 @@ class UStr
   static UChar toLowerCase(UChar c);
   static UChar toUpperCase(UChar c);
 
-  static icu::UnicodeSet* createCharClass(const UnicodeString &ccs, unsigned int pos, unsigned int* retPos);
+  static icu::UnicodeSet* createCharClass(const UnicodeString &ccs, int pos, int* retPos);
   /** \\x{2028} \\x23 \\c  - into wchar
     @param str String to parse Escape sequence.
     @param pos Position, where sequence starts.

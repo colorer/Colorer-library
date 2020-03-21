@@ -75,7 +75,7 @@ UChar UStr::toUpperCase(UChar c)
   return u_toupper(c);
 }
 
-icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int pos, unsigned int* retPos)
+icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, int pos, int* retPos)
 {
   if (ccs[pos] != '[')
     return nullptr;
@@ -167,7 +167,7 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
     }
     // substract -[class]
     if (pos + 1 < ccs.length() && ccs[pos] == '-' && ccs[pos + 1] == '[') {
-      unsigned int retEnd;
+      int retEnd;
       icu::UnicodeSet* scc = createCharClass(ccs, pos + 1, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
@@ -185,7 +185,7 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
     }
     // intersect &&[class]
     if (pos + 2 < ccs.length() && ccs[pos] == '&' && ccs[pos + 1] == '&' && ccs[pos + 2] == '[') {
-      unsigned int retEnd;
+      int retEnd;
       icu::UnicodeSet* scc = createCharClass(ccs, pos + 2, &retEnd);
       if (retEnd == ccs.length()) {
         delete cc;
@@ -203,7 +203,7 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, unsigned int po
     }
     // add [class]
     if (ccs[pos] == '[') {
-      unsigned int retEnd;
+      int retEnd;
       icu::UnicodeSet* scc = createCharClass(ccs, pos, &retEnd);
       if (scc == nullptr) {
         delete cc;

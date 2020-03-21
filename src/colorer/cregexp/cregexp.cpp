@@ -189,7 +189,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
   retPos = -1;
 
   next = re;
-  for (unsigned int i = 0; i < expr.length(); i++) {
+  for (int i = 0; i < expr.length(); i++) {
     // simple character
     if (extend && UStr::isWhitespace(expr[i]))
       continue;
@@ -441,7 +441,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
       int en = -1;
       int comma = -1;
       bool nonGreedy = false;
-      unsigned int j;
+      int j;
       for (j = i; j < expr.length(); j++) {
         if (expr.length() > j + 1 && expr[j] == '}' && expr[j + 1] == '?') {
           en = j;
@@ -553,7 +553,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
 
     // [] [^]
     if (expr[i] == '[') {
-      unsigned int endPos;
+      int endPos;
       auto* cc = UStr::createCharClass(expr, i, &endPos);
       //spdlog::info("class {0}", UnicodeString(expr_,i,endPos-i+1));
       if (cc == nullptr)

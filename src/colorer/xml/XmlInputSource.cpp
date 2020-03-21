@@ -149,7 +149,8 @@ void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<Un
     dirent* dire;
     while ((dire = readdir(dir)) != nullptr) {
       struct stat st;
-      stat(UStr::to_stdstr(&UnicodeString(*relPath + "/" + dire->d_name)).c_str(), &st);
+      UnicodeString path = UnicodeString(*relPath + "/" + dire->d_name);
+      stat(UStr::to_stdstr(&path).c_str(), &st);
       if (!(st.st_mode & S_IFDIR)) {
         files.push_back(UnicodeString(*relPath) + "/" + dire->d_name);
       }
