@@ -57,8 +57,8 @@ INPUT_RECORD ir;
       for(li = 0; li < csbi.dwSize.X; li++){
         if (leftpos+li >= iLine->length()) break;
         buffer[Y*csbi.dwSize.X + li].Char.UnicodeChar = (*iLine)[leftpos+li];
-        if (unc_fault)
-          buffer[Y*csbi.dwSize.X + li].Char.AsciiChar = Encodings::toChar(encoding, (*iLine)[leftpos+li]);
+        /*if (unc_fault)
+          buffer[Y*csbi.dwSize.X + li].Char.AsciiChar = Encodings::toChar(encoding, (*iLine)[leftpos+li]);*/
       }
       for(LineRegion *l1 = baseEditor->getLineRegions(i); l1 != nullptr; l1 = l1->next){
         if (l1->special || l1->rdef == nullptr) continue;

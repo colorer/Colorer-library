@@ -54,38 +54,16 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
         }
 
         int val = 0;
-        bool bfore = false;
-        auto fore_str = UStr::to_stdstr(subelem->getAttribute(hrdAssignAttrFore));
-        if (!fore_str.empty()) {
-          try {
-            val = std::stoi(fore_str, nullptr);
-            bfore = true;
-          } catch (std::exception& e) {
-            spdlog::error("Error parse param {0} with value {1} to integer number", UStr::to_stdstr(hrdAssignAttrFore), fore_str);
-          }
-        }
-
+        UnicodeString dhrdAssignAttrFore = UnicodeString(subelem->getAttribute(hrdAssignAttrFore));
+        bool bfore = UStr::getNumber(&dhrdAssignAttrFore, &val);
         int fore = val;
-        bool bback = false;
-        auto back_str = UStr::to_stdstr(subelem->getAttribute(hrdAssignAttrBack));
-        if (!back_str.empty()) {
-          try {
-            fore = std::stoi(back_str, nullptr);
-            bback = true;
-          } catch (std::exception& e) {
-            spdlog::error("Error parse param {0} with value {1} to integer number", UStr::to_stdstr(hrdAssignAttrBack), back_str);
-          }
-        }
-
+        UnicodeString dhrdAssignAttrBack = UnicodeString(subelem->getAttribute(hrdAssignAttrBack));
+        bool bback = UStr::getNumber(&dhrdAssignAttrBack, &val);
         int back = val;
         int style = 0;
-        auto style_str = UStr::to_stdstr(subelem->getAttribute(hrdAssignAttrStyle));
-        if (!style_str.empty()) {
-          try {
-            style = std::stoi(style_str, nullptr);
-          } catch (std::exception& e) {
-            spdlog::error("Error parse param {0} with value {1} to integer number", UStr::to_stdstr(hrdAssignAttrStyle), style_str);
-          }
+        UnicodeString dhrdAssignAttrStyle = UnicodeString(subelem->getAttribute(hrdAssignAttrStyle));
+        if (UStr::getNumber(&dhrdAssignAttrStyle, &val)) {
+          style = val;
         }
 
         RegionDefine* rdef = new StyledRegion(bfore, bback, fore, back, style);
