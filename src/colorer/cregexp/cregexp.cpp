@@ -15,8 +15,7 @@ SRegInfo::SRegInfo()
 }
 SRegInfo::~SRegInfo()
 {
-  if (next)
-    delete next;
+  delete next;
   if (un.param)
     switch (op) {
       case ReEnum:
@@ -73,12 +72,10 @@ CRegExp::CRegExp(const UnicodeString* text)
 }
 CRegExp::~CRegExp()
 {
-  if (tree_root)
-    delete tree_root;
+  delete tree_root;
 #ifndef NAMED_MATCHES_IN_HASH
   for (int bp = 0; bp < cnMatch; bp++)
-    if (brnames[bp])
-      delete brnames[bp];
+    delete brnames[bp];
 #endif
 }
 
@@ -88,13 +85,11 @@ EError CRegExp::setRELow(const UnicodeString& expr)
   if (!len)
     return EERROR;
 
-  if (tree_root)
-    delete tree_root;
+  delete tree_root;
   tree_root = nullptr;
 #ifndef NAMED_MATCHES_IN_HASH
   for (int bp = 0; bp < cnMatch; bp++)
-    if (brnames[bp])
-      delete brnames[bp];
+    delete brnames[bp];
 #endif
 
   cMatch = 0;
@@ -555,7 +550,6 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
     if (expr[i] == '[') {
       int endPos;
       auto* cc = UStr::createCharClass(expr, i, &endPos);
-      //spdlog::info("class {0}", UnicodeString(expr_,i,endPos-i+1));
       if (cc == nullptr)
         return EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
@@ -1039,7 +1033,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             }
             br = false;
             for (i = backTrace->s[sv]; i < backTrace->e[sv]; i++) {
-              if (UStr::toLowerCase(pattern[toParse]) != UStr::toLowerCase((*backStr)[i]) || toParse >= end) {
+              if (toParse >= end || UStr::toLowerCase(pattern[toParse]) != UStr::toLowerCase((*backStr)[i])) {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 br = true;
                 break;
