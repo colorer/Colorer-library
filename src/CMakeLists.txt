@@ -20,54 +20,92 @@ set(SRC_COLORER
     colorer/common/UStr.cpp colorer/common/UStr.h
     colorer/common/UnicodeLogger.h
     colorer/common/UnicodeStringContainer.h
-    colorer/cregexp/cregexp.cpp colorer/cregexp/cregexp.h
-    colorer/editor/BaseEditor.cpp colorer/editor/BaseEditor.h
-    colorer/editor/EditorListener.h colorer/editor/OutlineItem.h
-    colorer/editor/Outliner.cpp colorer/editor/Outliner.h
+    colorer/cregexp/cregexp.cpp
+    colorer/cregexp/cregexp.h
+    colorer/editor/BaseEditor.cpp
+    colorer/editor/BaseEditor.h
+    colorer/editor/EditorListener.h
+    colorer/editor/OutlineItem.h
+    colorer/editor/Outliner.cpp
+    colorer/editor/Outliner.h
     colorer/editor/PairMatch.h
     colorer/handlers/LineRegion.h
-    colorer/handlers/LineRegionsCompactSupport.cpp colorer/handlers/LineRegionsCompactSupport.h
-    colorer/handlers/LineRegionsSupport.cpp colorer/handlers/LineRegionsSupport.h
+    colorer/handlers/LineRegionsCompactSupport.cpp
+    colorer/handlers/LineRegionsCompactSupport.h
+    colorer/handlers/LineRegionsSupport.cpp
+    colorer/handlers/LineRegionsSupport.h
     colorer/handlers/RegionDefine.h
     colorer/handlers/RegionMapper.h
-    colorer/handlers/RegionMapperImpl.cpp colorer/handlers/RegionMapperImpl.h
-    colorer/handlers/StyledHRDMapper.h colorer/handlers/StyledHRDMapper.cpp
+    colorer/handlers/RegionMapperImpl.cpp
+    colorer/handlers/RegionMapperImpl.h
+    colorer/handlers/StyledHRDMapper.cpp
+    colorer/handlers/StyledHRDMapper.h
+    colorer/handlers/StyledRegion.cpp
     colorer/handlers/StyledRegion.h
-    colorer/handlers/TextHRDMapper.h colorer/handlers/TextHRDMapper.cpp
+    colorer/handlers/TextHRDMapper.cpp
+    colorer/handlers/TextHRDMapper.h
+    colorer/handlers/TextRegion.cpp
     colorer/handlers/TextRegion.h
-    colorer/io/FileInputSource.cpp colorer/io/FileInputSource.h
-    colorer/io/FileWriter.h colorer/io/FileWriter.cpp
-    colorer/io/HTTPInputSource.cpp colorer/io/HTTPInputSource.h
-    colorer/io/InputSource.cpp colorer/io/InputSource.h
-    colorer/io/JARInputSource.h colorer/io/JARInputSource.cpp
-    colorer/io/MemoryFile.h colorer/io/MemoryFile.cpp
-    colorer/io/SharedInputSource.h colorer/io/SharedInputSource.cpp
-    colorer/io/StreamWriter.cpp colorer/io/StreamWriter.h
-    colorer/io/Writer.cpp colorer/io/Writer.h
-    colorer/parsers/CatalogParser.cpp colorer/parsers/CatalogParser.h
+    colorer/io/FileInputSource.cpp
+    colorer/io/FileInputSource.h
+    colorer/io/FileWriter.cpp
+    colorer/io/FileWriter.h
+    colorer/io/HTTPInputSource.cpp
+    colorer/io/HTTPInputSource.h
+    colorer/io/InputSource.cpp
+    colorer/io/InputSource.h
+    colorer/io/JARInputSource.cpp
+    colorer/io/JARInputSource.h
+    colorer/io/MemoryFile.cpp
+    colorer/io/MemoryFile.h
+    colorer/io/SharedInputSource.cpp
+    colorer/io/SharedInputSource.h
+    colorer/io/StreamWriter.cpp
+    colorer/io/StreamWriter.h
+    colorer/io/Writer.cpp
+    colorer/io/Writer.h
+    colorer/parsers/CatalogParser.cpp
+    colorer/parsers/CatalogParser.h
+    colorer/parsers/FileType.cpp
     colorer/parsers/FileTypeChooser.h
-    colorer/parsers/FileTypeImpl.h colorer/parsers/FileTypeImpl.cpp
-    colorer/parsers/HRCParserImpl.cpp colorer/parsers/HRCParserImpl.h
+    colorer/parsers/FileTypeImpl.cpp
+    colorer/parsers/FileTypeImpl.h
+    colorer/parsers/HRCParser.cpp
+    colorer/parsers/HRCParserImpl.cpp
+    colorer/parsers/HRCParserImpl.h
     colorer/parsers/HRDNode.h
-    colorer/parsers/KeywordList.h colorer/parsers/KeywordList.cpp
+    colorer/parsers/KeywordList.cpp
+    colorer/parsers/KeywordList.h
     colorer/parsers/ParserFactoryImpl.cpp
     colorer/parsers/ParserFactoryImpl.h
     colorer/parsers/SchemeImpl.h
-    colorer/parsers/SchemeNode.cpp colorer/parsers/SchemeNode.h
-    colorer/parsers/TextParserHelpers.cpp colorer/parsers/TextParserHelpers.h
-    colorer/parsers/TextParserImpl.cpp colorer/parsers/TextParserImpl.h
+    colorer/parsers/SchemeNode.cpp
+    colorer/parsers/SchemeNode.h
+    colorer/parsers/TextParser.cpp
+    colorer/parsers/TextParserHelpers.cpp
+    colorer/parsers/TextParserHelpers.h
+    colorer/parsers/TextParserImpl.cpp
+    colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
     colorer/parsers/XmlTagDefs.h
     colorer/viewer/ParsedLineWriter.h
-    colorer/viewer/TextConsoleViewer.cpp colorer/viewer/TextConsoleViewer.h
-    colorer/viewer/TextLinesStore.cpp colorer/viewer/TextLinesStore.h
-    colorer/xml/BaseEntityResolver.cpp colorer/xml/BaseEntityResolver.h
-    colorer/xml/LocalFileXmlInputSource.h colorer/xml/LocalFileXmlInputSource.cpp
-    colorer/xml/SharedXmlInputSource.cpp colorer/xml/SharedXmlInputSource.h
-    colorer/xml/XmlInputSource.cpp colorer/xml/XmlInputSource.h
-    colorer/xml/XmlParserErrorHandler.cpp colorer/xml/XmlParserErrorHandler.h
-    colorer/xml/ZipXmlInputSource.cpp colorer/xml/ZipXmlInputSource.h
-    colorer/parsers/TextParser.cpp colorer/parsers/HRCParser.cpp colorer/parsers/FileType.cpp)
+    colorer/viewer/TextConsoleViewer.cpp
+    colorer/viewer/TextConsoleViewer.h
+    colorer/viewer/TextLinesStore.cpp
+    colorer/viewer/TextLinesStore.h
+    colorer/xml/BaseEntityResolver.cpp
+    colorer/xml/BaseEntityResolver.h
+    colorer/xml/LocalFileXmlInputSource.cpp
+    colorer/xml/LocalFileXmlInputSource.h
+    colorer/xml/SharedXmlInputSource.cpp
+    colorer/xml/SharedXmlInputSource.h
+    colorer/xml/XmlInputSource.cpp
+    colorer/xml/XmlInputSource.h
+    colorer/xml/XmlParserErrorHandler.cpp
+    colorer/xml/XmlParserErrorHandler.h
+    colorer/xml/ZipXmlInputSource.cpp
+    colorer/xml/ZipXmlInputSource.h
+    )
 
 #====================================================
 # common flags

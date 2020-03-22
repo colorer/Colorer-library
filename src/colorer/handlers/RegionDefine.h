@@ -55,6 +55,7 @@ class RegionDefine
     return *this;
   }
 
+  RegionDefine(const RegionDefine& rd) = delete;
   /**
    * Clones current region and creates it's duplicate.
    * To be implemented in subclasses.
@@ -63,6 +64,9 @@ class RegionDefine
 
   /** Default Destructor */
   virtual ~RegionDefine() = default;
+
+ protected:
+  RegionDefine() = default;
 };
 
 #endif

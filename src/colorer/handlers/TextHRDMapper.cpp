@@ -1,7 +1,6 @@
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <cstdio>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
@@ -19,9 +18,6 @@ TextHRDMapper::~TextHRDMapper()
   }
 }
 
-/** Loads region definitions from HRD file.
-    Multiple files could be loaded.
-*/
 void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 {
   xercesc::XercesDOMParser xml_parser;
@@ -31,17 +27,18 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw Exception("Error loading HRD file");
+    throw Exception("Error loading HRD file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
-  if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception("Error loading HRD file");
+  if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
+    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + UnicodeString(is->getInputSource()->getSystemId()));
   }
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
+
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
         if (*xname == '\0') {
           continue;
@@ -88,14 +85,10 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   }
 }
 
-/** Writes all currently loaded region definitions into
-    XML file. Note, that this method writes all loaded
-    defines from all loaded HRD files.
-*/
 void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write("<?xml version=\"1.0\"?>\n<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n<hrd>\n");
-  for (const auto & regionDefine : regionDefines) {
+  for (const auto& regionDefine : regionDefines) {
     const TextRegion* rdef = TextRegion::cast(regionDefine.second);
     writer->write("  <define name='" + regionDefine.first + "'");
     if (rdef->start_text != nullptr) {
@@ -115,7 +108,6 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
   writer->write("\n</hrd>\n");
 }
 
-/** Adds or replaces region definition */
 void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefine* rd)
 {
   const TextRegion* rd_new = TextRegion::cast(rd);
@@ -151,7 +143,7 @@ void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefin
   regionDefines.emplace(p);
 
   // Searches and replaces old region references
-  for (auto & idx : regionDefinesVector)
+  for (auto& idx : regionDefinesVector)
     if (idx == rd_old->second) {
       idx = new_region;
       break;

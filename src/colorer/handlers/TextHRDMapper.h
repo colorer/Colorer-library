@@ -3,8 +3,6 @@
 
 #include <colorer/handlers/RegionMapperImpl.h>
 #include <colorer/handlers/TextRegion.h>
-#include <colorer/io/Writer.h>
-#include <colorer/xml/XmlInputSource.h>
 
 /** HRD files reader.
     HRD Files format contains mappings of HRC syntax regions into
@@ -20,8 +18,8 @@ class TextHRDMapper : public RegionMapperImpl
   TextHRDMapper();
   ~TextHRDMapper() override;
 
-  /**
-   * Loads region defines from @c is InputSource
+  /** Loads region definitions from HRD file.
+   * Multiple files could be loaded.
    */
   void loadRegionMappings(XmlInputSource* is) override;
 
@@ -30,7 +28,10 @@ class TextHRDMapper : public RegionMapperImpl
    * Note, that result document would not be equal
    * to input one, because there could be multiple input
    * documents.
+   * Note, that this method writes all loaded
+   * defines from all loaded HRD files.
    */
+
   void saveRegionMappings(Writer* writer) const override;
 
   /**

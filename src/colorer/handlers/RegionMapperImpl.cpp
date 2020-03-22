@@ -40,8 +40,6 @@ const RegionDefine* RegionMapperImpl::getRegionDefine(const Region* region) cons
   return rd;
 }
 
-/** Returns region mapping by it's full qualified name.
- */
 const RegionDefine* RegionMapperImpl::getRegionDefine(const UnicodeString& name) const
 {
   auto tp = regionDefines.find(name);

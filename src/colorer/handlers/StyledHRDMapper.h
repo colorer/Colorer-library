@@ -3,8 +3,6 @@
 
 #include <colorer/handlers/RegionMapperImpl.h>
 #include <colorer/handlers/StyledRegion.h>
-#include <colorer/io/Writer.h>
-#include <colorer/xml/XmlInputSource.h>
 
 /** HRD files reader.
     HRD Files format contains mappings of HRC syntax regions into

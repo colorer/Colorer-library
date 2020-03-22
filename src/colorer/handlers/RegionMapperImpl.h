@@ -1,12 +1,10 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
-#include <colorer/handlers/RegionDefine.h>
 #include <colorer/handlers/RegionMapper.h>
 #include <colorer/io/Writer.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <vector>
-#include <xercesc/sax/InputSource.hpp>
 
 /** Abstract RegionMapper.
     Stores all region mappings in hashtable and sequental vector.
@@ -21,16 +19,19 @@ class RegionMapperImpl : public RegionMapper
   /** Loads region defines from @c is InputSource
    */
   virtual void loadRegionMappings(XmlInputSource* is) = 0;
+
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input
       documents.
   */
   virtual void saveRegionMappings(Writer* writer) const = 0;
+
   /** Changes specified region definition to @c rdnew
       @param region Region full qualified name.
       @param rdnew  New region definition to replace old one
   */
+
   virtual void setRegionDefine(const UnicodeString& region, const RegionDefine* rdnew) = 0;
 
   /** Enumerates all loaded region defines.
@@ -39,6 +40,8 @@ class RegionMapperImpl : public RegionMapper
   std::vector<const RegionDefine*> enumerateRegionDefines() const;
 
   const RegionDefine* getRegionDefine(const Region* region) const override;
+  /** Returns region mapping by it's full qualified name.
+   */
   const RegionDefine* getRegionDefine(const UnicodeString& name) const override;
 
   RegionMapperImpl(const RegionMapperImpl&) = delete;
