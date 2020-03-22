@@ -3,6 +3,7 @@
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
+#include <memory>
 
 TextHRDMapper::TextHRDMapper() = default;
 
@@ -14,7 +15,6 @@ TextHRDMapper::~TextHRDMapper()
     delete rd->end_text;
     delete rd->start_back;
     delete rd->end_back;
-    delete rd;
   }
 }
 
@@ -38,7 +38,6 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
-
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
         if (*xname == '\0') {
           continue;
@@ -52,31 +51,31 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
           delete rd->end_text;
           delete rd->start_back;
           delete rd->end_back;
-          delete rd;
+          regionDefines.erase(tp);
         }
-        const UnicodeString* stext = nullptr;
-        const UnicodeString* etext = nullptr;
-        const UnicodeString* sback = nullptr;
-        const UnicodeString* eback = nullptr;
+        uUnicodeString stext;
+        uUnicodeString etext;
+        uUnicodeString sback;
+        uUnicodeString eback;
         const XMLCh* sval;
         sval = subelem->getAttribute(hrdAssignAttrSText);
         if (*sval != '\0') {
-          stext = new UnicodeString(sval);
+          stext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEText);
         if (*sval != '\0') {
-          etext = new UnicodeString(sval);
+          etext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrSBack);
         if (*sval != '\0') {
-          sback = new UnicodeString(sval);
+          sback = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEBack);
         if (*sval != '\0') {
-          eback = new UnicodeString(sval);
+          eback = std::make_unique<UnicodeString>(sval);
         }
 
-        RegionDefine* rdef = new TextRegion(stext, etext, sback, eback);
+        RegionDefine* rdef = new TextRegion(stext.get(), etext.get(), sback.get(), eback.get());
         std::pair<UnicodeString, RegionDefine*> pp(*name, rdef);
         regionDefines.emplace(pp);
         delete name;
@@ -87,7 +86,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 
 void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write("<?xml version=\"1.0\"?>\n<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n<hrd>\n");
+  writer->write("<?xml version=\"1.0\"?>\n");
   for (const auto& regionDefine : regionDefines) {
     const TextRegion* rdef = TextRegion::cast(regionDefine.second);
     writer->write("  <define name='" + regionDefine.first + "'");
@@ -111,21 +110,24 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefine* rd)
 {
   const TextRegion* rd_new = TextRegion::cast(rd);
-  const UnicodeString* stext = nullptr;
-  const UnicodeString* etext = nullptr;
-  const UnicodeString* sback = nullptr;
-  const UnicodeString* eback = nullptr;
-  if (rd_new->start_text != nullptr) {
-    stext = new UnicodeString(*rd_new->start_text);
+  if (!rd_new)
+    return;
+
+  uUnicodeString stext;
+  uUnicodeString etext;
+  uUnicodeString sback;
+  uUnicodeString eback;
+  if (rd_new->start_text) {
+    stext = std::make_unique<UnicodeString>(*rd_new->start_text);
   }
-  if (rd_new->end_text != nullptr) {
-    etext = new UnicodeString(*rd_new->end_text);
+  if (rd_new->end_text) {
+    etext = std::make_unique<UnicodeString>(*rd_new->end_text);
   }
-  if (rd_new->start_back != nullptr) {
-    sback = new UnicodeString(*rd_new->start_back);
+  if (rd_new->start_back) {
+    sback = std::make_unique<UnicodeString>(*rd_new->start_back);
   }
-  if (rd_new->end_back != nullptr) {
-    eback = new UnicodeString(*rd_new->end_back);
+  if (rd_new->end_back) {
+    eback = std::make_unique<UnicodeString>(*rd_new->end_back);
   }
 
   auto rd_old = regionDefines.find(name);
@@ -135,15 +137,14 @@ void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefin
     delete rdef->end_text;
     delete rdef->start_back;
     delete rdef->end_back;
-    delete rdef;
   }
 
-  RegionDefine* new_region = new TextRegion(stext, etext, sback, eback);
+  RegionDefine* new_region = new TextRegion(stext.get(), etext.get(), sback.get(), eback.get());
   std::pair<UnicodeString, RegionDefine*> p(name, new_region);
   regionDefines.emplace(p);
 
   // Searches and replaces old region references
-  for (auto& idx : regionDefinesVector)
+  for (auto& idx : regionDefinesCache)
     if (idx == rd_old->second) {
       idx = new_region;
       break;

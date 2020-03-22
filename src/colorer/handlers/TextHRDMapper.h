@@ -1,7 +1,7 @@
 #ifndef _COLORER_TEXTHRDMAPPER_H_
 #define _COLORER_TEXTHRDMAPPER_H_
 
-#include <colorer/handlers/RegionMapperImpl.h>
+#include <colorer/handlers/RegionMapper.h>
 #include <colorer/handlers/TextRegion.h>
 
 /** HRD files reader.
@@ -12,7 +12,7 @@
 
     @ingroup colorer_handlers
 */
-class TextHRDMapper : public RegionMapperImpl
+class TextHRDMapper : public RegionMapper
 {
  public:
   TextHRDMapper();

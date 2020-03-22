@@ -32,7 +32,7 @@ class Region
     return parent;
   }
   /** Quick access region id (incrementable) */
-  [[nodiscard]] virtual unsigned int getID() const
+  [[nodiscard]] virtual size_t getID() const
   {
     return id;
   }
@@ -57,7 +57,7 @@ class Region
     Basic constructor.
     Used only by HRCParser.
   */
-  Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, unsigned int _id)
+  Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, size_t _id)
   {
     name = new UnicodeString(*_name);
     description = nullptr;
@@ -78,7 +78,7 @@ class Region
   /** Internal members */
   UnicodeString *name, *description;
   const Region* parent;
-  unsigned int id;
+  size_t id;
 };
 
 #endif

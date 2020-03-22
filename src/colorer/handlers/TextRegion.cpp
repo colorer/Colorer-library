@@ -13,7 +13,6 @@ TextRegion::TextRegion(const UnicodeString* _start_text, const UnicodeString* _e
 
 TextRegion::TextRegion()
 {
-  start_text = end_text = start_back = end_back = nullptr;
   type = RegionDefine::TEXT_REGION;
 }
 

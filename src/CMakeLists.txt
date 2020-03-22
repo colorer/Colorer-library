@@ -36,8 +36,7 @@ set(SRC_COLORER
     colorer/handlers/LineRegionsSupport.h
     colorer/handlers/RegionDefine.h
     colorer/handlers/RegionMapper.h
-    colorer/handlers/RegionMapperImpl.cpp
-    colorer/handlers/RegionMapperImpl.h
+    colorer/handlers/RegionMapper.cpp
     colorer/handlers/StyledHRDMapper.cpp
     colorer/handlers/StyledHRDMapper.h
     colorer/handlers/StyledRegion.cpp
