@@ -6,18 +6,8 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
-const int StyledRegion::RD_BOLD = 1;
-const int StyledRegion::RD_ITALIC = 2;
-const int StyledRegion::RD_UNDERLINE = 4;
-const int StyledRegion::RD_STRIKEOUT = 8;
-
-StyledHRDMapper::StyledHRDMapper() = default;
-
 StyledHRDMapper::~StyledHRDMapper()
 {
-  for (const auto& it : regionDefines) {
-    delete it.second;
-  }
   regionDefines.clear();
 }
 
@@ -25,52 +15,62 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
+
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
+  xml_parser.setLoadSchema(false);
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
+
   if (error_handler.getSawErrors()) {
-    throw Exception("Error loading HRD file");
+    throw Exception("Error loading HRD file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
   }
+
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
-  if (hbase == nullptr || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception("Error loading HRD file");
+  if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
+    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + UnicodeString(is->getInputSource()->getSystemId()));
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
-        if (*xname == '\0') {
+        if (*xname == xercesc::chNull) {
           continue;
         }
 
-        auto* name = new UnicodeString(xname);
-        auto rd_new = regionDefines.find(*name);
+        UnicodeString name(xname);
+        auto rd_new = regionDefines.find(name);
         if (rd_new != regionDefines.end()) {
+          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
+                       UnicodeString(is->getInputSource()->getSystemId()));
           regionDefines.erase(rd_new);
         }
 
-        int val = 0;
-        UnicodeString dhrdAssignAttrFore = UnicodeString(subelem->getAttribute(hrdAssignAttrFore));
-        bool bfore = UStr::getNumber(&dhrdAssignAttrFore, &val);
-        int fore = val;
-        UnicodeString dhrdAssignAttrBack = UnicodeString(subelem->getAttribute(hrdAssignAttrBack));
-        bool bback = UStr::getNumber(&dhrdAssignAttrBack, &val);
-        int back = val;
-        int style = 0;
-        UnicodeString dhrdAssignAttrStyle = UnicodeString(subelem->getAttribute(hrdAssignAttrStyle));
-        if (UStr::getNumber(&dhrdAssignAttrStyle, &val)) {
-          style = val;
+        unsigned int fore = 0;
+        bool bfore = false;
+        const XMLCh* sval = subelem->getAttribute(hrdAssignAttrFore);
+        if (*sval != xercesc::chNull) {
+          bfore = UStr::HexToUInt(UnicodeString(sval), &fore);
         }
 
-        RegionDefine* rdef = new StyledRegion(bfore, bback, fore, back, style);
-        std::pair<UnicodeString, RegionDefine*> pp(*name, rdef);
-        regionDefines.emplace(pp);
+        unsigned int back = 0;
+        bool bback = false;
+        sval = subelem->getAttribute(hrdAssignAttrBack);
+        if (*sval != xercesc::chNull) {
+          bback = UStr::HexToUInt(UnicodeString(sval), &back);
+        }
 
-        delete name;
+        unsigned int style = 0;
+        sval = subelem->getAttribute(hrdAssignAttrStyle);
+        if (*sval != xercesc::chNull) {
+          UStr::HexToUInt(UnicodeString(sval), &style);
+        }
+
+        auto rdef = std::unique_ptr<RegionDefine>(new StyledRegion(bfore, bback, fore, back, style));
+        regionDefines.emplace(name, std::move(rdef));
       }
     }
   }
@@ -82,21 +82,21 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
 */
 void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 {
-  writer->write("<?xml version=\"1.0\"?>\n<!DOCTYPE hrd SYSTEM \"../hrd.dtd\">\n\n<hrd>\n");
+  writer->write("<?xml version=\"1.0\"?>\n");
   for (const auto& regionDefine : regionDefines) {
-    const StyledRegion* rdef = StyledRegion::cast(regionDefine.second);
+    const StyledRegion* rdef = StyledRegion::cast(regionDefine.second.get());
     char temporary[256];
     writer->write("  <define name='" + regionDefine.first + "'");
-    if (rdef->bfore) {
+    if (rdef->isForeSet) {
       sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(temporary);
     }
-    if (rdef->bback) {
+    if (rdef->isBackSet) {
       sprintf(temporary, " back=\"#%06x\"", rdef->back);
       writer->write(temporary);
     }
     if (rdef->style) {
-      sprintf(temporary, " style=\"#%06x\"", rdef->style);
+      sprintf(temporary, " style=\"%u\"", rdef->style);
       writer->write(temporary);
     }
     writer->write("/>\n");
@@ -107,18 +107,17 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 /** Adds or replaces region definition */
 void StyledHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefine* rd)
 {
-  auto rd_old = regionDefines.find(name);
+  if (!rd)
+    return;
 
   const StyledRegion* new_region = StyledRegion::cast(rd);
   RegionDefine* rd_new = new StyledRegion(*new_region);
-  std::pair<UnicodeString, RegionDefine*> pp(name, rd_new);
-  regionDefines.emplace(pp);
 
-  // Searches and replaces old region references
-  for (auto& idx : regionDefinesCache) {
-    if (idx == rd_old->second) {
-      idx = rd_new;
-      break;
-    }
+  auto rd_old_it = regionDefines.find(name);
+  if (rd_old_it == regionDefines.end()) {
+    std::pair<UnicodeString, RegionDefine*> pp(name, rd_new);
+    regionDefines.emplace(pp);
+  } else {
+    rd_old_it->second.reset(rd_new);
   }
 }

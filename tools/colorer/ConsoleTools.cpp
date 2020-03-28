@@ -344,7 +344,7 @@ void ConsoleTools::viewFile()
 
     int background;
     const StyledRegion* rd = StyledRegion::cast(baseEditor.rd_def_Text);
-    if (rd != nullptr && rd->bfore && rd->bback) {
+    if (rd != nullptr && rd->isForeSet && rd->isBackSet) {
       background = rd->fore + (rd->back << 4);
     } else {
       background = 0x1F;
@@ -447,7 +447,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n");
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->start_text);
+        commonWriter->write(*TextRegion::cast(rd)->start_text);
       } else {
         commonWriter->write("<html><body style='");
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
@@ -490,7 +490,7 @@ void ConsoleTools::genOutput(bool useTokens)
       commonWriter->write("</pre></body></html>\n");
     } else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
-        commonWriter->write(TextRegion::cast(rd)->end_text);
+        commonWriter->write(*TextRegion::cast(rd)->end_text);
       } else {
         commonWriter->write("</pre></body></html>\n");
       }

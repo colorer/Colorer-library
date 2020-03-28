@@ -15,7 +15,7 @@
 class StyledHRDMapper : public RegionMapper
 {
  public:
-  StyledHRDMapper();
+  StyledHRDMapper() = default;
   ~StyledHRDMapper() override;
 
   /** Loads region defines from @c is InputSource

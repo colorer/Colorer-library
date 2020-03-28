@@ -3,29 +3,23 @@
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <memory>
-
-TextHRDMapper::TextHRDMapper() = default;
 
 TextHRDMapper::~TextHRDMapper()
 {
-  for (auto& regionDefine : regionDefines) {
-    const TextRegion* rd = TextRegion::cast(regionDefine.second);
-    delete rd->start_text;
-    delete rd->end_text;
-    delete rd->start_back;
-    delete rd->end_back;
-  }
+  regionDefines.clear();
 }
 
 void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
+
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
+  xml_parser.setLoadSchema(false);
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
+
   if (error_handler.getSawErrors()) {
     throw Exception("Error loading HRD file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
   }
@@ -35,50 +29,45 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + UnicodeString(is->getInputSource()->getSystemId()));
   }
+
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
-        if (*xname == '\0') {
+        if (*xname == xercesc::chNull) {
           continue;
         }
 
-        auto* name = new UnicodeString(xname);
-        auto tp = regionDefines.find(*name);
+        UnicodeString name(xname);
+        auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          const TextRegion* rd = TextRegion::cast(tp->second);
-          delete rd->start_text;
-          delete rd->end_text;
-          delete rd->start_back;
-          delete rd->end_back;
+          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name, UnicodeString(is->getInputSource()->getSystemId()));
           regionDefines.erase(tp);
         }
-        uUnicodeString stext;
-        uUnicodeString etext;
-        uUnicodeString sback;
-        uUnicodeString eback;
+        std::shared_ptr<const UnicodeString> stext;
+        std::shared_ptr<const UnicodeString> etext;
+        std::shared_ptr<const UnicodeString> sback;
+        std::shared_ptr<const UnicodeString> eback;
         const XMLCh* sval;
         sval = subelem->getAttribute(hrdAssignAttrSText);
-        if (*sval != '\0') {
+        if (*sval != xercesc::chNull) {
           stext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEText);
-        if (*sval != '\0') {
+        if (*sval != xercesc::chNull) {
           etext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrSBack);
-        if (*sval != '\0') {
+        if (*sval != xercesc::chNull) {
           sback = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEBack);
-        if (*sval != '\0') {
+        if (*sval != xercesc::chNull) {
           eback = std::make_unique<UnicodeString>(sval);
         }
 
-        RegionDefine* rdef = new TextRegion(stext.get(), etext.get(), sback.get(), eback.get());
-        std::pair<UnicodeString, RegionDefine*> pp(*name, rdef);
-        regionDefines.emplace(pp);
-        delete name;
+        auto rdef = std::unique_ptr<RegionDefine>(new TextRegion(stext, etext, sback, eback));
+        regionDefines.emplace(name, std::move(rdef));
       }
     }
   }
@@ -88,7 +77,7 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write("<?xml version=\"1.0\"?>\n");
   for (const auto& regionDefine : regionDefines) {
-    const TextRegion* rdef = TextRegion::cast(regionDefine.second);
+    const TextRegion* rdef = TextRegion::cast(regionDefine.second.get());
     writer->write("  <define name='" + regionDefine.first + "'");
     if (rdef->start_text != nullptr) {
       writer->write(" start_text='" + *rdef->start_text + "'");
@@ -109,44 +98,17 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 
 void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefine* rd)
 {
-  const TextRegion* rd_new = TextRegion::cast(rd);
-  if (!rd_new)
+  if (!rd)
     return;
 
-  uUnicodeString stext;
-  uUnicodeString etext;
-  uUnicodeString sback;
-  uUnicodeString eback;
-  if (rd_new->start_text) {
-    stext = std::make_unique<UnicodeString>(*rd_new->start_text);
-  }
-  if (rd_new->end_text) {
-    etext = std::make_unique<UnicodeString>(*rd_new->end_text);
-  }
-  if (rd_new->start_back) {
-    sback = std::make_unique<UnicodeString>(*rd_new->start_back);
-  }
-  if (rd_new->end_back) {
-    eback = std::make_unique<UnicodeString>(*rd_new->end_back);
-  }
+  const TextRegion* rd_new = TextRegion::cast(rd);
+  RegionDefine* new_region = new TextRegion(*rd_new);
 
-  auto rd_old = regionDefines.find(name);
-  if (rd_old != regionDefines.end()) {
-    const TextRegion* rdef = TextRegion::cast(rd_old->second);
-    delete rdef->start_text;
-    delete rdef->end_text;
-    delete rdef->start_back;
-    delete rdef->end_back;
+  auto rd_old_it = regionDefines.find(name);
+  if (rd_old_it == regionDefines.end()) {
+    std::pair<UnicodeString, RegionDefine*> pp(name, new_region);
+    regionDefines.emplace(pp);
+  } else {
+    rd_old_it->second.reset(new_region);
   }
-
-  RegionDefine* new_region = new TextRegion(stext.get(), etext.get(), sback.get(), eback.get());
-  std::pair<UnicodeString, RegionDefine*> p(name, new_region);
-  regionDefines.emplace(p);
-
-  // Searches and replaces old region references
-  for (auto& idx : regionDefinesCache)
-    if (idx == rd_old->second) {
-      idx = new_region;
-      break;
-    }
 }

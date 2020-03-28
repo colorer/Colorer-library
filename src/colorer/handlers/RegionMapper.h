@@ -57,7 +57,7 @@ class RegionMapper
 
  protected:
   // all RegionDefine
-  std::unordered_map<UnicodeString, RegionDefine*> regionDefines;
+  std::unordered_map<UnicodeString, std::unique_ptr<RegionDefine>> regionDefines;
   // "cache" for fast getting RegionDefine
   mutable std::vector<const RegionDefine*> regionDefinesCache;
 };

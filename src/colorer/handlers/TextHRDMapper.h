@@ -15,7 +15,7 @@
 class TextHRDMapper : public RegionMapper
 {
  public:
-  TextHRDMapper();
+  TextHRDMapper()= default;
   ~TextHRDMapper() override;
 
   /** Loads region definitions from HRD file.

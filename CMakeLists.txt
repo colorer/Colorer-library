@@ -110,3 +110,5 @@ find_package(GTest)
 if (${GTEST_FOUND})
   add_subdirectory(./tests/unit)
 endif ()
+
+add_subdirectory(./tests)

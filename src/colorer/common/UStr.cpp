@@ -1,7 +1,6 @@
 #include <colorer/common/UStr.h>
 #include <unicode/uchar.h>
 
-
 UnicodeString UStr::to_unistr(const int number)
 {
   return UnicodeString(std::to_string(number).c_str());
@@ -308,148 +307,30 @@ UnicodeString* UStr::getCurlyContent(const UnicodeString& str, int pos)
 int UStr::getNumber(const UnicodeString* pstr)
 {
   int r = 1, num = 0;
-  if (pstr == nullptr) return -1;
+  if (pstr == nullptr)
+    return -1;
   for (int i = pstr->length() - 1; i >= 0; i--) {
-    if ((*pstr)[i] > '9' || (*pstr)[i] < '0') return -1;
+    if ((*pstr)[i] > '9' || (*pstr)[i] < '0')
+      return -1;
     num += ((*pstr)[i] - 0x30) * r;
     r *= 10;
   }
   return num;
 }
 
-//  modifed GetNumber - sign extension!
-// 1.1123 .123 0x1f #1f $1f
-bool UStr::getNumber(const UnicodeString* pstr, double* res)
+bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
 {
-  double Numr, r, flt;
-  int pos, Type, Num;
-  int s, e, i, j, pt, k, ExpS, ExpE;
-  bool Exp = false, ExpSign = true, sign = false;
+  UnicodeString s;
+  if (str_hex[0] == '#')
+    s = UnicodeString(str_hex, 1);
+  else
+    s = str_hex;
 
-  if (pstr == nullptr || pstr->length() == 0) return false;
-
-  const UnicodeString &str = *pstr;
-  pos = str.length();
-
-  s = 0;
-  e = pos;
-  Type = 3;
-  while (true) {
-    if (str.length() > 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-      s = 2;
-      Type = 0;
-      break;
-    }
-    if (str[0] == '$' || str[0] == '#') {
-      s = 1;
-      Type = 0;
-      break;
-    }
-    if (str[0] == '-') {
-      Type = 3;
-      s = 1;
-      sign = true;
-      break;
-    }
-    break;
+  try {
+    *result = std::stoul(UStr::to_stdstr(&s), nullptr, 16);
+    return true;
+  } catch (std::exception& e) {
+    spdlog::error("Can`t convert {0} to int. {1}", str_hex, e.what());
+    return false;
   }
-
-  switch (Type) {
-    case 0: // hex
-      Num = 0;
-      i = e - 1;
-      while (i >= s) {
-        j = str[i];
-        if (((j < 0x30) || (j > 0x39)) &&
-            (((j | 0x20) < 'a') || ((j | 0x20) > 'f')))
-          return false;
-        if (j > 0x40) j -= 7;
-        j &= 15;
-        if (i > e - 9) Num |= (j << ((e - i - 1) * 4));
-        i--;
-      }
-      *res = (int)Num;
-      break;
-    case 3: // double
-      for (i = s; i < e; i++)
-        if (str[i] == 'e' || str[i] == 'E') {
-          Exp = true;
-          ExpS = i + 1;
-          if (str[i + 1] == '+' || str[i + 1] == '-') {
-            ExpS++;
-            if (str[i + 1] == '-') ExpSign = false;
-          }
-          ExpE = e;
-          e = i;
-        }
-      pt = e;
-      for (i = s; i < e; i++)
-        if (str[i] == '.') {
-          pt = i;
-          break;
-        }
-      Numr = 0;
-      i = pt - 1;
-      while (i >= s) {
-        j = str[i];
-        if ((j < 0x30) || (j > 0x39))
-          return false;
-        j &= 15;
-        k = pt - i - 1;
-        r = (long double)j;
-        while (k) {
-          k--;
-          r *= 10;
-        }
-        Numr += r;
-        i--;
-      }
-      i = e - 1;
-      while (i > pt) {
-        j = str[i];
-        if ((j < 0x30) || (j > 0x39))
-          return false;
-        j &= 15;
-        k = i - pt;
-        r = j;
-        while (k) {
-          k--;
-          r /= 10;
-        }
-        Numr += r;
-        i--;
-      }
-      if (Exp) {
-        flt = 0;
-        i = ExpE - 1;
-        while (i >= ExpS) {
-          j = str[i];
-          if ((j < 0x30) || (j > 0x39))
-            return false;
-          j &= 15;
-          k = ExpE - i - 1;
-          r = (long double)j;
-          while (k) {
-            k--;
-            r *= 10;
-          }
-          flt += r;
-          i--;
-        }
-        if (ExpSign)  Numr = Numr * pow(10.0, flt);
-        if (!ExpSign) Numr = Numr / pow(10.0, flt);
-      }
-      *res = Numr;
-      break;
-  }
-  if (sign) *res = -(*res);
-  return true;
-}
-
-bool UStr::getNumber(const UnicodeString* pstr, int* res)
-{
-  double dres;
-  if (getNumber(pstr, &dres)) *res = (int)dres;
-  else return false;
-  return true;
 }

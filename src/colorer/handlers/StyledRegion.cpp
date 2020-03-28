@@ -1,11 +1,11 @@
 #include <colorer/Exception.h>
 #include <colorer/handlers/StyledRegion.h>
 
-StyledRegion::StyledRegion(bool _bfore, bool _bback, unsigned int _fore, unsigned int _back, unsigned int _style)
+StyledRegion::StyledRegion(bool _isForeSet, bool _isBackSet, unsigned int _fore, unsigned int _back, unsigned int _style)
 {
   type = RegionDefine::STYLED_REGION;
-  bfore = _bfore;
-  bback = _bback;
+  isForeSet = _isForeSet;
+  isBackSet = _isBackSet;
   fore = _fore;
   back = _back;
   style = _style;
@@ -14,9 +14,11 @@ StyledRegion::StyledRegion(bool _bfore, bool _bback, unsigned int _fore, unsigne
 StyledRegion::StyledRegion()
 {
   type = RegionDefine::STYLED_REGION;
-  bfore = bback = false;
-  fore = back = 0;
-  style = 0;
+  isForeSet = false;
+  isBackSet = false;
+  fore = 0;
+  back = 0;
+  style = RD_NONE;
 }
 
 StyledRegion::StyledRegion(const StyledRegion& rd)
@@ -47,13 +49,13 @@ void StyledRegion::assignParent(const RegionDefine* _parent)
   const StyledRegion* parent = StyledRegion::cast(_parent);
   if (parent == nullptr)
     return;
-  if (!bfore) {
+  if (!isForeSet) {
     fore = parent->fore;
-    bfore = parent->bfore;
+    isForeSet = parent->isForeSet;
   }
-  if (!bback) {
+  if (!isBackSet) {
     back = parent->back;
-    bback = parent->bback;
+    isBackSet = parent->isBackSet;
   }
   style = style | parent->style;
 }
@@ -63,9 +65,9 @@ void StyledRegion::setValues(const RegionDefine* _rd)
   const StyledRegion* rd = StyledRegion::cast(_rd);
   if (rd) {
     fore = rd->fore;
-    bfore = rd->bfore;
+    isForeSet = rd->isForeSet;
     back = rd->back;
-    bback = rd->bback;
+    isBackSet = rd->isBackSet;
     style = rd->style;
     type = rd->type;
   }

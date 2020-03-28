@@ -15,15 +15,16 @@ class TextRegion : public RegionDefine
    * Text wrapping information.
    * Pointers are managed externally.
    */
-  const UnicodeString* start_text;
-  const UnicodeString* end_text;
-  const UnicodeString* start_back;
-  const UnicodeString* end_back;
+  std::shared_ptr<const UnicodeString> start_text;
+  std::shared_ptr<const UnicodeString> end_text;
+  std::shared_ptr<const UnicodeString> start_back;
+  std::shared_ptr<const UnicodeString> end_back;
 
   /**
    * Initial constructor
    */
-  TextRegion(const UnicodeString* _start_text, const UnicodeString* _end_text, const UnicodeString* _start_back, const UnicodeString* _end_back);
+  TextRegion(std::shared_ptr<const UnicodeString>& _start_text, std::shared_ptr<const UnicodeString>& _end_text,
+             std::shared_ptr<const UnicodeString>& _start_back, std::shared_ptr<const UnicodeString>& _end_back);
   TextRegion();
 
   /**

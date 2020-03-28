@@ -5,7 +5,7 @@ std::vector<const RegionDefine*> RegionMapper::enumerateRegionDefines() const
   std::vector<const RegionDefine*> r;
   r.reserve(regionDefines.size());
   for (const auto& regionDefine : regionDefines) {
-    r.push_back(regionDefine.second);
+    r.push_back(regionDefine.second.get());
   }
   return r;
 }
@@ -31,8 +31,8 @@ const RegionDefine* RegionMapper::getRegionDefine(const Region* region) const
 
   auto rd_new = regionDefines.find(*region->getName());
   if (rd_new != regionDefines.end()) {
-    regionDefinesCache.at(region->getID()) = rd_new->second;
-    return rd_new->second;
+    regionDefinesCache.at(region->getID()) = rd_new->second.get();
+    return rd_new->second.get();
   }
 
   if (region->getParent()) {
@@ -46,7 +46,7 @@ const RegionDefine* RegionMapper::getRegionDefine(const UnicodeString& name) con
 {
   auto tp = regionDefines.find(name);
   if (tp != regionDefines.end()) {
-    return tp->second;
+    return tp->second.get();
   }
   return nullptr;
 }

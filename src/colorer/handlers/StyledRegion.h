@@ -12,15 +12,12 @@
 class StyledRegion : public RegionDefine
 {
  public:
-  static const int RD_BOLD;
-  static const int RD_ITALIC;
-  static const int RD_UNDERLINE;
-  static const int RD_STRIKEOUT;
+  enum Style { RD_NONE = 0, RD_BOLD = 1, RD_ITALIC = 2, RD_UNDERLINE = 4, RD_STRIKEOUT = 8 };
 
   /** Is foreground value assigned? */
-  bool bfore;
+  bool isForeSet;
   /** Is background value assigned? */
-  bool bback;
+  bool isBackSet;
   /** Foreground color of region */
   unsigned int fore;
   /** Background color of region */
@@ -29,7 +26,7 @@ class StyledRegion : public RegionDefine
   unsigned int style;
 
   /** Common constructor */
-  StyledRegion(bool _bfore, bool _bback, unsigned int _fore, unsigned int _back, unsigned int _style);
+  StyledRegion(bool _isForeSet, bool _isBackSet, unsigned int _fore, unsigned int _back, unsigned int _style);
 
   /** Empty constructor */
   StyledRegion();

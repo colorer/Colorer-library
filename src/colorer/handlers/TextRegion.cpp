@@ -1,13 +1,13 @@
 #include <colorer/Exception.h>
 #include <colorer/handlers/TextRegion.h>
 
-TextRegion::TextRegion(const UnicodeString* _start_text, const UnicodeString* _end_text, const UnicodeString* _start_back,
-                       const UnicodeString* _end_back)
+TextRegion::TextRegion(std::shared_ptr<const UnicodeString>& _start_text, std::shared_ptr<const UnicodeString>& _end_text,
+                       std::shared_ptr<const UnicodeString>& _start_back, std::shared_ptr<const UnicodeString>& _end_back)
 {
-  start_text = _start_text;
-  end_text = _end_text;
-  start_back = _start_back;
-  end_back = _end_back;
+  start_text = std::move(_start_text);
+  end_text = std::move(_end_text);
+  start_back = std::move(_start_back);
+  end_back = std::move(_end_back);
   type = RegionDefine::TEXT_REGION;
 }
 

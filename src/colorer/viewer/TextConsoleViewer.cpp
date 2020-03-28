@@ -73,8 +73,8 @@ INPUT_RECORD ir;
         if (len < 0 || X >= csbi.dwSize.X) continue;
         if (len+X > csbi.dwSize.X) len = csbi.dwSize.X-X;
         WORD color = (WORD)(l1->styled()->fore + (l1->styled()->back<<4));
-        if (!l1->styled()->bfore) color = (color&0xF0) + (background&0xF);
-        if (!l1->styled()->bback) color = (color&0xF) + (background&0xF0);
+        if (!l1->styled()->isForeSet) color = (color&0xF0) + (background&0xF);
+        if (!l1->styled()->isBackSet) color = (color&0xF) + (background&0xF0);
         for(int li = 0; li < len; li++)
           buffer[Y*csbi.dwSize.X + X + li].Attributes = color;
       }

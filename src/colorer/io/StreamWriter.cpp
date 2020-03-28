@@ -17,7 +17,7 @@ void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
 
 void StreamWriter::writeBOM(){
   //if (useBOM && Encodings::isMultibyteEncoding(encodingIndex))
-  write(0xFEFF);
+  if (useBOM) write(0xFEFF);
 }
 
 StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool useBOM = true){

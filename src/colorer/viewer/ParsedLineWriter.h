@@ -76,11 +76,11 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       }
-      if (l1->texted()->start_back != nullptr) markupWriter->write(l1->texted()->start_back);
-      if (l1->texted()->start_text != nullptr) markupWriter->write(l1->texted()->start_text);
+      if (l1->texted()->start_back != nullptr) markupWriter->write(*l1->texted()->start_back);
+      if (l1->texted()->start_text != nullptr) markupWriter->write(*l1->texted()->start_text);
       textWriter->write(line, pos, end - l1->start);
-      if (l1->texted()->end_text != nullptr) markupWriter->write(l1->texted()->end_text);
-      if (l1->texted()->end_back != nullptr) markupWriter->write(l1->texted()->end_back);
+      if (l1->texted()->end_text != nullptr) markupWriter->write(*l1->texted()->end_text);
+      if (l1->texted()->end_back != nullptr) markupWriter->write(*l1->texted()->end_back);
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -128,8 +128,8 @@ public:
   static void writeStyle(Writer *writer, const StyledRegion *lr){
     static char span[256];
     int cp = 0;
-    if (lr->bfore) cp += sprintf(span, "color:#%.6x; ", lr->fore);
-    if (lr->bback) cp += sprintf(span+cp, "background:#%.6x; ", lr->back);
+    if (lr->isForeSet) cp += sprintf(span, "color:#%.6x; ", lr->fore);
+    if (lr->isBackSet) cp += sprintf(span+cp, "background:#%.6x; ", lr->back);
     if (lr->style&StyledRegion::RD_BOLD) cp += sprintf(span+cp, "font-weight:bold; ");
     if (lr->style&StyledRegion::RD_ITALIC) cp += sprintf(span+cp, "font-style:italic; ");
     if (lr->style&StyledRegion::RD_UNDERLINE) cp += sprintf(span+cp, "text-decoration:underline; ");
@@ -140,7 +140,7 @@ public:
   /** Puts into stream starting HTML \<span> tag with requested style specification
   */
   static void writeStart(Writer *writer, const StyledRegion *lr){
-    if (!lr->bfore && !lr->bback) return;
+    if (!lr->isForeSet && !lr->isBackSet) return;
     writer->write("<span style='");
     writeStyle(writer, lr);
     writer->write("'>");
@@ -149,7 +149,7 @@ public:
   /** Puts into stream ending HTML \</span> tag
   */
   static void writeEnd(Writer *writer, const StyledRegion *lr){
-    if (!lr->bfore && !lr->bback) return;
+    if (!lr->isForeSet && !lr->isBackSet) return;
     writer->write("</span>");
   }
 

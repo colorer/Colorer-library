@@ -10,14 +10,15 @@ set(SRC_COLORER
     colorer/FileType.h
     colorer/HRCParser.h
     colorer/LineSource.h
-    colorer/ParserFactory.h colorer/parsers/ParserFactory.cpp
+    colorer/ParserFactory.h
     colorer/Region.h
     colorer/RegionHandler.h
     colorer/Scheme.h
     colorer/TextParser.h
     colorer/common/Exception.cpp
     colorer/common/Features.h
-    colorer/common/UStr.cpp colorer/common/UStr.h
+    colorer/common/UStr.cpp
+    colorer/common/UStr.h
     colorer/common/UnicodeLogger.h
     colorer/common/UnicodeStringContainer.h
     colorer/cregexp/cregexp.cpp
@@ -35,8 +36,8 @@ set(SRC_COLORER
     colorer/handlers/LineRegionsSupport.cpp
     colorer/handlers/LineRegionsSupport.h
     colorer/handlers/RegionDefine.h
-    colorer/handlers/RegionMapper.h
     colorer/handlers/RegionMapper.cpp
+    colorer/handlers/RegionMapper.h
     colorer/handlers/StyledHRDMapper.cpp
     colorer/handlers/StyledHRDMapper.h
     colorer/handlers/StyledRegion.cpp
@@ -75,6 +76,7 @@ set(SRC_COLORER
     colorer/parsers/HRDNode.h
     colorer/parsers/KeywordList.cpp
     colorer/parsers/KeywordList.h
+    colorer/parsers/ParserFactory.cpp
     colorer/parsers/ParserFactoryImpl.cpp
     colorer/parsers/ParserFactoryImpl.h
     colorer/parsers/SchemeImpl.h
