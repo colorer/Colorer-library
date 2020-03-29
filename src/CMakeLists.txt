@@ -30,6 +30,7 @@ set(SRC_COLORER
     colorer/editor/Outliner.cpp
     colorer/editor/Outliner.h
     colorer/editor/PairMatch.h
+    colorer/handlers/LineRegion.cpp
     colorer/handlers/LineRegion.h
     colorer/handlers/LineRegionsCompactSupport.cpp
     colorer/handlers/LineRegionsCompactSupport.h

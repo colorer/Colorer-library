@@ -17,7 +17,7 @@ class LineRegionsSupport : public RegionHandler
   ~LineRegionsSupport() override;
 
   /**
-   * Resizes structures to mantain regions for @c lineCount lines.
+   * Resize structures to maintain regions for @c lineCount lines.
    */
   void resize(size_t lineCount);
 
@@ -74,15 +74,15 @@ class LineRegionsSupport : public RegionHandler
    */
   void startParsing(size_t lno) override;
   void clearLine(size_t lno, UnicodeString* line) override;
-  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) override;
-  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
-  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void addRegion(size_t line_no, UnicodeString* line, int start_idx, int end_idx, const Region* region) override;
+  void enterScheme(size_t line_no, UnicodeString* line, int start_idx, int end_idx, const Region* region, const Scheme* scheme) override;
+  void leaveScheme(size_t line_no, UnicodeString* line, int start_idx, int end_idx, const Region* region, const Scheme* scheme) override;
 
  protected:
   /**
    * Behaviour is redefined in derived classes
    */
-  virtual void addLineRegion(size_t lno, LineRegion* lr);
+  virtual void addLineRegion(size_t line_no, LineRegion* lr);
   [[nodiscard]] size_t getLineIndex(size_t lno) const;
   [[nodiscard]] bool checkLine(size_t lno) const;
 

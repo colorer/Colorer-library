@@ -12,10 +12,11 @@
 */
 class LineRegionsCompactSupport : public LineRegionsSupport
 {
-public:
-  LineRegionsCompactSupport();
-  ~LineRegionsCompactSupport() override;
-protected:
+ public:
+  LineRegionsCompactSupport() = default;
+  ~LineRegionsCompactSupport() override = default;
+
+ protected:
   /** This method compacts regions while
      adding them into list structure
   */
@@ -23,6 +24,3 @@ protected:
 };
 
 #endif
-
-
-

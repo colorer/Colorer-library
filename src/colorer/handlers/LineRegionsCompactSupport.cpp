@@ -1,8 +1,5 @@
 #include <colorer/handlers/LineRegionsCompactSupport.h>
 
-LineRegionsCompactSupport::LineRegionsCompactSupport() = default;
-LineRegionsCompactSupport::~LineRegionsCompactSupport() = default;
-
 void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
 {
   LineRegion* lstart = getLineRegions(lno);

@@ -44,7 +44,7 @@ public:
   virtual void clearLine(size_t lno, UnicodeString* line) {};
 
   /** Informs handler about lexical region in line.
-      This is a basic method, wich transfer information from
+      This is a basic method, which transfer information from
       parser to application. Positions of different passed regions
       can be overlapped.
       @param lno Current line number
@@ -67,11 +67,11 @@ public:
   */
   virtual void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
-  /** Informs handler about leaveing specified scheme.
+  /** Informs handler about leaving specified scheme.
       Parameter <code>region</code> is used to specify
       scheme background region information.
       If text parse process ends, but current schemes stack is not balanced
-      (this can happends because of bad balanced structure of source text,
+      (this can happens because of bad balanced structure of source text,
       or partial text parse) this method is <b>not</b> called for unbalanced
       levels.
       @param lno Current line number
