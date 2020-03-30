@@ -127,7 +127,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # CMAKE_CXX_FLAGS_RELEASE= -O3 -DNDEBUG
 
   # set only new flags
-  set(FLAGS_CXX_DEFAULT -fpermissive -Wall)
+  set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic
+      -Wsign-promo -Wnon-virtual-dtor)
   set(FLAGS_CXX_RELEASE)
   set(FLAGS_CXX_DEBUG)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

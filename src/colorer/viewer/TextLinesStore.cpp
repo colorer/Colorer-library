@@ -29,7 +29,7 @@ void TextLinesStore::freeFile()
   lines.clear();
 }
 
-void TextLinesStore::loadFile(const UnicodeString* fileName_, const UnicodeString* inputEncoding, bool tab2spaces)
+void TextLinesStore::loadFile(const UnicodeString* fileName_, const UnicodeString* /*inputEncoding*/, bool tab2spaces)
 {
   if (this->fileName != nullptr) {
     freeFile();

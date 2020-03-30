@@ -62,7 +62,7 @@ void Outliner::modifyEvent(size_t topLine)
   modifiedLine = topLine;
 }
 
-void Outliner::startParsing(size_t lno)
+void Outliner::startParsing(size_t /*lno*/)
 {
   curLevel = 0;
 }
@@ -75,7 +75,7 @@ void Outliner::endParsing(size_t lno)
   curLevel = 0;
 }
 
-void Outliner::clearLine(size_t lno, UnicodeString* line)
+void Outliner::clearLine(size_t /*lno*/, UnicodeString* /*line*/)
 {
   lineIsEmpty = true;
 }
@@ -103,12 +103,12 @@ void Outliner::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const 
   lineIsEmpty = false;
 }
 
-void Outliner::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::enterScheme(size_t /*lno*/, UnicodeString* /*line*/, int /*sx*/, int /*ex*/, const Region* /*region*/, const Scheme* /*scheme*/)
 {
   curLevel++;
 }
 
-void Outliner::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void Outliner::leaveScheme(size_t /*lno*/, UnicodeString* /*line*/, int /*sx*/, int /*ex*/, const Region* /*region*/, const Scheme* /*scheme*/)
 {
   curLevel--;
 }

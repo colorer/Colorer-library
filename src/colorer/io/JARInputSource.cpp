@@ -32,7 +32,7 @@ JARInputSource::~JARInputSource(){
   delete stream;
 }
 
-JARInputSource::JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool faked){
+JARInputSource::JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool /*faked*/){
   // relative jar uri
   JARInputSource *parent = base;
   if (parent == nullptr) throw InputSourceException("Bad jar uri format: " + *basePath);

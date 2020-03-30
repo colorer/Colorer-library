@@ -5,13 +5,13 @@
 
 StreamWriter::StreamWriter()= default;
 
-void StreamWriter::init(FILE *fstream, int encoding, bool useBOM){
+void StreamWriter::init(FILE *fstream, int /*encoding*/, bool _useBOM){
   
   if (fstream == nullptr) throw Exception("Invalid stream");
   file = fstream;
 //  if (encoding == -1) encoding = Encodings::getDefaultEncodingIndex();
   encodingIndex = 4;
-  this->useBOM = useBOM;
+  useBOM = _useBOM;
   writeBOM();
 }
 
@@ -20,8 +20,8 @@ void StreamWriter::writeBOM(){
   if (useBOM) write(0xFEFF);
 }
 
-StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool useBOM = true){
-  init(fstream, encoding, useBOM);
+StreamWriter::StreamWriter(FILE *fstream, int encoding = -1, bool _useBOM = true){
+  init(fstream, encoding, _useBOM);
 }
 
 StreamWriter::~StreamWriter()= default;

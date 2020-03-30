@@ -187,9 +187,9 @@ FileType* BaseEditor::getFileType()
   return currentFileType;
 }
 
-void BaseEditor::setBackParse(int backParse)
+void BaseEditor::setBackParse(int _backParse)
 {
-  this->backParse = backParse;
+  backParse = _backParse;
 }
 
 void BaseEditor::addRegionHandler(RegionHandler* rh)
@@ -245,7 +245,7 @@ PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
   return nullptr;
 }
 
-PairMatch* BaseEditor::getEnwrappedPairMatch(int lineNo, int pos)
+PairMatch* BaseEditor::getEnwrappedPairMatch(int /*lineNo*/, int /*pos*/)
 {
   return nullptr;
 }

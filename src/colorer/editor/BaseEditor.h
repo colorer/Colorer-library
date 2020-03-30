@@ -70,7 +70,7 @@ public:
    * @param backParse Number of lines. If <= 0, dropped into default
    * value.
    */
-  void setBackParse(int backParse);
+  void setBackParse(int _backParse);
 
   /**
    * Initial HRC type, used for parse processing.

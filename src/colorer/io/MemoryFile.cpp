@@ -2,7 +2,7 @@
 #include <colorer/Common.h>
 #include <string.h>
 
-voidpf ZCALLBACK mem_open_file_func (voidpf opaque, const char *filename, int mode)
+voidpf ZCALLBACK mem_open_file_func (voidpf opaque, const char* /*filename*/, int /*mode*/)
 {
   MemoryFile *mf = (MemoryFile*)opaque;
   mf->error = 0;
@@ -10,7 +10,7 @@ voidpf ZCALLBACK mem_open_file_func (voidpf opaque, const char *filename, int mo
   return (voidpf)0x666888;
 }
 
-uLong ZCALLBACK mem_read_file_func (voidpf opaque, voidpf stream, void *buf, uLong size){
+uLong ZCALLBACK mem_read_file_func (voidpf opaque, voidpf /*stream*/, void *buf, uLong size){
 
   MemoryFile *mf = (MemoryFile*)opaque;
 
@@ -21,20 +21,20 @@ uLong ZCALLBACK mem_read_file_func (voidpf opaque, voidpf stream, void *buf, uLo
 }
 
 
-uLong ZCALLBACK mem_write_file_func (voidpf opaque, voidpf stream, const void *buf, uLong size)
+uLong ZCALLBACK mem_write_file_func (voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/)
 {
   // we need this?
   //MemoryFile *mf = (MemoryFile*)opaque;
   return 0;
 }
 
-long ZCALLBACK mem_tell_file_func (voidpf opaque, voidpf stream)
+long ZCALLBACK mem_tell_file_func (voidpf opaque, voidpf /*stream*/)
 {
   MemoryFile *mf = (MemoryFile*)opaque;
   return mf->pointer;
 }
 
-long ZCALLBACK mem_seek_file_func (voidpf opaque, voidpf stream, uLong offset, int origin)
+long ZCALLBACK mem_seek_file_func (voidpf opaque, voidpf /*stream*/, uLong offset, int origin)
 {
   MemoryFile *mf = (MemoryFile*)opaque;
   int cpointer;
@@ -64,12 +64,12 @@ long ZCALLBACK mem_seek_file_func (voidpf opaque, voidpf stream, uLong offset, i
   return 0;
 }
 
-int ZCALLBACK mem_close_file_func (voidpf opaque, voidpf stream)
+int ZCALLBACK mem_close_file_func (voidpf /*opaque*/, voidpf /*stream*/)
 {
   return 0;
 }
 
-int ZCALLBACK mem_error_file_func (voidpf opaque, voidpf stream)
+int ZCALLBACK mem_error_file_func (voidpf opaque, voidpf /*stream*/)
 {
   MemoryFile *mf = (MemoryFile*)opaque;
   return mf->error;

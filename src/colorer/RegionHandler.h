@@ -17,7 +17,7 @@
 */
 class RegionHandler
 {
-public:
+ public:
   /** Start of text parsing.
       Called only once, when TextParser starts
       parsing of the specified block of text.
@@ -25,14 +25,14 @@ public:
       endParsing call.
       @param lno Start line number
   */
-  virtual void startParsing(size_t lno) {};
+  virtual void startParsing([[maybe_unused]] size_t lno) {};
 
   /** End of text parsing.
       Called only once, when TextParser stops
       parsing of the specified block of text.
       @param lno End line number
   */
-  virtual void endParsing(size_t lno) {};
+  virtual void endParsing([[maybe_unused]] size_t lno) {};
 
   /** Clear line event.
       Called once for each parsed text line, when TextParser starts to parse
@@ -41,7 +41,7 @@ public:
       structure of this line before adding new one.
       @param lno Line number
   */
-  virtual void clearLine(size_t lno, UnicodeString* line) {};
+  virtual void clearLine([[maybe_unused]] size_t lno, [[maybe_unused]] UnicodeString* line) {};
 
   /** Informs handler about lexical region in line.
       This is a basic method, which transfer information from
@@ -82,11 +82,9 @@ public:
   */
   virtual void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
-protected:
+ protected:
   RegionHandler() = default;
   virtual ~RegionHandler() = default;
 };
 
 #endif
-
-

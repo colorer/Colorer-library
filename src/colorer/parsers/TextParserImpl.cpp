@@ -184,7 +184,7 @@ void TextParser::Impl::enterScheme(int lno, SMatches* match, const SchemeNode* s
   }
 }
 
-void TextParser::Impl::leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::leaveScheme(int /*lno*/, SMatches* match, const SchemeNode* schemeNode)
 {
   if (schemeNode->innerRegion) {
     leaveScheme(gy, match->s[0], match->s[0], schemeNode->region);
@@ -211,7 +211,7 @@ void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)
   enterScheme(gy, 0, 0, ch->clender->region);
 }
 
-int TextParser::Impl::searchKW(const SchemeNode* node, int no, int lowlen, int hilen)
+int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, int /*hilen*/)
 {
   if (!node->kwList->num) {
     return MATCH_NOTHING;

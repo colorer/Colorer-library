@@ -20,7 +20,7 @@ public:
       @param lineRegions Linked list of LineRegion structures.
              Only region references are used there.
   */
-  static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, UnicodeString *line, LineRegion *lineRegions){
+  static void tokenWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/, UnicodeString *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->region == nullptr) continue;
@@ -65,7 +65,7 @@ public:
       @param line Line of text
       @param lineRegions Linked list of LineRegion structures
   */
-  static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*> *docLinkHash, UnicodeString *line, LineRegion *lineRegions){
+  static void markupWrite(Writer *markupWriter, Writer *textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/, UnicodeString *line, LineRegion *lineRegions){
     int pos = 0;
     for(LineRegion *l1 = lineRegions; l1; l1 = l1->next){
       if (l1->special || l1->rdef == nullptr) continue;

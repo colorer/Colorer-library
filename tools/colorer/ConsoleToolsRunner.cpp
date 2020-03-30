@@ -232,7 +232,7 @@ void printError()
           "  -ed<name>  Log file directory\n"
           "  -el<name>  Log level (off, debug, info, warning, error)\n"
          );
-};
+}
 
 void initConsoleTools(ConsoleTools &ct)
 {

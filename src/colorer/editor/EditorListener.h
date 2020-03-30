@@ -5,8 +5,9 @@
 /**
  * Listener of BaseEditor events
  */
-class EditorListener {
-public:
+class EditorListener
+{
+ public:
   /**
    * Informs EditorListener object about text modification event.
    * All the text becomes invalid after the specified line.
@@ -14,8 +15,7 @@ public:
    */
   virtual void modifyEvent(size_t topLine) = 0;
 
+  virtual ~EditorListener() = default;
 };
 
 #endif
-
-

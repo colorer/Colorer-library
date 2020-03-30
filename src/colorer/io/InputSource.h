@@ -62,27 +62,13 @@ namespace colorer {
     relatively to the current.
     @param relPath Relative URI part.
     */
-    virtual InputSource *createRelative(const UnicodeString *relPath){ return nullptr;};
+    virtual InputSource *createRelative([[maybe_unused]]  const UnicodeString *relPath){ return nullptr;};
 
     virtual ~InputSource()= default;
   protected:
     InputSource()= default;
   };
 
-
-  /** @deprecated I think deprecated class.
-  @ingroup common_io
-  */
-  class MultipleInputSource{
-  public:
-    [[nodiscard]] virtual bool hasMoreInput() const = 0;
-    [[nodiscard]] virtual InputSource *nextInput() const = 0;
-    [[nodiscard]] virtual const UnicodeString *getLocation() const = 0;
-
-    virtual ~MultipleInputSource()= default;
-  protected:
-    explicit MultipleInputSource(const UnicodeString *basePath){};
-  };
 }
 #endif
 

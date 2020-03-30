@@ -3,7 +3,7 @@
 
 FileType::FileType() : pimpl(new FileType::Impl()) {}
 
-void FileType::setParamValue(const UnicodeString& name, const UnicodeString* value) {}
+void FileType::setParamValue(const UnicodeString& /*name*/, const UnicodeString* /*value*/) {}
 
 const UnicodeString* FileType::getName() const
 {

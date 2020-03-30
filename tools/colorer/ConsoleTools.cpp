@@ -78,7 +78,7 @@ void ConsoleTools::setInputEncoding(const UnicodeString &str)
   }*/
 }
 
-void ConsoleTools::setOutputEncoding(const UnicodeString &str)
+void ConsoleTools::setOutputEncoding(const UnicodeString &/*str*/)
 {
  /* outputEncoding.reset(new UnicodeString(str));
   outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());

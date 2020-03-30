@@ -16,12 +16,12 @@ public:
       @param useBOM Does it needed to output first
              Unicode Byte Order Mark character.
   */
-  StreamWriter(FILE *fstream, int encoding, bool useBOM);
+  StreamWriter(FILE *fstream, int encoding, bool _useBOM);
   ~StreamWriter() override;
   void write(UChar c) override;
 protected:
   StreamWriter();
-  void init(FILE *fstream, int encoding, bool useBOM);
+  void init(FILE *fstream, int encoding, bool _useBOM);
   void writeBOM();
   FILE *file;
 private:
