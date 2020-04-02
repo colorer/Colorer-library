@@ -57,7 +57,6 @@ set(SRC_COLORER
     ${COLORER}/TextParser.h
     ${COMMON}/Colorer.h ${COMMON}/Colorer.cpp
     ${COMMON}/Exception.cpp
-    ${COMMON}/MemoryChunks.cpp ${COMMON}/MemoryChunks.h ${COMMON}/MemoryOperator.h
     ${COMMON}/Features.h
     ${IO}/FileInputSource.cpp ${IO}/FileInputSource.h
     ${IO}/FileWriter.h ${IO}/FileWriter.cpp
@@ -92,15 +91,9 @@ set(SRC_COLORER
     )
 
 #====================================================
-# dlmalloc
-#====================================================
-set(DLMALLOC ../libs/dlmalloc)
-set(SRC_MALLOC ${DLMALLOC}/dlmalloc.c)
-
-#====================================================
 # common flags
 #====================================================
-set(COLORER_DEF -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
+set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
 if(WIN32)
   set(COLORER_DEF ${COLORER_DEF} -D_WIN32)
 endif(WIN32)
@@ -152,15 +145,15 @@ endif()
 add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC})
 target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-    PUBLIC ../libs/xercesc/src
+    PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
-    PUBLIC ../libs/dlmalloc
-    PUBLIC ../libs/spdlog/include
+    PUBLIC ../external/spdlog/include
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
     PUBLIC ZLIB::MINIZIP
     PUBLIC ${THREAD_LIBS}
+    PUBLIC spdlog::spdlog
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
@@ -201,7 +194,7 @@ if(COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
-      CFG_TEXT "exclude-path=*/libs/*"
+      CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
 endif()

@@ -1,4 +1,0 @@
-LIBRARY
-EXPORTS
-   GetRegExpProc=GetRegExpProc@4
-   GetColorerProc=GetColorerProc@4

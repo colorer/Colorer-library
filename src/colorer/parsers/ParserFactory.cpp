@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #ifdef __unix__
 #include <dirent.h>
 #include <sys/stat.h>
@@ -44,7 +44,7 @@ SString ParserFactory::searchCatalog() const
   getPossibleCatalogPaths(paths);
 
   SString right_path;
-  for (auto path : paths) {
+  for (const auto& path : paths) {
     try {
       spdlog::debug("test path '{0}'", path.getChars());
 
@@ -196,7 +196,7 @@ void ParserFactory::parseCatalog(const SString &catalog_path)
   CatalogParser catalog_parser;
   catalog_parser.parse(&catalog_path);
 
-  for (auto hrc_location : catalog_parser.hrc_locations) {
+  for (const auto& hrc_location : catalog_parser.hrc_locations) {
     hrc_locations.push_back(hrc_location);
   }
 
@@ -225,8 +225,8 @@ std::vector<SString> ParserFactory::enumHRDClasses()
 {
   std::vector<SString> result;
   result.reserve(hrd_nodes.size());
-  for (auto p = hrd_nodes.begin(); p != hrd_nodes.end(); ++p) {
-    result.push_back(p->first);
+  for (auto & hrd_node : hrd_nodes) {
+    result.push_back(hrd_node.first);
   }
   return result;
 }
@@ -236,8 +236,8 @@ std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const String &classI
   auto hash = hrd_nodes.find(classID);
   std::vector<const HRDNode*> result;
   result.reserve(hash->second->size());
-  for (auto p = hash->second->begin(); p != hash->second->end(); ++p) {
-    result.push_back(p->get());
+  for (auto & p : *hash->second) {
+    result.push_back(p.get());
   }
   return result;
 }
@@ -248,9 +248,9 @@ const HRDNode* ParserFactory::getHRDNode(const String &classID, const String &na
   if (hash == hrd_nodes.end()) {
     throw ParserFactoryException(SString("can't find HRDClass '") + classID + "'");
   }
-  for (auto p = hash->second->begin(); p != hash->second->end(); ++p) {
-    if (nameID.compareTo(p->get()->hrd_name) == 0) {
-      return p->get();
+  for (auto & p : *hash->second) {
+    if (nameID.compareTo(p.get()->hrd_name) == 0) {
+      return p.get();
     }
   }
   throw ParserFactoryException(SString("can't find HRDName '") + nameID + "'");
@@ -293,12 +293,12 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
 
   auto hrd_node = getHRDNode(*class_id, *name_id);
 
-  StyledHRDMapper* mapper = new StyledHRDMapper();
-  for (size_t idx = 0; idx < hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx).length() != 0) {
+  auto* mapper = new StyledHRDMapper();
+  for (const auto & idx : hrd_node->hrd_location)
+    if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
+        dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd:");
@@ -324,12 +324,12 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
 
   auto hrd_node = getHRDNode(d_text, *name_id);
 
-  TextHRDMapper* mapper = new TextHRDMapper();
-  for (size_t idx = 0; idx <  hrd_node->hrd_location.size(); idx++)
-    if (hrd_node->hrd_location.at(idx).length() != 0) {
+  auto* mapper = new TextHRDMapper();
+  for (const auto & idx : hrd_node->hrd_location)
+    if (idx.length() != 0) {
       uXmlInputSource dfis = nullptr;
       try {
-        dfis = XmlInputSource::newInstance(hrd_node->hrd_location.at(idx).getWChars(), base_catalog_path.getWChars());
+        dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception &e) {
         spdlog::error("Can't load hrd: ");
@@ -347,39 +347,5 @@ void ParserFactory::addHrd(std::unique_ptr<HRDNode> hrd)
   hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
 }
 
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Colorer Library.
- *
- * The Initial Developer of the Original Code is
- * Cail Lomecb <irusskih at gmail dot com>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2009
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s): see file CONTRIBUTORS
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+
 

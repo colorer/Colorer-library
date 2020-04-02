@@ -13,7 +13,7 @@ SRegInfo::SRegInfo()
   un.param = nullptr;
   op = ReEmpty;
   param0 = param1 = 0;
-};
+}
 SRegInfo::~SRegInfo()
 {
   if (next) delete next;
@@ -35,8 +35,8 @@ SRegInfo::~SRegInfo()
           || op == ReBrackets || op == ReNamedBrackets))
         delete un.param;
       break;
-  };
-};
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // CRegExp class
@@ -59,16 +59,16 @@ void CRegExp::init()
   namedMatches = 0;
 #endif
   count_elem = 0;
-};
+}
 CRegExp::CRegExp()
 {
   init();
-};
+}
 CRegExp::CRegExp(const String *text)
 {
   init();
   if (text) setRE(text);
-};
+}
 CRegExp::~CRegExp()
 {
   if (tree_root) delete tree_root;
@@ -76,7 +76,7 @@ CRegExp::~CRegExp()
   for(int bp = 0; bp < cnMatch; bp++)
     if(brnames[bp]) delete brnames[bp];
 #endif
-};
+}
 
 EError CRegExp::setRELow(const String &expr)
 {
@@ -109,10 +109,10 @@ EError CRegExp::setRELow(const String &expr)
       if (expr[j] == 'x') extend = true;
       if (expr[j] == 's') singleLine = true;
       if (expr[j] == 'm') multiLine = true;
-    };
+    }
     len = i-start;
     ok = true;
-  };
+  }
   if (!ok) return ESYNTAX;
 
   // making tree structure
@@ -129,7 +129,7 @@ EError CRegExp::setRELow(const String &expr)
   if (err) return err;
   optimize();
   return EOK;
-};
+}
 
 
 void CRegExp::optimize()
@@ -141,7 +141,7 @@ SRegInfo *next = tree_root;
     if (next->op == ReBrackets){
       next = next->un.param;
       continue;
-    };
+    }
 /*    if (next->op == ReMetaSymb &&
         next->un.metaSymbol >= ReWBound && next->un.metaSymbol < ReChrLast){
       next = next->next;
@@ -151,17 +151,17 @@ SRegInfo *next = tree_root;
       if (next->un.metaSymbol != ReSoL && next->un.metaSymbol != ReWBound) break;
       firstMetaChar = next->un.metaSymbol;
       break;
-    };
+    }
     if (next->op == ReSymb){
       firstChar = next->un.symbol;
       break;
-    };
+    }
     if (next->op == ReWord){
       firstChar = (*next->un.word)[0];
     }
     break;
-  };
-};
+  }
+}
 
 EError CRegExp::setStructs(SRegInfo *&re, const String &expr, int &retPos)
 {
@@ -172,21 +172,21 @@ SRegInfo *next, *temp;
   retPos = -1;
 
   next = re;
-  for(int i = 0; i < expr.length(); i++){
+  for(unsigned int i = 0; i < expr.length(); i++){
     // simple character
     if (extend && Character::isWhitespace(expr[i])) continue;
     // context return
     if (expr[i] == ')'){
       retPos = i;
       break;
-    };
+    }
     // next element
     if (i != 0){
       next->next = new SRegInfo;
       next->next->parent = next->parent;
       next->next->prev = next;
       next = next->next;
-    };
+    }
     // Escape symbol
     if (expr[i] == '\\'){
       String *br_name;
@@ -277,7 +277,7 @@ SRegInfo *next, *temp;
             delete br_name;
             if (next->param0 == -1) return ESYNTAX;
             i += blen+2;
-          };
+          }
           break;
 #endif // COLORERMODE
 #endif // NAMED_MATCHES_IN_HASH
@@ -295,7 +295,7 @@ SRegInfo *next, *temp;
           if(br_name->length() && namedMatches && !namedMatches->getItem(br_name)){
             delete br_name;
             return EBRACKETS;
-          };
+          }
           next->param0 = 0;
           next->namedata = new SString(br_name);
           delete br_name;
@@ -311,34 +311,34 @@ SRegInfo *next, *temp;
             next->un.symbol = UnicodeTools::getEscapedChar(expr, i, retEnd);
             if (next->un.symbol == BAD_WCHAR) return ESYNTAX;
             i = retEnd-1;
-          };
+          }
           break;
-      };
+      }
       i++;
       continue;
-    };
+    }
 
     if (expr[i] == '.'){
       next->op = ReMetaSymb;
       next->un.metaSymbol = ReAnyChr;
       continue;
-    };
+    }
     if (expr[i] == '^'){
       next->op = ReMetaSymb;
       next->un.metaSymbol = ReSoL;
       continue;
-    };
+    }
     if (expr[i] == '$'){
       next->op = ReMetaSymb;
       next->un.metaSymbol = ReEoL;
       continue;
-    };
+    }
 #ifdef COLORERMODE
     if (expr[i] == '~'){
       next->op = ReMetaSymb;
       next->un.metaSymbol = ReSoScheme;
       continue;
-    };
+    }
 #endif
 
     next->un.param = 0;
@@ -351,67 +351,67 @@ SRegInfo *next, *temp;
         next->param0 = UnicodeTools::getHex(expr[i+2]);
         i += 2;
         continue;
-      };
+      }
       if (expr[i] == '?' && expr[i+1] == '~' &&
           expr[i+2]>='0' && expr[i+2]<='9'){
         next->op = ReNBehind;
         next->param0 = UnicodeTools::getHex(expr[i+2]);
         i += 2;
         continue;
-      };
-    };
+      }
+    }
     if (expr.length() > i+1){
       if (expr[i] == '*' && expr[i+1] == '?'){
         next->op = ReNGRangeN;
         next->s = 0;
         i++;
         continue;
-      };
+      }
       if (expr[i] == '+' && expr[i+1] == '?'){
         next->op = ReNGRangeN;
         next->s = 1;
         i++;
         continue;
-      };
+      }
       if (expr[i] == '?' && expr[i+1] == '='){
         next->op = ReAhead;
         i++;
         continue;
-      };
+      }
       if (expr[i] == '?' && expr[i+1] == '!'){
         next->op = ReNAhead;
         i++;
         continue;
-      };
+      }
       if (expr[i] == '?' && expr[i+1] == '?'){
         next->op = ReNGRangeNM;
         next->s = 0;
         next->e = 1;
         i++;
         continue;
-      };
-    };
+      }
+    }
 
     if (expr[i] == '*'){
       next->op = ReRangeN;
       next->s = 0;
       continue;
-    };
+    }
     if (expr[i] == '+'){
       next->op = ReRangeN;
       next->s = 1;
       continue;
-    };
+    }
     if (expr[i] == '?'){
       next->op = ReRangeNM;
       next->s = 0;
       next->e = 1;
       continue;
-    };
+    }
     if (expr[i] == '|'){
       next->op = ReOr;
       continue;
-    };
+    }
 
     // {n,m}
     if (expr[i] == '{'){
@@ -419,20 +419,20 @@ SRegInfo *next, *temp;
       int en = -1;
       int comma = -1;
       bool nonGreedy = false;
-      int j;
+      unsigned int j;
       for (j = i; j < expr.length(); j++){
         if (expr.length() > j+1 && expr[j] == '}' && expr[j+1] == '?'){
           en = j;
           nonGreedy = true;
           j++;
           break;
-        };
+        }
         if (expr[j] == '}'){
           en = j;
           break;
-        };
+        }
         if (expr[j] == ',') comma = j;
-      };
+      }
       if (en == -1) return EBRACKETS;
       if (comma == -1) comma = en;
       CString ds = CString(&expr, st, comma-st);
@@ -447,7 +447,7 @@ SRegInfo *next, *temp;
       else next->op = nonGreedy ? ReNGRangeNM : ReRangeNM;
       i = j;
       continue;
-    };
+    }
     // ( ... )
     if (expr[i] == '('){
       bool namedBracket = false;
@@ -475,7 +475,7 @@ SRegInfo *next, *temp;
           if (getBracketNo(br_name) != -1){
             delete br_name;
             return EBRACKETS;
-          };
+          }
 #endif
           if (cnMatch < NAMED_MATCHES_NUM){
             next->param0 = cnMatch;
@@ -487,25 +487,25 @@ SRegInfo *next, *temp;
           if(br_name->length() && namedMatches && namedMatches->getItem(br_name)){
             delete br_name;
             return EBRACKETS;
-          };
+          }
 #endif
           next->param0 = 0;
           next->namedata = br_name;
           if (namedMatches){
             SMatch mt = {-1, -1};
             namedMatches->setItem(br_name, mt);
-          };
+          }
 #endif
-        };
+        }
         i += blen+4;
       }else{
         next->op = ReBrackets;
         if (cMatch < MATCHES_NUM){
           next->param0 = cMatch;
           cMatch++;
-        };
+        }
         i += 1;
-      };
+      }
       next->un.param = new SRegInfo;
       next->un.param->parent = next;
       int endPos;
@@ -514,7 +514,7 @@ SRegInfo *next, *temp;
       if (err) return err;
       i += endPos;
       continue;
-    };
+    }
 
     // [] [^]
     if (expr[i] == '['){
@@ -526,11 +526,11 @@ SRegInfo *next, *temp;
       next->un.charclass = cc;
       i = endPos;
       continue;
-    };
+    }
     if (expr[i] == ')' || expr[i] == ']' || expr[i] == '}') return EBRACKETS;
     next->op = ReSymb;
     next->un.symbol = expr[i];
-  };
+  }
 
   // operators fixes
   for(next = re; next; next = next->next){
@@ -543,7 +543,7 @@ SRegInfo *next, *temp;
     if (resymb && resymb->op > ReBlockOps && resymb->op < ReSymbolOps){
       wsize--;
       resymb = resymb->prev;
-    };
+    }
     if (wsize > 1){
       reafterword = resymb;
       resymb = reword;
@@ -554,7 +554,7 @@ SRegInfo *next, *temp;
         resymb = resymb->next;
         retmp->next = nullptr;
         if (idx > 0) delete retmp;
-      };
+      }
       reword->op = ReWord;
       reword->un.word = new SString(CString(wcword, 0, wsize));
       delete[] wcword;
@@ -562,7 +562,7 @@ SRegInfo *next, *temp;
       if (reafterword) reafterword->prev = reword;
       next = reword;
       continue;
-    };
+    }
 
     // adds empty alternative
     while (next->op == ReOr){
@@ -573,7 +573,7 @@ SRegInfo *next, *temp;
         temp->next = next;
         next->prev = temp;
         continue;
-      };
+      }
       // foo||bar
       if (next->next && next->next->op == ReOr){
         temp->prev = next;
@@ -581,14 +581,14 @@ SRegInfo *next, *temp;
         if (next->next) next->next->prev = temp;
         next->next = temp;
         continue;
-      };
+      }
       // foo|bar|
       if (!next->next){
         temp->prev = next;
         temp->next = 0;
         next->next = temp;
         continue;
-      };
+      }
       // foo|bar|*
       if (next->next->op > ReBlockOps && next->next->op < ReSymbolOps){
         temp->prev = next;
@@ -596,11 +596,11 @@ SRegInfo *next, *temp;
         next->next->prev = temp;
         next->next = temp;
         continue;
-      };
+      }
       delete temp;
       break;
-    };
-  };
+    }
+  }
 
   // op's generating...
   next = re;
@@ -614,7 +614,7 @@ SRegInfo *next, *temp;
       while(next->op == ReOr && realFirst->prev && realFirst->prev->op != ReOr){
         realFirst->parent = next;
         realFirst = realFirst->prev;
-      };
+      }
 
       if (!realFirst->prev){
         re = next;
@@ -624,14 +624,14 @@ SRegInfo *next, *temp;
         next->un.param = realFirst;
         next->prev = realFirst->prev;
         realFirst->prev->next = next;
-      };
+      }
       realFirst->prev = 0;
-    };
+    }
     next = next->next;
-  };
+  }
   if (retPos == -1) retPos = expr.length();
   return EOK;
-};
+}
 
 
 
@@ -651,11 +651,11 @@ bool CRegExp::isWordBoundary(int &toParse)
   if (toParse > 0 && (Character::isLetterOrDigit((*global_pattern)[toParse-1]) ||
       (*global_pattern)[toParse-1] == '_')) before = 1;
   return before+after == 1;
-};
+}
 bool CRegExp::isNWordBoundary(int &toParse)
 {
   return !isWordBoundary(toParse);
-};
+}
 
 
 
@@ -683,7 +683,7 @@ const String &pattern = *global_pattern;
                           pattern[toParse-1] == 0x2028 ||
                           pattern[toParse-1] == 0x2029)) ok = true;
         return (toParse == 0 || ok);
-      };
+      }
       return (toParse == 0);
     case ReEoL:
       if (multiLine){
@@ -695,7 +695,7 @@ const String &pattern = *global_pattern;
                           pattern[toParse-1] == 0x2028 ||
                           pattern[toParse-1] == 0x2029)) ok = true;
         return (toParse == end || ok);
-      };
+      }
       return (end == toParse);
     case ReDigit:
       if (toParse >= end || !Character::isDigit(pattern[toParse])) return false;
@@ -752,7 +752,7 @@ const String &pattern = *global_pattern;
 #endif
     default:
       return false;
-  };
+  }
 }
 
 void CRegExp::check_stack(bool res,SRegInfo **re, SRegInfo **prev, int *toParse, bool *leftenter, int *action)
@@ -804,7 +804,7 @@ void CRegExp::insert_stack(SRegInfo **re, SRegInfo **prev, int *toParse, bool *l
   if (!*re){
     *re = (*prev)->parent;
     *leftenter = false;
-  };
+  }
 }
 
 bool CRegExp::lowParse(SRegInfo *re, SRegInfo *prev, int toParse)
@@ -818,7 +818,7 @@ int action=-1;
   if (!re){
     re = prev->parent;
     leftenter = false;
-  };
+  }
   while (true){
     while(re || action!=-1){
       if (re && action==-1)
@@ -832,7 +832,7 @@ int action=-1;
           re = re->un.param;
           leftenter = true;
           continue;
-        };
+        }
         if (re->param0 == -1) break;
         if (re->op == ReBrackets){
           if (re->param0 || !startChange)
@@ -851,7 +851,7 @@ int action=-1;
           SMatch mt = { re->s, toParse };
           namedMatches->setItem(re->namedata, mt);
 #endif
-        };
+        }
         break;
       case ReSymb:
         if (toParse >= end){
@@ -896,7 +896,7 @@ int action=-1;
               br = true;
               break;
             }
-          };
+          }
           if (br) continue;
           toParse += wlen;
         }
@@ -938,7 +938,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
       case ReBkTraceN:
@@ -955,7 +955,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
       case ReBkTraceName:
@@ -973,7 +973,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
 #else
@@ -998,7 +998,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
 #else
@@ -1029,7 +1029,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
 #else
@@ -1051,9 +1051,9 @@ int action=-1;
               break;
             }
             toParse++;
-          };
+          }
           if (br) continue;
-        };
+        }
         break;
 #endif // NAMED_MATCHES_IN_HASH
 
@@ -1075,7 +1075,7 @@ int action=-1;
             break;
           }
           toParse++;
-        };
+        }
         if (br) continue;
         break;
       case ReAhead:
@@ -1128,7 +1128,7 @@ int action=-1;
           while (re->next)
             re = re->next;
           break;
-        };
+        }
         {
           insert_stack(&re,&prev,&toParse,&leftenter,rea_True,rea_Break,&re->un.param,0,toParse );
           continue;
@@ -1139,14 +1139,14 @@ int action=-1;
         if (leftenter){
           re->param0 = re->s;
           re->oldParse = -1;
-        };
+        }
         if (!re->param0 && re->oldParse == toParse) break;
         re->oldParse = toParse;
         // making branch
         if (!re->param0){
           insert_stack(&re,&prev,&toParse,&leftenter,rea_True,rea_RangeN_step2,&re->un.param,0,toParse );
           continue;
-        };
+        }
         // go into
         if (re->param0) re->param0--;
         re = re->un.param;
@@ -1157,7 +1157,7 @@ int action=-1;
           re->param0 = re->s;
           re->param1 = re->e - re->s;
           re->oldParse = -1;
-        };
+        }
         if (!re->param0){
           if (re->param1) re->param1--;
           else{
@@ -1168,7 +1168,7 @@ int action=-1;
             insert_stack(&re,&prev,&toParse,&leftenter,rea_True,rea_RangeNM_step2,&re->un.param,0,toParse );
             continue;
           }
-        };
+        }
         if (re->param0) re->param0--;
         re = re->un.param;
         leftenter = true;
@@ -1177,7 +1177,7 @@ int action=-1;
         if (leftenter){
           re->param0 = re->s;
           re->oldParse = -1;
-        };
+        }
         if (!re->param0 && re->oldParse == toParse) break;
         re->oldParse = toParse;
         if (!re->param0){
@@ -1193,7 +1193,7 @@ int action=-1;
           re->param0 = re->s;
           re->param1 = re->e - re->s;
           re->oldParse = -1;
-        };
+        }
         if (!re->param0){
           if (re->param1) re->param1--;
           else {
@@ -1204,12 +1204,12 @@ int action=-1;
             insert_stack(&re,&prev,&toParse,&leftenter,rea_True,rea_NGRangeNM_step2,&re->next,&re,toParse );
             continue;
           }
-        };
+        }
         if (re->param0) re->param0--;
         re = re->un.param;
         leftenter = true;
         continue;
-    };
+    }
    
     switch (action){
       case rea_False: 
@@ -1270,11 +1270,11 @@ int action=-1;
     }else{
       re = re->next;
       leftenter = true;
-    };
-  };
+    }
+  }
   check_stack(true,&re,&prev,&toParse,&leftenter,&action);
   }
-};
+}
 
 inline bool CRegExp::quickCheck(int toParse)
 {
@@ -1285,7 +1285,7 @@ inline bool CRegExp::quickCheck(int toParse)
     }else
       if ((*global_pattern)[toParse] != firstChar) return false;
     return true;
-  };
+  }
   if (firstMetaChar != ReBadMeta)
   switch(firstMetaChar){
     case ReSoL:
@@ -1298,9 +1298,9 @@ inline bool CRegExp::quickCheck(int toParse)
 #endif
 //    case ReWBound:
 //      return relocale->cl_isword(*toParse) && (toParse == start || !relocale->cl_isword(*(toParse-1)));
-  };
+  }
   return true;
-};
+}
 
 inline bool CRegExp::parseRE(int pos)
 {
@@ -1327,7 +1327,7 @@ inline bool CRegExp::parseRE(int pos)
     toParse = ++pos;
   }while(toParse <= end);
   return false;
-};
+}
 
 bool CRegExp::parse(const String *str, int pos, int eol, SMatches *mtch
 #ifdef NAMED_MATCHES_IN_HASH
@@ -1349,7 +1349,7 @@ bool CRegExp::parse(const String *str, int pos, int eol, SMatches *mtch
   bool result = parseRE(pos);
   positionMoves = nms;
   return result;
-};
+}
 
 bool CRegExp::parse(const String *str, SMatches *mtch
 #ifdef NAMED_MATCHES_IN_HASH
@@ -1367,7 +1367,7 @@ bool CRegExp::parse(const String *str, SMatches *mtch
   namedMatches = nmtch;
 #endif
   return parseRE(0);
-};
+}
 
 /////////////////////////////////////////////////////////////////
 // other methods
@@ -1385,21 +1385,21 @@ bool CRegExp::setRE(const String *re)
   error = setRELow(*re);
 #endif
   return error == EOK;
-};
+}
 bool CRegExp::isOk()
 {
   return error == EOK;
-};
+}
 EError CRegExp::getError()
 {
   return error;
-};
+}
 
 bool CRegExp::setPositionMoves(bool moves)
 {
   positionMoves = moves;
   return true;
-};
+}
 
 #ifndef NAMED_MATCHES_IN_HASH
 int CRegExp::getBracketNo(const String *brname)
@@ -1407,12 +1407,12 @@ int CRegExp::getBracketNo(const String *brname)
   for(int brn = 0; brn < cnMatch; brn++)
     if (brname->equalsIgnoreCase(brnames[brn])) return brn;
   return -1;
-};
+}
 String *CRegExp::getBracketName(int no)
 {
   if (no >= cnMatch) return 0;
   return brnames[no];
-};
+}
 #endif
 
 #ifdef COLORERMODE
@@ -1420,53 +1420,19 @@ bool CRegExp::setBackRE(CRegExp *bkre)
 {
   this->backRE = bkre;
   return true;
-};
+}
 bool CRegExp::setBackTrace(const String *str, SMatches *trace)
 {
   backTrace = trace;
   backStr = str;
   return true;
-};
+}
 bool CRegExp::getBackTrace(const String **str, SMatches **trace)
 {
   *str = backStr;
   *trace = backTrace;
   return true;
-};
+}
 #endif
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Colorer Library.
- *
- * The Initial Developer of the Original Code is
- * Cail Lomecb <irusskih at gmail dot com>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2009
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s): see file CONTRIBUTORS
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+
 

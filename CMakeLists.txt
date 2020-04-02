@@ -36,6 +36,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(COLORER_PVS_STUDIO_CHECK)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
   include(PVS-Studio)
 endif()
 
@@ -48,13 +49,8 @@ else()
   set(XMLCH_TYPE "uint16_t")
 endif()
 set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
-set(show-warnings OFF CACHE BOOL "Enable compiler warnings")
-set(BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
-set(XERCESC_BUILD_DOC OFF CACHE BOOL "Build docs")
-set(XERCESC_BUILD_TESTS OFF CACHE BOOL "Build test")
-set(XERCESC_BUILD_SAMPLES OFF CACHE BOOL "Build samples")
-
-add_subdirectory(./libs/xercesc)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 
 #====================================================
 # zlib
@@ -64,7 +60,12 @@ set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
 set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
 set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
 
-add_subdirectory(./libs/zlib)
+add_subdirectory(./external/zlib EXCLUDE_FROM_ALL)
+
+#====================================================
+# spdlog library
+#====================================================
+add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)
 
 #====================================================
 # colorer library
