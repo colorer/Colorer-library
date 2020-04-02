@@ -1,1 +1,0 @@
-test_speed.exe -t5 -c5 -b.\base\catalog.xml -f%1

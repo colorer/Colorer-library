@@ -1,7 +1,7 @@
 #ifndef _COLORER_PARSEDLINEWRITER_H_
 #define _COLORER_PARSEDLINEWRITER_H_
 
-#include<common/io/Writer.h>
+#include<colorer/io/Writer.h>
 #include<colorer/handlers/LineRegion.h>
 /**
     Static service methods of LineRegion output.
@@ -31,12 +31,12 @@ public:
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
       }
-      markupWriter->write(DString("<span class='"));
+      markupWriter->write(CString("<span class='"));
 
       const Region *region = l1->region;
       while(region != nullptr){
-        String *token0 = region->getName()->replace(DString(":"),DString("-"));
-        String *token = token0->replace(DString("."),DString("-"));
+        SString *token0 = SString(region->getName()).replace(CString(":"),CString("-"));
+        SString *token = token0->replace(CString("."),CString("-"));
         delete token0;
         markupWriter->write(token);
         delete token;
@@ -46,9 +46,9 @@ public:
         }
       }
 
-      markupWriter->write(DString("'>"));
+      markupWriter->write(CString("'>"));
       textWriter->write(line, pos, end - l1->start);
-      markupWriter->write(DString("</span>"));
+      markupWriter->write(CString("</span>"));
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -78,12 +78,12 @@ public:
       if (l1->start > pos){
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
-      };
-      if (l1->texted()->sback != nullptr) markupWriter->write(l1->texted()->sback);
-      if (l1->texted()->stext != nullptr) markupWriter->write(l1->texted()->stext);
+      }
+      if (l1->texted()->start_back != nullptr) markupWriter->write(l1->texted()->start_back);
+      if (l1->texted()->start_text != nullptr) markupWriter->write(l1->texted()->start_text);
       textWriter->write(line, pos, end - l1->start);
-      if (l1->texted()->etext != nullptr) markupWriter->write(l1->texted()->etext);
-      if (l1->texted()->eback != nullptr) markupWriter->write(l1->texted()->eback);
+      if (l1->texted()->end_text != nullptr) markupWriter->write(l1->texted()->end_text);
+      if (l1->texted()->end_back != nullptr) markupWriter->write(l1->texted()->end_back);
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -111,14 +111,14 @@ public:
       if (l1->start > pos){
         textWriter->write(line, pos, l1->start - pos);
         pos = l1->start;
-      };
+      }
       if (docLinkHash->size() > 0)
-        writeHref(markupWriter, docLinkHash, l1->scheme, DString(line, pos, end - l1->start), true);
+        writeHref(markupWriter, docLinkHash, l1->scheme, CString(line, pos, end - l1->start), true);
       writeStart(markupWriter, l1->styled());
       textWriter->write(line, pos, end - l1->start);
       writeEnd(markupWriter, l1->styled());
       if (docLinkHash->size() > 0)
-        writeHref(markupWriter, docLinkHash, l1->scheme, DString(line, pos, end - l1->start), false);
+        writeHref(markupWriter, docLinkHash, l1->scheme, CString(line, pos, end - l1->start), false);
       pos += end - l1->start;
     }
     if (pos < line->length()){
@@ -137,29 +137,29 @@ public:
     if (lr->style&StyledRegion::RD_ITALIC) cp += sprintf(span+cp, "font-style:italic; ");
     if (lr->style&StyledRegion::RD_UNDERLINE) cp += sprintf(span+cp, "text-decoration:underline; ");
     if (lr->style&StyledRegion::RD_STRIKEOUT) cp += sprintf(span+cp, "text-decoration:strikeout; ");
-    if (cp > 0) writer->write(DString(span));
+    if (cp > 0) writer->write(CString(span));
   }
 
   /** Puts into stream starting HTML \<span> tag with requested style specification
   */
   static void writeStart(Writer *writer, const StyledRegion *lr){
     if (!lr->bfore && !lr->bback) return;
-    writer->write(DString("<span style='"));
+    writer->write(CString("<span style='"));
     writeStyle(writer, lr);
-    writer->write(DString("'>"));
+    writer->write(CString("'>"));
   }
 
   /** Puts into stream ending HTML \</span> tag
   */
   static void writeEnd(Writer *writer, const StyledRegion *lr){
     if (!lr->bfore && !lr->bback) return;
-    writer->write(DString("</span>"));
+    writer->write(CString("</span>"));
   }
 
   static void writeHref(Writer *writer, std::unordered_map<SString, String*> *docLinkHash, const Scheme *scheme, const String &token, bool start){
     String *url = nullptr;
     if (scheme != nullptr){
-      auto it_url = docLinkHash->find(&(StringBuffer(token).append(DString("--")).append(scheme->getName())));
+      auto it_url = docLinkHash->find(&(SString(token).append(CString("--")).append(scheme->getName())));
       if (it_url != docLinkHash->end())
       {
         url = it_url->second;
@@ -173,46 +173,13 @@ public:
       }
     }
     if (url != nullptr){
-      if (start) writer->write(StringBuffer("<a href='")+url+DString("'>"));
-      else writer->write(DString("</a>"));
+      if (start) writer->write(SString("<a href='")+url+CString("'>"));
+      else writer->write(CString("</a>"));
     }
   }
 
 };
 
 #endif
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Colorer Library.
- *
- * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+
+

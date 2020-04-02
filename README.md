@@ -2,13 +2,13 @@ Colorer library
 ==========
   Colorer is a syntax highlighting library.
   
-How to build library from source
+How to build from source
 ----------
-To build library from source, you will need:
+To build library and other utils from source, you will need:
 
-  * Visual Studio 2010 or higher; or gcc 4.7
+  * Visual Studio 2015 update 1 or higher / gcc 4.9 or higher
   * git
-  * cmake 2.8.9 or higher
+  * cmake 3.10 or higher
 
 Download the source from git repository:
 
@@ -23,20 +23,8 @@ or update git repository:
 From root path of repository call
     
     mkdir build
-    cmake -G "Visual Studio 10" ../src
-    colorer_lib.sln
-
-Colorer tools
-==========
-
-How to build from source
-----------
-
-From root path of repository call
-    
-    mkdir build
-    cmake -G "Visual Studio 10" ../tools/colorer
-    consoletools.sln
+    cmake -G "Visual Studio 14 2015" ..
+    colorer.sln
 
 Links
 ========================

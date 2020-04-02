@@ -1,9 +1,10 @@
 #include <colorer/parsers/TextParserImpl.h>
-#include <common/Logging.h>
+#include <colorer/unicode/Character.h>
+#include <colorer/unicode/DString.h>
 
 TextParserImpl::TextParserImpl()
 {
-  CLR_TRACE("TextParserImpl", "constructor");
+  CTRACE(spdlog::trace("[TextParserImpl] constructor"));
   cache = new ParseCache();
   clearCache();
   lineSource = nullptr;
@@ -50,7 +51,7 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
   breakParsing = false;
   updateCache = (mode == TPM_CACHE_UPDATE);
 
-  CLR_TRACE("TextParserImpl", "parse from=%d, num=%d", from, num);
+  CTRACE(spdlog::trace("[TextParserImpl] parse from={0}, num={1}", from, num));
   /* Check for initial bad conditions */
   if (regionHandler == nullptr) {
     return from;
@@ -75,13 +76,13 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
   if (mode == TPM_CACHE_READ || mode == TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
     if (parent != nullptr) {
-      CLR_TRACE("TPCache", "searchLine() parent:%s,%d-%d", parent->scheme->getName()->getChars(), parent->sline, parent->eline);
+      CTRACE(spdlog::trace("[TPCache] searchLine() parent:{0},{1}-{2}", parent->scheme->getName()->getChars(), parent->sline, parent->eline));
     }
   }
   cachedLineNo = from;
   cachedParent = parent;
   cachedForward = forward;
-  CLR_TRACE("TextParserImpl", "parse: cache filled");
+  CTRACE(spdlog::trace("[TextParserImpl] parse: cache filled"));
 
 
   do {
@@ -102,11 +103,11 @@ int TextParserImpl::parse(int from, int num, TextParseMode mode)
     baseScheme = parent->scheme;
 
     stackLevel = 0;
-    CLR_TRACE("TextParserImpl", "parse: goes into colorize()");
+    CTRACE(spdlog::trace("[TextParserImpl] parse: goes into colorize()"));
     if (parent != cache) {
       vtlist->restore(parent->vcache);
       parent->clender->end->setBackTrace(parent->backLine, &parent->matchstart);
-      colorize(parent->clender->end, parent->clender->lowContentPriority);
+      colorize(parent->clender->end.get(), parent->clender->lowContentPriority);
       vtlist->clear();
     } else {
       colorize(nullptr, false);
@@ -276,7 +277,7 @@ int TextParserImpl::searchKW(const SchemeNode* node, int no, int lowlen, int hil
         }
       }
       if (!badbound) {
-        CLR_TRACE("TextParserImpl", "KW matched. gx=%d, region=%s", gx, node->kwList->kwList[pos].region->getName()->getChars());
+        CTRACE(spdlog::trace("[TextParserImpl] KW matched. gx={0}, region={1}", gx, node->kwList->kwList[pos].region->getName()->getChars()));
         addRegion(gy, gx, gx + kwlen, node->kwList->kwList[pos].region);
         gx += kwlen;
         return MATCH_RE;
@@ -310,16 +311,16 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
   ParseCache* ResF = nullptr;
   ParseCache* ResP = nullptr;
 
-  CLR_TRACE("TextParserImpl", "searchRE: entered scheme \"%s\"", cscheme->getName()->getChars());
+  CTRACE(spdlog::trace("[TextParserImpl] searchRE: entered scheme \"{0}\"", cscheme->getName()->getChars()));
 
   if (!cscheme) {
     return MATCH_NOTHING;
   }
-  for (int idx = 0; idx < cscheme->nodes.size(); idx++) {
-    SchemeNode* schemeNode = cscheme->nodes.at(idx);
-    CLR_TRACE("TextParserImpl", "searchRE: processing node:%d/%d, type:%s", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]);
+  for (auto schemeNode : cscheme->nodes) {
+    CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
-      case SNT_INHERIT:
+      case SchemeNode::SNT_EMPTY: break;
+      case SchemeNode::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;
         }
@@ -339,17 +340,17 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         }
         break;
 
-      case SNT_KEYWORDS:
+      case SchemeNode::SNT_KEYWORDS:
         if (searchKW(schemeNode, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
 
-      case SNT_RE:
+      case SchemeNode::SNT_RE:
         if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
-        CLR_TRACE("TextParserImpl", "RE matched. gx=%d", gx);
+        CTRACE(spdlog::trace("[TextParserImpl] RE matched. gx={0}", gx));
         for (i = 0; i < match.cMatch; i++) {
           addRegion(gy, match.s[i], match.e[i], schemeNode->regions[i]);
         }
@@ -364,7 +365,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         gx = match.e[0];
         return MATCH_RE;
 
-      case SNT_SCHEME: {
+      case SchemeNode::SNT_SCHEME: {
         if (!schemeNode->scheme) {
           break;
         }
@@ -373,7 +374,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           break;
         }
 
-        CLR_TRACE("TextParserImpl", "Scheme matched. gx=%d", gx);
+        CTRACE(spdlog::trace("[TextParserImpl] Scheme matched. gx={0}", gx));
 
         gx = match.e[0];
         ssubst = vtlist->pushvirt(schemeNode->scheme);
@@ -381,7 +382,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
           ssubst = schemeNode->scheme;
         }
 
-        SString* backLine = new SString(str);
+        auto* backLine = new SString(str);
         if (updateCache) {
           ResF = forward;
           ResP = parent;
@@ -416,7 +417,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
         int o_schemeStart = schemeStart;
         SMatches o_matchend = matchend;
         SMatches* o_match;
-        DString* o_str;
+        CString* o_str;
         schemeNode->end->getBackTrace((const String**)&o_str, &o_match);
 
         baseScheme = ssubst;
@@ -425,7 +426,7 @@ int TextParserImpl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 
         enterScheme(no, &match, schemeNode);
 
-        colorize(schemeNode->end, schemeNode->lowContentPriority);
+        colorize(schemeNode->end.get(), schemeNode->lowContentPriority);
 
         if (gy < gy2) {
           leaveScheme(gy, &matchend, schemeNode);
@@ -484,17 +485,14 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
   stackLevel++;
 
   for (; gy < gy2;) {
-    CLR_TRACE("TextParserImpl", "colorize: line no %d", gy);
+    CTRACE(spdlog::trace("[TextParserImpl] colorize: line no {0}", gy));
     // clears line at start,
     // prevents multiple requests on each line
     if (clearLine != gy) {
       clearLine = gy;
       str = lineSource->getLine(gy);
       if (str == nullptr) {
-        throw Exception(StringBuffer("null String passed into the parser: ") + SString(gy));
-        //!!unreachable code
-        //gy = gy2;
-        break;
+        throw Exception(SString("null String passed into the parser: ") + SString(gy));
       }
       regionHandler->clearLine(gy, str);
     }
@@ -577,38 +575,5 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
   stackLevel--;
   return true;
 }
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is the Colorer Library.
- *
- * The Initial Developer of the Original Code is
- * Cail Lomecb <cail@nm.ru>.
- * Portions created by the Initial Developer are Copyright (C) 1999-2005
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+
+
