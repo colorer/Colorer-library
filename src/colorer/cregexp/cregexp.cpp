@@ -519,7 +519,7 @@ SRegInfo *next, *temp;
     // [] [^]
     if (expr[i] == '['){
       int endPos;
-      CharacterClass *cc = CharacterClass::createCharClass(expr, i, &endPos);
+      CharacterClass *cc = CharacterClass::createCharClass(expr, i, &endPos, ignoreCase);
       if (cc == nullptr) return EENUM;
 //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
       next->op = ReEnum;
