@@ -40,11 +40,16 @@ if (NOT COLORER_INTERNAL_BUILD)
   endif ()
 endif ()
 
-# set global Visual C++ runtime
-if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-elseif ()
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+
+if (MSVC)
+  # set global Visual C++ runtime
+  if (CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+  else ()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+  endif ()
+  
+add_definitions(-D_WIN32)
 endif ()
 
 #====================================================
@@ -68,6 +73,7 @@ else()
 endif()
 set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+set(network OFF CACHE BOOL "Network support" FORCE)
 add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 
 #====================================================
