@@ -8,9 +8,9 @@ set(SRC_CPP ConsoleToolsRunner.cpp
     ConsoleTools.cpp ConsoleTools.h
     version.h)
 
-if(WIN32)
+if (WIN32)
   set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
-endif(WIN32)
+endif (WIN32)
 
 #====================================================
 # build
@@ -32,11 +32,11 @@ set_target_properties(consoletools PROPERTIES
 #====================================================
 
 # static analyze
-if(COLORER_PVS_STUDIO_CHECK)
+if (COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
-endif()
+endif ()

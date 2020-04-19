@@ -101,7 +101,7 @@ if (MSVC)
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif ()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # defaut for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
@@ -127,8 +127,8 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(FLAGS_CXX_DEFAULT)
   set(FLAGS_CXX_RELEASE /W3)
   set(FLAGS_CXX_DEBUG /W4)
-  
-endif()
+
+endif ()
 
 #====================================================
 # build
@@ -160,33 +160,33 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
 set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>
       )
-else()
+else ()
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_RELEASE}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>
       )
-endif()
+endif ()
 
 set_target_properties(colorer_lib PROPERTIES OUTPUT_NAME "colorer")
-if(MSVC)
+if (MSVC)
   set_target_properties(colorer_lib PROPERTIES DEBUG_POSTFIX "d")
-endif()
+endif ()
 
 #====================================================
 # test
 #====================================================
 
 # static analyze
-if(COLORER_PVS_STUDIO_CHECK)
+if (COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
-endif()
+endif ()

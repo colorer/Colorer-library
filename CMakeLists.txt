@@ -11,18 +11,18 @@ project(colorer CXX)
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
 option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif()
+endif ()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-if(NOT MSVC_IDE)
+if (NOT MSVC_IDE)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
-else()
+else ()
   #target_compile_options cannot set parameters for all configurations in MSVC
   set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
-endif()
-message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")       
+endif ()
+message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
 
 if (NOT COLORER_INTERNAL_BUILD)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -48,8 +48,8 @@ if (MSVC)
   else ()
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
   endif ()
-  
-add_definitions(-D_WIN32)
+
+  add_definitions(-D_WIN32)
 endif ()
 
 #====================================================
@@ -58,19 +58,19 @@ endif ()
 # additional modules path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-if(COLORER_PVS_STUDIO_CHECK)
+if (COLORER_PVS_STUDIO_CHECK)
   set(CMAKE_EXPORT_COMPILE_COMMANDS On)
   include(PVS-Studio)
-endif()
+endif ()
 
 #====================================================
 # xercesc
 #====================================================
-if(WIN32)
+if (WIN32)
   set(XMLCH_TYPE "wchar_t")
-else()
+else ()
   set(XMLCH_TYPE "uint16_t")
-endif()
+endif ()
 set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
 set(network OFF CACHE BOOL "Network support" FORCE)
@@ -100,6 +100,6 @@ add_subdirectory(./src)
 # colorer tool
 #====================================================
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
-if(COLORER_TOOLS_BUILD)
+if (COLORER_TOOLS_BUILD)
   add_subdirectory(./tools/colorer)
-endif()
+endif ()
