@@ -5,6 +5,8 @@
 #define COLORER_VER_MINOR 0
 #define COLORER_VER_PATCH 5
 
+#define COLORER_COPYRIGHT "(c) 1999-2009 Igor Russkih, (c) 2009-2020 Aleksey Dobrunov"
+
 #ifdef _WIN64
 #define CONF " x64"
 #elif defined _WIN32

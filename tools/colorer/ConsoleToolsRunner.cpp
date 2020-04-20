@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <colorer/common/Colorer.h>
+#include <colorer/version.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include "ConsoleTools.h"
-#include "version.h"
 
 /** Internal run action type */
 enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
@@ -276,8 +276,8 @@ int workIt()
   initConsoleTools(ct);
 
   if (settings.copyright) {
-    fprintf(stdout, "\nColorer console tools, version %s%s\n", VER_FILEVERSION_STR, CONF);
-    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2019 Aleksey Dobrunov \n\n");
+    fprintf(stdout, "\nColorer console tools, version %s\n", COLORER_VERSION);
+    fprintf(stdout, "%s \n\n", COLORER_COPYRIGHT);
   }
 
   try {

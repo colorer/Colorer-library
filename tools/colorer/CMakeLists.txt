@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
-project(consoletools)
+project(consoletools VERSION ${COLORER_VERSION} LANGUAGES CXX C)
 
 #====================================================
 # colorer_lib
 #====================================================
-set(SRC_CPP ConsoleToolsRunner.cpp
-    ConsoleTools.cpp ConsoleTools.h
+set(SRC_CPP
+    ConsoleToolsRunner.cpp
+    ConsoleTools.cpp
+    ConsoleTools.h
     )
 
 if (WIN32)
@@ -15,7 +17,6 @@ endif (WIN32)
 #====================================================
 # build
 #====================================================
-
 #inherit compile options from library
 
 if (COLORER_WIN64_BUILD)

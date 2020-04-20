@@ -25,7 +25,7 @@ BEGIN
             VALUE "FileDescription", "Colorer - Syntax Highlighting tools"
             VALUE "FileVersion", COLORER_VERSION
             VALUE "InternalName", "Colorer"
-            VALUE "LegalCopyright", "© 1999-2009 Igor Russkih, © 2009-2020 Aleksey Dobrunov"
+            VALUE "LegalCopyright", COLORER_COPYRIGHT
             VALUE "OriginalFilename", "colorer.exe"
             VALUE "ProductName", "Colorer console tools"
             VALUE "ProductVersion", COLORER_VERSION
