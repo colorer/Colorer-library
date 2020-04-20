@@ -41,6 +41,8 @@ if (NOT COLORER_INTERNAL_BUILD)
 endif ()
 
 
+option(COLORER_WIN64_BUILD "Build for x64" ON)
+
 if (MSVC)
   # set global Visual C++ runtime
   if (CMAKE_BUILD_TYPE MATCHES Debug)

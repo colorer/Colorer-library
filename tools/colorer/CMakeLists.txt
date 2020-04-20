@@ -6,7 +6,7 @@ project(consoletools)
 #====================================================
 set(SRC_CPP ConsoleToolsRunner.cpp
     ConsoleTools.cpp ConsoleTools.h
-    version.h)
+    )
 
 if (WIN32)
   set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
@@ -17,6 +17,10 @@ endif (WIN32)
 #====================================================
 
 #inherit compile options from library
+
+if (COLORER_WIN64_BUILD)
+  set(CMAKE_RC_FLAGS -D_WIN64)
+endif ()
 
 add_executable(consoletools ${SRC_CPP})
 target_link_libraries(consoletools PRIVATE colorer_lib)
