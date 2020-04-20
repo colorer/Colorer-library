@@ -6,9 +6,9 @@ How to build from source
 ----------
 To build library and other utils from source, you will need:
 
-  * Visual Studio 2015 update 1 or higher / gcc 4.9 or higher
+  * Visual Studio 2017 or higher / gcc 8 or higher
   * git
-  * cmake 3.10 or higher
+  * cmake 3.15 or higher
 
 Download the source from git repository:
 
@@ -23,7 +23,8 @@ or update git repository:
 From root path of repository call
     
     mkdir build
-    cmake -G "Visual Studio 14 2015" ..
+    cd build
+    cmake -G "Visual Studio 16 2019" ..
     colorer.sln
 
 Links
