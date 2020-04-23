@@ -89,7 +89,12 @@ TypeParameter* FileTypeImpl::addParam(const String *name){
 void FileTypeImpl::setParamValue(const String &name, const String *value){
   auto tp = paramsHash.find(name);
   if (tp != paramsHash.end()) {
-    tp->second->user_value = std::make_unique<SString>(value);
+    if (value) {
+      tp->second->user_value = std::make_unique<SString>(value);
+    }
+    else{
+      tp->second->user_value = nullptr;
+    }
   }
 }
 
