@@ -549,7 +549,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
     // [] [^]
     if (expr[i] == '[') {
       int endPos;
-      auto* cc = UStr::createCharClass(expr, i, &endPos);
+      auto* cc = UStr::createCharClass(expr, i, &endPos, false);
       if (cc == nullptr)
         return EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
