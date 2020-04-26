@@ -326,7 +326,7 @@ private:
   int schemeStart;
 #endif
   bool startChange, endChange;
-  std::unique_ptr<UnicodeString> global_pattern;
+  const UnicodeString* global_pattern;
   int end;
 
   SMatches *matches;

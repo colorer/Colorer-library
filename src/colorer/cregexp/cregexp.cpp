@@ -1423,7 +1423,7 @@ bool CRegExp::parse(const UnicodeString* str, int pos, int eol, SMatches* mtch
 #ifdef COLORERMODE
   schemeStart = soScheme;
 #endif
-  global_pattern = std::make_unique<UnicodeString>(*str);
+  global_pattern = str;
   end = eol;
   matches = mtch;
 #ifdef NAMED_MATCHES_IN_HASH
@@ -1442,7 +1442,7 @@ bool CRegExp::parse(const UnicodeString* str, SMatches* mtch
 )
 {
   end = str->length();
-  global_pattern = std::make_unique<UnicodeString>(*str);
+  global_pattern = str;
 #ifdef COLORERMODE
   schemeStart = 0;
 #endif
