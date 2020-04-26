@@ -53,7 +53,7 @@ bool Outliner::isOutlined(const Region* region)
 void Outliner::modifyEvent(size_t topLine)
 {
   for (size_t i = 0; i <outline.size(); ++i) {
-    if (outline[i]->lno > topLine) {
+    if (outline[i]->lno >= topLine) {
       outline.resize(i);
       break;
     }
