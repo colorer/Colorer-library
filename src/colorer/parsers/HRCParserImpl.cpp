@@ -99,10 +99,10 @@ void HRCParser::Impl::loadFileType(FileType* filetype)
     spdlog::error("Can't open source stream: {0}", e.what());
     thisType->pimpl->load_broken = true;
   } catch (HRCParserException &e) {
-    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()):"");
     thisType->pimpl->load_broken = true;
   } catch (Exception &e) {
-    spdlog::error("{0} [{1}]", e.what(), UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()):"");
     thisType->pimpl->load_broken = true;
   } catch (...) {
     spdlog::error("Unknown exception while loading {0}", UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
