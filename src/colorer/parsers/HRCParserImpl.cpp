@@ -140,7 +140,11 @@ FileType* HRCParser::Impl::getFileType(const UnicodeString* name)
   if (name == nullptr) {
     return nullptr;
   }
-  return fileTypeHash.find(*name)->second;
+  auto filetype = fileTypeHash.find(*name);
+  if (filetype != fileTypeHash.end())
+    return filetype->second;
+  else
+    return nullptr;
 }
 
 FileType* HRCParser::Impl::enumerateFileTypes(unsigned int index)
