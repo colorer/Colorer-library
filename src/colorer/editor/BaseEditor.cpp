@@ -572,5 +572,7 @@ bool BaseEditor::haveInvalidLine()
   return invalidLine < lineCount;
 }
 
-
-
+int BaseEditor::getInvalidLine() const
+{
+  return invalidLine;
+}

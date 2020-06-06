@@ -265,6 +265,10 @@ private:
   int lrSize;
   // position of last validLine
   int invalidLine;
+
+ public:
+  int getInvalidLine() const;
+ private:
   // no lines structure changes, just single line change
   int changedLine;
 
