@@ -12,6 +12,7 @@ TextParserImpl::TextParserImpl()
   picked = nullptr;
   baseScheme = nullptr;
   memset(&matchend, 0, sizeof(SMatches));
+  maxBlockSize = 0;
 }
 
 TextParserImpl::~TextParserImpl()
@@ -514,7 +515,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       res = root_end_re->parse(str, gx, len, &matchend, schemeStart);
     }
     if (!res) {
-      matchend.s[0] = matchend.e[0] = len;
+      matchend.s[0] = matchend.e[0] = gx + maxBlockSize > len ? len : gx + maxBlockSize;
     }
 
     int parent_len = len;
@@ -545,7 +546,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
         }
       }
       int oy = gy;
-      int re_result = searchRE(baseScheme, gy, matchend.s[0], len);
+      int re_result = searchRE(baseScheme, gy, matchend.s[0], matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
       if ((re_result == MATCH_SCHEME && (oy != gy || matchend.s[0] < gx)) ||
           (re_result == MATCH_RE && matchend.s[0] < gx)) {
         len = -1;
@@ -576,4 +577,7 @@ bool TextParserImpl::colorize(CRegExp* root_end_re, bool lowContentPriority)
   return true;
 }
 
-
+void TextParserImpl::setMaxBlockSize(int max_block_size)
+{
+  maxBlockSize = max_block_size;
+}

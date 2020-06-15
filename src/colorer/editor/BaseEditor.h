@@ -240,6 +240,7 @@ public:
   void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 
   bool haveInvalidLine();
+  void setMaxBlockSize(int max_block_size);
 
 private:
 
