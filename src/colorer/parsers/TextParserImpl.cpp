@@ -12,7 +12,7 @@ TextParserImpl::TextParserImpl()
   picked = nullptr;
   baseScheme = nullptr;
   memset(&matchend, 0, sizeof(SMatches));
-  maxBlockSize = 0;
+  maxBlockSize = 1000;
 }
 
 TextParserImpl::~TextParserImpl()
