@@ -41,11 +41,13 @@ if (NOT COLORER_INTERNAL_BUILD)
   endif ()
 endif ()
 
-# set global Visual C++ runtime
-if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-elseif ()
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+if (MSVC)
+  # set global Visual C++ runtime
+  if (CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+  else ()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+  endif ()
 endif ()
 
 #====================================================
@@ -67,13 +69,8 @@ if (NOT ${ICU_FIND_COMPONENTS})
   message(FATAL_ERROR "Not found ICU library")
 endif ()
 
-#====================================================
-# xercesc
-#====================================================
-set(XMLCH_TYPE "char16_t")
-set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
-add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 #====================================================
 # zlib

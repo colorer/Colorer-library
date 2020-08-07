@@ -158,15 +158,13 @@ endif ()
 add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC})
 target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-    PUBLIC ../external/xercesc/src
-    PUBLIC ${xerces-c_BINARY_DIR}/src
+    PUBLIC ${CONAN_INCLUDE_DIRS}
     PUBLIC ../external/spdlog/include
     PUBLIC ${ICU_INCLUDE_DIR}
     )
 target_link_libraries(colorer_lib
-    PUBLIC xerces-c
+    PUBLIC ${CONAN_LIBS}
     PUBLIC ZLIB::MINIZIP
-    PUBLIC ${THREAD_LIBS}
     PUBLIC spdlog::spdlog
     PUBLIC ${ICU_UC_LIBRARY}
     )
