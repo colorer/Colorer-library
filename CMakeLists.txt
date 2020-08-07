@@ -73,16 +73,6 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 #====================================================
-# zlib
-#====================================================
-set(ZLIB_EXAMPLES OFF CACHE BOOL "Build zlib example programs")
-set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
-set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
-set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
-
-add_subdirectory(./external/zlib EXCLUDE_FROM_ALL)
-
-#====================================================
 # spdlog library
 #====================================================
 add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)

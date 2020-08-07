@@ -1,7 +1,7 @@
 #include <colorer/common/UStr.h>
 #include<colorer/io/JARInputSource.h>
 #include<colorer/io/MemoryFile.h>
-#include<contrib/minizip/unzip.h>
+#include<unzip.h>
 
 JARInputSource::JARInputSource(const UnicodeString *basePath, InputSource *base){
   if (basePath == nullptr)

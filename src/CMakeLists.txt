@@ -164,7 +164,6 @@ target_include_directories(colorer_lib
     )
 target_link_libraries(colorer_lib
     PUBLIC ${CONAN_LIBS}
-    PUBLIC ZLIB::MINIZIP
     PUBLIC spdlog::spdlog
     PUBLIC ${ICU_UC_LIBRARY}
     )

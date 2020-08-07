@@ -1,5 +1,6 @@
 [requires]
 xerces-c/3.2.3@colorer/release
+zlib/1.2.11@colorer/release
 
 [generators]
 cmake
