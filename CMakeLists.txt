@@ -73,11 +73,6 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 #====================================================
-# spdlog library
-#====================================================
-add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)
-
-#====================================================
 # colorer library
 #====================================================
 add_subdirectory(./src)
