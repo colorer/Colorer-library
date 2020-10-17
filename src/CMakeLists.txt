@@ -159,11 +159,9 @@ add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC})
 target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ${CONAN_INCLUDE_DIRS}
-    PUBLIC ${ICU_INCLUDE_DIR}
     )
 target_link_libraries(colorer_lib
     PUBLIC ${CONAN_LIBS}
-    PUBLIC ${ICU_UC_LIBRARY}
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
