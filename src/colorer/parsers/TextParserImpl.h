@@ -25,6 +25,7 @@ class TextParser::Impl
   int parse(int from, int num, TextParseMode mode);
   void breakParse();
   void clearCache();
+  void setMaxBlockSize(int max_block_size);
 
  private:
   UnicodeString* str;
@@ -49,6 +50,9 @@ class TextParser::Impl
 
   LineSource* lineSource;
   RegionHandler* regionHandler;
+
+  // maximum block size of regexp in string line
+  int maxBlockSize;
 
   void fillInvisibleSchemes(ParseCache* cache);
   void addRegion(int lno, int sx, int ex, const Region* region);

@@ -579,3 +579,7 @@ int BaseEditor::getInvalidLine() const
 {
   return invalidLine;
 }
+
+void BaseEditor::setMaxBlockSize(int max_block_size) {
+  textParser->setMaxBlockSize(max_block_size);
+}

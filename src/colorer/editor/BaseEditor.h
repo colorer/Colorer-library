@@ -242,6 +242,7 @@ public:
   void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
 
   bool haveInvalidLine();
+  void setMaxBlockSize(int max_block_size);
 
 private:
 

@@ -1,5 +1,5 @@
-#include <colorer/parsers/TextParserImpl.h>
 #include <colorer/parsers/FileTypeImpl.h>
+#include <colorer/parsers/TextParserImpl.h>
 
 TextParser::TextParser() : pimpl(new TextParser::Impl()) {}
 
@@ -31,4 +31,9 @@ void TextParser::setLineSource(LineSource* lh)
 void TextParser::setRegionHandler(RegionHandler* rh)
 {
   pimpl->setRegionHandler(rh);
+}
+
+void TextParser::setMaxBlockSize(int max_block_size)
+{
+  pimpl->setMaxBlockSize(max_block_size);
 }

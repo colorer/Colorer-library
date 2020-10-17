@@ -89,6 +89,7 @@ class TextParser
    * Clears internal cached text tree stucture
    */
   void clearCache();
+  void setMaxBlockSize(int max_block_size);
 
   ~TextParser() = default;
 
