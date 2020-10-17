@@ -64,11 +64,6 @@ endif ()
 #====================================================
 # find dependences
 #====================================================
-find_package(ICU COMPONENTS uc)
-if (NOT ${ICU_FIND_COMPONENTS})
-  message(FATAL_ERROR "Not found ICU library")
-endif ()
-
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
