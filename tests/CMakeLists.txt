@@ -12,3 +12,9 @@ endmacro()
 add_sample_executable(texthrd
     hrd_mapper/hrdmapper.cpp
     )
+
+add_sample_executable(perftest
+    performance/test_speed.cpp
+    performance/tests.cpp
+    performance/tests.h
+    )
