@@ -13,6 +13,7 @@ class FileType
 {
   friend class HRCParser;
   friend class TextParser;
+
  public:
   /**
    * Public name of file type (HRC 'name' attribute).
@@ -45,6 +46,7 @@ class FileType
   [[nodiscard]] std::vector<UnicodeString> enumParams() const;
 
   [[nodiscard]] const UnicodeString* getParamDescription(const UnicodeString& name) const;
+  void setParamDescription(const UnicodeString& name, const UnicodeString* value);
 
   /** Returns parameter's value of this file type.
       Parameters are stored in prototypes as
@@ -71,6 +73,7 @@ class FileType
       @return Default value of this parameter
   */
   [[nodiscard]] const UnicodeString* getParamDefaultValue(const UnicodeString& name) const;
+  [[nodiscard]] const UnicodeString* getParamUserValue(const UnicodeString& name) const;
 
   /** Changes value of the parameter with specified name.
       Note, that changed parameter values are not stored in HRC
@@ -81,10 +84,13 @@ class FileType
       @param value New value of this parameter.
   */
   void setParamValue(const UnicodeString& name, const UnicodeString* value);
+  void setParamDefaultValue(const UnicodeString& name, const UnicodeString* value);
 
+  [[nodiscard]] size_t getParamCount() const;
+  void addParam(const UnicodeString* name);
 
   FileType();
-  ~FileType()= default;
+  ~FileType() = default;
 
  private:
   class Impl;

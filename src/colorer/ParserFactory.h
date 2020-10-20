@@ -7,6 +7,7 @@
 #include <colorer/TextParser.h>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
+#include <colorer/parsers/HRDNode.h>
 
 /**
  * Maintains catalog of HRC and HRD references.
@@ -83,6 +84,10 @@ class ParserFactory
    *         class and name IDs in catalog.xml file
    */
   TextHRDMapper* createTextMapper(const UnicodeString* nameID);
+
+  std::vector<const HRDNode*> enumHRDInstances(const UnicodeString& classID);
+  void addHrd(std::unique_ptr<HRDNode> hrd);
+  const HRDNode* getHRDNode(const UnicodeString& classID, const UnicodeString& nameID);
 
   ParserFactory(const ParserFactory&) = delete;
   void operator=(const ParserFactory&) = delete;

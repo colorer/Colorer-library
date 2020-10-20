@@ -1,3 +1,4 @@
+#include <colorer/ParserFactory.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
 
 ParserFactory::ParserFactory() : pimpl(new ParserFactory::Impl()) {}
@@ -25,4 +26,19 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const UnicodeString* classID,
 TextHRDMapper* ParserFactory::createTextMapper(const UnicodeString* nameID)
 {
   return pimpl->createTextMapper(nameID);
+}
+
+std::vector<const HRDNode*> ParserFactory::enumHRDInstances(const UnicodeString& classID)
+{
+  return pimpl->enumHRDInstances(classID);
+}
+
+void ParserFactory::addHrd(std::unique_ptr<HRDNode> hrd)
+{
+  pimpl->addHrd(std::move(hrd));
+}
+
+const HRDNode* ParserFactory::getHRDNode(const UnicodeString& classID, const UnicodeString& nameID)
+{
+  return pimpl->getHRDNode(classID, nameID);
 }

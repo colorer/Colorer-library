@@ -1,5 +1,4 @@
 #include <colorer/common/UStr.h>
-#include <unicode/uchar.h>
 
 UnicodeString UStr::to_unistr(const int number)
 {
@@ -24,8 +23,25 @@ std::unique_ptr<XMLCh[]> UStr::to_xmlch(const UnicodeString* str)
 std::string UStr::to_stdstr(const UnicodeString* str)
 {
   std::string out_str;
-  str->toUTF8String(out_str);
+  if (str) {
+    str->toUTF8String(out_str);
+  }
   return out_str;
+}
+
+std::wstring UStr::to_stdwstr(const UnicodeString* str)
+{
+  std::wstring out_string;
+  // wchar_t and UChar are the same size
+  if (str) {
+    auto len = str->length();
+    std::unique_ptr<wchar_t[]> out_s(new wchar_t[len + 1]);
+    str->extract(0, len, out_s.get());
+    out_s[len] = 0;
+
+    out_string.assign(out_s.get());
+  }
+  return out_string;
 }
 
 std::string UStr::to_stdstr(const XMLCh* str)
