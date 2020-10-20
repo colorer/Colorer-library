@@ -60,13 +60,15 @@ const UnicodeString* FileType::Impl::getParamValue(const UnicodeString& name_) c
 
 int FileType::Impl::getParamValueInt(const UnicodeString& name_, int def) const
 {
-  int val;
-  auto param_str = UStr::to_stdstr(getParamValue(name_));
-  try {
-    val = std::stoi(param_str, nullptr);
-  } catch (std::exception&) {
-    val = def;
-    spdlog::error("Error parse param {0} with value {1} to integer number", name_, param_str);
+  int val = def;
+  auto param_value = getParamValue(name_);
+  if (param_value) {
+    auto param_str = UStr::to_stdstr(param_value);
+    try {
+      val = std::stoi(param_str, nullptr);
+    } catch (std::exception&) {
+      spdlog::error("Error parse param {0} with value {1} to integer number", name_, param_str);
+    }
   }
   return val;
 }
