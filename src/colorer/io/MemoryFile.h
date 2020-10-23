@@ -1,6 +1,12 @@
 #ifndef _COLORER_MEMORYFILE_H_
 #define _COLORER_MEMORYFILE_H_
+
+#ifdef ZLIB_SHORT_PATH
+#include <unzip.h>
+#else
 #include <minizip/unzip.h>
+#endif
+
 
 typedef struct{
   const unsigned char *stream;

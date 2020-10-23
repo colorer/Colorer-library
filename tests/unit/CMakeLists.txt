@@ -5,8 +5,14 @@ set(unit_tests_SRC test_exception.cpp)
 
 add_executable(unit_tests ${unit_tests_SRC})
 
-target_link_libraries(unit_tests
-    PRIVATE GTest::GTest GTest::Main colorer_lib)
+if(COLORER_USE_CONAN)
+  target_link_libraries(unit_tests
+      PRIVATE ${CONAN_LIBS_GTEST}  colorer_lib)
+else()
+  target_link_libraries(unit_tests
+      PRIVATE GTest::GTest GTest::Main colorer_lib)
+endif()
+
 
 set_target_properties(unit_tests PROPERTIES
     CXX_STANDARD 17

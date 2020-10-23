@@ -274,7 +274,7 @@ int workIt()
   initConsoleTools(ct);
 
   if (settings.copyright) {
-    fprintf(stdout, "\nColorer console tools, version %s%s\n", TOOLS_VERSION, CONF);
+    fprintf(stdout, "\nColorer console tools, version %s\n", TOOLS_VERSION);
     fprintf(stdout, "%s \n\n", TOOLS_COPYRIGHT);
   }
 

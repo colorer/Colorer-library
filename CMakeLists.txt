@@ -59,6 +59,7 @@ if(COLORER_USE_CONAN)
 
   set(COLORER_STATIC_DEPEND TRUE)
 else()
+
   find_package(ICU COMPONENTS uc REQUIRED)
   find_package(XercesC REQUIRED)
   find_package(spdlog REQUIRED)
@@ -94,7 +95,7 @@ endif()
 # Tests
 #====================================================
 if(COLORER_BUILD_TEST)
-  if(${GTEST_FOUND})
+  if(COLORER_USE_CONAN OR GTEST_FOUND)
     add_subdirectory(./tests/unit)
   endif()
 

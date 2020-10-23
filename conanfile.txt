@@ -3,6 +3,7 @@ xerces-c/3.2.3@colorer/release
 zlib/1.2.11@colorer/release
 spdlog/1.7.0@colorer/release
 icu/67.1@colorer/release
+gtest/1.10.0
 
 [generators]
 cmake

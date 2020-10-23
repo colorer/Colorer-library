@@ -1,7 +1,11 @@
 #include <colorer/common/UStr.h>
 #include<colorer/io/JARInputSource.h>
 #include<colorer/io/MemoryFile.h>
-#include<minizip/unzip.h>
+#ifdef ZLIB_SHORT_PATH
+#include <unzip.h>
+#else
+#include <minizip/unzip.h>
+#endif
 
 JARInputSource::JARInputSource(const UnicodeString *basePath, InputSource *base){
   if (basePath == nullptr)
