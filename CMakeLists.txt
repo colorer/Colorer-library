@@ -11,18 +11,19 @@ project(colorer CXX)
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
 option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
+option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
 endif ()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-if(NOT MSVC_IDE)
+if (NOT MSVC_IDE)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
-else()
+else ()
   #target_compile_options cannot set parameters for all configurations in MSVC
   set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
-endif()
+endif ()
 message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
 
 if (NOT COLORER_INTERNAL_BUILD)
@@ -56,16 +57,20 @@ endif ()
 # additional modules path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-if (COLORER_PVS_STUDIO_CHECK)
-  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-  include(PVS-Studio)
-endif ()
-
 #====================================================
 # find dependences
 #====================================================
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+if (COLORER_USE_CONAN)
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup()
+else ()
+  find_package(ICU COMPONENTS uc REQUIRED)
+  find_package(XercesC REQUIRED)
+  find_package(spdlog REQUIRED)
+  find_package(fmt REQUIRED)
+  find_package(minizip REQUIRED)
+  find_package(GTest)
+endif ()
 
 #====================================================
 # colorer library
@@ -81,9 +86,16 @@ if (COLORER_TOOLS_BUILD)
 endif ()
 
 #====================================================
+# PVS-Studio
+#====================================================
+if (COLORER_PVS_STUDIO_CHECK)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
+  include(PVS-Studio)
+endif ()
+
+#====================================================
 # unit tests
 #====================================================
-find_package(GTest)
 if (${GTEST_FOUND})
   add_subdirectory(./tests/unit)
 endif ()

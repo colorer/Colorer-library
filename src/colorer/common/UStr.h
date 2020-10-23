@@ -10,9 +10,11 @@ class UStr
  public:
   [[nodiscard]] static UnicodeString to_unistr(int number);
   [[nodiscard]] static std::string to_stdstr(const UnicodeString* str);
-  [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString* str);
   [[nodiscard]] static std::string to_stdstr(const XMLCh* str);
   [[nodiscard]] static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
+#ifdef _WINDOWS
+  [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString* str);
+#endif
 
   static bool isLowerCase(UChar c);
   static bool isUpperCase(UChar c);

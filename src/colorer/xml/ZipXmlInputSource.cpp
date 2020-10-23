@@ -1,5 +1,5 @@
 #include <colorer/xml/ZipXmlInputSource.h>
-#include <unzip.h>
+#include <minizip/unzip.h>
 #include <xercesc/util/XMLString.hpp>
 #include <colorer/io/MemoryFile.h>
 #include <colorer/common/UStr.h>
