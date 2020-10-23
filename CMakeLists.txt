@@ -1,47 +1,36 @@
 cmake_minimum_required(VERSION 3.15)
+
+#====================================================
+# Enable policy
+#====================================================
 # enable CMAKE_MSVC_RUNTIME_LIBRARY
 cmake_policy(SET CMP0091 NEW)
 # enable <LIB>_ROOT
 cmake_policy(SET CMP0074 NEW)
 
+#====================================================
 project(colorer CXX)
 
 #====================================================
-# global settings
+# Set default build type
 #====================================================
-option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
-option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
-option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
-
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-if(NOT MSVC_IDE)
-  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
-else()
-  #target_compile_options cannot set parameters for all configurations in MSVC
-  set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
-endif()
-message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
+#====================================================
+# global library settings
+#====================================================
+option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
+option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
+option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
+option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
+option(COLORER_BUILD_TEST "Set on to build test" OFF)
 
-if(NOT COLORER_INTERNAL_BUILD)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-  # set output path for ide.
-  if("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/vc)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/vc)
-  elseif(DEFINED ENV{CLION_IDE} AND MSVC)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_vc_${CMAKE_BUILD_TYPE})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_vc_${CMAKE_BUILD_TYPE})
-  elseif(DEFINED ENV{CLION_IDE})
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_gcc_${CMAKE_BUILD_TYPE})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_gcc_${CMAKE_BUILD_TYPE})
-  endif()
-endif()
-
+#====================================================
+# global compilation settings
+#====================================================
 if(MSVC)
   # set global Visual C++ runtime
   if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -54,8 +43,8 @@ endif()
 #====================================================
 # load modules
 #====================================================
-# additional modules path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include(cmake/ide.cmake)
 
 #====================================================
 # find dependences
@@ -90,14 +79,16 @@ endif()
 #====================================================
 if(COLORER_PVS_STUDIO_CHECK)
   set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-  include(PVS-Studio)
+  include(cmake/PVS-Studio.cmake)
 endif()
 
 #====================================================
-# unit tests
+# Tests
 #====================================================
-if(${GTEST_FOUND})
-  add_subdirectory(./tests/unit)
-endif()
+if(COLORER_BUILD_TEST)
+  if(${GTEST_FOUND})
+    add_subdirectory(./tests/unit)
+  endif()
 
-add_subdirectory(./tests)
+  add_subdirectory(./tests)
+endif()
