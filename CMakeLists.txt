@@ -56,6 +56,8 @@ message(STATUS "Build Colorer: ${COLORER_VERSION}")
 if(COLORER_USE_CONAN)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
+
+  set(COLORER_STATIC_DEPEND TRUE)
 else()
   find_package(ICU COMPONENTS uc REQUIRED)
   find_package(XercesC REQUIRED)
@@ -63,6 +65,8 @@ else()
   find_package(fmt REQUIRED)
   find_package(minizip REQUIRED)
   find_package(GTest)
+
+  set(COLORER_STATIC_DEPEND FALSE)
 endif()
 
 #====================================================
