@@ -45,6 +45,10 @@ endif()
 #====================================================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include(cmake/ide.cmake)
+include(cmake/utils.cmake)
+
+colorer_extract_version()
+message(STATUS "Build Colorer: ${COLORER_VERSION}")
 
 #====================================================
 # find dependences

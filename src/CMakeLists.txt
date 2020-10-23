@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(colorer_lib CXX C)
+project(colorer_lib VERSION ${COLORER_VERSION} LANGUAGES CXX C)
 
 #====================================================
 # colorer
@@ -15,6 +15,7 @@ set(SRC_COLORER
     colorer/RegionHandler.h
     colorer/Scheme.h
     colorer/TextParser.h
+    colorer/version.h
     colorer/common/Exception.cpp
     colorer/common/Features.h
     colorer/common/UStr.cpp
@@ -113,9 +114,6 @@ set(SRC_COLORER
 # common flags
 #====================================================
 set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
-if(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(COLORER_DEF ${COLORER_DEF} -DWIN32)
-endif()
 if(MSVC)
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
@@ -203,10 +201,12 @@ else()
       )
 endif()
 
-set_target_properties(colorer_lib PROPERTIES OUTPUT_NAME "colorer")
-if(MSVC)
-  set_target_properties(colorer_lib PROPERTIES DEBUG_POSTFIX "d")
-endif()
+set_target_properties(colorer_lib PROPERTIES
+    OUTPUT_NAME "colorer"
+    VERSION ${COLORER_VERSION}
+    SOVERSION ${COLORER_VERSION_MAJOR}
+    DEBUG_POSTFIX "d"
+    )
 
 #====================================================
 # test

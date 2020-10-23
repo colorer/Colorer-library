@@ -274,8 +274,8 @@ int workIt()
   initConsoleTools(ct);
 
   if (settings.copyright) {
-    fprintf(stdout, "\nColorer console tools, version %s%s\n", VER_FILEVERSION_STR, CONF);
-    fprintf(stdout, "Copyright (c) 1999-2009 Igor Russkih, Copyright (c) 2009-2019 Aleksey Dobrunov \n\n");
+    fprintf(stdout, "\nColorer console tools, version %s%s\n", TOOLS_VERSION, CONF);
+    fprintf(stdout, "%s \n\n", TOOLS_COPYRIGHT);
   }
 
   try {

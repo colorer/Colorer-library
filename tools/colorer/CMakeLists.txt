@@ -4,9 +4,12 @@ project(consoletools)
 #====================================================
 # colorer_lib
 #====================================================
-set(SRC_CPP ConsoleToolsRunner.cpp
-    ConsoleTools.cpp ConsoleTools.h
-    version.h)
+set(SRC_CPP
+    ConsoleToolsRunner.cpp
+    ConsoleTools.cpp
+    ConsoleTools.h
+    version.h
+    )
 
 if(WIN32)
   set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
@@ -15,8 +18,7 @@ endif(WIN32)
 #====================================================
 # build
 #====================================================
-
-#inherit compile optionsfrom library
+#inherit compile options from library
 
 add_executable(consoletools ${SRC_CPP})
 target_link_libraries(consoletools PRIVATE colorer_lib)
@@ -26,6 +28,10 @@ set_target_properties(consoletools PROPERTIES
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     )
+
+if (NOT COLORER_WINx86)
+  set(CMAKE_RC_FLAGS -D_WIN64)
+endif ()
 
 #====================================================
 # test

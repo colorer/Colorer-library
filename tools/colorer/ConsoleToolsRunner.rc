@@ -1,35 +1,38 @@
+#pragma code_page(65001)
 #include <windows.h>
-#include "version.h"
+#include <version.h>
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION VER_FILEVERSION
- PRODUCTVERSION VER_PRODUCTVERSION
- FILEFLAGSMASK 0x17L
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0
+
 #ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
+| VS_FF_PRERELEASE | VS_FF_DEBUG
 #endif
- FILEOS 0x40004L
- FILETYPE 0x2L
- FILESUBTYPE 0x0L
+
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+
+FILEVERSION TOOLS_VER_MAJOR,TOOLS_VER_MINOR,TOOLS_VER_PATCH,0
+PRODUCTVERSION TOOLS_VER_MAJOR,TOOLS_VER_MINOR,TOOLS_VER_PATCH,0
+
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "041904b0"
+        BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", FILE_DESCRIPTION
-            VALUE "FileVersion", VER_FILEVERSION_STR
+            VALUE "FileDescription", "Colorer - Syntax Highlighting tools"
+            VALUE "FileVersion", TOOLS_VERSION
             VALUE "InternalName", "Colorer"
-            VALUE "LegalCopyright", "© 1999-2009 Igor Russkih, © 2009-2018 Aleksey Dobrunov"
+            VALUE "LegalCopyright", TOOLS_COPYRIGHT
             VALUE "OriginalFilename", "colorer.exe"
             VALUE "ProductName", "Colorer console tools"
-            VALUE "ProductVersion", VER_PRODUCTVERSION_STR
+            VALUE "ProductVersion", TOOLS_VERSION
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x419, 1200
+        VALUE "Translation", 0x0409, 1200
     END
 END

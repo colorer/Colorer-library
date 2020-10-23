@@ -1,11 +1,23 @@
-#define VER_FILEVERSION             1,0,4,0
-#define VER_FILEVERSION_STR         "1.0.4.0"
+#ifndef _COLORERTOOLS_VERSION_H_
+#define _COLORERTOOLS_VERSION_H_
 
-#define VER_PRODUCTVERSION          VER_FILEVERSION
-#define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
+#define TOOLS_VER_MAJOR 1
+#define TOOLS_VER_MINOR 0
+#define TOOLS_VER_PATCH 4
+
+#define TOOLS_COPYRIGHT "(c) 1999-2009 Igor Russkih, (c) 2009-2020 Aleksey Dobrunov"
+
 #ifdef _WIN64
-  #define CONF " (x64)"
+#define CONF " x64"
+#elif defined _WIN32
+#define CONF " x86"
 #else
-  #define CONF ""
+#define CONF ""
 #endif
-#define FILE_DESCRIPTION "Colorer - Syntax Highlighting tools" CONF
+
+#define STRINGIZE2(s) #s
+#define STRINGIZE(s) STRINGIZE2(s)
+
+#define TOOLS_VERSION STRINGIZE(COLORER_VER_MAJOR) "." STRINGIZE(COLORER_VER_MINOR) "." STRINGIZE(COLORER_VER_PATCH) CONF
+
+#endif  // _COLORERTOOLS_VERSION_H_
