@@ -13,43 +13,43 @@ option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
 option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
 
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif ()
+endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-if (NOT MSVC_IDE)
+if(NOT MSVC_IDE)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
-else ()
+else()
   #target_compile_options cannot set parameters for all configurations in MSVC
   set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
-endif ()
+endif()
 message("Configurations for IDE: ${CMAKE_CONFIGURATION_TYPES}")
 
-if (NOT COLORER_INTERNAL_BUILD)
+if(NOT COLORER_INTERNAL_BUILD)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
   # set output path for ide.
-  if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
+  if("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/vc)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/vc)
-  elseif (DEFINED ENV{CLION_IDE} AND MSVC)
+  elseif(DEFINED ENV{CLION_IDE} AND MSVC)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_vc_${CMAKE_BUILD_TYPE})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_vc_${CMAKE_BUILD_TYPE})
-  elseif (DEFINED ENV{CLION_IDE})
+  elseif(DEFINED ENV{CLION_IDE})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_gcc_${CMAKE_BUILD_TYPE})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/clion_gcc_${CMAKE_BUILD_TYPE})
-  endif ()
-endif ()
+  endif()
+endif()
 
-if (MSVC)
+if(MSVC)
   # set global Visual C++ runtime
-  if (CMAKE_BUILD_TYPE MATCHES Debug)
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-  else ()
+  else()
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
-  endif ()
-endif ()
+  endif()
+endif()
 
 #====================================================
 # load modules
@@ -60,17 +60,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 #====================================================
 # find dependences
 #====================================================
-if (COLORER_USE_CONAN)
+if(COLORER_USE_CONAN)
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
-else ()
+else()
   find_package(ICU COMPONENTS uc REQUIRED)
   find_package(XercesC REQUIRED)
   find_package(spdlog REQUIRED)
   find_package(fmt REQUIRED)
   find_package(minizip REQUIRED)
   find_package(GTest)
-endif ()
+endif()
 
 #====================================================
 # colorer library
@@ -81,23 +81,23 @@ add_subdirectory(./src)
 # colorer tool
 #====================================================
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
-if (COLORER_TOOLS_BUILD)
+if(COLORER_TOOLS_BUILD)
   add_subdirectory(./tools/colorer)
-endif ()
+endif()
 
 #====================================================
 # PVS-Studio
 #====================================================
-if (COLORER_PVS_STUDIO_CHECK)
+if(COLORER_PVS_STUDIO_CHECK)
   set(CMAKE_EXPORT_COMPILE_COMMANDS On)
   include(PVS-Studio)
-endif ()
+endif()
 
 #====================================================
 # unit tests
 #====================================================
-if (${GTEST_FOUND})
+if(${GTEST_FOUND})
   add_subdirectory(./tests/unit)
-endif ()
+endif()
 
 add_subdirectory(./tests)

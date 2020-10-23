@@ -113,14 +113,14 @@ set(SRC_COLORER
 # common flags
 #====================================================
 set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
-if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(COLORER_DEF ${COLORER_DEF} -DWIN32)
-endif ()
-if (MSVC)
+endif()
+if(MSVC)
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-endif ()
+endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # default for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
@@ -131,7 +131,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
       -Wsign-promo -Wnon-virtual-dtor)
   set(FLAGS_CXX_RELEASE)
   set(FLAGS_CXX_DEBUG)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # default for msvc
   # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS
@@ -149,7 +149,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(FLAGS_CXX_RELEASE /W3)
   set(FLAGS_CXX_DEBUG /W4)
 
-endif ()
+endif()
 
 #====================================================
 # build
@@ -166,14 +166,14 @@ set_target_properties(colorer_lib PROPERTIES
     CXX_EXTENSIONS NO
     )
 
-if (COLORER_USE_CONAN)
+if(COLORER_USE_CONAN)
   target_include_directories(colorer_lib
       PUBLIC ${CONAN_INCLUDE_DIRS}
       )
   target_link_libraries(colorer_lib
       PUBLIC ${CONAN_LIBS}
       )
-else ()
+else()
   target_include_directories(colorer_lib
       PUBLIC ${SPDLOG_INCLUDE_DIR}
       PRIVATE ${XercesC_INCLUDE_DIRS}
@@ -183,7 +183,7 @@ else ()
   target_link_libraries(colorer_lib
       PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog MiniZip::MiniZip
       )
-endif ()
+endif()
 
 # set options for target
 set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
@@ -191,33 +191,33 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
 set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
 
-if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>
       )
-else ()
+else()
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_RELEASE}>
       PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>
       )
-endif ()
+endif()
 
 set_target_properties(colorer_lib PROPERTIES OUTPUT_NAME "colorer")
-if (MSVC)
+if(MSVC)
   set_target_properties(colorer_lib PROPERTIES DEBUG_POSTFIX "d")
-endif ()
+endif()
 
 #====================================================
 # test
 #====================================================
 
 # static analyze
-if (COLORER_PVS_STUDIO_CHECK)
+if(COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
-endif ()
+endif()
