@@ -91,7 +91,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path)
 {
   auto* mf = new MemoryFile;
   mf->stream = src;
-  mf->length = size;
+  mf->length = (int)size;
   zlib_filefunc_def zlib_ff;
   fill_mem_filefunc(&zlib_ff, mf);
 

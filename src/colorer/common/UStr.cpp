@@ -85,12 +85,12 @@ bool UStr::isWhitespace(UChar c)
 
 UChar UStr::toLowerCase(UChar c)
 {
-  return u_tolower(c);
+  return (UChar)u_tolower(c);
 }
 
 UChar UStr::toUpperCase(UChar c)
 {
-  return u_toupper(c);
+  return (UChar)u_toupper(c);
 }
 
 icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, int pos, int* retPos, bool ignore_case)
@@ -98,7 +98,7 @@ icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, int pos, int* r
   if (ccs[pos] != '[')
     return nullptr;
 
-  icu::UnicodeSet* cc = new icu::UnicodeSet();
+  auto* cc = new icu::UnicodeSet();
   icu::UnicodeSet cc_temp;
   bool inverse = false;
   UChar prev_char = BAD_WCHAR;
@@ -280,14 +280,14 @@ UChar UStr::getEscapedChar(const UnicodeString& str, int pos, int& retPos)
         if (tmp < 0 || tmp > 0xFFFF)
           return BAD_WCHAR;
         retPos += val_len + 2;
-        return tmp;
+        return (UChar)tmp;
       } else {
         UnicodeString dtmp = UnicodeString(str, pos + 2, 2);
         int tmp = getHexNumber(&dtmp);
         if (str.length() <= pos + 2 || tmp == -1)
           return BAD_WCHAR;
         retPos += 2;
-        return tmp;
+        return (UChar)tmp;
       }
     }
     return str[pos + 1];

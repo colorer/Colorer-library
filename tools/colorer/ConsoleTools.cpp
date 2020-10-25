@@ -315,7 +315,7 @@ void ConsoleTools::profile(int loopCount)
   msecs = clock();
   while (loopCount--) {
     baseEditor.modifyLineEvent(0);
-    baseEditor.lineCountEvent(textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
     baseEditor.validate(-1, false);
   }
   msecs = clock() - msecs;
@@ -340,7 +340,7 @@ void ConsoleTools::viewFile()
     FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
-    baseEditor.lineCountEvent(textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
 
     int background;
     const StyledRegion* rd = StyledRegion::cast(baseEditor.rd_def_Text);
@@ -413,7 +413,7 @@ void ConsoleTools::genOutput(bool useTokens)
     // Using compact regions
     baseEditor.setRegionCompact(true);
     baseEditor.setRegionMapper(mapper);
-    baseEditor.lineCountEvent(textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
     // Choosing file type
     FileType* type = selectType(hrcParser, &textLinesStore);
     baseEditor.setFileType(type);
@@ -463,7 +463,7 @@ void ConsoleTools::genOutput(bool useTokens)
 
     int lni = 0;
     int lwidth = 1;
-    int lncount = textLinesStore.getLineCount();
+    int lncount = (int) textLinesStore.getLineCount();
     for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++);
 
     for (int i = 0; i < lncount; i++) {

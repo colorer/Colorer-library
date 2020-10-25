@@ -3,7 +3,6 @@
 Outliner::Outliner(BaseEditor* baseEditor, const Region* searchRegion)
 {
   this->searchRegion = searchRegion;
-  modifiedLine = -1;
   this->baseEditor = baseEditor;
   baseEditor->addRegionHandler(this);
   baseEditor->addEditorListener(this);
@@ -30,7 +29,7 @@ size_t Outliner::itemCount()
   return outline.size();
 }
 
-int Outliner::manageTree(std::vector<int>& treeStack, int newLevel)
+size_t Outliner::manageTree(std::vector<int>& treeStack, int newLevel)
 {
   while (treeStack.size() > 0 && newLevel < treeStack.back()) {
     treeStack.pop_back();
@@ -89,7 +88,7 @@ void Outliner::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const 
     return;
   }
 
-  UnicodeString* itemLabel = new UnicodeString(*line, sx, ex - sx);
+  auto* itemLabel = new UnicodeString(*line, sx, ex - sx);
 
   if (lineIsEmpty) {
     outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
