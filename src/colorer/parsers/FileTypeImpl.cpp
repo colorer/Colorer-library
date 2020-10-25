@@ -83,7 +83,7 @@ int FileType::Impl::getParamValueInt(const UnicodeString& param_name, int def) c
 {
   int val = def;
   auto param_value = getParamValue(param_name);
-  if (param_value) {
+  if (param_value && param_value->length() > 0) {
     auto param_str = UStr::to_stdstr(param_value);
     try {
       val = std::stoi(param_str, nullptr);
