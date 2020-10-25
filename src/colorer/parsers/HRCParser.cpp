@@ -1,7 +1,7 @@
 #include <colorer/HRCParser.h>
 #include <colorer/parsers/HRCParserImpl.h>
 
-HRCParser::HRCParser() : pimpl(new HRCParser::Impl()) {}
+HRCParser::HRCParser() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
 void HRCParser::loadSource(XmlInputSource* is)
 {

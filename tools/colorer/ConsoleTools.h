@@ -1,7 +1,7 @@
 #ifndef _COLORER_CONSOLETOOLS_H_
 #define _COLORER_CONSOLETOOLS_H_
 
-#include <colorer/parsers/ParserFactoryImpl.h>
+#include <colorer/ParserFactory.h>
 
 /** Writer interface wrapper, which
     allows escaping of XML markup characters (& and <)

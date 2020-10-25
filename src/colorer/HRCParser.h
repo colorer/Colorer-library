@@ -5,6 +5,7 @@
 #include <colorer/FileType.h>
 #include <colorer/Region.h>
 #include <colorer/xml/XmlInputSource.h>
+#include <spimpl.h>
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
@@ -72,7 +73,7 @@ class HRCParser
  private:
   class Impl;
 
-  std::unique_ptr<Impl> pimpl;
+  spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
 #endif

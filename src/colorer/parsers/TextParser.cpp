@@ -1,7 +1,7 @@
 #include <colorer/parsers/FileTypeImpl.h>
 #include <colorer/parsers/TextParserImpl.h>
 
-TextParser::TextParser() : pimpl(new TextParser::Impl()) {}
+TextParser::TextParser() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
 void TextParser::breakParse()
 {

@@ -4,6 +4,7 @@
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
 #include <colorer/Scheme.h>
+#include <spimpl.h>
 #include <vector>
 
 /**
@@ -100,7 +101,7 @@ class FileType
  private:
   class Impl;
 
-  std::unique_ptr<Impl> pimpl;
+  spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
 class FileTypeException : public Exception

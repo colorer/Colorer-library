@@ -1,7 +1,7 @@
 #include <colorer/FileType.h>
 #include <colorer/parsers/FileTypeImpl.h>
 
-FileType::FileType() : pimpl(new FileType::Impl()) {}
+FileType::FileType() : pimpl(spimpl::make_unique_impl<Impl>())  {}
 
 const UnicodeString* FileType::getName() const
 {

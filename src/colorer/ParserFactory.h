@@ -8,6 +8,7 @@
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/parsers/HRDNode.h>
+#include <spimpl.h>
 
 /**
  * Maintains catalog of HRC and HRD references.
@@ -95,7 +96,7 @@ class ParserFactory
  private:
   class Impl;
 
-  std::unique_ptr<Impl> pimpl;
+  spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
 /** Exception, thrown by ParserFactory class methods.

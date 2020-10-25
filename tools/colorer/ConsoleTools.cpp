@@ -4,11 +4,8 @@
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/io/FileWriter.h>
 #include <colorer/io/InputSource.h>
-#include <colorer/ParserFactory.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/viewer/TextLinesStore.h>
-#include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <ctime>
 #include <xercesc/dom/DOM.hpp>

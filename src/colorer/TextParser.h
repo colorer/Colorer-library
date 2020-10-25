@@ -4,6 +4,7 @@
 #include <colorer/FileType.h>
 #include <colorer/LineSource.h>
 #include <colorer/RegionHandler.h>
+#include <spimpl.h>
 
 /**
  * Basic lexical/syntax parser interface.
@@ -96,7 +97,7 @@ class TextParser
  private:
   class Impl;
 
-  std::unique_ptr<Impl> pimpl;
+  spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
-#endif //_COLORER_TEXTPARSER_H_
+#endif  //_COLORER_TEXTPARSER_H_

@@ -1,7 +1,7 @@
 #include <colorer/ParserFactory.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
 
-ParserFactory::ParserFactory() : pimpl(new ParserFactory::Impl()) {}
+ParserFactory::ParserFactory() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
 void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
 {

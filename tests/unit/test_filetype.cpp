@@ -1,5 +1,4 @@
 #include <colorer/FileType.h>
-#include <colorer/parsers/FileTypeImpl.h>
 #include <gtest/gtest.h>
 
 TEST(FileType, FileTypeName)

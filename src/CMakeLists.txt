@@ -171,17 +171,19 @@ set_target_properties(colorer_lib PROPERTIES
 
 if(COLORER_USE_CONAN)
   target_include_directories(colorer_lib
-      PUBLIC ${CONAN_INCLUDE_DIRS}
+      PRIVATE ${CONAN_INCLUDE_DIRS}
+      PUBLIC ../external/spimpl
       )
   target_link_libraries(colorer_lib
       PUBLIC ${CONAN_LIBS}
       )
 else()
   target_include_directories(colorer_lib
-      PUBLIC ${SPDLOG_INCLUDE_DIR}
+      PRIVATE ${SPDLOG_INCLUDE_DIR}
       PRIVATE ${XercesC_INCLUDE_DIRS}
       PRIVATE ${ICU_INCLUDE_DIRS}
       PRIVATE ${MiniZip_INCLUDE_DIRS}
+      PUBLIC ../external/spimpl
       )
   target_link_libraries(colorer_lib
       PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog MiniZip::MiniZip
