@@ -3,11 +3,6 @@
 
 FileType::FileType() : pimpl(new FileType::Impl()) {}
 
-void FileType::setParamValue(const UnicodeString& name, const UnicodeString* value)
-{
-  pimpl->setParamValue(name, value);
-}
-
 const UnicodeString* FileType::getName() const
 {
   return pimpl->getName();
@@ -48,9 +43,9 @@ const UnicodeString* FileType::getParamDefaultValue(const UnicodeString& name) c
   return pimpl->getParamDefaultValue(name);
 }
 
-int FileType::getParamValueInt(const UnicodeString& name, int def) const
+int FileType::getParamValueInt(const UnicodeString& name, int def_value) const
 {
-  return pimpl->getParamValueInt(name, def);
+  return pimpl->getParamValueInt(name, def_value);
 }
 
 void FileType::addParam(const UnicodeString* name)
@@ -76,4 +71,24 @@ void FileType::setParamDescription(const UnicodeString& name_, const UnicodeStri
 void FileType::setParamDefaultValue(const UnicodeString& name_, const UnicodeString* value)
 {
   pimpl->setParamDefaultValue(name_, value);
+}
+
+void FileType::setParamValue(const UnicodeString& name, const UnicodeString* value)
+{
+  pimpl->setParamValue(name, value);
+}
+
+void FileType::setName(const UnicodeString* name)
+{
+  pimpl->setName(name);
+}
+
+void FileType::setGroup(const UnicodeString* group)
+{
+  pimpl->setGroup(group);
+}
+
+void FileType::setDescription(const UnicodeString* description)
+{
+  pimpl->setDescription(description);
 }

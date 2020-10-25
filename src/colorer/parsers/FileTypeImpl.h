@@ -13,7 +13,7 @@
 class TypeParameter
 {
  public:
-  TypeParameter() : name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
+  TypeParameter() = default;
   ~TypeParameter() = default;
 
   /* parameter name*/
@@ -34,36 +34,36 @@ class TypeParameter
 class FileType::Impl
 {
  public:
-  Impl();
+  Impl() = default;
   ~Impl();
 
-  const UnicodeString* getName() const;
-  const UnicodeString* getGroup() const;
-  const UnicodeString* getDescription() const;
+  [[nodiscard]] const UnicodeString* getName() const;
+  [[nodiscard]] const UnicodeString* getGroup() const;
+  [[nodiscard]] const UnicodeString* getDescription() const;
 
-  void setName(const UnicodeString* name_);
-  void setGroup(const UnicodeString* group_);
-  void setDescription(const UnicodeString* description_);
+  void setName(const UnicodeString* param_name);
+  void setGroup(const UnicodeString* group_name);
+  void setDescription(const UnicodeString* description);
 
-  const UnicodeString* getParamValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamDefaultValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamUserValue(const UnicodeString& name_) const;
-  const UnicodeString* getParamDescription(const UnicodeString& name_) const;
-  int getParamValueInt(const UnicodeString& name, int def) const;
+  [[nodiscard]] const UnicodeString* getParamValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamDefaultValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamUserValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamDescription(const UnicodeString& param_name) const;
+  [[nodiscard]] int getParamValueInt(const UnicodeString& param_name, int def) const;
 
-  void setParamValue(const UnicodeString& name_, const UnicodeString* value);
-  void setParamDefaultValue(const UnicodeString& name_, const UnicodeString* value);
-  void setParamUserValue(const UnicodeString& name_, const UnicodeString* value);
-  void setParamDescription(const UnicodeString& name_, const UnicodeString* value);
+  void setParamValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamDefaultValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamUserValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamDescription(const UnicodeString& param_name, const UnicodeString* value);
 
-  std::vector<UnicodeString> enumParams() const;
-  size_t getParamCount() const;
-  size_t getParamUserValueCount() const;
+  [[nodiscard]] std::vector<UnicodeString> enumParams() const;
+  [[nodiscard]] size_t getParamCount() const;
+  [[nodiscard]] size_t getParamUserValueCount() const;
 
-  TypeParameter* addParam(const UnicodeString* name_);
-  void removeParamValue(const UnicodeString& name_);
+  TypeParameter* addParam(const UnicodeString* param_name);
+  void removeParamValue(const UnicodeString& param_name);
 
-  Scheme* getBaseScheme();
+  [[nodiscard]] Scheme* getBaseScheme() const;
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -79,55 +79,25 @@ class FileType::Impl
   double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
 
   /// is prototype component loaded
-  bool protoLoaded;
+  bool protoLoaded = false;
   /// is type component loaded
-  bool type_loaded;
+  bool type_loaded = false;
   /// is type references fully resolved
-  bool loadDone;
+  bool loadDone = false;
   /// is initial type load failed
-  bool load_broken;
+  bool load_broken = false;
   /// is this IS loading was started
-  bool input_source_loading;
+  bool input_source_loading = false;
 
   uUnicodeString name;
   uUnicodeString group;
   uUnicodeString description;
-  bool isPackage;
-  SchemeImpl* baseScheme;
+  bool isPackage = false;
+  SchemeImpl* baseScheme = nullptr;
 
   std::vector<FileTypeChooser*> chooserVector;
   std::unordered_map<UnicodeString, TypeParameter*> paramsHash;
   std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
 };
-
-inline const UnicodeString* FileType::Impl::getName() const
-{
-  return name.get();
-}
-
-inline const UnicodeString* FileType::Impl::getGroup() const
-{
-  return group.get();
-}
-
-inline const UnicodeString* FileType::Impl::getDescription() const
-{
-  return description.get();
-}
-
-inline void FileType::Impl::setName(const UnicodeString* name_)
-{
-  name = std::make_unique<UnicodeString>(*name_);
-}
-
-inline void FileType::Impl::setGroup(const UnicodeString* group_)
-{
-  group = std::make_unique<UnicodeString>(*group_);
-}
-
-inline void FileType::Impl::setDescription(const UnicodeString* description_)
-{
-  description = std::make_unique<UnicodeString>(*description_);
-}
 #endif

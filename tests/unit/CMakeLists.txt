@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(unit_tests CXX)
 
-set(unit_tests_SRC test_exception.cpp)
+set(unit_tests_SRC test_exception.cpp test_filetype.cpp)
 
 add_executable(unit_tests ${unit_tests_SRC})
 

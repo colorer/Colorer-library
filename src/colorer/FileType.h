@@ -2,6 +2,7 @@
 #define _COLORER_FILETYPE_H_
 
 #include <colorer/Common.h>
+#include <colorer/Exception.h>
 #include <colorer/Scheme.h>
 #include <vector>
 
@@ -15,6 +16,14 @@ class FileType
   friend class TextParser;
 
  public:
+  FileType();
+  ~FileType() = default;
+
+  void addParam(const UnicodeString* name);
+  void setName(const UnicodeString* name);
+  void setGroup(const UnicodeString* group);
+  void setDescription(const UnicodeString* description);
+
   /**
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
@@ -64,7 +73,7 @@ class FileType
       @return Value (changed or default) of this parameter
   */
   [[nodiscard]] const UnicodeString* getParamValue(const UnicodeString& name) const;
-  [[nodiscard]] int getParamValueInt(const UnicodeString& name, int def) const;
+  [[nodiscard]] int getParamValueInt(const UnicodeString& name, int def_value = 0) const;
 
   /** Returns parameter's default value of this file type.
       Default values are the values, explicitly pointed with
@@ -87,15 +96,17 @@ class FileType
   void setParamDefaultValue(const UnicodeString& name, const UnicodeString* value);
 
   [[nodiscard]] size_t getParamCount() const;
-  void addParam(const UnicodeString* name);
-
-  FileType();
-  ~FileType() = default;
 
  private:
   class Impl;
 
   std::unique_ptr<Impl> pimpl;
+};
+
+class FileTypeException : public Exception
+{
+ public:
+  explicit FileTypeException(const UnicodeString& msg) noexcept : Exception("[FileTypeException] " + msg) {}
 };
 
 #endif
