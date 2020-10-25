@@ -27,6 +27,7 @@ option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
 option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
 option(COLORER_BUILD_TEST "Set on to build test" OFF)
+option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 
 #====================================================
 # global compilation settings
@@ -48,7 +49,7 @@ include(cmake/ide.cmake)
 include(cmake/utils.cmake)
 
 colorer_extract_version()
-message(STATUS "Build Colorer: ${COLORER_VERSION}")
+message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 
 #====================================================
 # find dependences
@@ -78,7 +79,6 @@ add_subdirectory(./src)
 #====================================================
 # colorer tool
 #====================================================
-option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 if(COLORER_TOOLS_BUILD)
   add_subdirectory(./tools/colorer)
 endif()
