@@ -1,7 +1,7 @@
 #include <colorer/FileType.h>
 #include <colorer/parsers/FileTypeImpl.h>
 
-FileType::FileType() : pimpl(spimpl::make_unique_impl<Impl>())  {}
+FileType::FileType() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
 const UnicodeString* FileType::getName() const
 {
@@ -53,6 +53,11 @@ void FileType::addParam(const UnicodeString* name)
   pimpl->addParam(name);
 }
 
+void FileType::addParam(const UnicodeString& name)
+{
+  pimpl->addParam(&name);
+}
+
 size_t FileType::getParamCount() const
 {
   return pimpl->getParamCount();
@@ -91,4 +96,9 @@ void FileType::setGroup(const UnicodeString* group)
 void FileType::setDescription(const UnicodeString* description)
 {
   pimpl->setDescription(description);
+}
+
+void FileType::setParamValue(const UnicodeString& name, const UnicodeString& value)
+{
+  pimpl->setParamValue(name, &value);
 }

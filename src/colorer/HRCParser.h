@@ -43,6 +43,7 @@ class HRCParser
       @return File type, or null, there are no type with specified name.
   */
   FileType* getFileType(const UnicodeString* name);
+  FileType* getFileType(const UnicodeString& name);
 
   /** Searches and returns the best type for specified file.
       This method uses fileName and firstLine parameters

@@ -21,6 +21,7 @@ class FileType
   ~FileType() = default;
 
   void addParam(const UnicodeString* name);
+  void addParam(const UnicodeString& name);
   void setName(const UnicodeString* name);
   void setGroup(const UnicodeString* group);
   void setDescription(const UnicodeString* description);
@@ -94,6 +95,7 @@ class FileType
       @param value New value of this parameter.
   */
   void setParamValue(const UnicodeString& name, const UnicodeString* value);
+  void setParamValue(const UnicodeString& name, const UnicodeString& value);
   void setParamDefaultValue(const UnicodeString& name, const UnicodeString* value);
 
   [[nodiscard]] size_t getParamCount() const;

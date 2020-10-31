@@ -292,6 +292,7 @@ void HRCParser::Impl::addPrototype(const xercesc::DOMElement* elem)
     //  return;
   }
   auto* type = new FileType();
+  //TODO make 'group' mandatory
   type->pimpl->name = std::make_unique<UnicodeString>(UnicodeString(typeName));
   type->pimpl->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
   if (typeGroup != nullptr) {

@@ -18,6 +18,11 @@ FileType* HRCParser::getFileType(const UnicodeString* name)
   return pimpl->getFileType(name);
 }
 
+FileType* HRCParser::getFileType(const UnicodeString& name)
+{
+  return pimpl->getFileType(&name);
+}
+
 FileType* HRCParser::chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo)
 {
   return pimpl->chooseFileType(fileName, firstLine, typeNo);
@@ -47,3 +52,4 @@ void HRCParser::loadFileType(FileType* filetype)
 {
   pimpl->loadFileType(filetype);
 }
+
