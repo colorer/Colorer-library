@@ -13,15 +13,9 @@
 
 using namespace xercesc;
 
-ConsoleTools::ConsoleTools(): copyrightHeader(true), htmlEscaping(true), bomOutput(true), htmlWrapping(true), lineNumbers(false),
-  inputEncodingIndex(-1), outputEncodingIndex(-1), inputEncoding(nullptr), outputEncoding(nullptr), typeDescription(nullptr), catalogPath(nullptr), hrdName(nullptr),
-  outputFileName(nullptr), inputFileName(nullptr)
-{
-}
+ConsoleTools::ConsoleTools() = default;
 
-ConsoleTools::~ConsoleTools()
-{
-}
+ConsoleTools::~ConsoleTools() = default;
 
 void ConsoleTools::setCopyrightHeader(bool use)
 {
@@ -48,43 +42,43 @@ void ConsoleTools::addLineNumbers(bool add)
   lineNumbers = add;
 }
 
-void ConsoleTools::setTypeDescription(const UnicodeString &str)
+void ConsoleTools::setTypeDescription(const UnicodeString& str)
 {
   typeDescription.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setInputFileName(const UnicodeString &str)
+void ConsoleTools::setInputFileName(const UnicodeString& str)
 {
   inputFileName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setOutputFileName(const UnicodeString &str)
+void ConsoleTools::setOutputFileName(const UnicodeString& str)
 {
   outputFileName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setInputEncoding(const UnicodeString &str)
+void ConsoleTools::setInputEncoding(const UnicodeString& str)
 {
   inputEncoding.reset(new UnicodeString(str));
   /*inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
   if (inputEncodingIndex == -1) {
     throw Exception("Unknown input encoding: " + *inputEncoding.get());
   }*/
- /* if (outputEncoding == nullptr) {
-    outputEncodingIndex = inputEncodingIndex;
-  }*/
+  /* if (outputEncoding == nullptr) {
+     outputEncodingIndex = inputEncodingIndex;
+   }*/
 }
 
-void ConsoleTools::setOutputEncoding(const UnicodeString &/*str*/)
+void ConsoleTools::setOutputEncoding(const UnicodeString& /*str*/)
 {
- /* outputEncoding.reset(new UnicodeString(str));
-  outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());
-  if (outputEncodingIndex == -1) {
-    throw Exception("Unknown output encoding: " + *outputEncoding.get());
-  }*/
+  /* outputEncoding.reset(new UnicodeString(str));
+   outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());
+   if (outputEncodingIndex == -1) {
+     throw Exception("Unknown output encoding: " + *outputEncoding.get());
+   }*/
 }
 
-void ConsoleTools::setCatalogPath(const UnicodeString &str)
+void ConsoleTools::setCatalogPath(const UnicodeString& str)
 {
 #if defined _WIN32
   // replace the environment variables to their values
@@ -98,12 +92,12 @@ void ConsoleTools::setCatalogPath(const UnicodeString &str)
 #endif
 }
 
-void ConsoleTools::setHRDName(const UnicodeString &str)
+void ConsoleTools::setHRDName(const UnicodeString& str)
 {
   hrdName.reset(new UnicodeString(str));
 }
 
-void ConsoleTools::setLinkSource(const UnicodeString &str)
+void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
   const XMLCh kTagDoclinks[] = {chLatin_d, chLatin_o, chLatin_k, chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
   const XMLCh kTagLinks[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
@@ -133,14 +127,12 @@ void ConsoleTools::setLinkSource(const UnicodeString &str)
 
   for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), kTagLinks)) {
-
       xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(curel);
       const XMLCh* url = subelem->getAttribute(kLinksAttrUrl);
       const XMLCh* scheme = subelem->getAttribute(kLinksAttrScheme);
 
       for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink; eachLink = eachLink->getNextSibling()) {
         if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink)) {
-
           xercesc::DOMElement* subelem2 = static_cast<xercesc::DOMElement*>(eachLink);
           const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
           const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
@@ -171,7 +163,6 @@ void ConsoleTools::setLinkSource(const UnicodeString &str)
     }
   }
 }
-
 
 void ConsoleTools::RETest()
 {
@@ -206,7 +197,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
 {
   Writer* writer = nullptr;
   try {
-    writer = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
+    writer = new StreamWriter(stdout, outputEncodingIndex, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     HRCParser* hrcParser = pf.getHRCParser();
@@ -231,7 +222,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
       }
     }
     delete writer;
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     delete writer;
     fprintf(stderr, "%s\n", e.what());
   }
@@ -248,13 +239,12 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
         if (type == nullptr) {
           break;
         }
-        if (type->getDescription() != nullptr &&
-            type->getDescription()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription.get(),0)) {
+        if (type->getDescription() != nullptr && type->getDescription()->length() >= typeDescription->length() &&
+            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription.get(), 0)) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription.get(),0)) {
+            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription.get(), 0)) {
           break;
         }
         type = nullptr;
@@ -277,13 +267,13 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
       }
     }
 
-	UnicodeString fnpath(*inputFileName.get());
-	auto slash_idx = fnpath.lastIndexOf('\\');
+    UnicodeString fnpath(*inputFileName.get());
+    auto slash_idx = fnpath.lastIndexOf('\\');
 
-	if (slash_idx == -1) {
-		slash_idx = fnpath.lastIndexOf('/');
-	}
-	std::unique_ptr<UnicodeString> file_name (new UnicodeString(fnpath, slash_idx + 1));
+    if (slash_idx == -1) {
+      slash_idx = fnpath.lastIndexOf('/');
+    }
+    std::unique_ptr<UnicodeString> file_name(new UnicodeString(fnpath, slash_idx + 1));
 
     type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
   }
@@ -312,7 +302,7 @@ void ConsoleTools::profile(int loopCount)
   msecs = clock();
   while (loopCount--) {
     baseEditor.modifyLineEvent(0);
-    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
     baseEditor.validate(-1, false);
   }
   msecs = clock() - msecs;
@@ -337,7 +327,7 @@ void ConsoleTools::viewFile()
     FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
-    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
 
     int background;
     const StyledRegion* rd = StyledRegion::cast(baseEditor.rd_def_Text);
@@ -349,7 +339,7 @@ void ConsoleTools::viewFile()
     // File viewing in console window
     TextConsoleViewer viewer(&baseEditor, &textLinesStore, background, outputEncodingIndex);
     viewer.view();
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     fprintf(stderr, "%s\n", e.what());
   } catch (...) {
     fprintf(stderr, "unknown exception ...\n");
@@ -360,8 +350,8 @@ void ConsoleTools::forward()
 {
   colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
-  //CString eStream(stream, fis->length(), inputEncodingIndex);
-  UnicodeString eStream((char*)stream, fis->length());
+  // CString eStream(stream, fis->length(), inputEncodingIndex);
+  UnicodeString eStream((char*) stream, fis->length());
 
   Writer* outputFile;
   try {
@@ -370,7 +360,7 @@ void ConsoleTools::forward()
     } else {
       outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
     }
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
     fprintf(stderr, "%s", e.what());
     return;
@@ -400,7 +390,7 @@ void ConsoleTools::genOutput(bool useTokens)
       try {
         UnicodeString drgb = UnicodeString("rgb");
         mapper = pf.createStyledMapper(&drgb, hrdName.get());
-      } catch (ParserFactoryException &) {
+      } catch (ParserFactoryException&) {
         useMarkup = true;
         mapper = pf.createTextMapper(hrdName.get());
       }
@@ -410,7 +400,7 @@ void ConsoleTools::genOutput(bool useTokens)
     // Using compact regions
     baseEditor.setRegionCompact(true);
     baseEditor.setRegionMapper(mapper);
-    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
     // Choosing file type
     FileType* type = selectType(hrcParser, &textLinesStore);
     baseEditor.setFileType(type);
@@ -434,7 +424,7 @@ void ConsoleTools::genOutput(bool useTokens)
       } else {
         escapedWriter = commonWriter;
       }
-    } catch (Exception &e) {
+    } catch (Exception& e) {
       fprintf(stderr, "can't open file '%s' for writing:\n", UStr::to_stdstr(outputFileName.get()).c_str());
       fprintf(stderr, "%s", e.what());
       return;
@@ -461,12 +451,14 @@ void ConsoleTools::genOutput(bool useTokens)
     int lni = 0;
     int lwidth = 1;
     int lncount = (int) textLinesStore.getLineCount();
-    for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++);
+    for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++)
+      ;
 
     for (int i = 0; i < lncount; i++) {
       if (lineNumbers) {
         int iwidth = 1;
-        for (lni = i / 10; lni > 0; lni = lni / 10, iwidth++);
+        for (lni = i / 10; lni > 0; lni = lni / 10, iwidth++)
+          ;
         for (lni = iwidth; lni < lwidth; lni++) {
           commonWriter->write(0x0020);
         }
@@ -499,7 +491,7 @@ void ConsoleTools::genOutput(bool useTokens)
     delete escapedWriter;
 
     delete mapper;
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     fprintf(stderr, "%s\n", e.what());
   } catch (...) {
     fprintf(stderr, "unknown exception ...\n");

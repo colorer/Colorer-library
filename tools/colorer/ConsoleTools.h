@@ -9,12 +9,13 @@
 */
 class HtmlEscapesWriter : public Writer
 {
-public:
-  HtmlEscapesWriter(Writer* writer)
+ public:
+  explicit HtmlEscapesWriter(Writer* writer)
   {
     this->writer = writer;
   };
-  void write(UChar c)
+
+  void write(UChar c) override
   {
     if (c == '&') {
       writer->write("&amp;");
@@ -24,7 +25,8 @@ public:
       writer->write(c);
     }
   };
-protected:
+
+ protected:
   Writer* writer;
 };
 
@@ -37,8 +39,7 @@ protected:
 */
 class ConsoleTools
 {
-public:
-
+ public:
   ConsoleTools();
   ~ConsoleTools();
 
@@ -52,21 +53,21 @@ public:
   void setHtmlWrapping(bool use);
 
   /// Alternative HRC type description for type selection
-  void setTypeDescription(const UnicodeString &str);
+  void setTypeDescription(const UnicodeString& str);
   /// File name, used as input source. Could be URL.
-  void setInputFileName(const UnicodeString &str);
+  void setInputFileName(const UnicodeString& str);
   /// Optional file name, used for output
-  void setOutputFileName(const UnicodeString &str);
+  void setOutputFileName(const UnicodeString& str);
   /// Input Characters Encoding
-  void setInputEncoding(const UnicodeString &str);
+  void setInputEncoding(const UnicodeString& str);
   /// Output Characters Encoding
-  void setOutputEncoding(const UnicodeString &str);
+  void setOutputEncoding(const UnicodeString& str);
   /// Optional path to base catalog.xml
-  void setCatalogPath(const UnicodeString &str);
+  void setCatalogPath(const UnicodeString& str);
   /// Optional HRD instance name, used to perform parsing
-  void setHRDName(const UnicodeString &str);
+  void setHRDName(const UnicodeString& str);
   /// Sets linking datasource into this filename
-  void setLinkSource(const UnicodeString &str);
+  void setLinkSource(const UnicodeString& str);
   /// If true, result file will have line numbers before each line
   void addLineNumbers(bool add);
 
@@ -90,16 +91,14 @@ public:
   */
   void listTypes(bool load, bool useNames);
 
-
   FileType* selectType(HRCParser* hrcParser, LineSource* lineSource);
 
-
   /** Views file in console window, using TextConsoleViewer class
-  */
+   */
   void viewFile();
 
   /** Simply forwards input text to output, using passed encoding information.
-  */
+   */
   void forward();
 
   /** Generates HTML-ized output of file.
@@ -113,15 +112,16 @@ public:
    *  No HRD input is used, but direct tokenized output is produced with region names, as names of tokens.
    */
   void genTokenOutput();
-private:
-  bool copyrightHeader;
-  bool htmlEscaping;
-  bool bomOutput;
-  bool htmlWrapping;
-  bool lineNumbers;
 
-  int inputEncodingIndex;
-  int outputEncodingIndex;
+ private:
+  bool copyrightHeader = true;
+  bool htmlEscaping = true;
+  bool bomOutput = true;
+  bool htmlWrapping = true;
+  bool lineNumbers = false;
+
+  int inputEncodingIndex = -1;
+  int outputEncodingIndex = -1;
   std::unique_ptr<UnicodeString> inputEncoding;
   std::unique_ptr<UnicodeString> outputEncoding;
 
