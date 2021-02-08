@@ -8,6 +8,7 @@
 #include <colorer/viewer/TextConsoleViewer.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <ctime>
+#include <memory>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
@@ -44,22 +45,22 @@ void ConsoleTools::addLineNumbers(bool add)
 
 void ConsoleTools::setTypeDescription(const UnicodeString& str)
 {
-  typeDescription.reset(new UnicodeString(str));
+  typeDescription = std::make_unique<UnicodeString>(str);
 }
 
 void ConsoleTools::setInputFileName(const UnicodeString& str)
 {
-  inputFileName.reset(new UnicodeString(str));
+  inputFileName = std::make_unique<UnicodeString>(str);
 }
 
 void ConsoleTools::setOutputFileName(const UnicodeString& str)
 {
-  outputFileName.reset(new UnicodeString(str));
+  outputFileName = std::make_unique<UnicodeString>(str);
 }
 
 void ConsoleTools::setInputEncoding(const UnicodeString& str)
 {
-  inputEncoding.reset(new UnicodeString(str));
+  inputEncoding = std::make_unique<UnicodeString>(str);
   /*inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
   if (inputEncodingIndex == -1) {
     throw Exception("Unknown input encoding: " + *inputEncoding.get());
@@ -85,7 +86,7 @@ void ConsoleTools::setCatalogPath(const UnicodeString& str)
   size_t i = ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), nullptr, 0);
   char* temp = new char[i];
   ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), temp, static_cast<DWORD>(i));
-  catalogPath.reset(new UnicodeString(temp));
+  catalogPath = std::make_unique<UnicodeString>(temp);
   delete[] temp;
 #else
   catalogPath.reset(new UnicodeString(str));
@@ -94,7 +95,7 @@ void ConsoleTools::setCatalogPath(const UnicodeString& str)
 
 void ConsoleTools::setHRDName(const UnicodeString& str)
 {
-  hrdName.reset(new UnicodeString(str));
+  hrdName = std::make_unique<UnicodeString>(str);
 }
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
@@ -127,37 +128,41 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
 
   for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {
     if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), kTagLinks)) {
-      xercesc::DOMElement* subelem = static_cast<xercesc::DOMElement*>(curel);
-      const XMLCh* url = subelem->getAttribute(kLinksAttrUrl);
-      const XMLCh* scheme = subelem->getAttribute(kLinksAttrScheme);
+      auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel);
+      if (subelem) {
+        const XMLCh* url = subelem->getAttribute(kLinksAttrUrl);
+        const XMLCh* scheme = subelem->getAttribute(kLinksAttrScheme);
 
-      for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink; eachLink = eachLink->getNextSibling()) {
-        if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink)) {
-          xercesc::DOMElement* subelem2 = static_cast<xercesc::DOMElement*>(eachLink);
-          const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
-          const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
-          const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
-          UnicodeString fullURL;
-          if (*url != '\0') {
-            fullURL.append(UnicodeString(url));
+        for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink; eachLink = eachLink->getNextSibling()) {
+          if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink)) {
+            auto* subelem2 = dynamic_cast<xercesc::DOMElement*>(eachLink);
+            if (subelem2) {
+              const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
+              const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
+              const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
+              UnicodeString fullURL;
+              if (*url != '\0') {
+                fullURL.append(UnicodeString(url));
+              }
+              if (*l_url != '\0') {
+                fullURL.append(UnicodeString(l_url));
+              }
+              if (*l_scheme == '\0') {
+                l_scheme = scheme;
+              }
+              if (*token == '\0') {
+                continue;
+              }
+              auto* tok = new UnicodeString(token);
+              UnicodeString hkey(*tok);
+              if (*l_scheme != '\0') {
+                hkey.append("--").append(UnicodeString(l_scheme));
+              }
+              std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
+              docLinkHash.emplace(pair_url);
+              delete tok;
+            }
           }
-          if (*l_url != '\0') {
-            fullURL.append(UnicodeString(l_url));
-          }
-          if (*l_scheme == '\0') {
-            l_scheme = scheme;
-          }
-          if (*token == '\0') {
-            continue;
-          }
-          UnicodeString* tok = new UnicodeString(token);
-          UnicodeString hkey(*tok);
-          if (*l_scheme != '\0') {
-            hkey.append("--").append(UnicodeString(l_scheme));
-          }
-          std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
-          docLinkHash.emplace(pair_url);
-          delete tok;
         }
       }
     }
@@ -166,7 +171,7 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
 
 void ConsoleTools::RETest()
 {
-  SMatches match;
+  SMatches match {};
   CRegExp* re;
   bool res;
   char text[255];
@@ -240,11 +245,11 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
           break;
         }
         if (type->getDescription() != nullptr && type->getDescription()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription.get(), 0)) {
+            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription, 0)) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription.get(), 0)) {
+            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription, 0)) {
           break;
         }
         type = nullptr;
@@ -267,7 +272,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
       }
     }
 
-    UnicodeString fnpath(*inputFileName.get());
+    UnicodeString fnpath(*inputFileName);
     auto slash_idx = fnpath.lastIndexOf('\\');
 
     if (slash_idx == -1) {

@@ -240,7 +240,7 @@ void initConsoleTools(ConsoleTools &ct)
     ct.setInputFileName(*settings.input_file);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(*settings.catalog.get());
+    ct.setCatalogPath(*settings.catalog);
   }
   if (settings.link_sources) {
     ct.setLinkSource(*settings.link_sources);
@@ -258,7 +258,7 @@ void initConsoleTools(ConsoleTools &ct)
     ct.setTypeDescription(*settings.type_desc);
   }
   if (settings.hrd_name) {
-    ct.setHRDName(*settings.hrd_name.get());
+    ct.setHRDName(*settings.hrd_name);
   }
   ct.addLineNumbers(settings.line_numbers);
   ct.setCopyrightHeader(settings.copyright);
@@ -281,7 +281,7 @@ int workIt()
   try {
     switch (settings.job) {
       case JT_REGTEST:
-        ct.RETest();
+        ConsoleTools::RETest();
         break;
       case JT_PROFILE:
         ct.profile(settings.profile_loops);

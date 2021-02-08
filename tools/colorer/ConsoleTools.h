@@ -76,7 +76,7 @@ class ConsoleTools
       and checks expression against RE.
       Outputs all matched brackets.
   */
-  void RETest();
+  static void RETest();
 
   /** Runs parser in profile mode. Does everything, -h makes, but
       makes possible repeat loops and produces no output.
