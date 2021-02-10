@@ -1,8 +1,8 @@
 [requires]
-xerces-c/3.2.3@colorer/release
-zlib/1.2.11@colorer/release
-spdlog/1.7.0@colorer/release
-icu/67.1@colorer/release
+xerces-c/3.2.3
+zlib/1.2.11
+spdlog/1.8.2
+icu/68.2
 gtest/1.10.0
 
 [generators]
