@@ -70,7 +70,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   if (mode == TPM_CACHE_READ || mode == TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
     if (parent != nullptr) {
-      CTRACE(spdlog::trace("[TPCache] searchLine() parent:{0},{1}-{2}", parent->scheme->getName()->getChars(), parent->sline, parent->eline));
+      CTRACE(spdlog::trace("[TPCache] searchLine() parent:{0},{1}-{2}", *parent->scheme->getName(), parent->sline, parent->eline));
     }
   }
   cachedLineNo = from;
@@ -264,7 +264,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
         }
       }
       if (!badbound) {
-        CTRACE(spdlog::trace("[TextParserImpl] KW matched. gx={0}, region={1}", gx, node->kwList->kwList[pos].region->getName()->getChars()));
+        CTRACE(spdlog::trace("[TextParserImpl] KW matched. gx={0}, region={1}", gx, *node->kwList->kwList[pos].region->getName()));
         addRegion(gy, gx, gx + kwlen, node->kwList->kwList[pos].region);
         gx += kwlen;
         return MATCH_RE;
@@ -298,11 +298,12 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
   ParseCache* ResF = nullptr;
   ParseCache* ResP = nullptr;
 
-  CTRACE(spdlog::trace("[TextParserImpl] searchRE: entered scheme \"{0}\"", cscheme->getName()->getChars()));
+  CTRACE(spdlog::trace("[TextParserImpl] searchRE: entered scheme \"{0}\"", *cscheme->getName()));
 
   if (!cscheme) {
     return MATCH_NOTHING;
   }
+  int idx=0;
   for (auto schemeNode : cscheme->nodes) {
     CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
@@ -457,6 +458,7 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
         return MATCH_SCHEME;
       }
     }
+    idx++;
   }
   return MATCH_NOTHING;
 }
