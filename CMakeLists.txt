@@ -65,7 +65,7 @@ else()
   find_package(XercesC REQUIRED)
   find_package(spdlog REQUIRED)
   find_package(fmt REQUIRED)
-  find_package(minizip REQUIRED)
+  find_package(Minizip REQUIRED)
   find_package(GTest)
 
   set(COLORER_STATIC_DEPEND FALSE)
