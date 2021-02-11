@@ -10,8 +10,15 @@ typedef unsigned char byte;
 typedef icu::UnicodeString UnicodeString;
 typedef std::unique_ptr<UnicodeString> uUnicodeString;
 
-#include <colorer/common/Features.h>
 #include <colorer/common/UnicodeLogger.h>
 #include <spdlog/spdlog.h>
+#include <colorer/common/Features.h>
 #define BAD_WCHAR (0xFFFF)
+
+#ifdef COLORER_ENABLE_TRACE
+#define CTRACE(info) info
+#else
+#define CTRACE(info)
+#endif
+
 #endif

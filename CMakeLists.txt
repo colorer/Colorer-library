@@ -29,6 +29,10 @@ option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
 option(COLORER_BUILD_TEST "Set on to build test" OFF)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 
+option(COLORER_USE_HTTPINPUTSOURCE "Use http inputsource, only Windows" OFF)
+option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
+
 #====================================================
 # global compilation settings
 #====================================================
@@ -55,20 +59,25 @@ message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 # find dependences
 #====================================================
 if(COLORER_USE_CONAN)
+  set(COLORER_STATIC_DEPEND TRUE)
+
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
   conan_basic_setup()
 
-  set(COLORER_STATIC_DEPEND TRUE)
 else()
+  set(COLORER_STATIC_DEPEND FALSE)
 
+  # core library
   find_package(ICU COMPONENTS uc REQUIRED)
   find_package(XercesC REQUIRED)
   find_package(spdlog REQUIRED)
   find_package(fmt REQUIRED)
-  find_package(Minizip REQUIRED)
-  find_package(GTest)
+  if(COLORER_USE_JARINPUTSOURCE)
+    find_package(Minizip REQUIRED)
+  endif()
 
-  set(COLORER_STATIC_DEPEND FALSE)
+  # test library
+  find_package(GTest)
 endif()
 
 #====================================================

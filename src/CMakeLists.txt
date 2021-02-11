@@ -17,7 +17,6 @@ set(SRC_COLORER
     colorer/TextParser.h
     colorer/version.h
     colorer/common/Exception.cpp
-    colorer/common/Features.h
     colorer/common/UStr.cpp
     colorer/common/UStr.h
     colorer/common/UnicodeLogger.h
@@ -52,14 +51,8 @@ set(SRC_COLORER
     colorer/io/FileInputSource.h
     colorer/io/FileWriter.cpp
     colorer/io/FileWriter.h
-    colorer/io/HTTPInputSource.cpp
-    colorer/io/HTTPInputSource.h
     colorer/io/InputSource.cpp
     colorer/io/InputSource.h
-    colorer/io/JARInputSource.cpp
-    colorer/io/JARInputSource.h
-    colorer/io/MemoryFile.cpp
-    colorer/io/MemoryFile.h
     colorer/io/SharedInputSource.cpp
     colorer/io/SharedInputSource.h
     colorer/io/StreamWriter.cpp
@@ -106,14 +99,37 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
     colorer/xml/XmlParserErrorHandler.h
-    colorer/xml/ZipXmlInputSource.cpp
-    colorer/xml/ZipXmlInputSource.h
     )
+
+if(COLORER_USE_HTTPINPUTSOURCE AND WIN32)
+  set(COLORER_FEATURE_HTTPINPUTSOURCE 1)
+  set(SRC_COLORER_HTTP
+      colorer/io/HTTPInputSource.cpp
+      colorer/io/HTTPInputSource.h
+      )
+endif()
+
+if(COLORER_USE_JARINPUTSOURCE)
+  set(COLORER_FEATURE_JARINPUTSOURCE 1)
+  set(SRC_COLORER_JAR
+      colorer/io/JARInputSource.cpp
+      colorer/io/JARInputSource.h
+      colorer/io/MemoryFile.cpp
+      colorer/io/MemoryFile.h
+      colorer/xml/ZipXmlInputSource.cpp
+      colorer/xml/ZipXmlInputSource.h
+      )
+endif()
+
+# Generate headers
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorer/common/Features.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/colorer/common/Features.h
+)
 
 #====================================================
 # common flags
 #====================================================
-set(COLORER_DEF -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
 
 if(COLORER_STATIC_DEPEND)
   set(COLORER_DEF ${COLORER_DEF} -DXERCES_STATIC_LIBRARY)
@@ -158,7 +174,7 @@ endif()
 # build
 #====================================================
 
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_HTTP} ${SRC_COLORER_JAR})
 target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     )
@@ -172,6 +188,7 @@ set_target_properties(colorer_lib PROPERTIES
 if(COLORER_USE_CONAN)
   target_include_directories(colorer_lib
       PRIVATE ${CONAN_INCLUDE_DIRS}
+      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
       PUBLIC ../external/spimpl
       )
   target_link_libraries(colorer_lib
@@ -179,15 +196,25 @@ if(COLORER_USE_CONAN)
       )
 else()
   target_include_directories(colorer_lib
+      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
       PRIVATE ${SPDLOG_INCLUDE_DIR}
       PRIVATE ${XercesC_INCLUDE_DIRS}
       PRIVATE ${ICU_INCLUDE_DIRS}
-      PRIVATE ${MiniZip_INCLUDE_DIRS}
       PUBLIC ../external/spimpl
       )
   target_link_libraries(colorer_lib
-      PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog MiniZip::MiniZip
+      PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog
       )
+
+  if(COLORER_FEATURE_JARINPUTSOURCE)
+    target_include_directories(colorer_lib
+        PRIVATE ${MiniZip_INCLUDE_DIRS}
+        )
+    target_link_libraries(colorer_lib
+        PUBLIC MiniZip::MiniZip
+        )
+  endif()
+
 endif()
 
 # set options for target

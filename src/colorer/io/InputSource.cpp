@@ -32,16 +32,20 @@ InputSource *InputSource::newInstance(const UnicodeString *path, InputSource *ba
   if (path == nullptr){
     throw InputSourceException("InputSource::newInstance: path is nullptr");
   }
+  if (path->startsWith("http://")) {
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-  if (path->startsWith("http://")){
     return new HTTPInputSource(path, nullptr);
-  }
+#else
+    throw InputSourceException("InputSource::newInstance: http not supported");
 #endif
+  }
+  if (path->startsWith("jar:")) {
 #if COLORER_FEATURE_JARINPUTSOURCE
-  if (path->startsWith("jar:")){
     return new JARInputSource(path, base);
-  }
+#else
+    throw InputSourceException("InputSource::newInstance: jar not supported");
 #endif
+  }
   if (base != nullptr){
     InputSource *is = base->createRelative(path);
     if (is != nullptr) return is;

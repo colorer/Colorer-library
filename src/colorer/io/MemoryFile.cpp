@@ -1,6 +1,6 @@
 #include <colorer/io/MemoryFile.h>
 #include <colorer/Common.h>
-#include <string.h>
+#include <cstring>
 
 voidpf ZCALLBACK mem_open_file_func (voidpf opaque, const char* /*filename*/, int /*mode*/)
 {

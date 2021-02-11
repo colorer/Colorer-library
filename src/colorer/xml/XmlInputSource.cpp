@@ -2,9 +2,11 @@
 #include <colorer/common/UStr.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
 #include <colorer/xml/XmlInputSource.h>
+#if COLORER_FEATURE_JARINPUTSOURCE
 #include <colorer/xml/ZipXmlInputSource.h>
-#include <xercesc/util/XMLString.hpp>
+#endif
 #include <memory>
+#include <xercesc/util/XMLString.hpp>
 #ifdef __unix__
 #include <dirent.h>
 #include <sys/stat.h>
@@ -17,7 +19,11 @@
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* base)
 {
   if (xercesc::XMLString::startsWith(path, kJar)) {
+#if COLORER_FEATURE_JARINPUTSOURCE
     return std::make_unique<ZipXmlInputSource>(path, base);
+#else
+    throw InputSourceException("ZipXmlInputSource not supported");
+#endif
   }
   if (base) {
     return base->createRelative(path);
@@ -31,7 +37,11 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
     throw InputSourceException("XmlInputSource::newInstance: path is nullptr");
   }
   if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
+#if COLORER_FEATURE_JARINPUTSOURCE
     return std::make_unique<ZipXmlInputSource>(path, base);
+#else
+    throw InputSourceException("ZipXmlInputSource not supported");
+#endif
   }
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
@@ -56,9 +66,9 @@ uUnicodeString XmlInputSource::getAbsolutePath(const UnicodeString* basePath, co
 XMLCh* XmlInputSource::ExpandEnvironment(const XMLCh* path)
 {
 #ifdef WIN32
-  size_t i = ExpandEnvironmentStringsW((wchar_t*)path, nullptr, 0);
+  size_t i = ExpandEnvironmentStringsW((wchar_t*) path, nullptr, 0);
   auto* temp = new XMLCh[i];
-  ExpandEnvironmentStringsW((wchar_t*)path, (wchar_t*)temp, static_cast<DWORD>(i));
+  ExpandEnvironmentStringsW((wchar_t*) path, (wchar_t*) temp, static_cast<DWORD>(i));
   return temp;
 #else
   // TODO реализовать под nix
@@ -125,7 +135,7 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
 void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files)
 {
   WIN32_FIND_DATA ffd;
-  UnicodeString s= UnicodeString(UnicodeString(*relPath) + UnicodeString("\\*.*"));
+  UnicodeString s = UnicodeString(UnicodeString(*relPath) + UnicodeString("\\*.*"));
   HANDLE dir = FindFirstFile(UStr::to_stdstr(&s).c_str(), &ffd);
   if (dir != INVALID_HANDLE_VALUE) {
     while (true) {
