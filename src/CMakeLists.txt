@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(colorer_lib VERSION ${COLORER_VERSION} LANGUAGES CXX C)
+project(colorer_lib VERSION ${COLORER_VERSION} LANGUAGES CXX)
 
 #====================================================
 # colorer
@@ -15,7 +15,6 @@ set(SRC_COLORER
     colorer/RegionHandler.h
     colorer/Scheme.h
     colorer/TextParser.h
-    colorer/version.h
     colorer/common/Exception.cpp
     colorer/common/UStr.cpp
     colorer/common/UStr.h
@@ -84,6 +83,7 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
     colorer/parsers/XmlTagDefs.h
+    colorer/version.h
     colorer/viewer/ParsedLineWriter.h
     colorer/viewer/TextConsoleViewer.cpp
     colorer/viewer/TextConsoleViewer.h
@@ -121,7 +121,9 @@ if(COLORER_USE_JARINPUTSOURCE)
       )
 endif()
 
+#====================================================
 # Generate headers
+#====================================================
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/colorer/common/Features.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/colorer/common/Features.h
@@ -145,24 +147,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # CMAKE_CXX_FLAGS_RELEASE= -O3 -DNDEBUG
 
   # set only new flags
-  set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic
-      -Wsign-promo -Wnon-virtual-dtor)
+  set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic -Wsign-promo -Wnon-virtual-dtor)
   set(FLAGS_CXX_RELEASE)
   set(FLAGS_CXX_DEBUG)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # default for msvc
-  # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS
-  # CMAKE_C_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
-  # CMAKE_C_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
-
   # CMAKE_CXX_FLAGS= /DWIN32 /D_WINDOWS /GR /EHsc
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
-  set(FLAGS_C_DEFAULT)
-  set(FLAGS_C_RELEASE /W3)
-  set(FLAGS_C_DEBUG /W4)
   set(FLAGS_CXX_DEFAULT)
   set(FLAGS_CXX_RELEASE /W3)
   set(FLAGS_CXX_DEBUG /W4)
@@ -170,14 +164,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
+set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
+set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
+
 #====================================================
 # build
 #====================================================
-
 add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_HTTP} ${SRC_COLORER_JAR})
-target_include_directories(colorer_lib
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+target_include_directories(colorer_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 17
@@ -207,32 +201,16 @@ else()
       )
 
   if(COLORER_FEATURE_JARINPUTSOURCE)
-    target_include_directories(colorer_lib
-        PRIVATE ${MiniZip_INCLUDE_DIRS}
-        )
-    target_link_libraries(colorer_lib
-        PUBLIC MiniZip::MiniZip
-        )
+    target_include_directories(colorer_lib PRIVATE ${MiniZip_INCLUDE_DIRS})
+    target_link_libraries(colorer_lib PUBLIC MiniZip::MiniZip)
   endif()
 
 endif()
 
-# set options for target
-set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
-set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
-set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
-set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
-
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
-  target_compile_options(colorer_lib
-      PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
-      PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>
-      )
+  target_compile_options(colorer_lib PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>)
 else()
-  target_compile_options(colorer_lib
-      PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_RELEASE}>
-      PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>
-      )
+  target_compile_options(colorer_lib PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>)
 endif()
 
 set_target_properties(colorer_lib PROPERTIES
@@ -243,10 +221,8 @@ set_target_properties(colorer_lib PROPERTIES
     )
 
 #====================================================
-# test
+# analyze and metrics
 #====================================================
-
-# static analyze
 if(COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
