@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include "ConsoleTools.h"
-#include "version.h"
+#include <colorer/version.h>
 
 /** Internal run action type */
 enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
@@ -274,8 +274,8 @@ int workIt()
   initConsoleTools(ct);
 
   if (settings.copyright) {
-    fprintf(stdout, "\nColorer console tools, version %s\n", TOOLS_VERSION);
-    fprintf(stdout, "%s \n\n", TOOLS_COPYRIGHT);
+    fprintf(stdout, "\nColorer console tools, version %s\n", COLORER_VERSION);
+    fprintf(stdout, "%s \n\n", COLORER_COPYRIGHT);
   }
 
   try {

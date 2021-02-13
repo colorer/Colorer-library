@@ -1,6 +1,6 @@
 #pragma code_page(65001)
 #include <windows.h>
-#include <version.h>
+#include <colorer/version.h>
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 VS_VERSION_INFO VERSIONINFO
@@ -14,8 +14,8 @@ FILEFLAGS 0
 FILEOS VOS_NT_WINDOWS32
 FILETYPE VFT_APP
 
-FILEVERSION TOOLS_VER_MAJOR,TOOLS_VER_MINOR,TOOLS_VER_PATCH,0
-PRODUCTVERSION TOOLS_VER_MAJOR,TOOLS_VER_MINOR,TOOLS_VER_PATCH,0
+FILEVERSION COLORER_VER_MAJOR,COLORER_VER_MINOR,COLORER_VER_PATCH,0
+PRODUCTVERSION COLORER_VER_MAJOR,COLORER_VER_MINOR,COLORER_VER_PATCH,0
 
 BEGIN
     BLOCK "StringFileInfo"
@@ -23,12 +23,12 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "FileDescription", "Colorer - Syntax Highlighting tools"
-            VALUE "FileVersion", TOOLS_VERSION
+            VALUE "FileVersion", COLORER_VERSION
             VALUE "InternalName", "Colorer"
-            VALUE "LegalCopyright", TOOLS_COPYRIGHT
+            VALUE "LegalCopyright", COLORER_COPYRIGHT
             VALUE "OriginalFilename", "colorer.exe"
             VALUE "ProductName", "Colorer console tools"
-            VALUE "ProductVersion", TOOLS_VERSION
+            VALUE "ProductVersion", COLORER_VERSION
         END
     END
     BLOCK "VarFileInfo"

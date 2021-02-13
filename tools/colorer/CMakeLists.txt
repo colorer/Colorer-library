@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(consoletools)
+project(consoletools VERSION ${COLORER_VERSION} LANGUAGES CXX C)
 
 #====================================================
 # colorer_lib
@@ -8,7 +8,6 @@ set(SRC_CPP
     ConsoleToolsRunner.cpp
     ConsoleTools.cpp
     ConsoleTools.h
-    version.h
     )
 
 if(WIN32)
