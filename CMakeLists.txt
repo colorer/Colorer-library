@@ -46,6 +46,8 @@ endif()
 #====================================================
 # load modules
 #====================================================
+# this line need for find_package
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include(cmake/ide.cmake)
 include(cmake/utils.cmake)
 
