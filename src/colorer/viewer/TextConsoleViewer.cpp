@@ -3,7 +3,7 @@
 #include <colorer/common/UStr.h>
 #endif
 
-TextConsoleViewer::TextConsoleViewer(BaseEditor* be, TextLinesStore* ts, int background)
+TextConsoleViewer::TextConsoleViewer(BaseEditor* be, TextLinesStore* ts, unsigned short background)
 {
   textLinesStore = ts;
   baseEditor = be;
@@ -17,7 +17,7 @@ void TextConsoleViewer::view()
 #ifdef WIN32
   int topline, leftpos;
   leftpos = topline = 0;
-  INPUT_RECORD ir;
+  INPUT_RECORD ir {};
 
   HANDLE hConI = CreateFileW(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
   if (hConI == INVALID_HANDLE_VALUE)
@@ -35,19 +35,18 @@ void TextConsoleViewer::view()
   cci.bVisible = FALSE;
   SetConsoleCursorInfo(hCon, &cci);
 
-  CHAR_INFO* buffer = new CHAR_INFO[csbi.dwSize.X * csbi.dwSize.Y];
+  auto* buffer = new CHAR_INFO[csbi.dwSize.X * csbi.dwSize.Y];
   bool unc_fault = false;
   do {
     int lline = csbi.dwSize.Y;
     if (topline + lline > textLinesStore->getLineCount())
-      lline = textLinesStore->getLineCount() - topline;
+      lline = (int) textLinesStore->getLineCount() - topline;
     baseEditor->visibleTextEvent(topline, lline);
 
     for (int i = topline; i < topline + csbi.dwSize.Y; i++) {
       int Y = i - topline;
 
-      int li;
-      for (li = 0; li < csbi.dwSize.X; li++) {
+      for (int li = 0; li < csbi.dwSize.X; li++) {
         buffer[Y * csbi.dwSize.X + li].Char.UnicodeChar = ' ';
         buffer[Y * csbi.dwSize.X + li].Attributes = background;
       }
@@ -56,7 +55,7 @@ void TextConsoleViewer::view()
         continue;
       auto iLine = textLinesStore->getLine(i);
 
-      for (li = 0; li < csbi.dwSize.X; li++) {
+      for (int li = 0; li < csbi.dwSize.X; li++) {
         if (leftpos + li >= iLine->length())
           break;
         buffer[Y * csbi.dwSize.X + li].Char.UnicodeChar = (*iLine)[leftpos + li];
@@ -109,17 +108,17 @@ void TextConsoleViewer::view()
         buffer = new CHAR_INFO[csbi.dwSize.X * csbi.dwSize.Y];
         break;
       }
-      if (ir.EventType == MOUSE_EVENT && ir.Event.MouseEvent.dwEventFlags == 0x4) {
+      if (ir.EventType == MOUSE_EVENT && ir.Event.MouseEvent.dwEventFlags == MOUSE_HWHEELED) {
         switch (ir.Event.MouseEvent.dwButtonState) {
-          case 0x780000:
+          case 0x780000:  // wheel down
             topline -= csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
             break;
-          case 0xFF880000:
+          case 0xFF880000:  // wheel up
             topline += csbi.dwSize.Y;
             if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y)
-              topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
+              topline = (int) textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
             break;
@@ -158,7 +157,7 @@ void TextConsoleViewer::view()
           case VK_SPACE:
             topline += csbi.dwSize.Y;
             if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y)
-              topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
+              topline = (int) textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
             break;
@@ -166,7 +165,7 @@ void TextConsoleViewer::view()
             leftpos = topline = 0;
             break;
           case VK_END:
-            topline = textLinesStore->getLineCount() - csbi.dwSize.Y;
+            topline = (int) textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
             leftpos = 0;

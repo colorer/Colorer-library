@@ -314,10 +314,10 @@ void ConsoleTools::viewFile()
     // Initial line count notify
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
 
-    int background;
+    unsigned short background;
     const StyledRegion* rd = StyledRegion::cast(baseEditor.rd_def_Text);
     if (rd != nullptr && rd->isForeSet && rd->isBackSet) {
-      background = rd->fore + (rd->back << 4);
+      background = (unsigned short) (rd->fore + (rd->back << 4));
     } else {
       background = 0x1F;
     }
