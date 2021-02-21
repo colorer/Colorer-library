@@ -26,7 +26,7 @@ From root path of repository call
 You may build library on linux using standart package, not Conan.
 Ubuntu example
 
-    sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev libgtest-dev
+    sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
     mkdir build
     cmake ..
     cmake --build .

@@ -185,7 +185,7 @@ if(COLORER_USE_CONAN)
   target_include_directories(colorer_lib
       PRIVATE ${CONAN_INCLUDE_DIRS}
       PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-      PUBLIC ../external/spimpl
+      PUBLIC ${CMAKE_SOURCE_DIR}/external
       )
   target_link_libraries(colorer_lib
       PUBLIC ${CONAN_LIBS}
@@ -196,7 +196,7 @@ else()
       PRIVATE ${SPDLOG_INCLUDE_DIR}
       PRIVATE ${XercesC_INCLUDE_DIRS}
       PRIVATE ${ICU_INCLUDE_DIRS}
-      PUBLIC ../external/spimpl
+      PUBLIC ${CMAKE_SOURCE_DIR}/external
       )
   target_link_libraries(colorer_lib
       PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog

@@ -5,7 +5,7 @@
 #include <colorer/FileType.h>
 #include <colorer/Region.h>
 #include <colorer/xml/XmlInputSource.h>
-#include <spimpl.h>
+#include <spimpl/spimpl.h>
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer

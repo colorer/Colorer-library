@@ -8,7 +8,7 @@
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/parsers/HRDNode.h>
-#include <spimpl.h>
+#include <spimpl/spimpl.h>
 
 /**
  * Maintains catalog of HRC and HRD references.

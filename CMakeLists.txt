@@ -78,8 +78,6 @@ else()
     find_package(Minizip REQUIRED)
   endif()
 
-  # test library
-  find_package(GTest)
 endif()
 
 #====================================================
@@ -106,9 +104,6 @@ endif()
 # Tests
 #====================================================
 if(COLORER_BUILD_TEST)
-  if(COLORER_USE_CONAN OR GTEST_FOUND)
-    add_subdirectory(./tests/unit)
-  endif()
-
+  add_subdirectory(./tests/unit)
   add_subdirectory(./tests)
 endif()

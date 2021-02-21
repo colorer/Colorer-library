@@ -1,82 +1,107 @@
 #include <colorer/FileType.h>
-#include <gtest/gtest.h>
+#include <spdlog/sinks/null_sink.h>
+#include <catch2/catch.hpp>
 
-TEST(FileType, FileTypeName)
+TEST_CASE("Create FileType and set base properties")
 {
   UnicodeString name("TestType");
-  FileType file_type;
-  file_type.setName(&name);
-
-  EXPECT_TRUE(name.compare(*file_type.getName()) == 0);
-}
-
-TEST(FileType, FileTypeGroup)
-{
   UnicodeString group("TestGroup");
-  FileType file_type;
-  file_type.setGroup(&group);
-
-  EXPECT_TRUE(group.compare(*file_type.getGroup()) == 0);
-}
-
-TEST(FileType, FileTypeDescription)
-{
   UnicodeString description("TestDescription");
   FileType file_type;
+  file_type.setName(&name);
+  file_type.setGroup(&group);
   file_type.setDescription(&description);
 
-  EXPECT_TRUE(description.compare(*file_type.getDescription()) == 0);
+  CHECK(name.compare(*file_type.getName()) == 0);
+  CHECK(group.compare(*file_type.getGroup()) == 0);
+  CHECK(description.compare(*file_type.getDescription()) == 0);
 }
 
-TEST(FileType, FileTypeParamValue)
-{
-  UnicodeString param1("param1");
-  UnicodeString def_value("value1");
-  UnicodeString user_value("value2");
-
-  FileType file_type;
-  file_type.addParam(&param1);
-  file_type.setParamDefaultValue(param1, &def_value);
-
-  EXPECT_TRUE(file_type.getParamDefaultValue(param1)->compare(def_value) == 0);
-  EXPECT_TRUE(file_type.getParamValue(param1)->compare(def_value) == 0);
-  EXPECT_EQ(nullptr, file_type.getParamUserValue(param1));
-
-  file_type.setParamValue(param1, &def_value);
-  EXPECT_TRUE(file_type.getParamValue(param1)->compare(def_value) == 0);
-
-  file_type.setParamDefaultValue(param1, nullptr);
-  EXPECT_EQ(nullptr, file_type.getParamDefaultValue(param1));
-
-  file_type.setParamValue(param1, &user_value);
-  EXPECT_TRUE(file_type.getParamValue(param1)->compare(user_value) == 0);
-
-  file_type.setParamValue(param1, nullptr);
-  EXPECT_EQ(nullptr, file_type.getParamUserValue(param1));
-  EXPECT_EQ(nullptr, file_type.getParamValue(param1));
-}
-
-TEST(FileType, FileTypeParam)
+SCENARIO("Set param value for FileType")
 {
   UnicodeString param1("param1");
   UnicodeString param2("param2");
   UnicodeString def_value("value1");
+  UnicodeString user_value("value2");
 
-  FileType file_type;
-  file_type.addParam(&param1);
+  GIVEN("A simple FileType with one parameter")
+  {
+    FileType file_type;
+    file_type.addParam(&param1);
 
-  EXPECT_THROW(file_type.setParamValue(UnicodeString(nullptr), &def_value), FileTypeException);
-  EXPECT_THROW(file_type.setParamValue(param2, &def_value), FileTypeException);
+    WHEN("set only default value for parameter")
+    {
+      file_type.setParamDefaultValue(param1, &def_value);
 
-  EXPECT_THROW(file_type.setParamDefaultValue(UnicodeString(nullptr), &def_value), FileTypeException);
-  EXPECT_THROW(file_type.setParamDefaultValue(param2, &def_value), FileTypeException);
+      THEN("return this value as default and as value")
+      {
+        CHECK(file_type.getParamDefaultValue(param1)->compare(def_value) == 0);
+        CHECK(file_type.getParamValue(param1)->compare(def_value) == 0);
+      }
+      THEN("user value is empty")
+      {
+        CHECK(nullptr == file_type.getParamUserValue(param1));
+      }
+    }
+    WHEN("set value for parameter")
+    {
+      file_type.setParamValue(param1, &def_value);
 
-  EXPECT_THROW(file_type.setParamDescription(UnicodeString(nullptr), &def_value), FileTypeException);
-  EXPECT_THROW(file_type.setParamDescription(param2, &def_value), FileTypeException);
+      THEN("return this value as value, but not default")
+      {
+        CHECK(file_type.getParamValue(param1)->compare(def_value) == 0);
+        CHECK(file_type.getParamDefaultValue(param1) == nullptr);
+      }
+    }
+    WHEN("set nullptr as default value ")
+    {
+      file_type.setParamDefaultValue(param1, &def_value);
+      file_type.setParamDefaultValue(param1, nullptr);
+
+      THEN("return nullptr as default")
+      {
+        CHECK(file_type.getParamDefaultValue(param1) == nullptr);
+      }
+    }
+    WHEN("set nullptr as value ")
+    {
+      file_type.setParamValue(param1, &user_value);
+      file_type.setParamValue(param1, nullptr);
+
+      THEN("return default and user value equal nullptr")
+      {
+        CHECK(file_type.getParamUserValue(param1) == nullptr);
+        CHECK(file_type.getParamValue(param1) == nullptr);
+      }
+    }
+    WHEN("FileType don`t contains param2")
+    {
+      THEN("return it value throws exception")
+      {
+        REQUIRE_THROWS_AS(file_type.setParamValue(param2, &def_value), FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDefaultValue(param2, &def_value), FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDescription(param2, &def_value), FileTypeException);
+      }
+    }
+    WHEN("FileType exists")
+    {
+      THEN("return nullptr param value throws exception")
+      {
+        REQUIRE_THROWS_AS(file_type.setParamValue(UnicodeString(nullptr), &def_value), FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDefaultValue(UnicodeString(nullptr), &def_value), FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDescription(UnicodeString(nullptr), &def_value), FileTypeException);
+      }
+    }
+  }
 }
 
-TEST(FileType, FileTypeParamValueInt)
+TEST_CASE("Work with integer type of param value")
 {
+  // disable logging
+  spdlog::drop_all();
+  auto log = spdlog::null_logger_mt("main");
+  spdlog::set_default_logger(log);
+
   UnicodeString param1("param1");
   UnicodeString param2("param2");
   UnicodeString param3("param3");
@@ -88,12 +113,12 @@ TEST(FileType, FileTypeParamValueInt)
   file_type.addParam(&param1);
   file_type.addParam(&param2);
   file_type.addParam(&param3);
-  file_type.setParamValue(param1,&value1);
-  file_type.setParamValue(param2,&value2);
-  file_type.setParamValue(param3,&value3);
+  file_type.setParamValue(param1, &value1);
+  file_type.setParamValue(param2, &value2);
+  file_type.setParamValue(param3, &value3);
 
-  EXPECT_EQ(5,file_type.getParamValueInt(param2));
-  EXPECT_EQ(5,file_type.getParamValueInt(param3));
-  EXPECT_NO_THROW(file_type.getParamValueInt(UnicodeString(nullptr)));
-  EXPECT_NO_THROW(file_type.getParamValueInt(param1));
+  CHECK(5 == file_type.getParamValueInt(param2));
+  CHECK(5 == file_type.getParamValueInt(param3));
+  REQUIRE_NOTHROW(file_type.getParamValueInt(UnicodeString(nullptr)));
+  REQUIRE_NOTHROW(file_type.getParamValueInt(param1));
 }
