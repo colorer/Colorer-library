@@ -2,12 +2,11 @@
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/io/StreamWriter.h>
-#include <colorer/xml/XmlInputSource.h>
 #include <iostream>
 
 void testTextHrd()
 {
-  StreamWriter writer(stdout, -1, false);
+  StreamWriter writer(stdout, false);
 
   UnicodeString file = R"(./data/tags.hrd)";
 
@@ -25,7 +24,7 @@ void testTextHrd()
 
 void testStyledHrd()
 {
-  StreamWriter writer(stdout, -1, false);
+  StreamWriter writer(stdout, false);
 
   UnicodeString file = R"(./data/blue.hrd)";
 

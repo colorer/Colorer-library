@@ -70,7 +70,8 @@ void TestParserFactoryStyledMapper(int count, UnicodeString* catalogPath)
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     RegionMapper* regionMapperLocal = nullptr;
-    regionMapperLocal = parserFactoryLocal.createStyledMapper(&UnicodeString("console"), nullptr);
+    auto console = UnicodeString("console");
+    regionMapperLocal = parserFactoryLocal.createStyledMapper(&console, nullptr);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -149,11 +150,12 @@ void TestColoringFile(int count, UnicodeString* catalogPath, UnicodeString* test
     parserFactoryLocal.loadCatalog(catalogPath);
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(testFile, nullptr, true);
+    textLinesStore.loadFile(testFile, true);
     // Base editor to make primary parse
     BaseEditor baseEditor(&parserFactoryLocal, &textLinesStore);
     // HRD RegionMapper linking
-    baseEditor.setRegionMapper(&UnicodeString("console"), nullptr);
+    auto console = UnicodeString("console");
+    baseEditor.setRegionMapper(&console, nullptr);
     FileType* type = selectType(parserFactoryLocal.getHRCParser(), &textLinesStore, testFile);
     type->getBaseScheme();
     baseEditor.setFileType(type);
