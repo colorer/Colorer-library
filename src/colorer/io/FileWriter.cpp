@@ -1,19 +1,20 @@
-
-#include<cstdio>
 #include <colorer/common/UStr.h>
-#include<colorer/io/FileWriter.h>
+#include <colorer/io/FileWriter.h>
+#include <cstdio>
 
-FileWriter::FileWriter(const UnicodeString *fileName, int encoding, bool useBOM){
+FileWriter::FileWriter(const UnicodeString* fileName, bool useBOM)
+{
   file = fopen(UStr::to_stdstr(fileName).c_str(), "wb+");
-  init(file, encoding, useBOM);
+  init(file, useBOM);
 }
-FileWriter::FileWriter(const UnicodeString *fileName){
+
+FileWriter::FileWriter(const UnicodeString* fileName)
+{
   file = fopen(UStr::to_stdstr(fileName).c_str(), "wb+");
-  init(file, -1, false);
+  init(file, false);
 }
-FileWriter::~FileWriter(){
+
+FileWriter::~FileWriter()
+{
   fclose(file);
 }
-
-
-

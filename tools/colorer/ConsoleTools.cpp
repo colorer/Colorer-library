@@ -58,27 +58,6 @@ void ConsoleTools::setOutputFileName(const UnicodeString& str)
   outputFileName = std::make_unique<UnicodeString>(str);
 }
 
-void ConsoleTools::setInputEncoding(const UnicodeString& str)
-{
-  inputEncoding = std::make_unique<UnicodeString>(str);
-  /*inputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(inputEncoding.get()).c_str());
-  if (inputEncodingIndex == -1) {
-    throw Exception("Unknown input encoding: " + *inputEncoding.get());
-  }*/
-  /* if (outputEncoding == nullptr) {
-     outputEncodingIndex = inputEncodingIndex;
-   }*/
-}
-
-void ConsoleTools::setOutputEncoding(const UnicodeString& /*str*/)
-{
-  /* outputEncoding.reset(new UnicodeString(str));
-   outputEncodingIndex = Encodings::getEncodingIndex(UStr::to_stdstr(outputEncoding.get()).c_str());
-   if (outputEncodingIndex == -1) {
-     throw Exception("Unknown output encoding: " + *outputEncoding.get());
-   }*/
-}
-
 void ConsoleTools::setCatalogPath(const UnicodeString& str)
 {
 #if defined _WIN32
@@ -202,7 +181,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
 {
   Writer* writer = nullptr;
   try {
-    writer = new StreamWriter(stdout, outputEncodingIndex, false);
+    writer = new StreamWriter(stdout, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     HRCParser* hrcParser = pf.getHRCParser();
@@ -294,7 +273,7 @@ void ConsoleTools::profile(int loopCount)
   pf.loadCatalog(catalogPath.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
-  textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+  textLinesStore.loadFile(inputFileName.get(), true);
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
@@ -320,7 +299,7 @@ void ConsoleTools::viewFile()
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+    textLinesStore.loadFile(inputFileName.get(), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -342,7 +321,7 @@ void ConsoleTools::viewFile()
       background = 0x1F;
     }
     // File viewing in console window
-    TextConsoleViewer viewer(&baseEditor, &textLinesStore, background, outputEncodingIndex);
+    TextConsoleViewer viewer(&baseEditor, &textLinesStore, background);
     viewer.view();
   } catch (Exception& e) {
     fprintf(stderr, "%s\n", e.what());
@@ -355,15 +334,14 @@ void ConsoleTools::forward()
 {
   colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
-  // CString eStream(stream, fis->length(), inputEncodingIndex);
   UnicodeString eStream((char*) stream, fis->length());
 
   Writer* outputFile;
   try {
     if (outputFileName != nullptr) {
-      outputFile = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
+      outputFile = new FileWriter(outputFileName.get(), bomOutput);
     } else {
-      outputFile = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
+      outputFile = new StreamWriter(stdout, bomOutput);
     }
   } catch (Exception& e) {
     fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
@@ -382,7 +360,7 @@ void ConsoleTools::genOutput(bool useTokens)
   try {
     // Source file text lines store.
     TextLinesStore textLinesStore;
-    textLinesStore.loadFile(inputFileName.get(), inputEncoding.get(), true);
+    textLinesStore.loadFile(inputFileName.get(), true);
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
@@ -420,9 +398,9 @@ void ConsoleTools::genOutput(bool useTokens)
     Writer* commonWriter;
     try {
       if (outputFileName != nullptr) {
-        commonWriter = new FileWriter(outputFileName.get(), outputEncodingIndex, bomOutput);
+        commonWriter = new FileWriter(outputFileName.get(), bomOutput);
       } else {
-        commonWriter = new StreamWriter(stdout, outputEncodingIndex, bomOutput);
+        commonWriter = new StreamWriter(stdout, bomOutput);
       }
       if (htmlEscaping) {
         escapedWriter = new HtmlEscapesWriter(commonWriter);

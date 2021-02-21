@@ -15,6 +15,8 @@ set(SRC_COLORER
     colorer/RegionHandler.h
     colorer/Scheme.h
     colorer/TextParser.h
+    colorer/common/Encodings.cpp
+    colorer/common/Encodings.h
     colorer/common/Exception.cpp
     colorer/common/UStr.cpp
     colorer/common/UStr.h

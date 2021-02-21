@@ -16,15 +16,14 @@ public:
 
   /** Empty constructor. Does nothing.
   */
-  TextLinesStore();
+  TextLinesStore()=default;
   ~TextLinesStore() override;
 
   /** Loads specified file into vector of strings.
-      @param fileName File to load.
-      @param inputEncoding Input file encoding.
+      @param inFileName File to load.
       @param tab2spaces Points, if we have to convert all tabs in file into spaces.
   */
-  void loadFile(const UnicodeString* fileName, const UnicodeString* inputEncoding, bool tab2spaces);
+  void loadFile(const UnicodeString* inFileName, bool tab2spaces);
   /** Returns loaded file name.
   */
   const UnicodeString* getFileName();
@@ -38,7 +37,7 @@ protected:
   void freeFile();
 private:
   std::vector<UnicodeString *> lines;
-  UnicodeString* fileName;
+  uUnicodeString fileName;
   void replaceTabs(size_t lno);
 
 };

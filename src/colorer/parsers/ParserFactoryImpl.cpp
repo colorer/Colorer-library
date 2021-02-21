@@ -103,7 +103,7 @@ void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString> &pa
       UnicodeString d = UnicodeString(home_drive).append(UnicodeString(home_path)).append("/.colorer5catalog");
       if (_access(UStr::to_stdstr(&d).c_str(), 0) != -1) {
         TextLinesStore tls;
-        tls.loadFile(&d, nullptr, false);
+        tls.loadFile(&d, false);
         if (tls.getLineCount() > 0) {
           paths.emplace_back(UnicodeString(*tls.getLine(0)));
         }
@@ -125,7 +125,7 @@ void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString> &pa
   if (home_path != nullptr) {
     try {
       TextLinesStore tls;
-      tls.loadFile(&UnicodeString(home_path).append("/.colorer5catalog"), nullptr, false);
+      tls.loadFile(&UnicodeString(home_path).append("/.colorer5catalog"), false);
       if (tls.getLineCount() > 0) {
         paths.emplace_back(*tls.getLine(0));
       }

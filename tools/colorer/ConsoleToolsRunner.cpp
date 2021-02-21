@@ -17,8 +17,6 @@ struct setting {
   std::unique_ptr<UnicodeString> input_file;
   std::unique_ptr<UnicodeString> output_file;
   std::unique_ptr<UnicodeString> link_sources;
-  std::unique_ptr<UnicodeString> input_encoding;
-  std::unique_ptr<UnicodeString> output_encoding;
   std::unique_ptr<UnicodeString> type_desc;
   std::unique_ptr<UnicodeString> hrd_name;
   std::string log_file_prefix = "consoletools";
@@ -148,24 +146,6 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
-    if (argv[i][1] == 'e' && argv[i][2] == 'i' && (i + 1 < argc || argv[i][3])) {
-      if (argv[i][3]) {
-        settings.input_encoding = std::make_unique<UnicodeString>(argv[i] + 3);
-      } else {
-        settings.input_encoding = std::make_unique<UnicodeString>(argv[i + 1]);
-        i++;
-      }
-      continue;
-    }
-    if (argv[i][1] == 'e' && argv[i][2] == 'o' && (i + 1 < argc || argv[i][3])) {
-      if (argv[i][3]) {
-        settings.output_encoding = std::make_unique<UnicodeString>(argv[i] + 3);
-      } else {
-        settings.output_encoding = std::make_unique<UnicodeString>(argv[i + 1]);
-        i++;
-      }
-      continue;
-    }
     if (argv[i][1] == 'e' && argv[i][2] == 'h' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
         settings.log_file_prefix = std::string(argv[i] + 3);
@@ -219,8 +199,6 @@ void printError()
           "  -i<name>   Loads specified hrd rules from catalog\n"
           "  -t<type>   Tries to use type <type> instead of type autodetection\n"
           "  -ls<name>  Use file <name> as input linking data source for href generation\n"
-          "  -ei<name>  Use input file encoding <name>\n"
-          "  -eo<name>  Use output stream encoding <name>, also viewer encoding in w9x\n"
           "  -o<name>   Use file <name> as output stream\n"
           "  -ln        Add line numbers into the colorized file\n"
           "  -db        Disable BOM(ZWNBSP) start symbol output in Unicode encodings\n"
@@ -247,12 +225,6 @@ void initConsoleTools(ConsoleTools &ct)
   }
   if (settings.output_file) {
     ct.setOutputFileName(*settings.output_file);
-  }
-  if (settings.input_encoding) {
-    ct.setInputEncoding(*settings.input_encoding);
-  }
-  if (settings.output_encoding) {
-    ct.setOutputEncoding(*settings.output_encoding);
   }
   if (settings.type_desc) {
     ct.setTypeDescription(*settings.type_desc);

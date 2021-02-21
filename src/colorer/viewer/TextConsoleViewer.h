@@ -17,10 +17,9 @@ class TextConsoleViewer{
 private:
   TextLinesStore *textLinesStore;
   BaseEditor *baseEditor;
-  int encoding;
   int background;
 public:
-  TextConsoleViewer(BaseEditor *be, TextLinesStore *ts, int background, int encoding);
+ TextConsoleViewer(BaseEditor* be, TextLinesStore* ts, int background);
   ~TextConsoleViewer();
 
   void view();

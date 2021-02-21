@@ -58,10 +58,6 @@ class ConsoleTools
   void setInputFileName(const UnicodeString& str);
   /// Optional file name, used for output
   void setOutputFileName(const UnicodeString& str);
-  /// Input Characters Encoding
-  void setInputEncoding(const UnicodeString& str);
-  /// Output Characters Encoding
-  void setOutputEncoding(const UnicodeString& str);
   /// Optional path to base catalog.xml
   void setCatalogPath(const UnicodeString& str);
   /// Optional HRD instance name, used to perform parsing
@@ -119,11 +115,6 @@ class ConsoleTools
   bool bomOutput = true;
   bool htmlWrapping = true;
   bool lineNumbers = false;
-
-  int inputEncodingIndex = -1;
-  int outputEncodingIndex = -1;
-  std::unique_ptr<UnicodeString> inputEncoding;
-  std::unique_ptr<UnicodeString> outputEncoding;
 
   std::unique_ptr<UnicodeString> typeDescription;
   std::unique_ptr<UnicodeString> catalogPath;
