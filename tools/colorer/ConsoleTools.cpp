@@ -1,4 +1,5 @@
 #include "ConsoleTools.h"
+#include <colorer/common/Encodings.h>
 #include <colorer/common/UStr.h>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/editor/BaseEditor.h>
@@ -334,7 +335,7 @@ void ConsoleTools::forward()
 {
   colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
   const byte* stream = fis->openStream();
-  UnicodeString eStream((char*) stream, fis->length());
+  auto eStream = Encodings::toUnicodeString((char*) stream, fis->length());
 
   Writer* outputFile;
   try {
@@ -349,7 +350,7 @@ void ConsoleTools::forward()
     return;
   }
 
-  outputFile->write(eStream);
+  outputFile->write(*eStream);
 
   delete outputFile;
   delete fis;
