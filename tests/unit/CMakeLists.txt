@@ -7,7 +7,7 @@ add_executable(unit_tests ${unit_tests_SRC})
 
 if(COLORER_USE_CONAN)
   target_link_libraries(unit_tests
-      PRIVATE ${CONAN_LIBS_GTEST}  colorer_lib)
+      PRIVATE ${CONAN_LIBS_GTEST} colorer_lib)
 else()
   target_link_libraries(unit_tests
       PRIVATE GTest::GTest GTest::Main colorer_lib)

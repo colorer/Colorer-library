@@ -58,11 +58,14 @@ message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 # find dependences
 #====================================================
 if(COLORER_USE_CONAN)
-  set(COLORER_STATIC_DEPEND TRUE)
+  if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
 
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-  conan_basic_setup()
-
+    set(COLORER_STATIC_DEPEND TRUE)
+  else()
+    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run 'conan install' first")
+  endif()
 else()
   set(COLORER_STATIC_DEPEND FALSE)
 

@@ -19,7 +19,7 @@ From root path of repository call
     
     mkdir build
     conan install .. -s build_type=Release -s arch=x86_64 -s compiler.runtime=MT
-    cmake -G "Visual Studio 16 2019" -DCOLORER_USE_CONAN=true ..
+    cmake -G "Visual Studio 16 2019" -DCOLORER_USE_CONAN=On ..
     colorer.sln
 
 ### Linux
