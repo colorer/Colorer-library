@@ -42,8 +42,8 @@ void TestParserFactoryHRCParser(int count, UnicodeString* catalogPath)
     parserFactoryLocal.loadCatalog(catalogPath);
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    HRCParser* hrcParserLocal = nullptr;
-    hrcParserLocal = parserFactoryLocal.getHRCParser();
+    HRCParser* hrcParserLocal = parserFactoryLocal.getHRCParser();
+    (void)hrcParserLocal; // hide warning
     // stop timer
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -69,9 +69,8 @@ void TestParserFactoryStyledMapper(int count, UnicodeString* catalogPath)
     parserFactoryLocal.loadCatalog(catalogPath);
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    RegionMapper* regionMapperLocal = nullptr;
     auto console = UnicodeString("console");
-    regionMapperLocal = parserFactoryLocal.createStyledMapper(&console, nullptr);
+    RegionMapper* regionMapperLocal = parserFactoryLocal.createStyledMapper(&console, nullptr);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -95,8 +94,7 @@ void TestParserFactoryLoadAllHRCScheme(int count, UnicodeString* catalogPath)
   for (int i = 0; i <= count; i++) {
     ParserFactory parserFactoryLocal;
     parserFactoryLocal.loadCatalog(catalogPath);
-    HRCParser* hrcParserLocal = nullptr;
-    hrcParserLocal = parserFactoryLocal.getHRCParser();
+    HRCParser* hrcParserLocal = parserFactoryLocal.getHRCParser();
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
@@ -119,7 +117,7 @@ void TestParserFactoryLoadAllHRCScheme(int count, UnicodeString* catalogPath)
 
 FileType* selectType(HRCParser* hrcParser, LineSource* lineSource, UnicodeString* testFile)
 {
-  FileType* type = nullptr;
+  FileType* type;
 
   UnicodeString textStart;
   int totalLength = 0;

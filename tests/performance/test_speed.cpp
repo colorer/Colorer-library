@@ -24,9 +24,9 @@ void printError()
                    L"   3         TestParserFactoryStyledMapper\n"
                    L"   4         TestParserFactoryLoadAllHRCScheme\n"
                    L"   5         TestColoringFile\n");
-};
+}
 
-int init(int argc, wchar_t* argv[])
+int init(int argc, char* argv[])
 {
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != L'-') {
@@ -34,14 +34,14 @@ int init(int argc, wchar_t* argv[])
     }
     if (argv[i][1] == L't') {
       if (argv[i][2]) {
-        job = (JobType) _wtoi(argv[i] + 2);
+        job = (JobType) atoi(argv[i] + 2);
       } else
         return -1;
       continue;
     }
     if (argv[i][1] == L'c') {
       if (argv[i][2]) {
-        loops = _wtoi(argv[i] + 2);
+        loops = atoi(argv[i] + 2);
       }
       if (!loops)
         loops = 1;
@@ -73,7 +73,7 @@ int init(int argc, wchar_t* argv[])
   return 1;
 }
 
-int wmain(int argc, wchar_t* argv[])
+int main(int argc, char* argv[])
 {
   if ((argc < 2) || (init(argc, argv) == -1)) {
     printError();
@@ -101,8 +101,8 @@ int wmain(int argc, wchar_t* argv[])
         TestColoringFile(loops, catalogPath, testFile);
         break;
     }
-  } catch (Exception e) {
-    fprintf(stderr, e.what());
+  } catch (Exception &e) {
+    fprintf(stderr, "%s\n", e.what());
     return -1;
   };
 }
