@@ -135,10 +135,7 @@ configure_file(
 # common flags
 #====================================================
 
-if(COLORER_STATIC_DEPEND)
-  set(COLORER_DEF ${COLORER_DEF} -DXERCES_STATIC_LIBRARY)
-endif()
-if(COLORER_USE_CONAN)
+if(COLORER_BUILD_WITHOUT_VCPKG)
   set(COLORER_DEF ${COLORER_DEF} -DZLIB_SHORT_PATH)
 endif()
 
@@ -181,33 +178,22 @@ set_target_properties(colorer_lib PROPERTIES
     CXX_EXTENSIONS NO
     )
 
-if(COLORER_USE_CONAN)
-  target_include_directories(colorer_lib
-      PRIVATE ${CONAN_INCLUDE_DIRS}
-      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-      PUBLIC ${CMAKE_SOURCE_DIR}/external
-      )
-  target_link_libraries(colorer_lib
-      PUBLIC ${CONAN_LIBS}
-      )
-else()
-  target_include_directories(colorer_lib
-      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-      PRIVATE ${SPDLOG_INCLUDE_DIR}
-      PRIVATE ${XercesC_INCLUDE_DIRS}
-      PRIVATE ${ICU_INCLUDE_DIRS}
-      PUBLIC ${CMAKE_SOURCE_DIR}/external
-      )
-  target_link_libraries(colorer_lib
-      PUBLIC ICU::uc XercesC::XercesC spdlog::spdlog
-      )
+target_include_directories(colorer_lib
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+    PRIVATE ${SPDLOG_INCLUDE_DIR}
+    PRIVATE ${XercesC_INCLUDE_DIRS}
+    PRIVATE ${ICU_INCLUDE_DIRS}
+    PUBLIC ${CMAKE_SOURCE_DIR}/external
+    )
+target_link_libraries(colorer_lib
+    PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
+    )
 
-  if(COLORER_FEATURE_JARINPUTSOURCE)
-    target_include_directories(colorer_lib PRIVATE ${MiniZip_INCLUDE_DIRS})
-    target_link_libraries(colorer_lib PUBLIC MiniZip::MiniZip)
-  endif()
-
+if(COLORER_FEATURE_JARINPUTSOURCE)
+  target_include_directories(colorer_lib PRIVATE ${minizip_INCLUDE_DIRS})
+  target_link_libraries(colorer_lib PUBLIC minizip::minizip)
 endif()
+
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>)

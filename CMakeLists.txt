@@ -21,7 +21,7 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # global library settings
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other cmake project" OFF)
-option(COLORER_USE_CONAN "Use Conan for dependencies" OFF)
+option(COLORER_BUILD_WITHOUTVCPKG "Build without vcpkg, for example on linux" OFF)
 option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 option(COLORER_BUILD_TEST "Set on to build test" OFF)
@@ -46,8 +46,10 @@ endif()
 #====================================================
 # load modules
 #====================================================
-# this line need for find_package
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+if(COLORER_BUILD_WITHOUTVCPKG)
+  # this line need for find_package
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+endif()
 include(cmake/ide.cmake)
 include(cmake/utils.cmake)
 
@@ -57,27 +59,15 @@ message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 #====================================================
 # find dependences
 #====================================================
-if(COLORER_USE_CONAN)
-  if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
 
-    set(COLORER_STATIC_DEPEND TRUE)
-  else()
-    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run 'conan install' first")
-  endif()
-else()
-  set(COLORER_STATIC_DEPEND FALSE)
-
-  # core library
-  find_package(ICU COMPONENTS uc REQUIRED)
-  find_package(XercesC REQUIRED)
-  find_package(spdlog REQUIRED)
-  find_package(fmt REQUIRED)
-  if(COLORER_USE_JARINPUTSOURCE)
-    find_package(Minizip REQUIRED)
-  endif()
-
+# core library
+find_package(ICU COMPONENTS uc data REQUIRED)
+find_package(XercesC REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
+if(COLORER_USE_JARINPUTSOURCE)
+  find_package(ZLIB REQUIRED)
+  find_package(minizip REQUIRED)
 endif()
 
 #====================================================
