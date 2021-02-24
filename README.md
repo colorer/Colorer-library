@@ -9,25 +9,41 @@ To build library and other utils from source, you will need:
   * Visual Studio 2019 or higher / gcc 9 or higher
   * git
   * cmake 3.15 or higher
-  * [Conan](https://conan.io)
+  * [vcpkg](https://github.com/microsoft/vcpkg)
 
-Download the source from git repository:
+### Windows
+Install [vcpkg](https://github.com/microsoft/vcpkg), for example, in c:\work\vcpkg:
 
-    git clone https://github.com/colorer/Colorer-library.git
+    git clone https://github.com/microsoft/vcpkg
+    .\vcpkg\bootstrap-vcpkg.bat
+
+Download the source of Colorer, for example, in c:\work\colorer-library:
+
+    git clone https://github.com/colorer/Colorer-library.git colorer-library
  
-From root path of repository call
+Build dependencies:
+
+    c:\work\vcpkg\vcpkg install minizip spdlog icu[data-archive] xerces-c --triplet=x64-windows-static --overlay-ports=c:\work\colorer-library\external\vcpkg-ports
+
+For x86 platform use `--triplet=x86-windows-static`.
+Once builded, the dependencies will be cached in the system.
+Build colorer:
     
+    cd c:\work\colorer-library
     mkdir build
-    conan install .. -s build_type=Release -s arch=x86_64 -s compiler.runtime=MT
-    cmake -G "Visual Studio 16 2019" -DCOLORER_USE_CONAN=On ..
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:/work/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -G "Visual Studio 16 2019"
     colorer.sln
 
 ### Linux
-You may build library on linux using standart package, not Conan.
+You may build library on linux using standart package, without vcpkg.
 Ubuntu example
 
     sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
+    git clone https://github.com/colorer/Colorer-library.git
+    cd Colorer-library
     mkdir build
+    cd build
     cmake ..
     cmake --build .
 
@@ -35,7 +51,7 @@ Ubuntu example
 This options available for build
 
   * COLORER_INTERNAL_BUILD - This CMakeLists.txt called from other cmake project. Default 'OFF'.
-  * COLORER_USE_CONAN - Use Conan for dependencies. Default 'OFF'.
+  * COLORER_BUILD_WITHOUTVCPKG - Build without vcpkg, for example on linux. Default 'OFF'.
   * COLORER_WINx86 - Set on if building for Windows x86. Default 'OFF'.
   * COLORER_TOOLS_BUILD - Build colorer tools. Default 'ON'.
   * COLORER_BUILD_TEST - Set on to build test. Default 'OFF'.
