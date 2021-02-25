@@ -82,7 +82,9 @@ const byte* FileInputSource::openStream()
 
   stream = new byte[len];
   memset(stream, 0, sizeof(byte) * len);
-  read(source, stream, len);
+  if (read(source, stream, len) != len) {
+    throw InputSourceException("Error on read file" + *baseLocation);
+  }
   close(source);
   return stream;
 }
