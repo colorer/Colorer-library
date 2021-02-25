@@ -1,9 +1,5 @@
 #include <colorer/xml/ZipXmlInputSource.h>
-#ifdef ZLIB_SHORT_PATH
-#include <unzip.h>
-#else
 #include <minizip/unzip.h>
-#endif
 #include <xercesc/util/XMLString.hpp>
 #include <colorer/io/MemoryFile.h>
 #include <colorer/common/UStr.h>

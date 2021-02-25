@@ -134,11 +134,6 @@ configure_file(
 #====================================================
 # common flags
 #====================================================
-
-if(COLORER_BUILD_WITHOUT_VCPKG)
-  set(COLORER_DEF ${COLORER_DEF} -DZLIB_SHORT_PATH)
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # default for gcc
   # CMAKE_CXX_FLAGS=
