@@ -66,7 +66,7 @@ int init(int argc, char* argv[])
       continue;
     }
     if (argv[i][1]) {
-      fwprintf(stderr, L"WARNING: unknown option '-%s'\n", argv[i] + 1);
+      fprintf(stderr, "WARNING: unknown option '-%s'\n", argv[i] + 1);
       return -1;
     }
   }

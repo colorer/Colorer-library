@@ -162,7 +162,7 @@ void TestColoringFile(int count, UnicodeString* catalogPath, UnicodeString* test
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     baseEditor.modifyLineEvent(0);
-    baseEditor.lineCountEvent(textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
     baseEditor.validate(-1, false);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();

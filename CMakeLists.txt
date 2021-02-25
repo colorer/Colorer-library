@@ -21,7 +21,7 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # global library settings
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other cmake project" OFF)
-option(COLORER_BUILD_WITHOUTVCPKG "Build without vcpkg, for example on linux" OFF)
+option(COLORER_BUILD_WITHOUT_VCPKG "Build without vcpkg, for example on linux" OFF)
 option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 option(COLORER_BUILD_TEST "Set on to build test" OFF)
@@ -46,7 +46,7 @@ endif()
 #====================================================
 # load modules
 #====================================================
-if(COLORER_BUILD_WITHOUTVCPKG)
+if(COLORER_BUILD_WITHOUT_VCPKG)
   # this line need for find_package
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
