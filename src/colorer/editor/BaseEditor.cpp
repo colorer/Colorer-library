@@ -1,8 +1,8 @@
-#include <colorer/editor/BaseEditor.h>
 #include <colorer/common/UnicodeLogger.h>
+#include <colorer/editor/BaseEditor.h>
 #include <colorer/parsers/TextParserImpl.h>
 
-#define IDLE_PARSE(time) (100+(time)*4)
+#define IDLE_PARSE(time) (100 + (time) *4)
 
 const int CHOOSE_STR = 4;
 const int CHOOSE_LEN = 200 * CHOOSE_STR;
@@ -58,7 +58,8 @@ BaseEditor::~BaseEditor()
 {
   textParser->breakParse();
   breakParse = true;
-  while (validationProcess){}; /// @todo wait until validation is finished
+  while (validationProcess) {
+  };  /// @todo wait until validation is finished
   if (internalRM) {
     delete regionMapper;
   }
@@ -133,7 +134,6 @@ FileType* BaseEditor::setFileType(const UnicodeString& fileType)
   return currentFileType;
 }
 
-
 FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen)
 {
   UnicodeString textStart;
@@ -181,7 +181,6 @@ FileType* BaseEditor::chooseFileType(const UnicodeString* fileName)
   return currentFileType;
 }
 
-
 FileType* BaseEditor::getFileType()
 {
   return currentFileType;
@@ -222,7 +221,6 @@ void BaseEditor::removeEditorListener(EditorListener* el)
   }
 }
 
-
 PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
 {
   LineRegion* lrStart = getLineRegions(lineNo);
@@ -231,9 +229,7 @@ PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
   }
   LineRegion* pair = nullptr;
   for (LineRegion* l1 = lrStart; l1; l1 = l1->next) {
-    if ((l1->region->hasParent(def_PairStart) ||
-         l1->region->hasParent(def_PairEnd)) &&
-        linePos >= l1->start && linePos <= l1->end) {
+    if ((l1->region->hasParent(def_PairStart) || l1->region->hasParent(def_PairEnd)) && linePos >= l1->start && linePos <= l1->end) {
       pair = l1;
     }
   }
@@ -282,7 +278,7 @@ PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
         break;
       }
     } else {
-      if (pair->prev == slr->prev) { // first region
+      if (pair->prev == slr->prev) {  // first region
         lno--;
         if (lno < wStart) {
           break;
@@ -295,6 +291,8 @@ PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
       }
       pair = pair->prev;
     }
+    if (!pair)
+      throw Exception("pair is null");
     if (pair->region->hasParent(def_PairStart)) {
       pm->pairBalance++;
     }
@@ -339,7 +337,7 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
         break;
       }
     } else {
-      if (pair->prev == slr->prev) { // first region
+      if (pair->prev == slr->prev) {  // first region
         lno--;
         if (lno < 0) {
           break;
@@ -352,6 +350,8 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
       }
       pair = pair->prev;
     }
+    if (!pair)
+      throw Exception("pair is null");
     if (pair->region->hasParent(def_PairStart)) {
       pm->pairBalance++;
     }
@@ -368,7 +368,6 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
   }
   return pm;
 }
-
 
 LineRegion* BaseEditor::getLineRegions(int lno)
 {
@@ -387,7 +386,7 @@ void BaseEditor::modifyEvent(int topLine)
   spdlog::debug("[BaseEditor] modifyEvent: {0}", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
-    for (auto & editorListener : editorListeners) {
+    for (auto& editorListener : editorListeners) {
       editorListener->modifyEvent(topLine);
     }
   }
@@ -413,7 +412,6 @@ void BaseEditor::lineCountEvent(int newLineCount)
   spdlog::debug("[BaseEditor] lineCountEvent: {0}", newLineCount);
   lineCount = newLineCount;
 }
-
 
 inline int BaseEditor::getLastVisibleLine()
 {
@@ -450,18 +448,18 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   /* Fixes window position according to line number */
   if (lno < wStart || lno > wStart + wSize) {
     wStart = lno;
-    //if enable, introduces heavy delays on pair searching
-    //layoutChanged = true;
+    // if enable, introduces heavy delays on pair searching
+    // layoutChanged = true;
   }
 
-  if (layoutChanged || wStart < (int)firstLine || wStart + wSize > (int)firstLine + lrSize) {
+  if (layoutChanged || wStart < (int) firstLine || wStart + wSize > (int) firstLine + lrSize) {
     /*
      * visible area is shifted and line regions
      * should be rearranged according to
      */
     int newFirstLine = (wStart / wSize) * wSize;
     parseFrom = newFirstLine;
-    parseTo   = newFirstLine + lrSize;
+    parseTo = newFirstLine + lrSize;
     /*
      * Change LineRegions parameters only in case
      * of validate-for-usage request.
@@ -470,7 +468,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
       lrSupport->setFirstLine(newFirstLine);
     }
     /* Save time - already has the info in line cache */
-    if (!layoutChanged && (int)firstLine - newFirstLine == wSize) {
+    if (!layoutChanged && (int) firstLine - newFirstLine == wSize) {
       parseTo -= wSize - 1;
     }
     firstLine = newFirstLine;
@@ -498,7 +496,6 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
 
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
-
     spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TextParser::TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
@@ -525,7 +522,7 @@ void BaseEditor::idleJob(int time)
 void BaseEditor::startParsing(size_t lno)
 {
   lrSupport->startParsing(lno);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->startParsing(lno);
   }
 }
@@ -533,7 +530,7 @@ void BaseEditor::startParsing(size_t lno)
 void BaseEditor::endParsing(size_t lno)
 {
   lrSupport->endParsing(lno);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->endParsing(lno);
   }
 }
@@ -541,7 +538,7 @@ void BaseEditor::endParsing(size_t lno)
 void BaseEditor::clearLine(size_t lno, UnicodeString* line)
 {
   lrSupport->clearLine(lno, line);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->clearLine(lno, line);
   }
 }
@@ -549,7 +546,7 @@ void BaseEditor::clearLine(size_t lno, UnicodeString* line)
 void BaseEditor::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region)
 {
   lrSupport->addRegion(lno, line, sx, ex, region);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->addRegion(lno, line, sx, ex, region);
   }
 }
@@ -557,7 +554,7 @@ void BaseEditor::addRegion(size_t lno, UnicodeString* line, int sx, int ex, cons
 void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->enterScheme(lno, line, sx, ex, region, scheme);
   }
 }
@@ -565,7 +562,7 @@ void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, co
 void BaseEditor::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
 {
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
-  for (auto & regionHandler : regionHandlers) {
+  for (auto& regionHandler : regionHandlers) {
     regionHandler->leaveScheme(lno, line, sx, ex, region, scheme);
   }
 }
@@ -580,6 +577,7 @@ int BaseEditor::getInvalidLine() const
   return invalidLine;
 }
 
-void BaseEditor::setMaxBlockSize(int max_block_size) {
+void BaseEditor::setMaxBlockSize(int max_block_size)
+{
   textParser->setMaxBlockSize(max_block_size);
 }

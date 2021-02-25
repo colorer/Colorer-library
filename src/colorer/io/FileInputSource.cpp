@@ -1,32 +1,33 @@
-#include<cstring>
-#include<sys/stat.h>
-#include<sys/timeb.h>
-#include<fcntl.h>
-#include<ctime>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/timeb.h>
+#include <cstring>
+#include <ctime>
 
 #if defined WIN32
-#include<io.h>
-#include<windows.h>
+#include <io.h>
+#include <windows.h>
 #endif
 #if defined __unix__ || defined __GNUC__
-#include<unistd.h>
+#include <unistd.h>
 #endif
 #ifndef O_BINARY
 #define O_BINARY 0x0
 #endif
 
-#include<colorer/io/FileInputSource.h>
 #include <colorer/common/UStr.h>
+#include <colorer/io/FileInputSource.h>
 
-FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource *base){
+FileInputSource::FileInputSource(const UnicodeString* basePath, FileInputSource* base)
+{
   bool prefix = true;
-  if (basePath->startsWith("file://")){
+  if (basePath->startsWith("file://")) {
     baseLocation = new UnicodeString(*basePath, 7);
-  }else if (basePath->startsWith("file:/")){
+  } else if (basePath->startsWith("file:/")) {
     baseLocation = new UnicodeString(*basePath, 6);
-  }else if (basePath->startsWith("file:")){
+  } else if (basePath->startsWith("file:")) {
     baseLocation = new UnicodeString(*basePath, 5);
-  }else{
+  } else {
     if (isRelative(basePath) && base != nullptr)
       baseLocation = getAbsolutePath(base->getLocation(), basePath);
     else
@@ -34,66 +35,71 @@ FileInputSource::FileInputSource(const UnicodeString *basePath, FileInputSource 
     prefix = false;
   }
 #if defined WIN32
-   // replace the environment variables to their values
-  size_t i=ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(),nullptr,0);
-  char *temp = new char[i];
-  ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(),temp,static_cast<DWORD>(i));
+  // replace the environment variables to their values
+  size_t i = ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(), nullptr, 0);
+  char* temp = new char[i];
+  ExpandEnvironmentStrings(UStr::to_stdstr(baseLocation).c_str(), temp, static_cast<DWORD>(i));
   delete baseLocation;
   baseLocation = new UnicodeString(temp);
   delete[] temp;
 #endif
-  if(prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith("/")){
-    auto *n_baseLocation = new UnicodeString();
+  if (prefix && (baseLocation->indexOf(':') == -1 || baseLocation->indexOf(':') > 10) && !baseLocation->startsWith("/")) {
+    auto* n_baseLocation = new UnicodeString();
     n_baseLocation->append("/").append(*baseLocation);
     delete baseLocation;
     baseLocation = n_baseLocation;
   }
-  stream = nullptr;
 }
 
-FileInputSource::~FileInputSource(){
+FileInputSource::~FileInputSource()
+{
   delete baseLocation;
   delete[] stream;
 }
-colorer::InputSource *FileInputSource::createRelative(const UnicodeString *relPath){
+colorer::InputSource* FileInputSource::createRelative(const UnicodeString* relPath)
+{
   return new FileInputSource(relPath, this);
 }
 
-const UnicodeString *FileInputSource::getLocation() const{
+const UnicodeString* FileInputSource::getLocation() const
+{
   return baseLocation;
 }
 
-const byte *FileInputSource::openStream()
+const byte* FileInputSource::openStream()
 {
-  if (stream != nullptr) throw InputSourceException("openStream(): source stream already opened: '" + *baseLocation+"'");
+  if (stream != nullptr)
+    throw InputSourceException("openStream(): source stream already opened: '" + *baseLocation + "'");
 #if defined WIN32
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #else
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #endif
   if (source == -1)
-    throw InputSourceException("Can't open file '" + *baseLocation+"'");
-  struct stat st{};
+    throw InputSourceException("Can't open file '" + *baseLocation + "'");
+  struct stat st
+  {};
   fstat(source, &st);
   len = st.st_size;
 
   stream = new byte[len];
-  memset(stream,0, sizeof(byte)*len);
+  memset(stream, 0, sizeof(byte) * len);
   read(source, stream, len);
   close(source);
   return stream;
 }
 
-void FileInputSource::closeStream(){
-  if (stream == nullptr) throw InputSourceException("closeStream(): source stream is not yet opened");
+void FileInputSource::closeStream()
+{
+  if (stream == nullptr)
+    throw InputSourceException("closeStream(): source stream is not yet opened");
   delete[] stream;
   stream = nullptr;
 }
 
-int FileInputSource::length() const{
+int FileInputSource::length() const
+{
   if (stream == nullptr)
     throw InputSourceException("length(): stream is not yet opened");
   return len;
 }
-
-

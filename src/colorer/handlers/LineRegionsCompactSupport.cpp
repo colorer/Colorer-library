@@ -49,7 +49,7 @@ void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
       break;
     }
     // insert between or before special
-    if (ln->start < ladd->start && (ln->next->start > ladd->start || ln->next->special)) {
+    if (ln->start < ladd->start && (ln->next && (ln->next->start > ladd->start || ln->next->special))) {
       ladd->next = ln->next;
       ladd->prev = ln;
       ln->next->prev = ladd;

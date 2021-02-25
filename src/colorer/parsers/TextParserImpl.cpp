@@ -6,12 +6,6 @@ TextParser::Impl::Impl()
   CTRACE(spdlog::trace("[TextParserImpl] constructor"));
   cache = new ParseCache();
   clearCache();
-  lineSource = nullptr;
-  regionHandler = nullptr;
-  picked = nullptr;
-  baseScheme = nullptr;
-  memset(&matchend, 0, sizeof(SMatches));
-  maxBlockSize = 1000;
 }
 
 TextParser::Impl::~Impl()
@@ -24,7 +18,7 @@ void TextParser::Impl::setFileType(FileType* type)
 {
   baseScheme = nullptr;
   if (type != nullptr) {
-    baseScheme = (SchemeImpl*)(type->getBaseScheme());
+    baseScheme = (SchemeImpl*) (type->getBaseScheme());
   }
   clearCache();
 }
@@ -73,11 +67,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
       CTRACE(spdlog::trace("[TPCache] searchLine() parent:{0},{1}-{2}", *parent->scheme->getName(), parent->sline, parent->eline));
     }
   }
-  cachedLineNo = from;
-  cachedParent = parent;
-  cachedForward = forward;
   CTRACE(spdlog::trace("[TextParserImpl] parse: cache filled"));
-
 
   do {
     if (!forward) {
@@ -128,7 +118,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
 
 void TextParser::Impl::clearCache()
 {
-  ParseCache* tmp, *tmp2;
+  ParseCache *tmp, *tmp2;
   tmp = cache->next;
   while (tmp) {
     tmp2 = tmp->next;
@@ -189,7 +179,7 @@ void TextParser::Impl::leaveScheme(int /*lno*/, SMatches* match, const SchemeNod
 {
   if (schemeNode->innerRegion) {
     leaveScheme(gy, match->s[0], match->s[0], schemeNode->region);
-  }else{
+  } else {
     leaveScheme(gy, match->s[0], match->e[0], schemeNode->region);
   }
 
@@ -199,7 +189,6 @@ void TextParser::Impl::leaveScheme(int /*lno*/, SMatches* match, const SchemeNod
   for (int i = 0; i < match->cnMatch; i++) {
     addRegion(gy, match->ns[i], match->ne[i], schemeNode->regionen[i]);
   }
-
 }
 
 void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)
@@ -238,7 +227,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
     if (node->kwList->matchCase) {
       cr = node->kwList->kwList[pos].keyword->compare(UnicodeString(*str, gx, kwlen));
     } else {
-      cr = node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen),0);
+      cr = node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen), 0);
     }
 
     if (cr == 0 && right - left == 1) {
@@ -248,8 +237,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
           if (gx && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == '_')) {
             badbound = true;
           }
-          if (gx + kwlen < lowlen &&
-              (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == '_')) {
+          if (gx + kwlen < lowlen && (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == '_')) {
             badbound = true;
           }
         } else {
@@ -257,8 +245,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
           if (gx && !node->worddiv->contains((*str)[gx - 1])) {
             badbound = true;
           }
-          if (gx + kwlen < lowlen &&
-              !node->worddiv->contains((*str)[gx + kwlen])) {
+          if (gx + kwlen < lowlen && !node->worddiv->contains((*str)[gx + kwlen])) {
             badbound = true;
           }
         }
@@ -292,7 +279,7 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
 {
   int i, re_result;
   SchemeImpl* ssubst = nullptr;
-  SMatches match{};
+  SMatches match {};
   ParseCache* OldCacheF = nullptr;
   ParseCache* OldCacheP = nullptr;
   ParseCache* ResF = nullptr;
@@ -303,11 +290,13 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
   if (!cscheme) {
     return MATCH_NOTHING;
   }
-  int idx=0;
+  int idx = 0;
   for (auto schemeNode : cscheme->nodes) {
-    CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(), schemeNodeTypeNames[schemeNode->type]));
+    CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
+                         schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
-      case SchemeNode::SNT_EMPTY: break;
+      case SchemeNode::SNT_EMPTY:
+        break;
       case SchemeNode::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;
@@ -357,8 +346,7 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
         if (!schemeNode->scheme) {
           break;
         }
-        if (!schemeNode->start->parse(str, gx,
-                                      schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
+        if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
 
@@ -406,7 +394,7 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
         SMatches o_matchend = matchend;
         SMatches* o_match;
         UnicodeString* o_str;
-        schemeNode->end->getBackTrace((const UnicodeString**)&o_str, &o_match);
+        schemeNode->end->getBackTrace((const UnicodeString**) &o_str, &o_match);
 
         baseScheme = ssubst;
         schemeStart = gx;
@@ -433,7 +421,7 @@ int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLe
             delete OldCacheF;
             if (ResF) {
               ResF->next = nullptr;
-            } else {
+            } else if (ResP) {
               ResP->children = nullptr;
             }
             forward = ResF;
@@ -516,7 +504,7 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
     }
 
     int ret = LINE_NEXT;
-    for (; gx <= matchend.s[0];) { //    '<' or '<=' ???
+    for (; gx <= matchend.s[0];) {  //    '<' or '<=' ???
       if (breakParsing) {
         gy = gy2;
         break;
@@ -524,7 +512,8 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       if (picked != nullptr && gx + 11 <= matchend.s[0] && (*str)[gx] == 'C') {
         int ci;
         static char id[] = "fnq%Qtrjhg";
-        for (ci = 0; ci < 10; ci++) if ((*str)[gx + 1 + ci] != id[ci] - 5) {
+        for (ci = 0; ci < 10; ci++)
+          if ((*str)[gx + 1 + ci] != id[ci] - 5) {
             break;
           }
         if (ci == 10) {
@@ -535,8 +524,7 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       }
       int oy = gy;
       int re_result = searchRE(baseScheme, gy, matchend.s[0], matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
-      if ((re_result == MATCH_SCHEME && (oy != gy || matchend.s[0] < gx)) ||
-          (re_result == MATCH_RE && matchend.s[0] < gx)) {
+      if ((re_result == MATCH_SCHEME && (oy != gy || matchend.s[0] < gx)) || (re_result == MATCH_RE && matchend.s[0] < gx)) {
         len = -1;
         ret = LINE_REPARSE;
         break;
@@ -569,4 +557,3 @@ void TextParser::Impl::setMaxBlockSize(int max_block_size)
 {
   maxBlockSize = max_block_size;
 }
-

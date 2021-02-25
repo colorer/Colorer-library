@@ -4,9 +4,6 @@
 // parser's cache structures
 ParseCache::ParseCache()
 {
-  children = next = prev = parent = nullptr;
-  backLine = nullptr;
-  vcache = nullptr;
 }
 
 ParseCache::~ParseCache()

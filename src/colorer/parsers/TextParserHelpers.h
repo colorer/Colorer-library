@@ -20,9 +20,10 @@
 class VTList
 {
   VirtualEntryVector* vlist;
-  VTList* prev, *next, *last, *shadowlast;
+  VTList *prev, *next, *last, *shadowlast;
   int nodesnum;
-public:
+
+ public:
   VTList();
   ~VTList();
   void deltree();
@@ -45,32 +46,38 @@ public:
  */
 class ParseCache
 {
-public:
+ public:
   /** Start and end lines of this scheme match */
-  int sline, eline;
+  int sline = 0;
+  int eline = 0;
   /** Scheme, matched for this cache entry */
-  SchemeImpl* scheme;
+  SchemeImpl* scheme = nullptr;
   /** Particular parent block object, caused this scheme to
-    * be instantiated.
-    */
-  const SchemeNode* clender;
+   * be instantiated.
+   */
+  const SchemeNode* clender = nullptr;
+
   /**
    * Scheme virtualization cache entry
    */
-  VirtualEntryVector** vcache;
+  VirtualEntryVector** vcache = nullptr;
+
   /**
    * RE Match object for start RE of the enwrapped &lt;block> object
    */
-  SMatches matchstart;
+  SMatches matchstart = {};
   /**
    * Copy of the line with parent's start RE.
    */
-  UnicodeString* backLine;
+  UnicodeString* backLine = nullptr;
 
   /**
    * Tree structure references in parse cache
    */
-  ParseCache* children, *next, *prev, *parent;
+  ParseCache* children = nullptr;
+  ParseCache* next = nullptr;
+  ParseCache* prev = nullptr;
+  ParseCache* parent = nullptr;
   ParseCache();
   ~ParseCache();
   /**
@@ -83,5 +90,3 @@ public:
 };
 
 #endif
-
-

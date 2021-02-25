@@ -8,10 +8,7 @@ int RegExpStack_Size;
 //
 SRegInfo::SRegInfo()
 {
-  next = prev = parent = nullptr;
   un.param = nullptr;
-  op = ReEmpty;
-  param0 = param1 = 0;
 }
 SRegInfo::~SRegInfo()
 {
