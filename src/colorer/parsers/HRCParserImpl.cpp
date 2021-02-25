@@ -1,10 +1,8 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/FileTypeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
-#include <colorer/parsers/SchemeImpl.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/NumberFormatException.hpp>

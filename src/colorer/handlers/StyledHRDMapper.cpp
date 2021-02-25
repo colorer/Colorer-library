@@ -2,7 +2,6 @@
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
-#include <cstdio>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 

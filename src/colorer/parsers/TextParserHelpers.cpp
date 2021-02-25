@@ -178,12 +178,12 @@ VirtualEntryVector** VTList::store()
 
 bool VTList::restore(VirtualEntryVector** store)
 {
-  VTList* prevpos, *pos = this;
+  VTList* prevpos=nullptr;
+  VTList *pos = this;
   if (next || prev || !store) {
     return false;
   }
-//  nodesnum = store[0].shadowlast;
-  prevpos = last = nullptr;
+
   for (int i = 0; store[i] != nullptr; i++) {
     pos->next = new VTList;
     prevpos = pos;

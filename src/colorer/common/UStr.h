@@ -39,8 +39,7 @@ class UStr
   static int getHex(UChar c);
   static int getHexNumber(const UnicodeString* pstr);
   static int getNumber(const UnicodeString* pstr);
-  static bool getNumber(const UnicodeString* pstr, double* res);
-  static bool getNumber(const UnicodeString* pstr, int* res);
+
   /** For '{name}'  returns 'name'
     Removes brackets and returns new dynamic string,
     based on passed string.

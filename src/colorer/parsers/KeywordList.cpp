@@ -1,7 +1,5 @@
 #include <colorer/parsers/KeywordList.h>
 
-#include <memory>
-
 KeywordList::KeywordList()
 {
   num = 0;

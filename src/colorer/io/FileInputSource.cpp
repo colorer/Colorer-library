@@ -1,8 +1,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/timeb.h>
 #include <cstring>
-#include <ctime>
 
 #if defined WIN32
 #include <io.h>

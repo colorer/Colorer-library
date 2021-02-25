@@ -24,7 +24,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   lrSupport = nullptr;
 
   invalidLine = 0;
-  changedLine = 0;
   backParse = -1;
   lineCount = 0;
   wStart = 0;
@@ -35,7 +34,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   regionCompact = false;
   currentFileType = nullptr;
 
-  breakParse = false;
   validationProcess = false;
 
   UnicodeString def_text = UnicodeString("def:Text");
@@ -57,9 +55,8 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
 BaseEditor::~BaseEditor()
 {
   textParser->breakParse();
-  breakParse = true;
   while (validationProcess) {
-  };  /// @todo wait until validation is finished
+  }  /// @todo wait until validation is finished
   if (internalRM) {
     delete regionMapper;
   }
@@ -397,7 +394,6 @@ void BaseEditor::modifyLineEvent(int line)
   if (invalidLine > line) {
     invalidLine = line;
   }
-  // changedLine = topLine;!!!
 }
 
 void BaseEditor::visibleTextEvent(int wStart_, int wSize_)

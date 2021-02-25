@@ -1,6 +1,5 @@
 #include <colorer/common/UStr.h>
 #include <colorer/io/FileWriter.h>
-#include <cstdio>
 
 FileWriter::FileWriter(const UnicodeString* fileName, bool useBOM)
 {

@@ -27,7 +27,7 @@ public:
 
   [[nodiscard]] FileType* getFileType() const override
   {
-    return (FileType*)fileType;
+    return fileType;
   }
 
 

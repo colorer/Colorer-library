@@ -9,13 +9,10 @@
 #endif
 
 #include <colorer/common/UStr.h>
-#include <colorer/common/UnicodeLogger.h>
 #include <colorer/parsers/CatalogParser.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
-#include <colorer/TextParser.h>
 #include <colorer/viewer/TextLinesStore.h>
-#include <colorer/xml/XmlInputSource.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
@@ -287,7 +284,7 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
   auto* mapper = new StyledHRDMapper();
   for (const auto & idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
-      uXmlInputSource dfis = nullptr;
+      uXmlInputSource dfis;
       try {
         dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());
@@ -318,7 +315,7 @@ TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID
   auto* mapper = new TextHRDMapper();
   for (const auto & idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
-      uXmlInputSource dfis = nullptr;
+      uXmlInputSource dfis;
       try {
         dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());

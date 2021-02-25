@@ -272,12 +272,8 @@ private:
  public:
   int getInvalidLine() const;
  private:
-  // no lines structure changes, just single line change
-  int changedLine;
-
   bool internalRM;
   bool regionCompact;
-  bool breakParse;
   bool validationProcess;
 
   inline int getLastVisibleLine();

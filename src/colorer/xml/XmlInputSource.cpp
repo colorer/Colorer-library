@@ -1,18 +1,14 @@
 #include <colorer/Exception.h>
 #include <colorer/common/UStr.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
-#include <colorer/xml/XmlInputSource.h>
 #if COLORER_FEATURE_JARINPUTSOURCE
 #include <colorer/xml/ZipXmlInputSource.h>
 #endif
-#include <memory>
-#include <xercesc/util/XMLString.hpp>
 #ifdef __unix__
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
 #ifdef WIN32
-#include <io.h>
 #include <windows.h>
 #endif
 
