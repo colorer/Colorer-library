@@ -11,17 +11,17 @@ class VirtualEntry
 public:
   SchemeImpl* virtScheme;
   SchemeImpl* substScheme;
-  UString virtSchemeName;
-  UString substSchemeName;
+  uUnicodeString virtSchemeName;
+  uUnicodeString substSchemeName;
 
-  VirtualEntry(const String* scheme, const String* subst)
+  VirtualEntry(const UnicodeString* scheme, const UnicodeString* subst)
   {
     virtScheme = substScheme = nullptr;
-    virtSchemeName.reset(new SString(scheme));
-    substSchemeName.reset(new SString(subst));
+    virtSchemeName.reset(new UnicodeString(*scheme));
+    substSchemeName.reset(new UnicodeString(*subst));
   }
 
-  ~VirtualEntry() {}
+  ~VirtualEntry() = default;
 
 
 };

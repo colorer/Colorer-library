@@ -1,9 +1,10 @@
 #ifndef _COLORER_XMLINPUTSOURCE_H_
 #define _COLORER_XMLINPUTSOURCE_H_
 
+#include <colorer/Common.h>
+#include <colorer/Exception.h>
 #include <vector>
 #include <xercesc/sax/InputSource.hpp>
-#include <colorer/Common.h>
 #include <xercesc/util/XMLUniDefs.hpp>
 
 const XMLCh kJar[] = {xercesc::chLatin_j, xercesc::chLatin_a, xercesc::chLatin_r, xercesc::chColon, xercesc::chNull};
@@ -14,31 +15,31 @@ class XmlInputSource;
 typedef std::unique_ptr<XmlInputSource> uXmlInputSource;
 
 /**
-* @brief Class to creat xercesc::InputSource
-*/
-class XmlInputSource: public xercesc::InputSource
+ * @brief Class to creat xercesc::InputSource
+ */
+class XmlInputSource : public xercesc::InputSource
 {
-public:
+ public:
   /**
-  * @brief Statically creates instance of uXmlInputSource object,
-  * possibly based on parent source stream.
-  * @param base Base stream, used to resolve relative paths.
-  * @param path Could be relative file location, absolute file
-  */
+   * @brief Statically creates instance of uXmlInputSource object,
+   * possibly based on parent source stream.
+   * @param base Base stream, used to resolve relative paths.
+   * @param path Could be relative file location, absolute file
+   */
   static uXmlInputSource newInstance(const XMLCh* path, XmlInputSource* base);
 
   /**
-  * @brief Tries statically create instance of InputSource object,
-  * according to passed path string.
-  * @param path Could be relative file location, absolute file
-  */
+   * @brief Tries statically create instance of InputSource object,
+   * according to passed path string.
+   * @param path Could be relative file location, absolute file
+   */
   static uXmlInputSource newInstance(const XMLCh* path, const XMLCh* base);
 
   /**
-  * @brief Creates inherited InputSource with the same type
-  * relatively to the current.
-  * @param relPath Relative URI part.
-  */
+   * @brief Creates inherited InputSource with the same type
+   * relatively to the current.
+   * @param relPath Relative URI part.
+   */
   virtual uXmlInputSource createRelative(const XMLCh* relPath) const = 0;
 
   virtual xercesc::InputSource* getInputSource()
@@ -46,25 +47,22 @@ public:
     return nullptr;
   }
 
-  virtual ~XmlInputSource() {};
+  ~XmlInputSource() override = default;
 
-  static UString getAbsolutePath(const String* basePath, const String* relPath);
+  static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
   static XMLCh* ExpandEnvironment(const XMLCh* path);
-  static bool isRelative(const String* path);
-  static UString getClearPath(const String* basePath, const String* relPath);
-  static bool isDirectory(const String* path);
-  static void getFileFromDir(const String* relPath, std::vector<SString>& files);
-protected:
-  XmlInputSource() {};
+  static bool isRelative(const UnicodeString* path);
+  static uUnicodeString getClearPath(const UnicodeString* basePath, const UnicodeString* relPath);
+  static bool isDirectory(const UnicodeString* path);
+  static void getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files);
 
-private:
-  XmlInputSource(XmlInputSource const &) = delete;
-  XmlInputSource &operator=(XmlInputSource const &) = delete;
-  XmlInputSource(XmlInputSource &&) = delete;
-  XmlInputSource &operator=(XmlInputSource &&) = delete;
+  XmlInputSource(XmlInputSource const&) = delete;
+  XmlInputSource& operator=(XmlInputSource const&) = delete;
+  XmlInputSource(XmlInputSource&&) = delete;
+  XmlInputSource& operator=(XmlInputSource&&) = delete;
+
+ protected:
+  XmlInputSource() = default;
 };
 
-
-#endif //_COLORER_XMLINPUTSOURCE_H_
-
-
+#endif  //_COLORER_XMLINPUTSOURCE_H_

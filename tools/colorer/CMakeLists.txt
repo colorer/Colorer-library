@@ -10,18 +10,14 @@ set(SRC_CPP
     ConsoleTools.h
     )
 
-if (WIN32)
+if(WIN32)
   set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
-endif (WIN32)
+endif(WIN32)
 
 #====================================================
 # build
 #====================================================
 #inherit compile options from library
-
-if (COLORER_WIN64_BUILD)
-  set(CMAKE_RC_FLAGS -D_WIN64)
-endif ()
 
 add_executable(consoletools ${SRC_CPP})
 target_link_libraries(consoletools PRIVATE colorer_lib)
@@ -32,16 +28,20 @@ set_target_properties(consoletools PROPERTIES
     CXX_EXTENSIONS NO
     )
 
+if(NOT COLORER_WINx86)
+  set(CMAKE_RC_FLAGS -D_WIN64)
+endif()
+
 #====================================================
 # test
 #====================================================
 
 # static analyze
-if (COLORER_PVS_STUDIO_CHECK)
+if(COLORER_PVS_STUDIO_CHECK)
   pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
       OUTPUT FORMAT errorfile
       LOG ${PROJECT_NAME}.err)
-endif ()
+endif()

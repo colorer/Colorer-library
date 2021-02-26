@@ -1,7 +1,7 @@
 #include <colorer/io/HTTPInputSource.h>
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #include <wininet.h>
 #endif
@@ -11,12 +11,12 @@
 #define DWORD_PTR DWORD
 #endif
 
-HTTPInputSource::HTTPInputSource(const String* basePath, HTTPInputSource* base)
+HTTPInputSource::HTTPInputSource(const UnicodeString* basePath, HTTPInputSource* base)
 {
   if (isRelative(basePath) && base != nullptr) {
     baseLocation = getAbsolutePath(base->getLocation(), basePath);
   } else {
-    baseLocation = new SString(basePath);
+    baseLocation = new UnicodeString(*basePath);
   }
   stream = nullptr;
 }
@@ -27,12 +27,12 @@ HTTPInputSource::~HTTPInputSource()
   delete[] stream;
 }
 
-colorer::InputSource* HTTPInputSource::createRelative(const String* relPath)
+colorer::InputSource* HTTPInputSource::createRelative(const UnicodeString* relPath)
 {
   return new HTTPInputSource(relPath, this);
 }
 
-const String* HTTPInputSource::getLocation() const
+const UnicodeString* HTTPInputSource::getLocation() const
 {
   return baseLocation;
 }
@@ -40,11 +40,11 @@ const String* HTTPInputSource::getLocation() const
 const byte* HTTPInputSource::openStream()
 {
   if (stream != nullptr) {
-    throw InputSourceException(SString("openStream(): source stream already opened: '") + baseLocation + "'");
+    throw InputSourceException("openStream(): source stream already opened: '" +  *baseLocation + "'");
   }
 
 #if COLORER_FEATURE_HTTPINPUTSOURCE
-#ifdef _WIN32
+#ifdef WIN32
   const int blockSize = 0x1000;
   std::vector<byte*> streamVector;
   std::vector<int> streamSizeVector;
@@ -99,7 +99,7 @@ const byte* HTTPInputSource::openStream()
 void HTTPInputSource::closeStream()
 {
   if (stream == nullptr) {
-    throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
+    throw InputSourceException("closeStream(): source stream is not yet opened");
   }
   delete[] stream;
   stream = nullptr;
@@ -108,7 +108,7 @@ void HTTPInputSource::closeStream()
 int HTTPInputSource::length() const
 {
   if (stream == nullptr) {
-    throw InputSourceException(CString("length(): stream is not yet opened"));
+    throw InputSourceException("length(): stream is not yet opened");
   }
   return len;
 }

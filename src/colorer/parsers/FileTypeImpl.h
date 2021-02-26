@@ -1,25 +1,29 @@
 #ifndef _COLORER_FILETYPEIMPL_H_
 #define _COLORER_FILETYPEIMPL_H_
 
-#include <vector>
-#include <unordered_map>
-#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/FileType.h>
+#include <colorer/HRCParser.h>
 #include <colorer/parsers/FileTypeChooser.h>
+#include <colorer/parsers/SchemeImpl.h>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 /* structure for storing data of scheme parameter*/
-class TypeParameter {
-public:
-  TypeParameter(): name(nullptr), description(nullptr), default_value(nullptr), user_value(nullptr) {};
-  ~TypeParameter() {}
+class TypeParameter
+{
+ public:
+  TypeParameter() = default;
+  ~TypeParameter() = default;
 
   /* parameter name*/
-  UString name;
+  uUnicodeString name;
   /* parameter description*/
-  UString description;
+  uUnicodeString description;
   /* default value*/
-  UString default_value;
+  uUnicodeString default_value;
   /* user value*/
-  UString user_value;
+  uUnicodeString user_value;
 };
 
 /**
@@ -27,38 +31,39 @@ public:
  * Contains different attributes of HRC file type.
  * @ingroup colorer_parsers
  */
-class FileTypeImpl : public FileType
+class FileType::Impl
 {
-  friend class HRCParserImpl;
-  friend class TextParserImpl;
-public:
-  const String *getName() const;
-  const String *getGroup() const;
-  const String *getDescription() const;
+ public:
+  Impl() = default;
+  ~Impl();
 
-  void setName(const String *name_);
-  void setGroup(const String *group_);
-  void setDescription(const String *description_);
+  [[nodiscard]] const UnicodeString* getName() const;
+  [[nodiscard]] const UnicodeString* getGroup() const;
+  [[nodiscard]] const UnicodeString* getDescription() const;
 
-  const String *getParamValue(const String &name) const;
-  const String *getParamDefaultValue(const String &name) const;
-  const String *getParamUserValue(const String &name) const;
-  const String *getParamDescription(const String &name) const;
-  int getParamValueInt(const String &name, int def) const;
+  void setName(const UnicodeString* param_name);
+  void setGroup(const UnicodeString* group_name);
+  void setDescription(const UnicodeString* description);
 
-  void setParamValue(const String &name, const String *value);
-  void setParamDefaultValue(const String &name, const String *value);
-  void setParamUserValue(const String &name, const String *value);
-  void setParamDescription(const String &name, const String *value);
+  [[nodiscard]] const UnicodeString* getParamValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamDefaultValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamUserValue(const UnicodeString& param_name) const;
+  [[nodiscard]] const UnicodeString* getParamDescription(const UnicodeString& param_name) const;
+  [[nodiscard]] int getParamValueInt(const UnicodeString& param_name, int def) const;
 
-  std::vector<SString> enumParams() const;
-  size_t getParamCount() const;
-  size_t getParamUserValueCount() const;
+  void setParamValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamDefaultValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamUserValue(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamDescription(const UnicodeString& param_name, const UnicodeString* value);
 
-  TypeParameter* addParam(const String *name);
-  void removeParamValue(const String &name);
+  [[nodiscard]] std::vector<UnicodeString> enumParams() const;
+  [[nodiscard]] size_t getParamCount() const;
+  [[nodiscard]] size_t getParamUserValueCount() const;
 
-  Scheme *getBaseScheme();
+  TypeParameter* addParam(const UnicodeString* param_name);
+  void removeParamValue(const UnicodeString& param_name);
+
+  [[nodiscard]] Scheme* getBaseScheme() const;
   /**
    * Returns total priority, accordingly to all it's
    * choosers (filename and firstline choosers).
@@ -71,57 +76,28 @@ public:
    *        for example). If null, skipped.
    * @return Computed total filetype priority.
    */
-  double getPriority(const String *fileName, const String *fileContent) const;
-protected:
-  /// is prototype component loaded
-  bool protoLoaded;
-  /// is type component loaded
-  bool type_loaded;
-  /// is type references fully resolved
-  bool loadDone;
-  /// is initial type load failed
-  bool load_broken;
-  /// is this IS loading was started
-  bool input_source_loading;
+  double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
 
-  UString name;
-  UString group;
-  UString description;
-  bool isPackage;
-  HRCParserImpl *hrcParser;
-  SchemeImpl *baseScheme;
+  /// is prototype component loaded
+  bool protoLoaded = false;
+  /// is type component loaded
+  bool type_loaded = false;
+  /// is type references fully resolved
+  bool loadDone = false;
+  /// is initial type load failed
+  bool load_broken = false;
+  /// is this IS loading was started
+  bool input_source_loading = false;
+
+  uUnicodeString name;
+  uUnicodeString group;
+  uUnicodeString description;
+  bool isPackage = false;
+  SchemeImpl* baseScheme = nullptr;
 
   std::vector<FileTypeChooser*> chooserVector;
-  std::unordered_map<SString, TypeParameter*> paramsHash;
-  std::vector<UString> importVector;
+  std::unordered_map<UnicodeString, TypeParameter*> paramsHash;
+  std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
-
-  FileTypeImpl(HRCParserImpl *hrcParser);
-  ~FileTypeImpl();
 };
-
-inline const String* FileTypeImpl::getName() const{
-  return name.get();
-}
-
-inline const String* FileTypeImpl::getGroup() const{
-  return group.get();
-}
-
-inline const String* FileTypeImpl::getDescription() const{
-  return description.get();
-}
-
-inline void FileTypeImpl::setName(const String *name_) {
-  name.reset(new SString(name_));
-}
-
-inline void FileTypeImpl::setGroup(const String *group_) {
-  group.reset(new SString(group_));
-}
-
-inline void FileTypeImpl::setDescription(const String *description_) {
-  description.reset(new SString(description_));
-}
 #endif
-

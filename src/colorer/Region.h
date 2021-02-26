@@ -15,24 +15,24 @@
 */
 class Region
 {
-public:
+ public:
   /** Full Qualified region name (<code>def:Text</code> for example) */
-  virtual const String* getName() const
+  [[nodiscard]] virtual const UnicodeString* getName() const
   {
     return name;
   }
   /** Region description */
-  virtual const String* getDescription() const
+  [[nodiscard]] virtual const UnicodeString* getDescription() const
   {
     return description;
   }
   /** Direct region ancestor (parent) */
-  virtual const Region* getParent() const
+  [[nodiscard]] virtual const Region* getParent() const
   {
     return parent;
   }
   /** Quick access region id (incrementable) */
-  virtual int getID() const
+  [[nodiscard]] virtual size_t getID() const
   {
     return id;
   }
@@ -57,12 +57,12 @@ public:
     Basic constructor.
     Used only by HRCParser.
   */
-  Region(const String* _name, const String* _description, const Region* _parent, int _id)
+  Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, size_t _id)
   {
-    name = new SString(_name);
+    name = new UnicodeString(*_name);
     description = nullptr;
     if (_description != nullptr) {
-      description = new SString(_description);
+      description = new UnicodeString(*_description);
     }
     parent = _parent;
     id = _id;
@@ -74,13 +74,11 @@ public:
     delete description;
   }
 
-protected:
+ protected:
   /** Internal members */
-  String* name, *description;
+  UnicodeString *name, *description;
   const Region* parent;
-  int id;
+  size_t id;
 };
 
 #endif
-
-

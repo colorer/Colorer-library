@@ -11,17 +11,19 @@ class LocalFileXmlInputSource : public XmlInputSource
 {
 public:
   LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base);
-  ~LocalFileXmlInputSource();
-  xercesc::BinInputStream* makeStream() const override;
+  ~LocalFileXmlInputSource() override;
+  [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
   uXmlInputSource createRelative(const XMLCh* relPath) const override;
   xercesc::InputSource* getInputSource() override;
-private:
-  std::unique_ptr<xercesc::LocalFileInputSource> input_source;
 
   LocalFileXmlInputSource(LocalFileXmlInputSource const &) = delete;
   LocalFileXmlInputSource &operator=(LocalFileXmlInputSource const &) = delete;
   LocalFileXmlInputSource(LocalFileXmlInputSource &&) = delete;
   LocalFileXmlInputSource &operator=(LocalFileXmlInputSource &&) = delete;
+private:
+  std::unique_ptr<xercesc::LocalFileInputSource> input_source;
+
+
 };
 
 

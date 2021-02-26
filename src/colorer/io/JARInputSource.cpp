@@ -1,25 +1,24 @@
-
+#include <colorer/common/UStr.h>
 #include<colorer/io/JARInputSource.h>
 #include<colorer/io/MemoryFile.h>
-#include<contrib/minizip/unzip.h>
 
-JARInputSource::JARInputSource(const String *basePath, InputSource *base){
+JARInputSource::JARInputSource(const UnicodeString *basePath, InputSource *base){
   if (basePath == nullptr)
-    throw InputSourceException(SString("Can't create jar source"));
+    throw InputSourceException("Can't create jar source");
   // absolute jar uri
   int ex_idx = basePath->lastIndexOf('!');
-  if (ex_idx == -1) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
+  if (ex_idx == -1) throw InputSourceException("Bad jar uri format: " + *basePath);
 
-  inJarLocation = new SString(basePath, ex_idx+1, -1);
-  
-  CString bpath = CString(basePath, 4, ex_idx-4);
+  inJarLocation = new UnicodeString(*basePath, ex_idx+1);
+
+  UnicodeString bpath = UnicodeString(*basePath, 4, ex_idx-4);
   sharedIS = SharedInputSource::getInputSource(&bpath, base);
 
-  SString str("jar:");
-  str.append(sharedIS->getLocation());
-  str.append(CString("!"));
-  str.append(inJarLocation);
-  baseLocation = new SString(&str);
+  UnicodeString str("jar:");
+  str.append(*sharedIS->getLocation());
+  str.append("!");
+  str.append(*inJarLocation);
+  baseLocation = new UnicodeString(str);
 
   stream = nullptr;
   len = 0;
@@ -32,38 +31,38 @@ JARInputSource::~JARInputSource(){
   delete stream;
 }
 
-JARInputSource::JARInputSource(const String *basePath, JARInputSource *base, bool faked){
+JARInputSource::JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool /*faked*/){
   // relative jar uri
   JARInputSource *parent = base;
-  if (parent == nullptr) throw InputSourceException(SString("Bad jar uri format: ") + basePath);
+  if (parent == nullptr) throw InputSourceException("Bad jar uri format: " + *basePath);
   sharedIS = parent->getShared();
   sharedIS->addref();
 
   inJarLocation = getAbsolutePath(parent->getInJarLocation(), basePath);
 
-  SString str("jar:");
-  str.append(sharedIS->getLocation());
-  str.append(CString("!"));
-  str.append(inJarLocation);
-  baseLocation = new SString(&str);
+  UnicodeString str("jar:");
+  str.append(*sharedIS->getLocation());
+  str.append("!");
+  str.append(*inJarLocation);
+  baseLocation = new UnicodeString(str);
   stream = nullptr;
   len = 0;
 }
 
-colorer::InputSource *JARInputSource::createRelative(const String *relPath){
+colorer::InputSource *JARInputSource::createRelative(const UnicodeString *relPath){
   return new JARInputSource(relPath, this, true);
 }
 
-const String *JARInputSource::getLocation() const{
+const UnicodeString *JARInputSource::getLocation() const{
   return baseLocation;
 }
 
 const byte *JARInputSource::openStream()
 {
   if (stream != nullptr)
-    throw InputSourceException(SString("openStream(): source stream already opened: '")+baseLocation+"'");
+    throw InputSourceException("openStream(): source stream already opened: '"+ *baseLocation+"'");
 
-  MemoryFile *mf = new MemoryFile;
+  auto *mf = new MemoryFile;
   mf->stream = sharedIS->getStream();
   mf->length = sharedIS->length();
   zlib_filefunc_def zlib_ff;
@@ -71,23 +70,23 @@ const byte *JARInputSource::openStream()
 
   unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
-  if (fid == 0) {
+  if (fid == nullptr) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't locate file in JAR content: '"+ *inJarLocation+"'");
   }
-  int ret = unzLocateFile(fid, inJarLocation->getChars(), 0);
+  int ret = unzLocateFile(fid, UStr::to_stdstr(inJarLocation).c_str(), 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't locate file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't locate file in JAR content: '"+ *inJarLocation+"'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't retrieve current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't retrieve current file in JAR content: '"+ *inJarLocation+"'");
   }
 
   len = file_info.uncompressed_size;
@@ -96,19 +95,19 @@ const byte *JARInputSource::openStream()
   if (ret != UNZ_OK)  {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't open current file in JAR content: '")+inJarLocation+"'");
+	  throw InputSourceException("Can't open current file in JAR content: '"+ *inJarLocation+"'");
   }
   ret = unzReadCurrentFile(fid, stream, len);
   if (ret <= 0) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Can't read current file in JAR content: '")+inJarLocation+"' ("+SString(ret)+")");
+	  throw InputSourceException("Can't read current file in JAR content: '"+ *inJarLocation+"' ("+ UStr::to_unistr(ret)+")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
 	  delete mf;
 	  unzClose(fid);
-	  throw InputSourceException(SString("Bad JAR file CRC"));
+	  throw InputSourceException("Bad JAR file CRC");
   }
   ret = unzClose(fid);
   delete mf;
@@ -117,14 +116,14 @@ const byte *JARInputSource::openStream()
 
 void JARInputSource::closeStream(){
   if (stream == nullptr)
-    throw InputSourceException(SString("closeStream(): source stream is not yet opened"));
+    throw InputSourceException("closeStream(): source stream is not yet opened");
   delete stream;
   stream = nullptr;
 }
 
 int JARInputSource::length() const{
   if (stream == nullptr)
-    throw InputSourceException(CString("length(): stream is not yet opened"));
+    throw InputSourceException("length(): stream is not yet opened");
   return len;
 }
 

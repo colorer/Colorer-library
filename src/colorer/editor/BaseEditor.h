@@ -1,11 +1,13 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
-#include <colorer/parsers/ParserFactory.h>
-#include <colorer/handlers/LineRegionsSupport.h>
-#include <colorer/handlers/LineRegionsCompactSupport.h>
 #include <colorer/editor/EditorListener.h>
 #include <colorer/editor/PairMatch.h>
+#include <colorer/handlers/LineRegionsCompactSupport.h>
+#include <colorer/handlers/LineRegionsSupport.h>
+#include <colorer/ParserFactory.h>
+#include <colorer/LineSource.h>
+#include <colorer/TextParser.h>
 
 /**
  * Base Editor functionality.
@@ -29,7 +31,7 @@ public:
    *        text data in line-separated form. Can't be null.
    */
   BaseEditor(ParserFactory* pf, LineSource* lineSource);
-  ~BaseEditor();
+  ~BaseEditor() override;
 
   /**
    * This method informs handler about internal form of
@@ -59,7 +61,7 @@ public:
    * @param hrdClass Class of RegionMapper instance
    * @param hrdName  Name of RegionMapper instance
    */
-  void setRegionMapper(const String* hrdClass, const String* hrdName);
+  void setRegionMapper(const UnicodeString* hrdClass, const UnicodeString* hrdName);
 
   /**
    * Specifies number of lines, for which parser
@@ -68,7 +70,7 @@ public:
    * @param backParse Number of lines. If <= 0, dropped into default
    * value.
    */
-  void setBackParse(int backParse);
+  void setBackParse(int _backParse);
 
   /**
    * Initial HRC type, used for parse processing.
@@ -80,12 +82,12 @@ public:
    * Initial HRC type, used for parse processing.
    * If changed during processing, all text information is invalidated.
    */
-  FileType* setFileType(const String& fileType);
+  FileType* setFileType(const UnicodeString& fileType);
   /**
    * Tries to choose appropriate file type from HRC database
    * using passed fileName and first line of text (if available through lineSource)
    */
-  FileType* chooseFileType(const String* fileName);
+  FileType* chooseFileType(const UnicodeString* fileName);
 
   /**
    * Returns currently used HRC file type
@@ -232,19 +234,19 @@ public:
   /** Basic HRC region mapping */
   const RegionDefine* rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
 
-  void startParsing(size_t lno);
-  void endParsing(size_t lno);
-  void clearLine(size_t lno, String* line);
-  void addRegion(size_t lno, String* line, int sx, int ex, const Region* region);
-  void enterScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
-  void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
+  void startParsing(size_t lno) override;
+  void endParsing(size_t lno) override;
+  void clearLine(size_t lno, UnicodeString* line) override;
+  void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) override;
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
 
   bool haveInvalidLine();
   void setMaxBlockSize(int max_block_size);
 
 private:
 
-  FileType* chooseFileTypeCh(const String* fileName, int chooseStr, int chooseLen);
+  FileType* chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen);
 
   HRCParser* hrcParser;
   TextParser* textParser;
@@ -270,12 +272,8 @@ private:
  public:
   int getInvalidLine() const;
  private:
-  // no lines structure changes, just single line change
-  int changedLine;
-
   bool internalRM;
   bool regionCompact;
-  bool breakParse;
   bool validationProcess;
 
   inline int getLastVisibleLine();

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
+project(colorer CXX)
 
 #====================================================
 # Enable policy
@@ -9,74 +10,73 @@ cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0074 NEW)
 
 #====================================================
-project(colorer CXX)
-
+# Set default build type
 #====================================================
-# Set default build to release
-#====================================================
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
-endif ()
-message("Build type for Colorer: ${CMAKE_BUILD_TYPE}")
+endif()
+message("Build type: ${CMAKE_BUILD_TYPE}")
 
 #====================================================
-# global settings
+# global library settings
 #====================================================
-option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
-option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
-option(COLORER_WIN64_BUILD "Build for x64, else x86" ON)
+option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other cmake project" OFF)
+option(COLORER_BUILD_WITHOUT_VCPKG "Build without vcpkg, for example on linux" OFF)
+option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
+option(COLORER_BUILD_TEST "Set on to build test" OFF)
+option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 
-if (MSVC)
+option(COLORER_USE_HTTPINPUTSOURCE "Use http inputsource, only Windows" OFF)
+option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
+
+#====================================================
+# global compilation settings
+#====================================================
+if(MSVC)
   # set global Visual C++ runtime
-  if (CMAKE_BUILD_TYPE MATCHES Debug)
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-  else ()
+  else()
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
-  endif ()
-endif ()
+  endif()
+endif()
 
 #====================================================
 # load modules
 #====================================================
+if(COLORER_BUILD_WITHOUT_VCPKG)
+  # this line need for find_package
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+endif()
 include(cmake/ide.cmake)
 include(cmake/utils.cmake)
 
 colorer_extract_version()
-message(STATUS "Build Colorer: ${COLORER_VERSION}")
-
-if (COLORER_PVS_STUDIO_CHECK)
-  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-  include(cmake/PVS-Studio)
-endif ()
+message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 
 #====================================================
-# xercesc
+# find dependences
 #====================================================
-if (WIN32)
-  set(XMLCH_TYPE "wchar_t")
-else ()
-  set(XMLCH_TYPE "uint16_t")
-endif ()
-set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
-set(network OFF CACHE BOOL "Network support" FORCE)
-add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
+
+# core library
+find_package(ICU COMPONENTS uc data REQUIRED)
+find_package(XercesC REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
+if(COLORER_USE_JARINPUTSOURCE)
+  find_package(ZLIB REQUIRED)
+  find_package(minizip REQUIRED)
+endif()
 
 #====================================================
-# zlib
+# PVS-Studio
 #====================================================
-set(ZLIB_EXAMPLES OFF CACHE BOOL "Build zlib example programs")
-set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
-set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
-set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
-
-add_subdirectory(./external/zlib EXCLUDE_FROM_ALL)
-
-#====================================================
-# spdlog library
-#====================================================
-add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)
+if(COLORER_PVS_STUDIO_CHECK)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+  include(cmake/PVS-Studio.cmake)
+endif()
 
 #====================================================
 # colorer library
@@ -86,6 +86,14 @@ add_subdirectory(./src)
 #====================================================
 # colorer tool
 #====================================================
-if (COLORER_TOOLS_BUILD)
+if(COLORER_TOOLS_BUILD)
   add_subdirectory(./tools/colorer)
-endif ()
+endif()
+
+#====================================================
+# Tests
+#====================================================
+if(COLORER_BUILD_TEST)
+  add_subdirectory(./tests/unit)
+  add_subdirectory(./tests)
+endif()

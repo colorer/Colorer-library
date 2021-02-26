@@ -4,15 +4,21 @@
 /// system dependent byte
 typedef unsigned char byte;
 
+#include <colorer/common/UnicodeStringContainer.h>
+#include <unicode/unistr.h>
 #include <memory>
+typedef icu::UnicodeString UnicodeString;
+typedef std::unique_ptr<UnicodeString> uUnicodeString;
+
+#include <colorer/common/UnicodeLogger.h>
 #include <spdlog/spdlog.h>
 #include <colorer/common/Features.h>
-#include <colorer/unicode/String.h>
-#include <colorer/unicode/SString.h>
-#include <colorer/unicode/CString.h>
+#define BAD_WCHAR (0xFFFF)
 
-typedef std::unique_ptr<String> UString;
-typedef std::unique_ptr<SString> USString;
-
+#ifdef COLORER_ENABLE_TRACE
+#define CTRACE(info) info
+#else
+#define CTRACE(info)
 #endif
 
+#endif

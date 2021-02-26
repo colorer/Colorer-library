@@ -1,20 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <colorer/viewer/TextLinesStore.h>
+#include <colorer/Exception.h>
+#include <colorer/common/Encodings.h>
 #include <colorer/io/InputSource.h>
-#include <colorer/unicode/Encodings.h>
-
-void TextLinesStore::replaceTabs(size_t lno)
-{
-  SString* od = lines.at(lno)->replace(CString("\t"), CString("    "));
-  delete lines.at(lno);
-  lines.at(lno) = od;
-}
-
-TextLinesStore::TextLinesStore()
-{
-  fileName = nullptr;
-}
+#include <colorer/viewer/TextLinesStore.h>
 
 TextLinesStore::~TextLinesStore()
 {
@@ -23,32 +10,31 @@ TextLinesStore::~TextLinesStore()
 
 void TextLinesStore::freeFile()
 {
-  delete fileName;
-  fileName = nullptr;
-  for(auto it:lines){
+  fileName.reset();
+  for (auto it : lines) {
     delete it;
   }
   lines.clear();
 }
 
-void TextLinesStore::loadFile(const String* fileName_, const String* inputEncoding, bool tab2spaces)
+void TextLinesStore::loadFile(const UnicodeString* inFileName, bool tab2spaces)
 {
-  if (this->fileName != nullptr) {
+  if (this->fileName) {
     freeFile();
   }
 
-  if (fileName_ == nullptr) {
+  if (inFileName == nullptr) {
     char line[256];
     while (fgets(line, sizeof(line), stdin) != nullptr) {
       strtok(line, "\r\n");
-      lines.push_back(new SString(line));
+      lines.push_back(new UnicodeString(line));
       if (tab2spaces) {
         replaceTabs(lines.size() - 1);
       }
     }
   } else {
-    this->fileName = new SString(fileName_);
-    colorer::InputSource* is = colorer::InputSource::newInstance(fileName_);
+    this->fileName = std::make_unique<UnicodeString>(*inFileName);
+    colorer::InputSource* is = colorer::InputSource::newInstance(inFileName);
 
     const byte* data;
     try {
@@ -59,26 +45,23 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
     }
     int len = is->length();
 
-    int ei = inputEncoding == nullptr ? -1 : Encodings::getEncodingIndex(inputEncoding->getChars());
-    CString file(data, len, ei);
-    int length = file.length();
-    lines.reserve(static_cast<size_t>(length / 30)); // estimate number of lines
+    auto file = Encodings::toUnicodeString((char*) data, len);
+    auto length = file->length();
+    lines.reserve(static_cast<size_t>(length / 30));  // estimate number of lines
 
     int i = 0;
     int filepos = 0;
     int prevpos = 0;
-    if (length && file[0] == 0xFEFF) {
-      filepos = prevpos = 1;
-    }
+
     while (filepos < length + 1) {
-      if (filepos == length || file[filepos] == '\r' || file[filepos] == '\n') {
-        lines.push_back(new SString(&file, prevpos, filepos - prevpos));
+      if (filepos == length || (*file)[filepos] == '\r' || (*file)[filepos] == '\n') {
+        lines.push_back(new UnicodeString(*file, prevpos, filepos - prevpos));
         if (tab2spaces) {
           replaceTabs(lines.size() - 1);
         }
-        if (filepos + 1 < length && file[filepos] == '\r' && file[filepos + 1] == '\n') {
+        if (filepos + 1 < length && (*file)[filepos] == '\r' && (*file)[filepos + 1] == '\n') {
           filepos++;
-        } else if (filepos + 1 < length && file[filepos] == '\n' && file[filepos + 1] == '\r') {
+        } else if (filepos + 1 < length && (*file)[filepos] == '\n' && (*file)[filepos + 1] == '\r') {
           filepos++;
         }
         prevpos = filepos + 1;
@@ -90,12 +73,12 @@ void TextLinesStore::loadFile(const String* fileName_, const String* inputEncodi
   }
 }
 
-const String* TextLinesStore::getFileName()
+const UnicodeString* TextLinesStore::getFileName()
 {
-  return fileName;
+  return fileName.get();
 }
 
-SString* TextLinesStore::getLine(size_t lno)
+UnicodeString* TextLinesStore::getLine(size_t lno)
 {
   if (lines.size() <= lno) {
     return nullptr;
@@ -108,4 +91,7 @@ size_t TextLinesStore::getLineCount()
   return lines.size();
 }
 
-
+void TextLinesStore::replaceTabs(size_t lno)
+{
+  lines.at(lno)->findAndReplace("\t", "    ");
+}

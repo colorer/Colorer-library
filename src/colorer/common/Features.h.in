@@ -1,0 +1,16 @@
+#ifndef _COLORER_FEATURES_H_
+#define _COLORER_FEATURES_H_
+
+#cmakedefine COLORER_ENABLE_TRACE
+
+/**
+  If defined, HTTP InputSource is implemented.
+*/
+#cmakedefine01 COLORER_FEATURE_HTTPINPUTSOURCE
+
+/**
+  If defined, JAR InputSource is implemented.
+*/
+#cmakedefine01 COLORER_FEATURE_JARINPUTSOURCE
+
+#endif

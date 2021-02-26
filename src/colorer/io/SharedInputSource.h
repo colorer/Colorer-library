@@ -14,7 +14,7 @@ class SharedInputSource : colorer::InputSource
 
 public:
 
-  static SharedInputSource* getInputSource(const String* path, colorer::InputSource* base);
+  static SharedInputSource* getInputSource(const UnicodeString* path, colorer::InputSource* base);
 
   /** Increments reference counter */
   int addref()
@@ -48,32 +48,32 @@ public:
     return stream;
   }
 
-  const String* getLocation() const
+  [[nodiscard]] const UnicodeString* getLocation() const override
   {
     return is->getLocation();
   }
 
-  const byte* openStream()
+  const byte* openStream() override
   {
     return is->openStream();
   }
 
-  void closeStream()
+  void closeStream() override
   {
     is->closeStream();
   }
 
-  int length() const
+  [[nodiscard]] int length() const override
   {
     return is->length();
   }
 
 private:
 
-  SharedInputSource(colorer::InputSource* source);
-  ~SharedInputSource();
+  explicit SharedInputSource(colorer::InputSource* source);
+  ~SharedInputSource() override;
 
-  static std::unordered_map<SString, SharedInputSource*>* isHash;
+  static std::unordered_map<UnicodeString, SharedInputSource*>* isHash;
 
   colorer::InputSource* is;
   const byte* stream;

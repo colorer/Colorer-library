@@ -1,8 +1,6 @@
 #include <colorer/xml/LocalFileXmlInputSource.h>
-#include <memory>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <xercesc/util/XMLString.hpp>
-#include "XStr.h"
 
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
@@ -15,14 +13,13 @@ LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh*
 }
 
 LocalFileXmlInputSource::~LocalFileXmlInputSource()
-{
-}
+= default;
 
 xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
 {
   std::unique_ptr<xercesc::BinFileInputStream> stream(new xercesc::BinFileInputStream(input_source->getSystemId()));
   if (!stream->getIsOpen()) {
-    throw InputSourceException(SString("Can't open file '") + CString(input_source->getSystemId()) + "'");
+    throw InputSourceException("Can't open file '" + UnicodeString(input_source->getSystemId()) + "'");
   }
   return stream.release();
 }

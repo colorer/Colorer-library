@@ -8,7 +8,7 @@
 #include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlInputSource.h>
 
-class FileTypeImpl;
+class FileType;
 
 /** Implementation of HRCParser.
     Reads and mantains HRC database of syntax rules,
@@ -16,90 +16,87 @@ class FileTypeImpl;
     realtime text syntax parsing.
     @ingroup colorer_parsers
 */
-class HRCParserImpl : public HRCParser
+class HRCParser::Impl
 {
 public:
-  HRCParserImpl();
-  ~HRCParserImpl();
+  Impl();
+  ~Impl();
 
 
-  void loadSource(XmlInputSource* is);
-  FileType* getFileType(const String* name);
-  FileType* enumerateFileTypes(int index);
-  FileType* chooseFileType(const String* fileName, const String* firstLine, int typeNo = 0);
-  size_t getFileTypesCount();
+  void loadSource(XmlInputSource* is) ;
+  void loadFileType(FileType* filetype);
+  FileType* getFileType(const UnicodeString* name) ;
+  FileType* enumerateFileTypes(unsigned int index) ;
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) ;
+  size_t getFileTypesCount() ;
 
-  size_t getRegionCount();
-  const Region* getRegion(int id);
-  const Region* getRegion(const String* name);
-
-  const String* getVersion();
+  size_t getRegionCount() ;
+  const Region* getRegion(unsigned int id) ;
+  const Region* getRegion(const UnicodeString* name) ;
 
 protected:
-  friend class FileTypeImpl;
+  friend class FileType;
 
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
-  std::unordered_map<SString, FileTypeImpl*> fileTypeHash;
+  std::unordered_map<UnicodeString, FileType*> fileTypeHash;
   // types, not packages
-  std::vector<FileTypeImpl*>    fileTypeVector;
+  std::vector<FileType*>    fileTypeVector;
 
-  std::unordered_map<SString, SchemeImpl*>   schemeHash;
-  std::unordered_map<SString, int> disabledSchemes;
+  std::unordered_map<UnicodeString, SchemeImpl*>   schemeHash;
+  std::unordered_map<UnicodeString, int> disabledSchemes;
 
   std::vector<const Region*> regionNamesVector;
-  std::unordered_map<SString, const Region*> regionNamesHash;
-  std::unordered_map<SString, String*> schemeEntitiesHash;
+  std::unordered_map<UnicodeString, const Region*> regionNamesHash;
+  std::unordered_map<UnicodeString, UnicodeString*> schemeEntitiesHash;
 
-  String* versionName;
+  UnicodeString* versionName;
 
-  FileTypeImpl* parseProtoType;
-  FileTypeImpl* parseType;
+  FileType* current_parse_prototype;
+  FileType* current_parse_type;
   XmlInputSource* current_input_source;
   bool structureChanged;
   bool updateStarted;
 
-  void loadFileType(FileType* filetype);
-  void unloadFileType(FileTypeImpl* filetype);
+  void unloadFileType(FileType* filetype);
 
   void parseHRC(XmlInputSource* is);
   void parseHrcBlock(const xercesc::DOMElement* elem);
-  void parseHrcBlockElements(const xercesc::DOMElement* elem);
+  void parseHrcBlockElements(xercesc::DOMNode* elem);
   void addPrototype(const xercesc::DOMElement* elem);
   void parsePrototypeBlock(const xercesc::DOMElement* elem);
   void addPrototypeLocation(const xercesc::DOMElement* elem);
   void addPrototypeDetectParam(const xercesc::DOMElement* elem);
-  void addPrototypeParameters(const xercesc::DOMElement* elem);
+  void addPrototypeParameters(const xercesc::DOMNode* elem);
   void addType(const xercesc::DOMElement* elem);
-  void parseTypeBlock(const xercesc::DOMElement* elem);
+  void parseTypeBlock(const xercesc::DOMNode* elem);
   void addTypeRegion(const xercesc::DOMElement* elem);
   void addTypeEntity(const xercesc::DOMElement* elem);
   void addTypeImport(const xercesc::DOMElement* elem);
 
   void addScheme(const xercesc::DOMElement* elem);
-  void parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  void addSchemeNodes(SchemeImpl* scheme, const xercesc::DOMElement* elem);
+  void parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMNode* elem);
   void addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  int getSchemeKeywordsCount(const xercesc::DOMElement* elem);
+  int getSchemeKeywordsCount(const xercesc::DOMNode* elem);
   void addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem);
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
-  String* qualifyOwnName(const String* name);
-  bool checkNameExist(const String* name, FileTypeImpl* parseType, QualifyNameType qntype, bool logErrors);
-  String* qualifyForeignName(const String* name, QualifyNameType qntype, bool logErrors);
+  UnicodeString* qualifyOwnName(const UnicodeString* name);
+  bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype, bool logErrors);
+  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors);
 
   void updateLinks();
-  String* useEntities(const String* name);
-  const Region* getNCRegion(const xercesc::DOMElement* elem, const String& tag);
-  const Region* getNCRegion(const String* name, bool logErrors);
+  uUnicodeString useEntities(const UnicodeString* name);
+  const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
+  const Region* getNCRegion(const UnicodeString* name, bool logErrors);
 };
 
-#include<colorer/parsers/FileTypeImpl.h>
+#include<colorer/FileType.h>
 
 #endif
 

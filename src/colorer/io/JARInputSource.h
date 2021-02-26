@@ -16,22 +16,22 @@ public:
              @c anyURI can be any valid URI, relative or absolute.
       @param base source, used to resolving relative URIs
   */
-  JARInputSource(const String *basePath, colorer::InputSource *base);
-  ~JARInputSource();
+  JARInputSource(const UnicodeString *basePath, colorer::InputSource *base);
+  ~JARInputSource() override;
 
-  const String *getLocation() const;
+  [[nodiscard]] const UnicodeString *getLocation() const override;
 
-  const byte *openStream();
-  void closeStream();
-  int length() const;
+  const byte *openStream() override;
+  void closeStream() override;
+  [[nodiscard]] int length() const override;
 protected:
-  SharedInputSource *getShared() const { return sharedIS; };
-  const String *getInJarLocation() const { return inJarLocation; };
-  colorer::InputSource *createRelative(const String *relPath);
-  JARInputSource(const String *basePath, JARInputSource *base, bool faked);
+  [[nodiscard]] SharedInputSource *getShared() const { return sharedIS; };
+  [[nodiscard]] const UnicodeString *getInJarLocation() const { return inJarLocation; };
+  colorer::InputSource *createRelative(const UnicodeString *relPath) override;
+  JARInputSource(const UnicodeString *basePath, JARInputSource *base, bool faked);
 private:
-  String *baseLocation;
-  String *inJarLocation;
+  UnicodeString *baseLocation;
+  UnicodeString *inJarLocation;
   SharedInputSource *sharedIS;
   byte *stream;
   int len;

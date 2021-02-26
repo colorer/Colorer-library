@@ -1,7 +1,7 @@
 #ifndef _COLORER_CONSOLETOOLS_H_
 #define _COLORER_CONSOLETOOLS_H_
 
-#include <colorer/parsers/ParserFactory.h>
+#include <colorer/ParserFactory.h>
 
 /** Writer interface wrapper, which
     allows escaping of XML markup characters (& and <)
@@ -9,22 +9,24 @@
 */
 class HtmlEscapesWriter : public Writer
 {
-public:
-  HtmlEscapesWriter(Writer* writer)
+ public:
+  explicit HtmlEscapesWriter(Writer* writer)
   {
     this->writer = writer;
   };
-  void write(wchar c)
+
+  void write(UChar c) override
   {
     if (c == '&') {
-      writer->write(CString("&amp;"));
+      writer->write("&amp;");
     } else if (c == '<') {
-      writer->write(CString("&lt;"));
+      writer->write("&lt;");
     } else {
       writer->write(c);
     }
   };
-protected:
+
+ protected:
   Writer* writer;
 };
 
@@ -37,8 +39,7 @@ protected:
 */
 class ConsoleTools
 {
-public:
-
+ public:
   ConsoleTools();
   ~ConsoleTools();
 
@@ -52,21 +53,17 @@ public:
   void setHtmlWrapping(bool use);
 
   /// Alternative HRC type description for type selection
-  void setTypeDescription(const String &str);
+  void setTypeDescription(const UnicodeString& str);
   /// File name, used as input source. Could be URL.
-  void setInputFileName(const String &str);
+  void setInputFileName(const UnicodeString& str);
   /// Optional file name, used for output
-  void setOutputFileName(const String &str);
-  /// Input Characters Encoding
-  void setInputEncoding(const String &str);
-  /// Output Characters Encoding
-  void setOutputEncoding(const String &str);
+  void setOutputFileName(const UnicodeString& str);
   /// Optional path to base catalog.xml
-  void setCatalogPath(const String &str);
+  void setCatalogPath(const UnicodeString& str);
   /// Optional HRD instance name, used to perform parsing
-  void setHRDName(const String &str);
+  void setHRDName(const UnicodeString& str);
   /// Sets linking datasource into this filename
-  void setLinkSource(const String &str);
+  void setLinkSource(const UnicodeString& str);
   /// If true, result file will have line numbers before each line
   void addLineNumbers(bool add);
 
@@ -75,7 +72,7 @@ public:
       and checks expression against RE.
       Outputs all matched brackets.
   */
-  void RETest();
+  static void RETest();
 
   /** Runs parser in profile mode. Does everything, -h makes, but
       makes possible repeat loops and produces no output.
@@ -90,16 +87,14 @@ public:
   */
   void listTypes(bool load, bool useNames);
 
-
   FileType* selectType(HRCParser* hrcParser, LineSource* lineSource);
 
-
   /** Views file in console window, using TextConsoleViewer class
-  */
+   */
   void viewFile();
 
   /** Simply forwards input text to output, using passed encoding information.
-  */
+   */
   void forward();
 
   /** Generates HTML-ized output of file.
@@ -113,25 +108,21 @@ public:
    *  No HRD input is used, but direct tokenized output is produced with region names, as names of tokens.
    */
   void genTokenOutput();
-private:
-  bool copyrightHeader;
-  bool htmlEscaping;
-  bool bomOutput;
-  bool htmlWrapping;
-  bool lineNumbers;
 
-  int inputEncodingIndex;
-  int outputEncodingIndex;
-  std::unique_ptr<String> inputEncoding;
-  std::unique_ptr<String> outputEncoding;
+ private:
+  bool copyrightHeader = true;
+  bool htmlEscaping = true;
+  bool bomOutput = true;
+  bool htmlWrapping = true;
+  bool lineNumbers = false;
 
-  std::unique_ptr<String> typeDescription;
-  std::unique_ptr<String> catalogPath;
-  std::unique_ptr<String> hrdName;
-  std::unique_ptr<String> outputFileName;
-  std::unique_ptr<String> inputFileName;
+  std::unique_ptr<UnicodeString> typeDescription;
+  std::unique_ptr<UnicodeString> catalogPath;
+  std::unique_ptr<UnicodeString> hrdName;
+  std::unique_ptr<UnicodeString> outputFileName;
+  std::unique_ptr<UnicodeString> inputFileName;
 
-  std::unordered_map<SString, String*> docLinkHash;
+  std::unordered_map<UnicodeString, UnicodeString*> docLinkHash;
 };
 
 #endif

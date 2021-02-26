@@ -1,48 +1,15 @@
 #include <colorer/Exception.h>
 
-Exception::Exception(const Exception &e) noexcept:
-  what_str(e.what_str)
-{
-}
+Exception::Exception(const char* msg) noexcept : what_str(msg) {}
 
-Exception::Exception() noexcept
+Exception::Exception(const UnicodeString& msg) noexcept
 {
-}
-
-Exception::Exception(const char* msg) noexcept:
-  what_str(msg)
-{
-}
-
-Exception::Exception(const String &msg) noexcept:
-  what_str(msg)
-{
-}
-
-Exception &Exception::operator=(const Exception &e) noexcept
-{
-  what_str = e.what_str;
-  return *this;
-}
-
-Exception::~Exception()
-{
+  msg.toUTF8String(what_str);
 }
 
 const char* Exception::what() const noexcept
 {
-  return what_str.getChars();
+  return what_str.c_str();
 }
 
-InputSourceException::InputSourceException() noexcept:
-  Exception("[InputSourceException] ")
-{
-}
-
-InputSourceException::InputSourceException(const String &msg) noexcept:
-  InputSourceException()
-{
-  what_str.append(msg);
-}
-
-
+InputSourceException::InputSourceException(const UnicodeString& msg) noexcept : Exception("[InputSourceException] " + msg) {}

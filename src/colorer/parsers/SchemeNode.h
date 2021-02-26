@@ -1,12 +1,12 @@
 #ifndef _COLORER_SCHEMENODE_H_
 #define _COLORER_SCHEMENODE_H_
 
-#include <vector>
 #include <colorer/Common.h>
 #include <colorer/Region.h>
+#include <colorer/cregexp/cregexp.h>
 #include <colorer/parsers/KeywordList.h>
 #include <colorer/parsers/VirtualEntry.h>
-#include <colorer/cregexp/cregexp.h>
+#include <vector>
 
 extern const char* schemeNodeTypeNames[];
 
@@ -22,35 +22,31 @@ typedef std::vector<VirtualEntry*> VirtualEntryVector;
 */
 class SchemeNode
 {
-public:
+ public:
   enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
 
-  SchemeNodeType type;
+  SchemeNodeType type = SNT_EMPTY;
 
-  UString schemeName;
-  SchemeImpl* scheme;
+  uUnicodeString schemeName = nullptr;
+  SchemeImpl* scheme = nullptr;
 
   VirtualEntryVector virtualEntryVector;
   std::unique_ptr<KeywordList> kwList;
-  std::unique_ptr<CharacterClass> worddiv;
+  std::unique_ptr<icu::UnicodeSet> worddiv;
 
-  const Region* region;
-  const Region* regions[REGIONS_NUM];
-  const Region* regionsn[NAMED_REGIONS_NUM];
-  const Region* regione[REGIONS_NUM];
-  const Region* regionen[NAMED_REGIONS_NUM];
+  const Region* region = nullptr;
+  const Region* regions[REGIONS_NUM] = {};
+  const Region* regionsn[NAMED_REGIONS_NUM] = {};
+  const Region* regione[REGIONS_NUM] = {};
+  const Region* regionen[NAMED_REGIONS_NUM] = {};
   std::unique_ptr<CRegExp> start;
   std::unique_ptr<CRegExp> end;
-  bool innerRegion;
-  bool lowPriority;
-  bool lowContentPriority;
-
+  bool innerRegion = false;
+  bool lowPriority = false;
+  bool lowContentPriority = false;
 
   SchemeNode();
   ~SchemeNode();
 };
 
-
-#endif //_COLORER_SCHEMENODE_H_
-
-
+#endif  //_COLORER_SCHEMENODE_H_

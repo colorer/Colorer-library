@@ -16,18 +16,18 @@ public:
       @param basePath URL to open (can be relative).
       @param base Parent input source, to use as base url for relative URLs.
   */
-  HTTPInputSource(const String *basePath, HTTPInputSource *base);
-  ~HTTPInputSource();
+  HTTPInputSource(const UnicodeString *basePath, HTTPInputSource *base);
+  ~HTTPInputSource() override;
 
-  const String *getLocation() const;
+  [[nodiscard]] const UnicodeString *getLocation() const override;
 
-  const byte *openStream();
-  void closeStream();
-  int length() const;
+  const byte *openStream() override;
+  void closeStream() override;
+  [[nodiscard]] int length() const override;
 protected:
-  colorer::InputSource *createRelative(const String *relPath);
+  colorer::InputSource *createRelative(const UnicodeString *relPath) override;
 private:
-  String *baseLocation;
+  UnicodeString *baseLocation;
   byte *stream;
   int len;
 };

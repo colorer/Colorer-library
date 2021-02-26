@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrd>
+
+  <assign name="def:Text" stext="text" etext="/text" sback="back" eback="/back"/>
+
+  <assign name="def:String" stext="b" etext="/b"/>
+  <assign name="def:String" stext="be" etext="/be"/>
+  <assign name="def:StringContent" stext="i" etext="/i"/>
+  <assign name="def:Character" stext="i" etext="/i"/>
+
+  <assign name="def:Comment" stext="i" etext="/i"/>
+  <assign name="def:CommentDoc" stext="i" etext="/i"/>
+  <assign name="def:CommentDocEdge" stext="i" etext="/i"/>
+
+  <assign name="def:Symbol" stext="i" etext="/i"/>
+  <assign name="def:SymbolStrong" stext="i" etext="/i"/>
+
+  <assign name="def:Operator" stext="b" etext="/b"/>
+
+  <assign name="def:Keyword" stext="b" etext="/b"/>
+  <assign name="def:KeywordStrong" stext="b" etext="/b"/>
+
+  <assign name="def:Directive" stext="small" etext="/small"/>
+
+  <assign name="def:Tag" stext="b" etext="/b" sback="tag-back" eback="/tag-back" />
+
+  <assign name="def:Label" stext="b" etext="/b"/>
+  <assign name="def:LabelStrong" stext="b" etext="/b"/>
+
+  <assign name="def:Insertion" stext="u" etext="/u"/>
+
+  <assign name="def:Error" stext="u" etext="/u"/>
+
+  <assign name="def:Path" stext="u" etext="/u"/>
+  <assign name="def:URL" stext="u" etext="/u"/>
+  <assign name="def:EMail" stext="u" etext="/u"/>
+
+  <assign name="def:Date" stext="u" etext="/u"/>
+  <assign name="def:Time" stext="u" etext="/u"/>
+
+</hrd>

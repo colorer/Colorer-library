@@ -10,30 +10,31 @@ class SharedXmlInputSource
 public:
 
   static SharedXmlInputSource* getSharedInputSource(const XMLCh* path, const XMLCh* base);
-  xercesc::InputSource* getInputSource() const;
+  [[nodiscard]] xercesc::InputSource* getInputSource() const;
 
   /** Increments reference counter */
   int addref();
   /** Decrements reference counter */
   int delref();
 
-  XMLSize_t getSize() const;
-  XMLByte* getSrc() const;
+  [[nodiscard]] XMLSize_t getSize() const;
+  [[nodiscard]] XMLByte* getSrc() const;
+
+  SharedXmlInputSource(SharedXmlInputSource const &) = delete;
+  SharedXmlInputSource &operator=(SharedXmlInputSource const &) = delete;
+  SharedXmlInputSource(SharedXmlInputSource &&) = delete;
+  SharedXmlInputSource &operator=(SharedXmlInputSource &&) = delete;
 private:
-  SharedXmlInputSource(uXmlInputSource &source);
+  explicit SharedXmlInputSource(uXmlInputSource &source);
   ~SharedXmlInputSource();
 
-  static std::unordered_map<SString, SharedXmlInputSource*>* isHash;
+  static std::unordered_map<UnicodeString, SharedXmlInputSource*>* isHash;
 
   uXmlInputSource input_source;
   int ref_count;
   std::unique_ptr<XMLByte[]> mSrc;
   XMLSize_t mSize;
 
-  SharedXmlInputSource(SharedXmlInputSource const &) = delete;
-  SharedXmlInputSource &operator=(SharedXmlInputSource const &) = delete;
-  SharedXmlInputSource(SharedXmlInputSource &&) = delete;
-  SharedXmlInputSource &operator=(SharedXmlInputSource &&) = delete;
 };
 
 inline XMLSize_t SharedXmlInputSource::getSize() const

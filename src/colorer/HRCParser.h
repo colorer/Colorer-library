@@ -1,24 +1,20 @@
 #ifndef _COLORER_HRCPARSER_H_
 #define _COLORER_HRCPARSER_H_
 
+#include <colorer/Exception.h>
 #include <colorer/FileType.h>
 #include <colorer/Region.h>
 #include <colorer/xml/XmlInputSource.h>
-
+#include <spimpl/spimpl.h>
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
 */
 class HRCParserException : public Exception
 {
-public:
-  HRCParserException() noexcept : Exception("[HRCParserException] ") {};
-  HRCParserException(const String &msg) noexcept : HRCParserException()
-  {
-    what_str.append(msg);
-  }
+ public:
+  explicit HRCParserException(const UnicodeString& msg) noexcept : Exception("[HRCParserException] " + msg) {}
 };
-
 
 /** Abstract template of HRCParser class implementation.
     Defines basic operations of loading and accessing
@@ -27,25 +23,27 @@ public:
 */
 class HRCParser
 {
-public:
+ public:
   /** Loads HRC from specified InputSource stream.
       Referred HRC file can contain prototypes and
       real types definitions. If it contains just prototype definition,
       real type load must be performed before using with #loadType() method
       @param is InputSource stream of HRC file
   */
-  virtual void loadSource(XmlInputSource *is) = 0;
+  void loadSource(XmlInputSource* is);
+  void loadFileType(FileType* filetype);
 
   /** Enumerates sequentially all prototypes
       @param index index of type.
       @return Requested type, or null, if #index is too big
   */
-  virtual FileType *enumerateFileTypes(int index) = 0;
+  FileType* enumerateFileTypes(unsigned int index);
 
   /** @param name Requested type name.
       @return File type, or null, there are no type with specified name.
   */
-  virtual FileType *getFileType(const String *name) = 0;
+  FileType* getFileType(const UnicodeString* name);
+  FileType* getFileType(const UnicodeString& name);
 
   /** Searches and returns the best type for specified file.
       This method uses fileName and firstLine parameters
@@ -55,32 +53,28 @@ public:
       @param typeNo Sequential number of type, if more than one type
                     satisfy these input parameters.
   */
-  virtual FileType *chooseFileType(const String *fileName, const String *firstLine, int typeNo = 0) = 0;
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
 
-  virtual size_t getFileTypesCount() = 0;
+  size_t getFileTypesCount();
 
   /** Total number of declared regions
-  */
-  virtual size_t getRegionCount() = 0;
+   */
+  size_t getRegionCount();
   /** Returns region by internal id
-  */
-  virtual const Region *getRegion(int id) = 0;
+   */
+  const Region* getRegion(unsigned int id);
   /** Returns region by name
       @note Also loads referred type, if it is not yet loaded.
   */
-  virtual const Region *getRegion(const String *name) = 0;
+  const Region* getRegion(const UnicodeString* name);
 
-  /** HRC base version.
-      Usually this is the 'version' attribute of 'hrc' element
-      of the first loaded HRC file.
-  */
-  virtual const String *getVersion() = 0;
+  ~HRCParser() = default;
+  HRCParser();
 
-  virtual ~HRCParser(){};
-protected:
-  HRCParser(){};
+ private:
+  class Impl;
+
+  spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
-
 #endif
-

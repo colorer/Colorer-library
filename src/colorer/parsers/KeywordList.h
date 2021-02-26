@@ -3,7 +3,7 @@
 
 #include <colorer/Common.h>
 #include <colorer/Region.h>
-#include <colorer/unicode/CharacterClass.h>
+#include <unicode/uniset.h>
 
 /** Information about one parsed keyword.
     Contains keyword, symbol specifier, region reference
@@ -11,7 +11,7 @@
     @ingroup colorer_parsers
 */
 struct KeywordInfo {
-  std::unique_ptr<const SString> keyword;
+  std::unique_ptr<const UnicodeString> keyword;
   const Region* region;
   bool isSymbol;
   int  ssShorter;
@@ -25,8 +25,8 @@ class KeywordList
 public:
   int num;
   bool matchCase;
-  unsigned int minKeywordLength;
-  std::unique_ptr<CharacterClass> firstChar;
+  int minKeywordLength;
+  std::unique_ptr<icu::UnicodeSet> firstChar;
   KeywordInfo* kwList;
   KeywordList();
   ~KeywordList();

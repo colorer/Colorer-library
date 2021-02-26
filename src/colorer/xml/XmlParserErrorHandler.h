@@ -1,29 +1,24 @@
 #ifndef _COLORER_XML_PARSER_ERROR_HANDLER_H_
 #define _COLORER_XML_PARSER_ERROR_HANDLER_H_
 
-#include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
 
 /* XmlParserErrorHandler - class to catch errors and warnings from the XML Parser*/
 class XmlParserErrorHandler : public xercesc::ErrorHandler
 {
-public:
+ public:
+  XmlParserErrorHandler() : fSawErrors(false) {}
 
-  XmlParserErrorHandler(): fSawErrors(false)
-  {
-  }
+  ~XmlParserErrorHandler() override = default;
 
-  ~XmlParserErrorHandler()
-  {
-  }
-
-  void warning(const xercesc::SAXParseException &toCatch) override;
-  void error(const xercesc::SAXParseException &toCatch) override;
-  void fatalError(const xercesc::SAXParseException &toCatch) override;
+  void warning(const xercesc::SAXParseException& toCatch) override;
+  void error(const xercesc::SAXParseException& toCatch) override;
+  void fatalError(const xercesc::SAXParseException& toCatch) override;
   void resetErrors() override;
-  bool getSawErrors() const;
+  [[nodiscard]] bool getSawErrors() const;
 
-private:
+ private:
   /* fSawErrors
   This is set if we get any errors, and is queryable via a getter
   method. Its used by the main code to suppress output if there are
@@ -42,4 +37,3 @@ inline void XmlParserErrorHandler::resetErrors()
 }
 
 #endif  // _COLORER_XML_PARSER_ERROR_HANDLER_H_
-

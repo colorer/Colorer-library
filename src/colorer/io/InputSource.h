@@ -1,7 +1,9 @@
 #ifndef _COLORER_INPUTSOURCE_H_
 #define _COLORER_INPUTSOURCE_H_
 
-#include<colorer/Common.h>
+#include <colorer/Common.h>
+#include <colorer/Exception.h>
+
 namespace colorer {
   /** Abstract byte input source.
   Supports derivation of input source,
@@ -13,7 +15,7 @@ namespace colorer {
   public:
     /** Current stream location
     */
-    virtual const String *getLocation() const = 0;
+    [[nodiscard]] virtual const UnicodeString *getLocation() const = 0;
 
     /** Opens stream and returns array of readed bytes.
     @throw InputSourceException If some IO-errors occurs.
@@ -27,14 +29,14 @@ namespace colorer {
     /** Return length of opened stream
     @throw InputSourceException If stream is closed.
     */
-    virtual int length() const = 0;
+    [[nodiscard]] virtual int length() const = 0;
 
     /** Tries statically create instance of InputSource object,
     according to passed @c path string.
     @param path Could be relative file location, absolute
     file, http uri, jar uri.
     */
-    static InputSource *newInstance(const String *path);
+    static InputSource *newInstance(const UnicodeString *path);
 
     /** Statically creates instance of InputSource object,
     possibly based on parent source stream.
@@ -42,7 +44,7 @@ namespace colorer {
     @param path Could be relative file location, absolute
     file, http uri, jar uri.
     */
-    static InputSource *newInstance(const String *path, InputSource *base);
+    static InputSource *newInstance(const UnicodeString *path, InputSource *base);
 
     /** Returns new String, created from linking of
     @c basePath and @c relPath parameters.
@@ -50,37 +52,23 @@ namespace colorer {
     @param relPath Relative path, used to append to basePath
     and construct new path. Can be @b absolute
     */
-    static String *getAbsolutePath(const String*basePath, const String*relPath);
+    static UnicodeString *getAbsolutePath(const UnicodeString*basePath, const UnicodeString*relPath);
 
     /** Checks, if passed path relative or not.
     */
-    static bool isRelative(const String *path);
+    static bool isRelative(const UnicodeString *path);
 
     /** Creates inherited InputSource with the same type
     relatively to the current.
     @param relPath Relative URI part.
     */
-    virtual InputSource *createRelative(const String *relPath){ return nullptr;};
+    virtual InputSource *createRelative([[maybe_unused]]  const UnicodeString *relPath){ return nullptr;};
 
-    virtual ~InputSource(){};
+    virtual ~InputSource()= default;
   protected:
-    InputSource(){};
+    InputSource()= default;
   };
 
-
-  /** @deprecated I think deprecated class.
-  @ingroup common_io
-  */
-  class MultipleInputSource{
-  public:
-    virtual bool hasMoreInput() const = 0;
-    virtual InputSource *nextInput() const = 0;
-    virtual const String *getLocation() const = 0;
-
-    virtual ~MultipleInputSource(){};
-  protected:
-    MultipleInputSource(const String *basePath){};
-  };
 }
 #endif
 

@@ -1,18 +1,14 @@
 #include <colorer/parsers/TextParserHelpers.h>
 
-
 /////////////////////////////////////////////////////////////////////////
 // parser's cache structures
 ParseCache::ParseCache()
 {
-  children = next = prev = parent = nullptr;
-  backLine = nullptr;
-  vcache = nullptr;
 }
 
 ParseCache::~ParseCache()
 {
-  CTRACE(spdlog::trace("[TPCache] ~ParseCache():{0},{1}-{2}", scheme->getName()->getChars(), sline, eline));
+  CTRACE(spdlog::trace("[TPCache] ~ParseCache():{0},{1}-{2}", *scheme->getName(), sline, eline));
   delete backLine;
   delete children;
   prev = nullptr;
@@ -40,7 +36,7 @@ ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
   ParseCache* r1 = nullptr, *r2 = nullptr, *tmp = this;
   *cache = nullptr;
   while (tmp) {
-    CTRACE(spdlog::trace("[TPCache] searchLine() tmp:{0},{1}-{2}", tmp->scheme->getName()->getChars(), tmp->sline, tmp->eline));
+    CTRACE(spdlog::trace("[TPCache] searchLine() tmp:{0},{1}-{2}", *tmp->scheme->getName(), tmp->sline, tmp->eline));
     if (tmp->sline <= ln && tmp->eline >= ln) {
 	  if (tmp->children) {
 		r1 = tmp->children->searchLine(ln, &r2);
@@ -91,7 +87,7 @@ void VTList::deltree()
 bool VTList::push(SchemeNode* node)
 {
   VTList* newitem;
-  if (!node || node->virtualEntryVector.size() == 0) {
+  if (!node || node->virtualEntryVector.empty()) {
     return false;
   }
   newitem = new VTList();
@@ -182,12 +178,12 @@ VirtualEntryVector** VTList::store()
 
 bool VTList::restore(VirtualEntryVector** store)
 {
-  VTList* prevpos, *pos = this;
+  VTList* prevpos=nullptr;
+  VTList *pos = this;
   if (next || prev || !store) {
     return false;
   }
-//  nodesnum = store[0].shadowlast;
-  prevpos = last = nullptr;
+
   for (int i = 0; store[i] != nullptr; i++) {
     pos->next = new VTList;
     prevpos = pos;

@@ -67,9 +67,7 @@ public:
    * pair match properties consistent between parse stages
    */
   void setStart(LineRegion *pair){
-    if (start != nullptr){
-      delete start;
-    }
+    delete start;
     if (pair != nullptr){
       start = new LineRegion(*pair);
     }
@@ -80,9 +78,7 @@ public:
    * pair match properties consistent between parse stages
    */
   void setEnd(LineRegion *pair){
-    if (end != nullptr){
-      delete end;
-    }
+    delete end;
     if (pair != nullptr){
       end = new LineRegion(*pair);
     }
