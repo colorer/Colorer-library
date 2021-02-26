@@ -1,7 +1,7 @@
-#Colorer library
+# Colorer library
 Colorer is a syntax highlighting library.
   
-##How to build from source
+## How to build from source
 
 ### Main 
 To build library and other utils from source, you will need:
@@ -50,17 +50,15 @@ Ubuntu example
 ### Options for build
 This options available for build
 
-  * COLORER_INTERNAL_BUILD - This CMakeLists.txt called from other cmake project. Default 'OFF'.
-  * COLORER_BUILD_WITHOUTVCPKG - Build without vcpkg, for example on linux. Default 'OFF'.
-  * COLORER_WINx86 - Set on if building for Windows x86. Default 'OFF'.
-  * COLORER_TOOLS_BUILD - Build colorer tools. Default 'ON'.
-  * COLORER_BUILD_TEST - Set on to build test. Default 'OFF'.
-  * COLORER_PVS_STUDIO_CHECK - Check project in PVS-Studio. Default 'OFF'.
-
-
-  * COLORER_USE_HTTPINPUTSOURCE - Use http inputsource, only Windows. Default 'OFF'. 
-  * COLORER_USE_JARINPUTSOURCE - Use jar inputsource for schemes. Default 'ON'.
-  * COLORER_USE_DEEPTRACE - Use trace logging. Default 'OFF'.
+  * `COLORER_INTERNAL_BUILD` - This CMakeLists.txt called from other cmake project. Default 'OFF'.
+  * `COLORER_BUILD_WITHOUTVCPKG` - Build without vcpkg, for example on linux. Default 'OFF'.
+  * `COLORER_WINx86` - Set on if building for Windows x86. Default 'OFF'.
+  * `COLORER_TOOLS_BUILD` - Build colorer tools. Default 'ON'.
+  * `COLORER_BUILD_TEST` - Set on to build test. Default 'OFF'.
+  * `COLORER_PVS_STUDIO_CHECK` - Check project in PVS-Studio. Default 'OFF'.
+  * `COLORER_USE_HTTPINPUTSOURCE` - Use http inputsource, only Windows. Default 'OFF'. 
+  * `COLORER_USE_JARINPUTSOURCE` - Use jar inputsource for schemes. Default 'ON'.
+  * `COLORER_USE_DEEPTRACE` - Use trace logging. Default 'OFF'.
 
 Links
 ========================
