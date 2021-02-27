@@ -39,7 +39,7 @@ void TextConsoleViewer::view()
   bool unc_fault = false;
   do {
     int lline = csbi.dwSize.Y;
-    if (topline + lline > textLinesStore->getLineCount())
+    if (topline + lline > (int) textLinesStore->getLineCount())
       lline = (int) textLinesStore->getLineCount() - topline;
     baseEditor->visibleTextEvent(topline, lline);
 
@@ -51,7 +51,7 @@ void TextConsoleViewer::view()
         buffer[Y * csbi.dwSize.X + li].Attributes = background;
       }
 
-      if (i >= textLinesStore->getLineCount())
+      if (i >= (int) textLinesStore->getLineCount())
         continue;
       auto iLine = textLinesStore->getLine(i);
 
@@ -117,7 +117,7 @@ void TextConsoleViewer::view()
             break;
           case 0xFF880000:  // wheel up
             topline += csbi.dwSize.Y;
-            if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y)
+            if (topline > (int) textLinesStore->getLineCount() - csbi.dwSize.Y)
               topline = (int) textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
@@ -133,7 +133,7 @@ void TextConsoleViewer::view()
               topline--;
             break;
           case VK_DOWN:
-            if (topline + csbi.dwSize.Y < textLinesStore->getLineCount())
+            if (topline + csbi.dwSize.Y < (int) textLinesStore->getLineCount())
               topline++;
             break;
           case VK_LEFT:
@@ -156,7 +156,7 @@ void TextConsoleViewer::view()
           case VK_NEXT:
           case VK_SPACE:
             topline += csbi.dwSize.Y;
-            if (topline > textLinesStore->getLineCount() - csbi.dwSize.Y)
+            if (topline > (int) textLinesStore->getLineCount() - csbi.dwSize.Y)
               topline = (int) textLinesStore->getLineCount() - csbi.dwSize.Y;
             if (topline < 0)
               topline = 0;
