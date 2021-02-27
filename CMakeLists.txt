@@ -20,13 +20,15 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 #====================================================
 # global library settings
 #====================================================
+# build options
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other cmake project" OFF)
-option(COLORER_BUILD_WITHOUT_VCPKG "Build without vcpkg, for example on linux" OFF)
-option(COLORER_WINx86 "Set on if building for Windows x86" OFF)
-option(COLORER_TOOLS_BUILD "build colorer tools" ON)
-option(COLORER_BUILD_TEST "Set on to build test" OFF)
+option(COLORER_USE_VCPKG "Use dependencies installed via vcpkg" ON)
+option(COLORER_BUILD_TOOLS "Build colorer tools" ON)
+option(COLORER_BUILD_TEST "Build tests" OFF)
 option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
+set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
+# library features
 option(COLORER_USE_HTTPINPUTSOURCE "Use http inputsource, only Windows" OFF)
 option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
@@ -46,7 +48,7 @@ endif()
 #====================================================
 # load modules
 #====================================================
-if(COLORER_BUILD_WITHOUT_VCPKG)
+if(NOT COLORER_USE_VCPKG)
   # this line need for find_package
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
@@ -86,7 +88,7 @@ add_subdirectory(./src)
 #====================================================
 # colorer tool
 #====================================================
-if(COLORER_TOOLS_BUILD)
+if(COLORER_BUILD_TOOLS)
   add_subdirectory(./tools/colorer)
 endif()
 

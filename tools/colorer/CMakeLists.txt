@@ -28,7 +28,7 @@ set_target_properties(consoletools PROPERTIES
     CXX_EXTENSIONS NO
     )
 
-if(NOT COLORER_WINx86)
+if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
   set(CMAKE_RC_FLAGS -D_WIN64)
 endif()
 

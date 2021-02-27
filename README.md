@@ -49,10 +49,10 @@ Ubuntu example
 This options available for build
 
   * `COLORER_INTERNAL_BUILD` - This CMakeLists.txt called from other cmake project. Default 'OFF'.
-  * `COLORER_BUILD_WITHOUTVCPKG` - Build without vcpkg, for example on linux. Default 'OFF'.
-  * `COLORER_WINx86` - Set on if building for Windows x86. Default 'OFF'.
-  * `COLORER_TOOLS_BUILD` - Build colorer tools. Default 'ON'.
-  * `COLORER_BUILD_TEST` - Set on to build test. Default 'OFF'.
+  * `COLORER_USE_VCPKG` - Use dependencies installed via vcpkg. Default 'ON'.
+  * `COLORER_BUILD_ARCH` - Build architecture. Default 'x64'.
+  * `COLORER_BUILD_TOOLS` - Build colorer tools. Default 'ON'.
+  * `COLORER_BUILD_TEST` - Build tests. Default 'OFF'.
   * `COLORER_PVS_STUDIO_CHECK` - Check project in PVS-Studio. Default 'OFF'.
   * `COLORER_USE_HTTPINPUTSOURCE` - Use http inputsource, only Windows. Default 'OFF'. 
   * `COLORER_USE_JARINPUTSOURCE` - Use jar inputsource for schemes. Default 'ON'.
