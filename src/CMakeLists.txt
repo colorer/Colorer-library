@@ -175,10 +175,10 @@ set_target_properties(colorer_lib PROPERTIES
 
 target_include_directories(colorer_lib
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-    PRIVATE ${SPDLOG_INCLUDE_DIR}
-    PRIVATE ${XercesC_INCLUDE_DIRS}
-    PRIVATE ${ICU_INCLUDE_DIRS}
-    PUBLIC ${CMAKE_SOURCE_DIR}/external
+    PUBLIC ${SPDLOG_INCLUDE_DIR}
+    PUBLIC ${XercesC_INCLUDE_DIRS}
+    PUBLIC ${ICU_INCLUDE_DIRS}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../external
     )
 target_link_libraries(colorer_lib
     PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
