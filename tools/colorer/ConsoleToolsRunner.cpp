@@ -1,17 +1,16 @@
+#include <colorer/version.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/null_sink.h>
+#include <spdlog/spdlog.h>
 #include <cstdio>
 #include <cstdlib>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
 #include "ConsoleTools.h"
-#include <colorer/version.h>
 
 /** Internal run action type */
-enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE,
-               JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES,
-               JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD
-             };
+enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
 
-struct setting {
+struct setting
+{
   JobType job = JT_NOTHING;
   std::unique_ptr<UnicodeString> catalog;
   std::unique_ptr<UnicodeString> input_file;
@@ -20,7 +19,7 @@ struct setting {
   std::unique_ptr<UnicodeString> type_desc;
   std::unique_ptr<UnicodeString> hrd_name;
   std::string log_file_prefix = "consoletools";
-  std::string log_file_dir = "./";
+  std::string log_file_dir = ".";
   std::string log_level = "off";
   int profile_loops = 1;
   bool line_numbers = false;
@@ -33,7 +32,6 @@ struct setting {
 /** Reads and parse command line */
 void readArgs(int argc, char* argv[])
 {
-
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
       settings.input_file = std::make_unique<UnicodeString>(argv[i]);
@@ -183,7 +181,7 @@ void readArgs(int argc, char* argv[])
 void printError()
 {
   fprintf(stderr,
-    "Usage: colorer (command) (parameters) (logging parameters) [<filename>]\n"
+          "Usage: colorer (command) (parameters) (logging parameters) [<filename>]\n"
           " Commands:\n"
           "  -l         Lists all available languages\n"
           "  -lt        Lists all available languages (HRC types)\n"
@@ -208,11 +206,10 @@ void printError()
           " Logging parameters (default logging off):\n"
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
-          "  -el<name>  Log level (off, debug, info, warning, error)\n"
-         );
+          "  -el<name>  Log level (off, debug, info, warning, error). Default value is off.\n");
 }
 
-void initConsoleTools(ConsoleTools &ct)
+void initConsoleTools(ConsoleTools& ct)
 {
   if (settings.input_file) {
     ct.setInputFileName(*settings.input_file);
@@ -241,7 +238,6 @@ void initConsoleTools(ConsoleTools &ct)
 
 int workIt()
 {
-
   ConsoleTools ct;
   initConsoleTools(ct);
 
@@ -283,7 +279,7 @@ int workIt()
         printError();
         break;
     }
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     spdlog::error("{0}", e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
@@ -292,19 +288,24 @@ int workIt()
 }
 
 /** Creates ConsoleTools class instance and runs it.
-*/
+ */
 int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
   auto level = spdlog::level::from_str(settings.log_level);
-  if (level!= spdlog::level::off) {
+  if (level == spdlog::level::off) {
+    spdlog::drop_all();
+    auto logger = spdlog::null_logger_mt("main");
+    spdlog::set_default_logger(logger);
+    logger->set_level(level);
+  } else {
     try {
       std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
       auto logger = spdlog::basic_logger_mt("main", file_name);
       spdlog::set_default_logger(logger);
       logger->set_level(level);
-    } catch (std::exception &e){
+    } catch (std::exception& e) {
       fprintf(stderr, "%s\n", e.what());
       return -1;
     }
