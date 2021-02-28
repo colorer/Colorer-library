@@ -1,3 +1,10 @@
+## [1.1.1] - 2021-02-28
+### Fixed
+- Fix output log messages to stdout if log level equal 'off' ([#14](https://github.com/colorer/Colorer-library/issues/14))
+
+### Changed
+- Set default log level value to 'off'
+
 ## [1.1.0] - 2021-02-28
 ### Changed
 - Change license to MIT
