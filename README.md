@@ -13,21 +13,20 @@ To build library and other utils from source, you will need:
   * [vcpkg](https://github.com/microsoft/vcpkg)
 
 ### Windows
-Install [vcpkg](https://github.com/microsoft/vcpkg), for example, in c:\work\vcpkg:
+Download the source of Colorer, for example, in colorer-library:
 
-    git clone https://github.com/microsoft/vcpkg
-    .\vcpkg\bootstrap-vcpkg.bat
+    git clone https://github.com/colorer/Colorer-library.git --recursive colorer-library 
 
-Download the source of Colorer, for example, in c:\work\colorer-library:
+Setup vcpkg
 
-    git clone https://github.com/colorer/Colorer-library.git colorer-library
+    cd colorer-library
+    ./external/vcpkg/bootstrap-vcpkg.bat
 
 Build colorer and dependency, if they are not in the local cache:
-    
-    cd c:\work\colorer-library
+
     mkdir build
     cd build
-    cmake -S .. -G "Visual Studio 16 2019" -DCMAKE_TOOLCHAIN_FILE=C:/Work/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DVCPKG_OVERLAY_PORTS=..\external\vcpkg-ports -DVCPKG_FEATURE_FLAGS=versions
+    cmake -S .. -G "Visual Studio 16 2019" -DCMAKE_TOOLCHAIN_FILE=../external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DVCPKG_OVERLAY_PORTS=../external/vcpkg-ports -DVCPKG_FEATURE_FLAGS=versions
     colorer.sln
 
 For x86 platform use `--triplet=x86-windows-static`.
