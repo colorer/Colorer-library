@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(consoletools VERSION ${COLORER_VERSION} LANGUAGES CXX C)
-
 #====================================================
-# colorer_lib
+# consoletools
 #====================================================
 set(SRC_CPP
     ConsoleToolsRunner.cpp
@@ -20,7 +17,8 @@ endif(WIN32)
 #inherit compile options from library
 
 add_executable(consoletools ${SRC_CPP})
-target_link_libraries(consoletools PRIVATE colorer_lib)
+add_executable(colorer::consoletools ALIAS consoletools)
+target_link_libraries(consoletools PRIVATE colorer::colorer)
 set_target_properties(consoletools PROPERTIES OUTPUT_NAME "colorer")
 set_target_properties(consoletools PROPERTIES
     CXX_STANDARD 17
@@ -38,7 +36,7 @@ endif()
 
 # static analyze
 if(COLORER_PVS_STUDIO_CHECK)
-  pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
+  pvs_studio_add_target(TARGET consoletools.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"

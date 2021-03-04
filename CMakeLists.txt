@@ -1,13 +1,24 @@
 cmake_minimum_required(VERSION 3.15)
-project(colorer CXX)
 
 #====================================================
-# Enable policy
+# Policy
 #====================================================
 # enable CMAKE_MSVC_RUNTIME_LIBRARY
 cmake_policy(SET CMP0091 NEW)
 # enable <LIB>_ROOT
 cmake_policy(SET CMP0074 NEW)
+
+#====================================================
+# Extract version
+#====================================================
+include(cmake/colorer_extract_version.cmake)
+colorer_extract_version()
+
+#====================================================
+# main project
+#====================================================
+project(colorer VERSION ${COLORER_VERSION} LANGUAGES CXX)
+message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 
 #====================================================
 # Set default build type
@@ -53,10 +64,6 @@ if(NOT COLORER_USE_VCPKG)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
 include(cmake/ide.cmake)
-include(cmake/utils.cmake)
-
-colorer_extract_version()
-message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 
 #====================================================
 # find dependences
@@ -99,3 +106,41 @@ if(COLORER_BUILD_TEST)
   add_subdirectory(./tests/unit)
   add_subdirectory(./tests)
 endif()
+
+#====================================================
+# install
+#====================================================
+include(GNUInstallDirs)
+
+install(TARGETS colorer_lib
+    EXPORT colorerTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/colorer
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILES_MATCHING PATTERN "*.h"
+    )
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/src/colorer/common/Features.h"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/colorer/common")
+
+install(EXPORT colorerTargets
+    FILE colorerTargets.cmake
+    DESTINATION lib/cmake/colorer
+    NAMESPACE colorer::
+    )
+
+configure_file("${CMAKE_CURRENT_LIST_DIR}/cmake/colorerConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake" @ONLY)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake" COMPATIBILITY SameMajorVersion)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/colorer")
+
+if(COLORER_BUILD_TOOLS)
+  install(TARGETS consoletools RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+

@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(colorer_lib VERSION ${COLORER_VERSION} LANGUAGES CXX)
-
 #====================================================
-# colorer
+# colorer source
 #====================================================
 set(SRC_COLORER
     colorer/Common.h
@@ -144,6 +141,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic -Wsign-promo -Wnon-virtual-dtor)
   set(FLAGS_CXX_RELEASE -Werror)
   set(FLAGS_CXX_DEBUG)
+  set(COLORER_DEF)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # default for msvc
@@ -155,7 +153,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(FLAGS_CXX_RELEASE /W3 /WX)
   set(FLAGS_CXX_DEBUG /W4)
 
-  set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
+  set(COLORER_DEF -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
 set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
@@ -165,35 +163,34 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 # build
 #====================================================
 add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_HTTP} ${SRC_COLORER_JAR})
-target_include_directories(colorer_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
+add_library(colorer::colorer ALIAS colorer_lib)
+target_include_directories(colorer_lib PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+    )
+
+target_compile_definitions(colorer_lib PRIVATE ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     )
 
-target_include_directories(colorer_lib
-    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-    PUBLIC ${SPDLOG_INCLUDE_DIR}
-    PUBLIC ${XercesC_INCLUDE_DIRS}
-    PUBLIC ${ICU_INCLUDE_DIRS}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../external
-    )
 target_link_libraries(colorer_lib
     PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
     )
 
 if(COLORER_FEATURE_JARINPUTSOURCE)
-  target_include_directories(colorer_lib PRIVATE ${minizip_INCLUDE_DIRS})
   target_link_libraries(colorer_lib PUBLIC minizip::minizip)
 endif()
 
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
-  target_compile_options(colorer_lib PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>)
+  target_compile_options(colorer_lib PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>)
 else()
-  target_compile_options(colorer_lib PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>)
+  target_compile_options(colorer_lib PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_RELEASE}>)
 endif()
 
 set_target_properties(colorer_lib PROPERTIES
@@ -207,7 +204,7 @@ set_target_properties(colorer_lib PROPERTIES
 # analyze and metrics
 #====================================================
 if(COLORER_PVS_STUDIO_CHECK)
-  pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
+  pvs_studio_add_target(TARGET colorer_lib.analyze ALL
       ANALYZE ${PROJECT_NAME}
       MODE GA 64 OP CS
       CFG_TEXT "exclude-path=*/external/*"
