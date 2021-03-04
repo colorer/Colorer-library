@@ -60,6 +60,13 @@ jobs:
     steps:
     - name: Checkout source
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install vcpkg
+      run: |
+          cd external\vcpkg
+          .\bootstrap-vcpkg.bat
     
     - name: Add C++ build tools to PATH
       uses: ilammy/msvc-dev-cmd@v1.5.0
@@ -85,7 +92,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: >
         cmake $GITHUB_WORKSPACE -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCOLORER_BUILD_TEST=ON
-        -DCOLORER_BUILD_ARCH=${{ matrix.arch }} -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCOLORER_BUILD_ARCH=${{ matrix.arch }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
         -DVCPKG_FEATURE_FLAGS=versions
 
