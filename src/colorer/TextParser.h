@@ -4,7 +4,7 @@
 #include <colorer/FileType.h>
 #include <colorer/LineSource.h>
 #include <colorer/RegionHandler.h>
-#include <spimpl/spimpl.h>
+#include <colorer/common/spimpl.h>
 
 /**
  * Basic lexical/syntax parser interface.

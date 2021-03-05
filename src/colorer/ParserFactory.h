@@ -5,10 +5,10 @@
 #include <colorer/Exception.h>
 #include <colorer/HRCParser.h>
 #include <colorer/TextParser.h>
+#include <colorer/common/spimpl.h>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/parsers/HRDNode.h>
-#include <spimpl/spimpl.h>
 
 /**
  * Maintains catalog of HRC and HRD references.

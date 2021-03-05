@@ -4,7 +4,7 @@
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
 #include <colorer/Scheme.h>
-#include <spimpl/spimpl.h>
+#include <colorer/common/spimpl.h>
 #include <vector>
 
 /**

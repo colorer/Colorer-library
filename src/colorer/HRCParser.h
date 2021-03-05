@@ -4,8 +4,8 @@
 #include <colorer/Exception.h>
 #include <colorer/FileType.h>
 #include <colorer/Region.h>
+#include <colorer/common/spimpl.h>
 #include <colorer/xml/XmlInputSource.h>
-#include <spimpl/spimpl.h>
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
