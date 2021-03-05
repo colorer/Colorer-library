@@ -10,7 +10,6 @@ To build library and other utils from source, you will need:
   * Visual Studio 2019 or higher / gcc 9 or higher
   * git
   * cmake 3.15 or higher
-  * [vcpkg](https://github.com/microsoft/vcpkg)
 
 ### Windows
 Download the source of Colorer, for example, in colorer-library:
@@ -47,7 +46,6 @@ Ubuntu example
 ### Options for build
 This options available for build
 
-  * `COLORER_INTERNAL_BUILD` - This CMakeLists.txt called from other cmake project. Default 'OFF'.
   * `COLORER_USE_VCPKG` - Use dependencies installed via vcpkg. Default 'ON'.
   * `COLORER_BUILD_ARCH` - Build architecture. Default 'x64'.
   * `COLORER_BUILD_TOOLS` - Build colorer tools. Default 'ON'.

@@ -1,15 +1,4 @@
-#====================================================
 # IDE support
-#====================================================
-
-#====================================================
-# Set output path for ide.
-#====================================================
-if(NOT COLORER_INTERNAL_BUILD)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-endif()
-message("Output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 #====================================================
 # Set configuration types

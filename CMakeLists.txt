@@ -32,7 +32,6 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # global library settings
 #====================================================
 # build options
-option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other cmake project" OFF)
 option(COLORER_USE_VCPKG "Use dependencies installed via vcpkg" ON)
 option(COLORER_BUILD_TOOLS "Build colorer tools" ON)
 option(COLORER_BUILD_TEST "Build tests" OFF)
@@ -68,7 +67,6 @@ include(cmake/ide.cmake)
 #====================================================
 # find dependences
 #====================================================
-
 # core library
 find_package(ICU COMPONENTS uc data REQUIRED)
 find_package(XercesC REQUIRED)
