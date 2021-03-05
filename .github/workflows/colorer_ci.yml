@@ -42,7 +42,7 @@ jobs:
      - name: Test
        working-directory: ${{runner.workspace}}/build
        shell: bash
-       run: ./bin/unit_tests
+       run: ../tests/unit/unit_tests
     
   windows-vc:
     strategy:
@@ -104,5 +104,5 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./bin/unit_tests.exe
+      run: ./tests/unit/unit_tests.exe
       
