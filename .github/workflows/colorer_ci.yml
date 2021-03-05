@@ -42,7 +42,7 @@ jobs:
      - name: Test
        working-directory: ${{runner.workspace}}/build
        shell: bash
-       run: ../tests/unit/unit_tests
+       run: ./tests/unit/unit_tests
     
   windows-vc:
     strategy:
