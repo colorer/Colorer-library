@@ -40,7 +40,7 @@ void TextLinesStore::loadFile(const UnicodeString* inFileName, bool tab2spaces)
     this->fileName = std::make_unique<UnicodeString>(*inFileName);
     colorer::InputSource* is = colorer::InputSource::newInstance(inFileName);
 
-    const byte* data = nullptr;
+    const byte* data;
     try {
       data = is->openStream();
     } catch (InputSourceException&) {
@@ -54,7 +54,6 @@ void TextLinesStore::loadFile(const UnicodeString* inFileName, bool tab2spaces)
   auto length = file->length();
   lines.reserve(static_cast<size_t>(length / 30));  // estimate number of lines
 
-  int i = 0;
   int filepos = 0;
   int prevpos = 0;
 
@@ -66,11 +65,8 @@ void TextLinesStore::loadFile(const UnicodeString* inFileName, bool tab2spaces)
       }
       if (filepos + 1 < length && (*file)[filepos] == '\r' && (*file)[filepos + 1] == '\n') {
         filepos++;
-      } else if (filepos + 1 < length && (*file)[filepos] == '\n' && (*file)[filepos + 1] == '\r') {
-        filepos++;
       }
       prevpos = filepos + 1;
-      i++;
     }
     filepos++;
   }
