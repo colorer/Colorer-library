@@ -199,7 +199,7 @@ void printError()
           "  -ls<name>  Use file <name> as input linking data source for href generation\n"
           "  -o<name>   Use file <name> as output stream\n"
           "  -ln        Add line numbers into the colorized file\n"
-          "  -db        Disable BOM(ZWNBSP) start symbol output in Unicode encodings\n"
+          "  -db        Disable BOM start symbol output in Unicode encodings\n"
           "  -dc        Disable information header in generator's output\n"
           "  -ds        Disable HTML symbol substitutions in generator's output\n"
           "  -dh        Disable HTML header and footer output\n"
