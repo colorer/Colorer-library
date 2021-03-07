@@ -18,7 +18,7 @@ int SharedXmlInputSource::delref()
   return ref_count;
 }
 
-SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
+SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource& source)
 {
   ref_count = 1;
   input_source = std::move(source);
@@ -65,4 +65,3 @@ xercesc::InputSource* SharedXmlInputSource::getInputSource() const
 {
   return input_source->getInputSource();
 }
-
