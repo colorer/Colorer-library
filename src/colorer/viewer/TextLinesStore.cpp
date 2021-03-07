@@ -2,6 +2,7 @@
 #include <colorer/common/Encodings.h>
 #include <colorer/io/InputSource.h>
 #include <colorer/viewer/TextLinesStore.h>
+#include <unicode/ustdio.h>
 
 TextLinesStore::~TextLinesStore()
 {
@@ -23,53 +24,55 @@ void TextLinesStore::loadFile(const UnicodeString* inFileName, bool tab2spaces)
     freeFile();
   }
 
+  uUnicodeString file;
+
   if (inFileName == nullptr) {
-    char line[256];
-    while (fgets(line, sizeof(line), stdin) != nullptr) {
-      strtok(line, "\r\n");
-      lines.push_back(new UnicodeString(line));
-      if (tab2spaces) {
-        replaceTabs(lines.size() - 1);
-      }
+    char line[512];
+    size_t read_len;
+    std::vector<char> stdin_array;
+
+    while ((read_len = fread(line, 1, sizeof(line), stdin)) != 0) {
+      stdin_array.resize(stdin_array.size() + read_len);
+      memcpy(&stdin_array[stdin_array.size() - read_len], &line[0], read_len * sizeof(char));
     }
+    file = Encodings::toUnicodeString(stdin_array.data(), (int32_t) stdin_array.size());
   } else {
     this->fileName = std::make_unique<UnicodeString>(*inFileName);
     colorer::InputSource* is = colorer::InputSource::newInstance(inFileName);
 
-    const byte* data;
+    const byte* data = nullptr;
     try {
       data = is->openStream();
     } catch (InputSourceException&) {
       delete is;
       throw;
     }
-    int len = is->length();
-
-    auto file = Encodings::toUnicodeString((char*) data, len);
-    auto length = file->length();
-    lines.reserve(static_cast<size_t>(length / 30));  // estimate number of lines
-
-    int i = 0;
-    int filepos = 0;
-    int prevpos = 0;
-
-    while (filepos < length + 1) {
-      if (filepos == length || (*file)[filepos] == '\r' || (*file)[filepos] == '\n') {
-        lines.push_back(new UnicodeString(*file, prevpos, filepos - prevpos));
-        if (tab2spaces) {
-          replaceTabs(lines.size() - 1);
-        }
-        if (filepos + 1 < length && (*file)[filepos] == '\r' && (*file)[filepos + 1] == '\n') {
-          filepos++;
-        } else if (filepos + 1 < length && (*file)[filepos] == '\n' && (*file)[filepos + 1] == '\r') {
-          filepos++;
-        }
-        prevpos = filepos + 1;
-        i++;
-      }
-      filepos++;
-    }
+    file = Encodings::toUnicodeString((char*) data, (int32_t) is->length());
     delete is;
+  }
+
+  auto length = file->length();
+  lines.reserve(static_cast<size_t>(length / 30));  // estimate number of lines
+
+  int i = 0;
+  int filepos = 0;
+  int prevpos = 0;
+
+  while (filepos < length + 1) {
+    if (filepos == length || (*file)[filepos] == '\r' || (*file)[filepos] == '\n') {
+      lines.push_back(new UnicodeString(*file, prevpos, filepos - prevpos));
+      if (tab2spaces) {
+        replaceTabs(lines.size() - 1);
+      }
+      if (filepos + 1 < length && (*file)[filepos] == '\r' && (*file)[filepos + 1] == '\n') {
+        filepos++;
+      } else if (filepos + 1 < length && (*file)[filepos] == '\n' && (*file)[filepos + 1] == '\r') {
+        filepos++;
+      }
+      prevpos = filepos + 1;
+      i++;
+    }
+    filepos++;
   }
 }
 
