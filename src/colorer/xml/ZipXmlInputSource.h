@@ -23,7 +23,7 @@ class ZipXmlInputSource : public XmlInputSource
  private:
   void create(const XMLCh* path, const XMLCh* base);
   uUnicodeString in_jar_location;
-  SharedXmlInputSource* jar_input_source;
+  SharedXmlInputSource* jar_input_source = nullptr;
 };
 
 class UnZip : public xercesc::BinInputStream
@@ -33,7 +33,7 @@ class UnZip : public xercesc::BinInputStream
   ~UnZip() override;
 
   [[nodiscard]] XMLFilePos curPos() const override;
-  XMLSize_t readBytes(XMLByte* const toFill, const XMLSize_t maxToRead) override;
+  XMLSize_t readBytes(XMLByte* toFill, XMLSize_t maxToRead) override;
   [[nodiscard]] const XMLCh* getContentType() const override;
 
   UnZip(UnZip const&) = delete;

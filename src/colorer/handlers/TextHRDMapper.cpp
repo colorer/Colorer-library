@@ -1,3 +1,4 @@
+#include <colorer/Exception.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/parsers/XmlTagDefs.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
@@ -41,7 +42,8 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
         UnicodeString name(xname);
         auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name, UnicodeString(is->getInputSource()->getSystemId()));
+          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
+                       UnicodeString(is->getInputSource()->getSystemId()));
           regionDefines.erase(tp);
         }
         std::shared_ptr<const UnicodeString> stext;

@@ -1,3 +1,4 @@
+#include <colorer/Exception.h>
 #include <colorer/common/UStr.h>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/parsers/XmlTagDefs.h>
