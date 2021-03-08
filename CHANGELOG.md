@@ -2,6 +2,10 @@
 ### Changed
 - Work with redirect stdin as input file, detect charset if set BOM ([#8](https://github.com/colorer/Colorer-library/issues/8))
 
+### Fixed
+- Fix crash on invalid zip file name ([#15](https://github.com/colorer/Colorer-library/issues/15))
+- colorertools: fix crash if didn`t detect file type and didn`t input filename
+
 ## [1.1.1] - 2021-02-28
 ### Fixed
 - Fix output log messages to stdout if log level equal 'off' ([#14](https://github.com/colorer/Colorer-library/issues/14))

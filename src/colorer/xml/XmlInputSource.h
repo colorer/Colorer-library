@@ -2,8 +2,6 @@
 #define _COLORER_XMLINPUTSOURCE_H_
 
 #include <colorer/Common.h>
-#include <colorer/Exception.h>
-#include <vector>
 #include <xercesc/sax/InputSource.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 

@@ -18,12 +18,12 @@ int SharedXmlInputSource::delref()
   return ref_count;
 }
 
-SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
+SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource& source)
 {
   ref_count = 1;
   input_source = std::move(source);
-  auto pStream = input_source->getInputSource()->makeStream();
-  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(pStream));
+  auto pStream = input_source->makeStream();
+  std::unique_ptr<xercesc::BinFileInputStream> bfis(dynamic_cast<xercesc::BinFileInputStream*>(pStream));
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
   bfis->readBytes(mSrc.get(), mSize);
@@ -65,4 +65,3 @@ xercesc::InputSource* SharedXmlInputSource::getInputSource() const
 {
   return input_source->getInputSource();
 }
-

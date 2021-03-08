@@ -220,24 +220,27 @@ void ConsoleTools::listTypes(bool load, bool useNames)
 FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
 {
   FileType* type = nullptr;
-  if (typeDescription != nullptr) {
+  if (typeDescription) {
     type = hrcParser->getFileType(typeDescription.get());
     if (type == nullptr) {
+      // don`t found type by name, check by description or part of description
       for (int idx = 0;; idx++) {
         type = hrcParser->enumerateFileTypes(idx);
         if (type == nullptr) {
           break;
         }
-        if (type->getDescription() != nullptr && type->getDescription()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription, 0)) {
+        if (type->getDescription() && type->getDescription()->length() >= typeDescription->length() &&
+            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT)) {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription, 0)) {
+            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT)) {
           break;
         }
-        type = nullptr;
       }
+    }
+    if (type == nullptr) {
+      spdlog::warn("Don`t found type by name '{0}'", *typeDescription);
     }
   }
   if (typeDescription == nullptr || type == nullptr) {
@@ -256,14 +259,16 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
       }
     }
 
-    UnicodeString fnpath(*inputFileName);
-    auto slash_idx = fnpath.lastIndexOf('\\');
+    std::unique_ptr<UnicodeString> file_name;
+    if (inputFileName) {
+      UnicodeString fnpath(*inputFileName);
+      auto slash_idx = fnpath.lastIndexOf('\\');
 
-    if (slash_idx == -1) {
-      slash_idx = fnpath.lastIndexOf('/');
+      if (slash_idx == -1) {
+        slash_idx = fnpath.lastIndexOf('/');
+      }
+      file_name = std::make_unique<UnicodeString>(fnpath, slash_idx + 1);
     }
-    std::unique_ptr<UnicodeString> file_name(new UnicodeString(fnpath, slash_idx + 1));
-
     type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
   }
   return type;
