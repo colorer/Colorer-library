@@ -68,8 +68,9 @@ const byte* FileInputSource::openStream()
 {
   if (stream != nullptr)
     throw InputSourceException("openStream(): source stream already opened: '" + *baseLocation + "'");
-#if defined WIN32
-  int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
+#ifdef _MSC_VER
+  int source;
+  _sopen_s(&source, UStr::to_stdstr(baseLocation).c_str(), _O_BINARY | O_RDONLY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
 #else
   int source = open(UStr::to_stdstr(baseLocation).c_str(), O_BINARY);
 #endif
@@ -82,10 +83,17 @@ const byte* FileInputSource::openStream()
 
   stream = new byte[len];
   memset(stream, 0, sizeof(byte) * len);
+#ifdef _MSC_VER
+  if (_read(source, stream, len) != len) {
+    throw InputSourceException("Error on read file" + *baseLocation);
+  }
+  _close(source);
+#else
   if (read(source, stream, len) != len) {
     throw InputSourceException("Error on read file" + *baseLocation);
   }
   close(source);
+#endif
   return stream;
 }
 

@@ -86,17 +86,18 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
   for (const auto& regionDefine : regionDefines) {
     const StyledRegion* rdef = StyledRegion::cast(regionDefine.second.get());
     char temporary[256];
+    constexpr auto size_temporary = std::size(temporary);
     writer->write("  <define name='" + regionDefine.first + "'");
     if (rdef->isForeSet) {
-      sprintf(temporary, " fore=\"#%06x\"", rdef->fore);
+      snprintf(temporary, size_temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(temporary);
     }
     if (rdef->isBackSet) {
-      sprintf(temporary, " back=\"#%06x\"", rdef->back);
+      snprintf(temporary, size_temporary, " back=\"#%06x\"", rdef->back);
       writer->write(temporary);
     }
     if (rdef->style) {
-      sprintf(temporary, " style=\"%u\"", rdef->style);
+      snprintf(temporary, size_temporary, " style=\"%u\"", rdef->style);
       writer->write(temporary);
     }
     writer->write("/>\n");
