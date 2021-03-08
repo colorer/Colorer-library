@@ -152,11 +152,10 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
 void ConsoleTools::RETest()
 {
   SMatches match {};
-  CRegExp* re;
+  CRegExp re;
   bool res;
   char text[255];
 
-  re = new CRegExp();
   do {
     printf("\nregexp:");
     if (fgets(text, sizeof(text), stdin) == nullptr) {
@@ -164,7 +163,7 @@ void ConsoleTools::RETest()
     }
     strtok(text, "\r\n");
     UnicodeString dtext = UnicodeString(text);
-    if (!re->setRE(&dtext)) {
+    if (!re.setRE(&dtext)) {
       continue;
     }
     printf("exprn:");
@@ -173,13 +172,12 @@ void ConsoleTools::RETest()
     }
     strtok(text, "\r\n");
     dtext = UnicodeString(text);
-    res = re->parse(&dtext, &match);
+    res = re.parse(&dtext, &match);
     printf("%s\nmatch:  ", res ? "ok" : "error");
     for (int i = 0; i < match.cMatch; i++) {
       printf("%d:(%d,%d), ", i, match.s[i], match.e[i]);
     }
   } while (text[0]);
-  delete re;
 }
 
 void ConsoleTools::listTypes(bool load, bool useNames)

@@ -51,7 +51,7 @@ bool Outliner::isOutlined(const Region* region)
 
 void Outliner::modifyEvent(size_t topLine)
 {
-  for (size_t i = 0; i <outline.size(); ++i) {
+  for (size_t i = 0; i < outline.size(); ++i) {
     if (outline[i]->lno >= topLine) {
       outline.resize(i);
       break;
@@ -88,17 +88,16 @@ void Outliner::addRegion(size_t lno, UnicodeString* line, int sx, int ex, const 
     return;
   }
 
-  auto* itemLabel = new UnicodeString(*line, sx, ex - sx);
+  auto itemLabel = UnicodeString(*line, sx, ex - sx);
 
   if (lineIsEmpty) {
-    outline.push_back(new OutlineItem(lno, sx, curLevel, itemLabel, region));
+    outline.push_back(new OutlineItem(lno, sx, curLevel, &itemLabel, region));
   } else {
     OutlineItem* thisItem = outline.back();
     if (thisItem->token != nullptr && thisItem->lno == lno) {
-      thisItem->token->append(*itemLabel);
+      thisItem->token->append(itemLabel);
     }
   }
-  delete itemLabel;
   lineIsEmpty = false;
 }
 
@@ -111,6 +110,3 @@ void Outliner::leaveScheme(size_t /*lno*/, UnicodeString* /*line*/, int /*sx*/, 
 {
   curLevel--;
 }
-
-
-

@@ -964,7 +964,7 @@ void HRCParser::Impl::updateLinks()
       FileType* old_parseType = current_parse_type;
       current_parse_type = scheme->fileType;
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
-        SchemeNode* snode = scheme->nodes.at(sni);
+        SchemeNode* snode = scheme->nodes[sni];
         if (snode->schemeName != nullptr && (snode->type == SchemeNode::SNT_SCHEME || snode->type == SchemeNode::SNT_INHERIT) && snode->scheme == nullptr) {
           UnicodeString* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
           if (schemeName != nullptr) {

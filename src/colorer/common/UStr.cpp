@@ -10,7 +10,7 @@ std::unique_ptr<XMLCh[]> UStr::to_xmlch(const UnicodeString* str)
   // XMLCh and UChar are the same size
   if (str) {
     auto len = str->length();
-    std::unique_ptr<XMLCh[]> out_s(new XMLCh[len + 1]);
+    auto out_s = std::make_unique<XMLCh[]>(len + 1);
     str->extract(0, len, out_s.get());
     out_s[len] = 0;
 
@@ -37,7 +37,7 @@ std::wstring UStr::to_stdwstr(const UnicodeString* str)
   std::wstring out_string;
   if (str) {
     auto len = str->length();
-    std::unique_ptr<wchar_t[]> out_s(new wchar_t[len + 1]);
+    auto out_s = std::make_unique<wchar_t[]>(len + 1);
     str->extract(0, len, out_s.get());
     out_s[len] = 0;
 

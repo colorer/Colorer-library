@@ -68,7 +68,8 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
           eback = std::make_unique<UnicodeString>(sval);
         }
 
-        auto rdef = std::unique_ptr<RegionDefine>(new TextRegion(stext, etext, sback, eback));
+
+        auto rdef = std::make_unique<TextRegion>(stext, etext, sback, eback);
         regionDefines.emplace(name, std::move(rdef));
       }
     }

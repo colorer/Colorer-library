@@ -69,7 +69,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource* is)
           UStr::HexToUInt(UnicodeString(sval), &style);
         }
 
-        auto rdef = std::unique_ptr<RegionDefine>(new StyledRegion(bfore, bback, fore, back, style));
+        auto rdef = std::make_unique<StyledRegion>(bfore, bback, fore, back, style);
         regionDefines.emplace(name, std::move(rdef));
       }
     }

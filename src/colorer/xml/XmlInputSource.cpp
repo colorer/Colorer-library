@@ -54,7 +54,7 @@ uUnicodeString XmlInputSource::getAbsolutePath(const UnicodeString* basePath, co
   } else {
     root_pos++;
   }
-  std::unique_ptr<UnicodeString> newPath(new UnicodeString());
+  auto newPath = std::make_unique<UnicodeString>();
   newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
   return newPath;
 }
@@ -86,7 +86,7 @@ bool XmlInputSource::isRelative(const UnicodeString* path)
 
 uUnicodeString XmlInputSource::getClearPath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
-  uUnicodeString clear_path(new UnicodeString(*relPath));
+  auto clear_path = std::make_unique<UnicodeString>(*relPath);
   if (relPath->indexOf("%") != -1) {
     XMLCh* e_path = ExpandEnvironment(UStr::to_xmlch(clear_path.get()).get());
     clear_path = std::make_unique<UnicodeString>(e_path);

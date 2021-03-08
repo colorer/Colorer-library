@@ -62,29 +62,26 @@ const byte *JARInputSource::openStream()
   if (stream != nullptr)
     throw InputSourceException("openStream(): source stream already opened: '"+ *baseLocation+"'");
 
-  auto *mf = new MemoryFile;
-  mf->stream = sharedIS->getStream();
-  mf->length = sharedIS->length();
+  MemoryFile mf;
+  mf.stream = sharedIS->getStream();
+  mf.length = sharedIS->length();
   zlib_filefunc_def zlib_ff;
-  fill_mem_filefunc(&zlib_ff, mf);
+  fill_mem_filefunc(&zlib_ff, &mf);
 
   unzFile fid = unzOpen2(nullptr, &zlib_ff);
 
   if (fid == nullptr) {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't locate file in JAR content: '"+ *inJarLocation+"'");
   }
   int ret = unzLocateFile(fid, UStr::to_stdstr(inJarLocation).c_str(), 0);
   if (ret != UNZ_OK)  {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't locate file in JAR content: '"+ *inJarLocation+"'");
   }
   unz_file_info file_info;
   ret = unzGetCurrentFileInfo(fid, &file_info, nullptr, 0, nullptr, 0, nullptr, 0);
   if (ret != UNZ_OK)  {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't retrieve current file in JAR content: '"+ *inJarLocation+"'");
   }
@@ -93,24 +90,20 @@ const byte *JARInputSource::openStream()
   stream = new byte[len];
   ret = unzOpenCurrentFile(fid);
   if (ret != UNZ_OK)  {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't open current file in JAR content: '"+ *inJarLocation+"'");
   }
   ret = unzReadCurrentFile(fid, stream, len);
   if (ret <= 0) {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Can't read current file in JAR content: '"+ *inJarLocation+"' ("+ UStr::to_unistr(ret)+")");
   }
   ret = unzCloseCurrentFile(fid);
   if (ret == UNZ_CRCERROR) {
-	  delete mf;
 	  unzClose(fid);
 	  throw InputSourceException("Bad JAR file CRC");
   }
   ret = unzClose(fid);
-  delete mf;
   return stream;
 }
 
