@@ -21,7 +21,7 @@ int kwCompare(const void* e1, const void* e2)
 
 int kwCompareI(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword,0);
+  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword,U_FOLD_CASE_DEFAULT);
 }
 
 void KeywordList::sortList()
