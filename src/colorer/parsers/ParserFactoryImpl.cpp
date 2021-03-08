@@ -12,6 +12,7 @@
 #include <colorer/parsers/CatalogParser.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
+#include <colorer/utils/Environment.h>
 #include <colorer/viewer/TextLinesStore.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
@@ -66,7 +67,7 @@ UnicodeString ParserFactory::Impl::searchCatalog()
   return right_path;
 }
 
-void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString> &paths)
+void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString>& paths)
 {
 #ifdef WIN32
   // image_path/  image_path/..
@@ -87,17 +88,18 @@ void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString> &pa
   }
 
   // %COLORER5CATALOG%
-  char* colorer5_catalog = getenv("COLORER5CATALOG");
+
+  auto colorer5_catalog = Environment::getOSVariable("COLORER5CATALOG");
   if (colorer5_catalog) {
-    paths.emplace_back(UnicodeString(colorer5_catalog));
+    paths.emplace_back(UnicodeString(*colorer5_catalog));
   }
 
   // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
-  char* home_drive = getenv("HOMEDRIVE");
-  char* home_path = getenv("HOMEPATH");
+  auto home_drive = Environment::getOSVariable("HOMEDRIVE");
+  auto home_path = Environment::getOSVariable("HOMEPATH");
   if (home_drive && home_path) {
     try {
-      UnicodeString d = UnicodeString(home_drive).append(UnicodeString(home_path)).append("/.colorer5catalog");
+      UnicodeString d = home_drive->append(*home_path).append("/.colorer5catalog");
       if (_access(UStr::to_stdstr(&d).c_str(), 0) != -1) {
         TextLinesStore tls;
         tls.loadFile(&d, false);
@@ -126,7 +128,7 @@ void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString> &pa
       if (tls.getLineCount() > 0) {
         paths.emplace_back(*tls.getLine(0));
       }
-    } catch (InputSourceException &) { //-V565
+    } catch (InputSourceException&) {  //-V565
       // it`s ok. the error is not interesting
     }
   }
@@ -163,7 +165,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
       } else {
         loadHrc(clear_path.get(), &base_catalog_path);
       }
-    } catch (const Exception &e) {
+    } catch (const Exception& e) {
       spdlog::error("{0}", e.what());
     }
   }
@@ -182,7 +184,7 @@ void ParserFactory::Impl::loadHrc(const UnicodeString* hrc_path, const UnicodeSt
   }
 }
 
-void ParserFactory::Impl::parseCatalog(const UnicodeString &catalog_path)
+void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
 {
   CatalogParser catalog_parser;
   catalog_parser.parse(&catalog_path);
@@ -200,7 +202,7 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString &catalog_path)
   }
 }
 
-size_t ParserFactory::Impl::countHRD(const UnicodeString &classID)
+size_t ParserFactory::Impl::countHRD(const UnicodeString& classID)
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
@@ -213,30 +215,30 @@ std::vector<UnicodeString> ParserFactory::Impl::enumHRDClasses()
 {
   std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
-  for (auto & hrd_node : hrd_nodes) {
+  for (auto& hrd_node : hrd_nodes) {
     result.push_back(hrd_node.first);
   }
   return result;
 }
 
-std::vector<const HRDNode*> ParserFactory::Impl::enumHRDInstances(const UnicodeString &classID)
+std::vector<const HRDNode*> ParserFactory::Impl::enumHRDInstances(const UnicodeString& classID)
 {
   auto hash = hrd_nodes.find(classID);
   std::vector<const HRDNode*> result;
   result.reserve(hash->second->size());
-  for (auto & p : *hash->second) {
+  for (auto& p : *hash->second) {
     result.push_back(p.get());
   }
   return result;
 }
 
-const HRDNode* ParserFactory::Impl::getHRDNode(const UnicodeString &classID, const UnicodeString &nameID)
+const HRDNode* ParserFactory::Impl::getHRDNode(const UnicodeString& classID, const UnicodeString& nameID)
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
     throw ParserFactoryException("can't find HRDClass '" + classID + "'");
   }
-  for (auto & p : *hash->second) {
+  for (auto& p : *hash->second) {
     if (nameID.compare(p->hrd_name) == 0) {
       return p.get();
     }
@@ -268,9 +270,9 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
   const UnicodeString name_default("default");
   UnicodeString name_env;
   if (nameID == nullptr) {
-    char* hrd = getenv("COLORER5HRD");
-    if (hrd != nullptr) {
-      name_env = UnicodeString(hrd);
+    auto hrd = Environment::getOSVariable("COLORER5HRD");
+    if (hrd) {
+      name_env = UnicodeString(*hrd);
       name_id = &name_env;
     } else {
       name_id = &name_default;
@@ -282,13 +284,13 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
   auto hrd_node = getHRDNode(*class_id, *name_id);
 
   auto* mapper = new StyledHRDMapper();
-  for (const auto & idx : hrd_node->hrd_location)
+  for (const auto& idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
       uXmlInputSource dfis;
       try {
         dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());
-      } catch (Exception &e) {
+      } catch (Exception& e) {
         spdlog::error("Can't load hrd:");
         spdlog::error("{0}", e.what());
         throw ParserFactoryException("Error load hrd");
@@ -313,13 +315,13 @@ TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID
   auto hrd_node = getHRDNode(d_text, *name_id);
 
   auto* mapper = new TextHRDMapper();
-  for (const auto & idx : hrd_node->hrd_location)
+  for (const auto& idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
       uXmlInputSource dfis;
       try {
         dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
         mapper->loadRegionMappings(dfis.get());
-      } catch (Exception &e) {
+      } catch (Exception& e) {
         spdlog::error("Can't load hrd: ");
         spdlog::error("{0}", e.what());
       }
@@ -334,6 +336,3 @@ void ParserFactory::Impl::addHrd(std::unique_ptr<HRDNode> hrd)
   }
   hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
 }
-
-
-

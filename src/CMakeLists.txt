@@ -82,7 +82,10 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
     colorer/parsers/XmlTagDefs.h
+    colorer/utils/Environment.cpp
+    colorer/utils/Environment.h
     colorer/version.h
+    colorer/viewer/ParsedLineWriter.cpp
     colorer/viewer/ParsedLineWriter.h
     colorer/viewer/TextConsoleViewer.cpp
     colorer/viewer/TextConsoleViewer.h
@@ -97,8 +100,7 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.cpp
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
-    colorer/xml/XmlParserErrorHandler.h
-    )
+    colorer/xml/XmlParserErrorHandler.h)
 
 if(COLORER_USE_HTTPINPUTSOURCE AND WIN32)
   set(COLORER_FEATURE_HTTPINPUTSOURCE 1)
@@ -141,7 +143,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic -Wsign-promo -Wnon-virtual-dtor)
   set(FLAGS_CXX_RELEASE -Werror)
   set(FLAGS_CXX_DEBUG)
-  set(COLORER_DEF)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # default for msvc
@@ -152,8 +153,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(FLAGS_CXX_DEFAULT)
   set(FLAGS_CXX_RELEASE /W3 /WX)
   set(FLAGS_CXX_DEBUG /W4)
-
-  set(COLORER_DEF -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
 set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
@@ -170,7 +169,6 @@ target_include_directories(colorer_lib PUBLIC
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     )
 
-target_compile_definitions(colorer_lib PRIVATE ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
