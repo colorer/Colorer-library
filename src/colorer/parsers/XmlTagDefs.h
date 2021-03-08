@@ -1,8 +1,6 @@
 #ifndef _COLORER_XMLTAGDEFS_H_
 #define _COLORER_XMLTAGDEFS_H_
 
-#include <xercesc/util/XMLUniDefs.hpp>
-using namespace xercesc;
 /* catalog.xml
 
 <catalog>
@@ -12,20 +10,20 @@ using namespace xercesc;
   <hrd-sets>
     <hrd class="" name="" description="">
       <location link=""/>
-    </hrd>   
+    </hrd>
   </hrd-sets>
 </catalog>
 */
 
-const XMLCh catTagCatalog[] = {chLatin_c, chLatin_a, chLatin_t, chLatin_a, chLatin_l, chLatin_o, chLatin_g, chNull};
-const XMLCh catTagHrcSets[] = {chLatin_h, chLatin_r, chLatin_c, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
-const XMLCh catTagLocation[] = {chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh catLocationAttrLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
-const XMLCh catTagHrdSets[] = {chLatin_h, chLatin_r, chLatin_d, chDash, chLatin_s, chLatin_e, chLatin_t, chLatin_s, chNull};
-const XMLCh catTagHrd[] = {chLatin_h, chLatin_r, chLatin_d, chNull};
-const XMLCh catHrdAttrClass[] = {chLatin_c, chLatin_l, chLatin_a, chLatin_s, chLatin_s, chNull};
-const XMLCh catHrdAttrName[] =  {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh catHrdAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r,  chLatin_i, chLatin_p, chLatin_t,  chLatin_i, chLatin_o, chLatin_n, chNull};
+const char16_t catTagCatalog[] = u"catalog\0";
+const char16_t catTagHrcSets[] = u"hrc-sets\0";
+const char16_t catTagLocation[] = u"location\0";
+const char16_t catLocationAttrLink[] = u"link\0";
+const char16_t catTagHrdSets[] = u"hrd-sets\0";
+const char16_t catTagHrd[] = u"hrd\0";
+const char16_t catHrdAttrClass[] = u"class\0";
+const char16_t catHrdAttrName[] = u"name\0";
+const char16_t catHrdAttrDescription[] = u"description\0";
 
 /* hrc file
 
@@ -65,71 +63,71 @@ const XMLCh catHrdAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_
 </hrc>
 */
 
-const XMLCh hrcTagHrc[] = {chLatin_h, chLatin_r, chLatin_c, chNull};
-const XMLCh hrcHrcAttrVersion[] = {chLatin_v, chLatin_e, chLatin_r, chLatin_s, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagAnnotation[] = {chLatin_a, chLatin_n, chLatin_n, chLatin_o, chLatin_t, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagPrototype[] = {chLatin_p, chLatin_r, chLatin_o, chLatin_t, chLatin_o, chLatin_t, chLatin_y, chLatin_p, chLatin_e, chNull};
-const XMLCh hrcPrototypeAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcPrototypeAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r, chLatin_i, chLatin_p, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcPrototypeAttrGroup[] = {chLatin_g, chLatin_r, chLatin_o, chLatin_u, chLatin_p, chNull};
-const XMLCh hrcTagLocation[] = {chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcLocationAttrLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
-const XMLCh hrcTagFilename[] = {chLatin_f, chLatin_i, chLatin_l, chLatin_e, chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcFilenameAttrWeight[] = {chLatin_w, chLatin_e, chLatin_i, chLatin_g, chLatin_h, chLatin_t, chNull}; 
-const XMLCh hrcTagFirstline[] = {chLatin_f, chLatin_i, chLatin_r, chLatin_s, chLatin_t, chLatin_l, chLatin_i, chLatin_n, chLatin_e, chNull};
-const XMLCh hrcFirstlineAttrWeight[] = {chLatin_w, chLatin_e, chLatin_i, chLatin_g, chLatin_h, chLatin_t, chNull}; 
-const XMLCh hrcTagParametrs[] = {chLatin_p, chLatin_a, chLatin_r, chLatin_a, chLatin_m, chLatin_e, chLatin_t, chLatin_e, chLatin_r, chLatin_s, chNull};
-const XMLCh hrcTagParam[] = {chLatin_p, chLatin_a, chLatin_r, chLatin_a, chLatin_m, chNull};
-const XMLCh hrcParamAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcParamAttrValue[] = {chLatin_v, chLatin_a, chLatin_l, chLatin_u, chLatin_e, chNull};
-const XMLCh hrcParamAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r, chLatin_i, chLatin_p, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagPackage[] = {chLatin_p, chLatin_a, chLatin_c, chLatin_k, chLatin_a, chLatin_g, chLatin_e, chNull};
-const XMLCh hrcPackageAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcPackageAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r, chLatin_i, chLatin_p, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcPackageAttrGroup[] = {chLatin_g, chLatin_r, chLatin_o, chLatin_u, chLatin_p, chNull};
-const XMLCh hrcTagType[] = {chLatin_t, chLatin_y, chLatin_p, chLatin_e, chNull};
-const XMLCh hrcTypeAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcTagImport[] = {chLatin_i, chLatin_m, chLatin_p, chLatin_o, chLatin_r, chLatin_t, chNull};
-const XMLCh hrcImportAttrType[] = {chLatin_t, chLatin_y, chLatin_p, chLatin_e, chNull};
-const XMLCh hrcTagRegion[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull}; 
-const XMLCh hrcRegionAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcRegionAttrParent[] = {chLatin_p, chLatin_a, chLatin_r, chLatin_e, chLatin_n, chLatin_t, chNull};
-const XMLCh hrcRegionAttrDescription[] = {chLatin_d, chLatin_e, chLatin_s, chLatin_c, chLatin_r, chLatin_i, chLatin_p, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagEntity[] = {chLatin_e, chLatin_n, chLatin_t, chLatin_i, chLatin_t, chLatin_y, chNull};
-const XMLCh hrcEntityAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcEntityAttrValue[] = {chLatin_v, chLatin_a, chLatin_l, chLatin_u, chLatin_e, chNull};
-const XMLCh hrcTagScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcSchemeAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcSchemeAttrIf[] = {chLatin_i, chLatin_f, chNull};
-const XMLCh hrcSchemeAttrUnless[] = {chLatin_u, chLatin_n, chLatin_l, chLatin_e, chLatin_s, chLatin_s, chNull};
-const XMLCh hrcTagKeywords[] = {chLatin_k, chLatin_e, chLatin_y, chLatin_w, chLatin_o, chLatin_r, chLatin_d, chLatin_s, chNull};
-const XMLCh hrcKeywordsAttrIgnorecase[] = {chLatin_i, chLatin_g, chLatin_n, chLatin_o, chLatin_r, chLatin_e, chLatin_c, chLatin_a, chLatin_s, chLatin_e, chNull};
-const XMLCh hrcKeywordsAttrPriority[] = {chLatin_p, chLatin_r, chLatin_i, chLatin_o, chLatin_r, chLatin_i, chLatin_t, chLatin_y, chNull};
-const XMLCh hrcKeywordsAttrWorddiv[] = {chLatin_w, chLatin_o, chLatin_r, chLatin_d, chLatin_d, chLatin_i, chLatin_v, chNull};
-const XMLCh hrcKeywordsAttrRegion[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagWord[] = {chLatin_w, chLatin_o, chLatin_r, chLatin_d, chNull};
-const XMLCh hrcWordAttrName[]= {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcWordAttrRegion[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagSymb[] = {chLatin_s, chLatin_y, chLatin_m, chLatin_b, chNull};
-const XMLCh hrcSymbAttrName[]= {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcSymbAttrRegion[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagRegexp[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_e, chLatin_x, chLatin_p, chNull};
-const XMLCh hrcRegexpAttrMatch[] = {chLatin_m, chLatin_a, chLatin_t, chLatin_c, chLatin_h, chNull};
-const XMLCh hrcRegexpAttrPriority[] = {chLatin_p, chLatin_r, chLatin_i, chLatin_o, chLatin_r, chLatin_i, chLatin_t, chLatin_y, chNull};
-const XMLCh hrcRegexpAttrRegion[] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcTagBlock[] = {chLatin_b, chLatin_l, chLatin_o, chLatin_c, chLatin_k, chNull};
-const XMLCh hrcBlockAttrStart[] = {chLatin_s, chLatin_t, chLatin_a, chLatin_r, chLatin_t, chNull};
-const XMLCh hrcBlockAttrEnd[] = {chLatin_e, chLatin_n, chLatin_d, chNull};
-const XMLCh hrcBlockAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcBlockAttrPriority[] = {chLatin_p, chLatin_r, chLatin_i, chLatin_o, chLatin_r, chLatin_i, chLatin_t, chLatin_y, chNull};
-const XMLCh hrcBlockAttrContentPriority[] = {chLatin_c, chLatin_o, chLatin_n, chLatin_t, chLatin_e, chLatin_n, chLatin_t, chDash, chLatin_p, chLatin_r, chLatin_i, chLatin_o, chLatin_r, chLatin_i, chLatin_t, chLatin_y, chNull};
-const XMLCh hrcBlockAttrInnerRegion[] = {chLatin_i, chLatin_n, chLatin_n, chLatin_e, chLatin_r, chDash, chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
-const XMLCh hrcBlockAttrMatch[] = {chLatin_m, chLatin_a, chLatin_t, chLatin_c, chLatin_h, chNull};
-const XMLCh hrcTagInherit[] = {chLatin_i, chLatin_n, chLatin_h, chLatin_e, chLatin_r, chLatin_i, chLatin_t, chNull};
-const XMLCh hrcInheritAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcTagVirtual[] = {chLatin_v, chLatin_i, chLatin_r, chLatin_t, chLatin_u, chLatin_a, chLatin_l, chNull};
-const XMLCh hrcVirtualAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-const XMLCh hrcVirtualAttrSubstScheme[] = {chLatin_s, chLatin_u, chLatin_b, chLatin_s, chLatin_t, chDash, chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
+const char16_t hrcTagHrc[] = u"hrc\0";
+const char16_t hrcHrcAttrVersion[] = u"version\0";
+const char16_t hrcTagAnnotation[] = u"annotation\0";
+const char16_t hrcTagPrototype[] = u"prototype\0";
+const char16_t hrcPrototypeAttrName[] = u"name\0";
+const char16_t hrcPrototypeAttrDescription[] = u"description\0";
+const char16_t hrcPrototypeAttrGroup[] = u"group\0";
+const char16_t hrcTagLocation[] = u"location\0";
+const char16_t hrcLocationAttrLink[] = u"link\0";
+const char16_t hrcTagFilename[] = u"filename\0";
+const char16_t hrcFilenameAttrWeight[] = u"weight\0";
+const char16_t hrcTagFirstline[] = u"firstline\0";
+const char16_t hrcFirstlineAttrWeight[] = u"weight\0";
+const char16_t hrcTagParametrs[] = u"parameters\0";
+const char16_t hrcTagParam[] = u"param\0";
+const char16_t hrcParamAttrName[] = u"name\0";
+const char16_t hrcParamAttrValue[] = u"value\0";
+const char16_t hrcParamAttrDescription[] = u"description\0";
+const char16_t hrcTagPackage[] = u"package\0";
+const char16_t hrcPackageAttrName[] = u"name\0";
+const char16_t hrcPackageAttrDescription[] = u"description\0";
+const char16_t hrcPackageAttrGroup[] = u"group\0";
+const char16_t hrcTagType[] = u"type\0";
+const char16_t hrcTypeAttrName[] = u"name\0";
+const char16_t hrcTagImport[] = u"import\0";
+const char16_t hrcImportAttrType[] = u"type\0";
+const char16_t hrcTagRegion[] = u"region\0";
+const char16_t hrcRegionAttrName[] = u"name\0";
+const char16_t hrcRegionAttrParent[] = u"parent\0";
+const char16_t hrcRegionAttrDescription[] = u"description\0";
+const char16_t hrcTagEntity[] = u"entity\0";
+const char16_t hrcEntityAttrName[] = u"name\0";
+const char16_t hrcEntityAttrValue[] = u"value\0";
+const char16_t hrcTagScheme[] = u"scheme\0";
+const char16_t hrcSchemeAttrName[] = u"name\0";
+const char16_t hrcSchemeAttrIf[] = u"if\0";
+const char16_t hrcSchemeAttrUnless[] = u"unless\0";
+const char16_t hrcTagKeywords[] = u"keywords\0";
+const char16_t hrcKeywordsAttrIgnorecase[] = u"ignorecase\0";
+const char16_t hrcKeywordsAttrPriority[] = u"priority\0";
+const char16_t hrcKeywordsAttrWorddiv[] = u"worddiv\0";
+const char16_t hrcKeywordsAttrRegion[] = u"region\0";
+const char16_t hrcTagWord[] = u"word\0";
+const char16_t hrcWordAttrName[] = u"name\0";
+const char16_t hrcWordAttrRegion[] = u"region\0";
+const char16_t hrcTagSymb[] = u"symb\0";
+const char16_t hrcSymbAttrName[] = u"name\0";
+const char16_t hrcSymbAttrRegion[] = u"region\0";
+const char16_t hrcTagRegexp[] = u"regexp\0";
+const char16_t hrcRegexpAttrMatch[] = u"match\0";
+const char16_t hrcRegexpAttrPriority[] = u"priority\0";
+const char16_t hrcRegexpAttrRegion[] = u"region\0";
+const char16_t hrcTagBlock[] = u"block\0";
+const char16_t hrcBlockAttrStart[] = u"start\0";
+const char16_t hrcBlockAttrEnd[] = u"end\0";
+const char16_t hrcBlockAttrScheme[] = u"scheme\0";
+const char16_t hrcBlockAttrPriority[] = u"priority\0";
+const char16_t hrcBlockAttrContentPriority[] = u"content-priority\0";
+const char16_t hrcBlockAttrInnerRegion[] = u"inner-region\0";
+const char16_t hrcBlockAttrMatch[] = u"match\0";
+const char16_t hrcTagInherit[] = u"inherit\0";
+const char16_t hrcInheritAttrScheme[] = u"scheme\0";
+const char16_t hrcTagVirtual[] = u"virtual\0";
+const char16_t hrcVirtualAttrScheme[] = u"scheme\0";
+const char16_t hrcVirtualAttrSubstScheme[] = u"subst-scheme\0";
 
 /* hrd file
 <hrd>
@@ -137,16 +135,15 @@ const XMLCh hrcVirtualAttrSubstScheme[] = {chLatin_s, chLatin_u, chLatin_b, chLa
   <assign name="" stext="" etext="" sback="" eback=""/>
 </hrc>
 */
-const XMLCh hrdTagHrd[] = {chLatin_h, chLatin_r, chLatin_d, chNull};
-const XMLCh hrdTagAssign[] = {chLatin_a, chLatin_s, chLatin_s, chLatin_i, chLatin_g, chLatin_n, chNull};
-const XMLCh hrdAssignAttrName[] = {chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull};
-const XMLCh hrdAssignAttrFore[] = {chLatin_f, chLatin_o, chLatin_r, chLatin_e, chNull};
-const XMLCh hrdAssignAttrBack[] = {chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
-const XMLCh hrdAssignAttrStyle[] = {chLatin_s, chLatin_t, chLatin_y, chLatin_l, chLatin_e, chNull};
-const XMLCh hrdAssignAttrSBack[] = {chLatin_s, chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
-const XMLCh hrdAssignAttrEBack[] = {chLatin_e, chLatin_b, chLatin_a, chLatin_c, chLatin_k, chNull};
-const XMLCh hrdAssignAttrSText[] = {chLatin_s, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull};
-const XMLCh hrdAssignAttrEText[] = {chLatin_e, chLatin_t, chLatin_e, chLatin_x, chLatin_t, chNull};
+const char16_t hrdTagHrd[] = u"hrd\0";
+const char16_t hrdTagAssign[] = u"assign\0";
+const char16_t hrdAssignAttrName[] = u"name\0";
+const char16_t hrdAssignAttrFore[] = u"fore\0";
+const char16_t hrdAssignAttrBack[] = u"back\0";
+const char16_t hrdAssignAttrStyle[] = u"style\0";
+const char16_t hrdAssignAttrSBack[] = u"sback\0";
+const char16_t hrdAssignAttrEBack[] = u"eback\0";
+const char16_t hrdAssignAttrSText[] = u"stext\0";
+const char16_t hrdAssignAttrEText[] = u"etext\0";
 
-#endif // _COLORER_XMLTAGDEFS_H_
-
+#endif  // _COLORER_XMLTAGDEFS_H_

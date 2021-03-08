@@ -801,7 +801,7 @@ void HRCParser::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMEleme
 
 void HRCParser::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
-  XMLCh rg_tmpl[7] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull};
+  char16_t rg_tmpl[] = u"region\0";
   const Region* brgn = getNCRegion(elem, rg_tmpl);
   if (brgn == nullptr) {
     return;
@@ -912,7 +912,7 @@ int HRCParser::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
 
 void HRCParser::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
 {
-  XMLCh rg_tmpl[8] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull};
+  char16_t rg_tmpl[] = u"region\0\0";
 
   if (el) {
     if (node->region == nullptr) {
@@ -942,7 +942,7 @@ void HRCParser::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* e
 void HRCParser::Impl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
 {
   int i;
-  XMLCh rg_tmpl[9] = {chLatin_r, chLatin_e, chLatin_g, chLatin_i, chLatin_o, chLatin_n, chNull, chNull, chNull};
+  char16_t rg_tmpl[] = u"region\0\0\0";
 
   node->region = getNCRegion(el, rg_tmpl);
   for (i = 0; i < REGIONS_NUM; i++) {
