@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
   "name": "colorer",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "dependencies": [
     {
       "name": "xerces-c",
