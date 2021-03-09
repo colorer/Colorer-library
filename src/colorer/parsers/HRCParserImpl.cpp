@@ -9,12 +9,6 @@
 #include <xercesc/util/XMLDouble.hpp>
 
 HRCParser::Impl::Impl()
-    : versionName(nullptr),
-      current_parse_prototype(nullptr),
-      current_parse_type(nullptr),
-      current_input_source(nullptr),
-      structureChanged(false),
-      updateStarted(false)
 {
   fileTypeHash.reserve(200);
   fileTypeVector.reserve(150);
@@ -295,7 +289,7 @@ void HRCParser::Impl::addPrototype(const xercesc::DOMElement* elem)
   }
   auto* type = new FileType();
   // TODO make 'group' mandatory
-  type->pimpl->name = std::make_unique<UnicodeString>(UnicodeString(typeName));
+  type->pimpl->name = std::make_unique<UnicodeString>(tname);
   type->pimpl->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
   if (typeGroup != nullptr) {
     type->pimpl->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
@@ -402,9 +396,9 @@ void HRCParser::Impl::addPrototypeParameters(const xercesc::DOMNode* elem)
         }
         UnicodeString d_name = UnicodeString(name);
         TypeParameter* tp = current_parse_prototype->pimpl->addParam(&d_name);
-        tp->default_value = std::make_unique<UnicodeString>(UnicodeString(value));
+        tp->default_value = std::make_unique<UnicodeString>(value);
         if (*descr != '\0') {
-          tp->description = std::make_unique<UnicodeString>(UnicodeString(descr));
+          tp->description = std::make_unique<UnicodeString>(descr);
         }
       }
       continue;
@@ -627,7 +621,7 @@ void HRCParser::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEle
   }
   auto* scheme_node = new SchemeNode();
   scheme_node->type = SchemeNode::SNT_INHERIT;
-  scheme_node->schemeName = std::make_unique<UnicodeString>(UnicodeString(nqSchemeName));
+  scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
   UnicodeString dnqSchemeName = UnicodeString(nqSchemeName);
   UnicodeString* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
   if (schemeName == nullptr) {
@@ -771,7 +765,7 @@ void HRCParser::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMEleme
     return;
   }
   auto* scheme_node = new SchemeNode();
-  scheme_node->schemeName = std::make_unique<UnicodeString>(UnicodeString(schemeName));
+  scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   UnicodeString attr_pr = UnicodeString(elem->getAttribute(hrcBlockAttrPriority));
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
   UnicodeString attr_ireg = UnicodeString(elem->getAttribute(hrcBlockAttrInnerRegion));
@@ -958,8 +952,8 @@ void HRCParser::Impl::updateLinks()
 {
   while (structureChanged) {
     structureChanged = false;
-    for (auto scheme_it = schemeHash.begin(); scheme_it != schemeHash.end(); ++scheme_it) {
-      SchemeImpl* scheme = scheme_it->second;
+    for (auto & scheme_it : schemeHash) {
+      SchemeImpl* scheme = scheme_it.second;
       if (!scheme->fileType->pimpl->loadDone) {
         continue;
       }

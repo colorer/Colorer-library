@@ -1,12 +1,11 @@
 #ifndef _COLORER_HRCPARSERIMPL_H_
 #define _COLORER_HRCPARSERIMPL_H_
 
-#include <colorer/cregexp/cregexp.h>
 #include <colorer/HRCParser.h>
+#include <colorer/cregexp/cregexp.h>
 #include <colorer/parsers/SchemeImpl.h>
-
-#include <xercesc/dom/DOM.hpp>
 #include <colorer/xml/XmlInputSource.h>
+#include <xercesc/dom/DOM.hpp>
 
 class FileType;
 
@@ -18,23 +17,22 @@ class FileType;
 */
 class HRCParser::Impl
 {
-public:
+ public:
   Impl();
   ~Impl();
 
-
-  void loadSource(XmlInputSource* is) ;
+  void loadSource(XmlInputSource* is);
   void loadFileType(FileType* filetype);
-  FileType* getFileType(const UnicodeString* name) ;
-  FileType* enumerateFileTypes(unsigned int index) ;
-  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0) ;
-  size_t getFileTypesCount() ;
+  FileType* getFileType(const UnicodeString* name);
+  FileType* enumerateFileTypes(unsigned int index);
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
+  size_t getFileTypesCount();
 
-  size_t getRegionCount() ;
-  const Region* getRegion(unsigned int id) ;
-  const Region* getRegion(const UnicodeString* name) ;
+  size_t getRegionCount();
+  const Region* getRegion(unsigned int id);
+  const Region* getRegion(const UnicodeString* name);
 
-protected:
+ protected:
   friend class FileType;
 
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
@@ -42,22 +40,22 @@ protected:
   // types and packages
   std::unordered_map<UnicodeString, FileType*> fileTypeHash;
   // types, not packages
-  std::vector<FileType*>    fileTypeVector;
+  std::vector<FileType*> fileTypeVector;
 
-  std::unordered_map<UnicodeString, SchemeImpl*>   schemeHash;
+  std::unordered_map<UnicodeString, SchemeImpl*> schemeHash;
   std::unordered_map<UnicodeString, int> disabledSchemes;
 
   std::vector<const Region*> regionNamesVector;
   std::unordered_map<UnicodeString, const Region*> regionNamesHash;
   std::unordered_map<UnicodeString, UnicodeString*> schemeEntitiesHash;
 
-  UnicodeString* versionName;
+  UnicodeString* versionName = nullptr;
 
-  FileType* current_parse_prototype;
-  FileType* current_parse_type;
-  XmlInputSource* current_input_source;
-  bool structureChanged;
-  bool updateStarted;
+  FileType* current_parse_prototype = nullptr;
+  FileType* current_parse_type = nullptr;
+  XmlInputSource* current_input_source = nullptr;
+  bool structureChanged = false;
+  bool updateStarted = false;
 
   void unloadFileType(FileType* filetype);
 
@@ -96,9 +94,4 @@ protected:
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
 };
 
-#include<colorer/FileType.h>
-
 #endif
-
-
-

@@ -8,7 +8,7 @@ class SchemeImpl;
 */
 class VirtualEntry
 {
-public:
+ public:
   SchemeImpl* virtScheme;
   SchemeImpl* substScheme;
   uUnicodeString virtSchemeName;
@@ -17,14 +17,11 @@ public:
   VirtualEntry(const UnicodeString* scheme, const UnicodeString* subst)
   {
     virtScheme = substScheme = nullptr;
-    virtSchemeName.reset(new UnicodeString(*scheme));
-    substSchemeName.reset(new UnicodeString(*subst));
+    virtSchemeName = std::make_unique<UnicodeString>(*scheme);
+    substSchemeName = std::make_unique<UnicodeString>(*subst);
   }
 
   ~VirtualEntry() = default;
-
-
 };
 
-#endif // _COLORER_VIRTUALENTRY_H_
-
+#endif  // _COLORER_VIRTUALENTRY_H_
