@@ -35,7 +35,7 @@ Once builded, the dependencies will be cached in the local cache.
 You may build library on linux using standart package, without vcpkg.
 Ubuntu example
 
-    sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev libminizip-dev
+    sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
     git clone https://github.com/colorer/Colorer-library.git
     cd Colorer-library
     mkdir build
