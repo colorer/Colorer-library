@@ -1,4 +1,4 @@
-name: build
+name: check build
 
 on:
   workflow_dispatch:
@@ -22,13 +22,12 @@ jobs:
        uses: actions/checkout@v2
      
      - name: Install dependency
-       run: sudo apt-get -y install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev libminizip-dev
+       run: sudo apt-get -y install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
 
-     - name: Create Build forlder
+     - name: Create Build folder
        run: cmake -E make_directory ${{runner.workspace}}/build
 
      - name: Configure CMake
-       shell: bash
        working-directory: ${{runner.workspace}}/build
        run: >
          cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
@@ -37,12 +36,10 @@ jobs:
 
      - name: Build
        working-directory: ${{runner.workspace}}/build
-       shell: bash
        run: cmake --build . --config $BUILD_TYPE -j 2
       
      - name: Test
        working-directory: ${{runner.workspace}}/build
-       shell: bash
        run: ./tests/unit/unit_tests
     
   windows-vc:
@@ -57,7 +54,6 @@ jobs:
             triplet: x86-windows-static
         
     runs-on: windows-2019
-
     steps:
     - name: Checkout source
       uses: actions/checkout@v2
@@ -74,7 +70,7 @@ jobs:
       with:
         arch: ${{ matrix.arch }}
 
-    - name: Setup NuGet Credentials for cache
+    - name: Setup NuGet Credentials for vpckg cache
       shell: bash
       run: >
         `$VCPKG_INSTALLATION_ROOT/vcpkg fetch nuget | tail -n 1`
