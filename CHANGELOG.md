@@ -1,3 +1,6 @@
+## [1.2.1] - 2021-04-03
+First auto builded release
+
 ## [1.2.0] - 2021-09-09
 ### Changed
 - Work with redirect stdin as input file, detect charset if set BOM ([#8](https://github.com/colorer/Colorer-library/issues/8))
