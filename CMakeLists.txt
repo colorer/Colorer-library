@@ -142,3 +142,16 @@ if(COLORER_BUILD_TOOLS)
   install(TARGETS consoletools RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
+#====================================================
+# cpack
+#====================================================
+if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
+  set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x64")
+else()
+  set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x86")
+endif()
+set(CPACK_GENERATOR "ZIP" CACHE STRING "Generators to support. semi-colon delimited list")
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}")
+
+include(CPack)

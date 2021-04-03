@@ -1,0 +1,167 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  create-release:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Get version
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Create release
+        run: gh release create ${{ steps.get_version.outputs.version }} -t "Colorer ${{ steps.get_version.outputs.version }}" -n "New version"
+        env:
+          GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
+
+  ubuntu:
+    needs: [ create-release ]
+    runs-on: ubuntu-20.04
+
+    env:
+      BUILD_TYPE: Release
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Get version
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Install dependency
+        run: sudo apt-get -y install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
+
+      - name: Create Build folder
+        run: cmake -E make_directory build
+
+      - name: Configure CMake
+        working-directory: build
+        run: >
+          cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCOLORER_USE_VCPKG=OFF
+          -DCOLORER_BUILD_ARCH=x64 -DCMAKE_INSTALL_PREFIX=./install/colorer
+
+      - name: Build
+        working-directory: build
+        run: cmake --build . --config $BUILD_TYPE -j 2
+
+      - name: Install
+        working-directory: build
+        run: cmake --install . --config $BUILD_TYPE
+
+      - name: Set name for release archive
+        run: |
+          echo "colorer_lib_name=colorer_lib.x64.${{ steps.get_version.outputs.version }}.tar.gz" >> $GITHUB_ENV
+          echo "colorer_name=colorer.x64.${{ steps.get_version.outputs.version }}.tar.gz" >> $GITHUB_ENV
+
+      - name: pack plugin
+        working-directory: build
+        run: |
+          tar -czvf ${{ env.colorer_lib_name }} -C ./install colorer
+          tar -czvf ${{ env.colorer_name }} -C ./install/colorer/bin colorer
+
+      - name: Publish artifact
+        run: |
+          gh release upload ${{ steps.get_version.outputs.version }} ./build/${{ env.colorer_lib_name }}
+          gh release upload ${{ steps.get_version.outputs.version }} ./build/${{ env.colorer_name }}
+        env:
+          GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
+
+  windows:
+    needs: [ create-release ]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, x86]
+        include:
+          - arch: x64
+            triplet: x64-windows-static
+          - arch: x86
+            triplet: x86-windows-static
+
+    env:
+      BUILD_TYPE: Release
+      VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+
+    runs-on: windows-2019
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Get version
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Add C++ build tools to PATH
+        uses: ilammy/msvc-dev-cmd@v1.5.0
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Install vcpkg
+        run: |
+          cd external\vcpkg
+          .\bootstrap-vcpkg.bat
+
+      - name: Setup NuGet Credentials for vpckg cache
+        shell: bash
+        run: >
+          `$VCPKG_INSTALLATION_ROOT/vcpkg fetch nuget | tail -n 1`
+          sources add
+          -source "https://nuget.pkg.github.com/colorer/index.json"
+          -storepasswordincleartext
+          -name "GitHub"
+          -username "${{ secrets.PACKAGES_GITHUB_USER }}"
+          -password "${{ secrets.PACKAGES_GITHUB_TOKEN }}"
+
+      - name: Create Build forlder
+        run: cmake -E make_directory build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: build
+        run: >
+          cmake $GITHUB_WORKSPACE -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
+          -DVCPKG_FEATURE_FLAGS=versions -DCMAKE_INSTALL_PREFIX=./install/colorer
+
+      - name: Build
+        working-directory: build
+        shell: bash
+        run: cmake --build . --config $BUILD_TYPE
+
+      - name: Install
+        working-directory: build
+        run: cmake --install . --config $BUILD_TYPE
+
+      - name: Set the pack file name
+        shell: bash
+        run: |
+          echo "colorer_lib_name=colorer_lib.${{ matrix.arch }}.${{ steps.get_version.outputs.version }}.7z" >> $GITHUB_ENV
+          echo "colorer_name=colorer.${{ matrix.arch }}.${{ steps.get_version.outputs.version }}.7z" >> $GITHUB_ENV
+
+      - name: pack plugin
+        working-directory: build
+        run: |
+          7z a ${{ env.colorer_lib_name }} .\install\colorer\*
+          7z a ${{ env.colorer_name }} .\install\colorer\bin\colorer.exe
+
+      - name: Publish artifact
+        run: |
+          gh release upload ${{ steps.get_version.outputs.version }} ./build/${{ env.colorer_lib_name }}
+          gh release upload ${{ steps.get_version.outputs.version }} ./build/${{ env.colorer_name }}
+        env:
+          GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
+
+
+
