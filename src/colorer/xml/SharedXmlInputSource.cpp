@@ -22,7 +22,8 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource &source)
 {
   ref_count = 1;
   input_source = std::move(source);
-  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(input_source->getInputSource()->makeStream()));
+  auto stream = input_source->makeStream();
+  std::unique_ptr<xercesc::BinFileInputStream> bfis(static_cast<xercesc::BinFileInputStream*>(stream));
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
   bfis->readBytes(mSrc.get(), mSize);

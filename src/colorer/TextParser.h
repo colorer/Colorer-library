@@ -91,6 +91,8 @@ public:
   virtual void clearCache() = 0;
 
   virtual ~TextParser() {};
+  
+  virtual void setMaxBlockSize(int max_block_size){};
 protected:
   TextParser() {};
 };

@@ -240,6 +240,7 @@ public:
   void leaveScheme(size_t lno, String* line, int sx, int ex, const Region* region, const Scheme* scheme);
 
   bool haveInvalidLine();
+  void setMaxBlockSize(int max_block_size);
 
 private:
 
@@ -265,6 +266,10 @@ private:
   int lrSize;
   // position of last validLine
   int invalidLine;
+
+ public:
+  int getInvalidLine() const;
+ private:
   // no lines structure changes, just single line change
   int changedLine;
 

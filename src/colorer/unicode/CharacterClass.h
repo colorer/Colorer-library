@@ -21,7 +21,7 @@ public:
   CharacterClass(const CharacterClass &);
   ~CharacterClass();
 
-  static CharacterClass* createCharClass(const String &ccs, int pos, int* retPos);
+  static CharacterClass* createCharClass(const String& ccs, int pos, int* retPos, bool ignore_case);
 
   void addChar(wchar);
   void clearChar(wchar);

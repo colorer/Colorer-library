@@ -99,10 +99,10 @@ void HRCParserImpl::loadFileType(FileType* filetype)
     spdlog::error("Can't open source stream: {0}", e.what());
     thisType->load_broken = true;
   } catch (HRCParserException &e) {
-    spdlog::error("{0} [{1}]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    spdlog::error("{0} [{1}]", e.what(), thisType->inputSource ? XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char():"");
     thisType->load_broken = true;
   } catch (Exception &e) {
-    spdlog::error("{0} [{1}]", e.what(), XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
+    spdlog::error("{0} [{1}]", e.what(), thisType->inputSource ? XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char() : "");
     thisType->load_broken = true;
   } catch (...) {
     spdlog::error("Unknown exception while loading {0}", XStr(thisType->inputSource->getInputSource()->getSystemId()).get_char());
@@ -140,7 +140,11 @@ FileType* HRCParserImpl::getFileType(const String* name)
   if (name == nullptr) {
     return nullptr;
   }
-  return fileTypeHash.find(name)->second;
+  auto filetype = fileTypeHash.find(name);
+  if (filetype != fileTypeHash.end())
+    return filetype->second;
+  else
+    return nullptr;
 }
 
 FileType* HRCParserImpl::enumerateFileTypes(int index)
@@ -801,7 +805,7 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   if (*worddiv != '\0') {
     CString dworddiv = CString(worddiv);
     String* entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr));
+    scheme_node->worddiv.reset(CharacterClass::createCharClass(*entWordDiv, 0, nullptr, false));
     if (scheme_node->worddiv == nullptr) {
       spdlog::error("fault compiling worddiv regexp '{0}' in scheme '{1}'", entWordDiv->getChars(), scheme->schemeName->getChars());
     }

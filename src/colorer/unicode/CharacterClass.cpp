@@ -25,7 +25,7 @@ CharacterClass::~CharacterClass()
   Extensions (comparing to Perl):
   inner class substraction [{L}-[{Lu}]], addition [{L}[1234]], intersection [{L}&[{Lu}]]
 */
-CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int* retPos)
+CharacterClass* CharacterClass::createCharClass(const String& ccs, int pos, int* retPos, bool ignore_case)
 {
   if (ccs[pos] != '[') return nullptr;
 
@@ -112,14 +112,21 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
           break;
         case 'l':
           cc->addCategory(CHAR_CATEGORY_Ll);
+          if (ignore_case) cc->addCategory(CHAR_CATEGORY_Lu);
           break;
         case 'u':
           cc->addCategory(CHAR_CATEGORY_Lu);
+          if (ignore_case) cc->addCategory(CHAR_CATEGORY_Ll);
           break;
         default:
           prev_char = UnicodeTools::getEscapedChar(ccs, pos, retEnd);
           if (prev_char == BAD_WCHAR) break;
           cc->addChar(prev_char);
+          if (ignore_case){
+            cc->addChar(Character::toLowerCase(prev_char));
+            cc->addChar(Character::toUpperCase(prev_char));
+            cc->addChar(Character::toTitleCase(prev_char));
+          }
           pos = retEnd - 1;
           break;
       }
@@ -129,7 +136,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // substract -[class]
     if (pos + 1 < ccs.length() && ccs[pos] == '-' && ccs[pos + 1] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos + 1, &retEnd);
+      CharacterClass* scc = createCharClass(ccs, pos + 1, &retEnd, false);
       if (retEnd == ccs.length()) {
         delete cc;
         return nullptr;
@@ -147,7 +154,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // intersect &&[class]
     if (pos + 2 < ccs.length() && ccs[pos] == '&' && ccs[pos + 1] == '&' && ccs[pos + 2] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos + 2, &retEnd);
+      CharacterClass* scc = createCharClass(ccs, pos + 2, &retEnd, false);
       if (retEnd == ccs.length()) {
         delete cc;
         return nullptr;
@@ -165,7 +172,7 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
     // add [class]
     if (ccs[pos] == '[') {
       int retEnd;
-      CharacterClass* scc = createCharClass(ccs, pos, &retEnd);
+      CharacterClass* scc = createCharClass(ccs, pos, &retEnd, ignore_case);
       if (scc == nullptr) {
         delete cc;
         return nullptr;
@@ -185,6 +192,11 @@ CharacterClass* CharacterClass::createCharClass(const String &ccs, int pos, int*
       continue;
     }
     cc->addChar(ccs[pos]);
+    if (ignore_case){
+      cc->addChar(Character::toLowerCase(ccs[pos]));
+      cc->addChar(Character::toUpperCase(ccs[pos]));
+      cc->addChar(Character::toTitleCase(ccs[pos]));
+    }
     prev_char = ccs[pos];
   }
   delete cc;
