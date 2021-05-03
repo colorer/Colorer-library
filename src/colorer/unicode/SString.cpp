@@ -99,7 +99,7 @@ SString &SString::append(const String* string, size_t maxlen)
 
 SString &SString::append(const String &string, size_t maxlen)
 {
-  const size_t len_new = len + std::min(maxlen, string.length());
+  const size_t len_new = len + (maxlen <= string.length() ? maxlen: string.length());
 
   if (alloc < len_new) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
