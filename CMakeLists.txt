@@ -36,6 +36,7 @@ option(COLORER_USE_VCPKG "Use dependencies installed via vcpkg" ON)
 option(COLORER_BUILD_TOOLS "Build colorer tools" ON)
 option(COLORER_BUILD_TEST "Build tests" OFF)
 option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
+option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
 # library features
@@ -108,50 +109,52 @@ endif()
 #====================================================
 # install
 #====================================================
-include(GNUInstallDirs)
+if(COLORER_BUILD_INSTALL)
+  include(GNUInstallDirs)
 
-install(TARGETS colorer_lib
-    EXPORT colorerTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
+  install(TARGETS colorer_lib
+      EXPORT colorerTargets
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      )
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/colorer
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    FILES_MATCHING PATTERN "*.h"
-    )
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/src/colorer/common/Features.h"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/colorer/common")
+  install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/colorer
+      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+      FILES_MATCHING PATTERN "*.h"
+      )
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/src/colorer/common/Features.h"
+      DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/colorer/common")
 
-install(EXPORT colorerTargets
-    FILE colorerTargets.cmake
-    DESTINATION lib/cmake/colorer
-    NAMESPACE colorer::
-    )
+  install(EXPORT colorerTargets
+      FILE colorerTargets.cmake
+      DESTINATION lib/cmake/colorer
+      NAMESPACE colorer::
+      )
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/cmake/colorerConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake" @ONLY)
+  configure_file("${CMAKE_CURRENT_LIST_DIR}/cmake/colorerConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake" @ONLY)
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake" COMPATIBILITY SameMajorVersion)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/colorer")
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake" COMPATIBILITY SameMajorVersion)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/colorerConfigVersion.cmake"
+      DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/colorer")
 
-if(COLORER_BUILD_TOOLS)
-  install(TARGETS consoletools RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  if(COLORER_BUILD_TOOLS)
+    install(TARGETS consoletools RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  endif()
+
+  #====================================================
+  # cpack
+  #====================================================
+  if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
+    set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x64")
+  else()
+    set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x86")
+  endif()
+  set(CPACK_GENERATOR "ZIP" CACHE STRING "Generators to support. semi-colon delimited list")
+  set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+  set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}")
+
+  include(CPack)
 endif()
-
-#====================================================
-# cpack
-#====================================================
-if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
-  set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x64")
-else()
-  set(PACKAGE_FILE_NAME "${PROJECT_NAME}.v${COLORER_VERSION}.x86")
-endif()
-set(CPACK_GENERATOR "ZIP" CACHE STRING "Generators to support. semi-colon delimited list")
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
-set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}")
-
-include(CPack)
