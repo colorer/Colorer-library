@@ -106,7 +106,7 @@ bool XmlInputSource::isDirectory(const UnicodeString* path)
   bool is_dir = false;
 #ifdef WIN32
   // stat on win_xp and vc2015 have bug.
-  DWORD dwAttrs = GetFileAttributes(UStr::to_stdstr(path).c_str());
+  DWORD dwAttrs = GetFileAttributesW(UStr::to_stdwstr(path).c_str());
   if (dwAttrs == INVALID_FILE_ATTRIBUTES) {
     throw Exception("Can't get info for file/path: " + *path);
   } else if (dwAttrs & FILE_ATTRIBUTE_DIRECTORY) {
