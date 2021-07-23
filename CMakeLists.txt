@@ -35,7 +35,6 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 option(COLORER_USE_VCPKG "Use dependencies installed via vcpkg" ON)
 option(COLORER_BUILD_TOOLS "Build colorer tools" ON)
 option(COLORER_BUILD_TEST "Build tests" OFF)
-option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
@@ -76,14 +75,6 @@ find_package(fmt REQUIRED)
 if(COLORER_USE_JARINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   find_package(minizip REQUIRED)
-endif()
-
-#====================================================
-# PVS-Studio
-#====================================================
-if(COLORER_PVS_STUDIO_CHECK)
-  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-  include(cmake/PVS-Studio.cmake)
 endif()
 
 #====================================================

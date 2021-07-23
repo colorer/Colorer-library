@@ -29,17 +29,3 @@ set_target_properties(consoletools PROPERTIES
 if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
   set(CMAKE_RC_FLAGS -D_WIN64)
 endif()
-
-#====================================================
-# test
-#====================================================
-
-# static analyze
-if(COLORER_PVS_STUDIO_CHECK)
-  pvs_studio_add_target(TARGET consoletools.analyze ALL
-      ANALYZE ${PROJECT_NAME}
-      MODE GA 64 OP CS
-      CFG_TEXT "exclude-path=*/external/*"
-      OUTPUT FORMAT errorfile
-      LOG ${PROJECT_NAME}.err)
-endif()
