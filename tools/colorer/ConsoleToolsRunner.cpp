@@ -305,6 +305,7 @@ int main(int argc, char* argv[])
       auto logger = spdlog::basic_logger_mt("main", file_name);
       spdlog::set_default_logger(logger);
       logger->set_level(level);
+      logger->flush_on(spdlog::level::err);
     } catch (std::exception& e) {
       fprintf(stderr, "%s\n", e.what());
       return -1;

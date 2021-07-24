@@ -8,10 +8,7 @@ class HRDNode
 {
  public:
   HRDNode() = default;
-  ~HRDNode()
-  {
-    hrd_location.clear();
-  }
+  ~HRDNode() = default;
 
   UnicodeString hrd_class;
   UnicodeString hrd_name;

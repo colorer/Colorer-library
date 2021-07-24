@@ -38,9 +38,6 @@ class ParserFactory::Impl
   void addHrd(std::unique_ptr<HRDNode> hrd);
 
  private:
-  static UnicodeString searchCatalog();
-  static void getPossibleCatalogPaths(std::vector<UnicodeString>& paths);
-
   void parseCatalog(const UnicodeString& catalog_path);
 
   void loadHrc(const UnicodeString* hrc_path, const UnicodeString* base_path) const;

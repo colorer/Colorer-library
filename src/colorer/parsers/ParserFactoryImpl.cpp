@@ -1,4 +1,3 @@
-#include <cstdlib>
 #ifdef __unix__
 #include <dirent.h>
 #include <sys/stat.h>
@@ -36,116 +35,14 @@ ParserFactory::Impl::~Impl()
   xercesc::XMLPlatformUtils::Terminate();
 }
 
-UnicodeString ParserFactory::Impl::searchCatalog()
-{
-  spdlog::debug("start search catalog.xml");
-
-  std::vector<UnicodeString> paths;
-  getPossibleCatalogPaths(paths);
-
-  UnicodeString right_path;
-  for (const auto& path : paths) {
-    try {
-      spdlog::debug("test path '{0}'", path);
-
-      uXmlInputSource catalog = XmlInputSource::newInstance(UStr::to_xmlch(&path).get(), static_cast<XMLCh*>(nullptr));
-
-      std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
-      right_path = UnicodeString(catalog->getInputSource()->getSystemId());
-
-      spdlog::debug("found valid path '{0}' = '{1}'", path, right_path);
-      break;
-    } catch (const Exception& e) {
-      spdlog::error(e.what());
-    }
-  }
-  spdlog::debug("end search catalog.xml");
-  if (right_path.isEmpty()) {
-    spdlog::error("Can't find suitable catalog.xml file. Check your program settings.");
-    throw ParserFactoryException("Can't find suitable catalog.xml file. Check your program settings.");
-  }
-  return right_path;
-}
-
-void ParserFactory::Impl::getPossibleCatalogPaths(std::vector<UnicodeString>& paths)
-{
-#ifdef WIN32
-  // image_path/  image_path/..
-  HMODULE hmod = GetModuleHandle(nullptr);
-  if (hmod) {
-    wchar_t cname[MAX_PATH];
-    int len = GetModuleFileNameW(hmod, cname, MAX_PATH);
-    if (len > 0) {
-      UnicodeString module(cname, 0, len - 1);
-      int pos[2];
-      pos[0] = module.lastIndexOf('\\');
-      pos[1] = module.lastIndexOf('\\', pos[0]);
-      for (int po : pos)
-        if (po >= 0) {
-          paths.emplace_back(UnicodeString(module, 0, po).append("\\catalog.xml"));
-        }
-    }
-  }
-
-  // %COLORER5CATALOG%
-
-  auto colorer5_catalog = Environment::getOSVariable("COLORER5CATALOG");
-  if (colorer5_catalog) {
-    paths.emplace_back(UnicodeString(*colorer5_catalog));
-  }
-
-  // %HOMEDRIVE%%HOMEPATH%\.colorer5catalog
-  auto home_drive = Environment::getOSVariable("HOMEDRIVE");
-  auto home_path = Environment::getOSVariable("HOMEPATH");
-  if (home_drive && home_path) {
-    try {
-      UnicodeString d = home_drive->append(*home_path).append("/.colorer5catalog");
-      if (_access(UStr::to_stdstr(&d).c_str(), 0) != -1) {
-        TextLinesStore tls;
-        tls.loadFile(&d, false);
-        if (tls.getLineCount() > 0) {
-          paths.emplace_back(UnicodeString(*tls.getLine(0)));
-        }
-      }
-    } catch (InputSourceException&) {  //-V565
-      // it`s ok. the error is not interesting
-    }
-  }
-#endif
-#ifdef __unix__
-  // %COLORER5CATALOG%
-  char* colorer5_catalog = getenv("COLORER5CATALOG");
-  if (colorer5_catalog) {
-    paths.emplace_back(UnicodeString(colorer5_catalog));
-  }
-
-  // %HOME%/.colorer5catalog
-  char* home_path = getenv("HOME");
-  if (home_path != nullptr) {
-    try {
-      TextLinesStore tls;
-      tls.loadFile(&UnicodeString(home_path).append("/.colorer5catalog"), false);
-      if (tls.getLineCount() > 0) {
-        paths.emplace_back(*tls.getLine(0));
-      }
-    } catch (InputSourceException&) {  //-V565
-      // it`s ok. the error is not interesting
-    }
-  }
-
-  // /usr/share/colorer/catalog.xml
-  paths.emplace_back(UnicodeString("/usr/share/colorer/catalog.xml"));
-  paths.emplace_back(UnicodeString("/usr/local/share/colorer/catalog.xml"));
-#endif
-}
-
 void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 {
   if (!catalog_path || catalog_path->isEmpty()) {
-    base_catalog_path = searchCatalog();
-    if (base_catalog_path.isEmpty()) {
-      throw ParserFactoryException("Can't find suitable catalog.xml file.");
+    auto env = Environment::getOSVariable("COLORER_CATALOG");
+    if (!env || env->isEmpty()) {
+      throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
+    base_catalog_path = UnicodeString(*env);
   } else {
     base_catalog_path = UnicodeString(*catalog_path);
   }
@@ -191,14 +88,10 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
 
   hrc_locations.clear();
   hrd_nodes.clear();
-  for (const auto& hrc_location : catalog_parser.hrc_locations) {
-    hrc_locations.push_back(hrc_location);
-  }
+  std::copy(catalog_parser.hrc_locations.begin(), catalog_parser.hrc_locations.end(), std::back_inserter(hrc_locations));
 
-  while (!catalog_parser.hrd_nodes.empty()) {
-    auto hrd = std::move(catalog_parser.hrd_nodes.front());
-    catalog_parser.hrd_nodes.pop_front();
-    addHrd(std::move(hrd));
+  for (auto& item : catalog_parser.hrd_nodes) {
+    addHrd(std::move(item));
   }
 }
 

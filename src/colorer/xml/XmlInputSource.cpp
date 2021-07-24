@@ -27,6 +27,11 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* b
   return std::make_unique<LocalFileXmlInputSource>(path, nullptr);
 }
 
+uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path)
+{
+  return newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
+}
+
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
 {
   if (!path || (*path == '\0')) {

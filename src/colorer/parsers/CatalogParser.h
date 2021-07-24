@@ -4,7 +4,6 @@
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
 #include <colorer/parsers/HRDNode.h>
-#include <list>
 #include <vector>
 #include <xercesc/dom/DOM.hpp>
 
@@ -18,7 +17,7 @@ class CatalogParser
   static std::unique_ptr<HRDNode> parseHRDSetsChild(const xercesc::DOMElement* elem);
 
   std::vector<UnicodeString> hrc_locations;
-  std::list<std::unique_ptr<HRDNode>> hrd_nodes;
+  std::vector<std::unique_ptr<HRDNode>> hrd_nodes;
 
   CatalogParser(CatalogParser const&) = delete;
   CatalogParser& operator=(CatalogParser const&) = delete;

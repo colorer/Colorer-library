@@ -32,6 +32,7 @@ class XmlInputSource : public xercesc::InputSource
    * @param path Could be relative file location, absolute file
    */
   static uXmlInputSource newInstance(const XMLCh* path, const XMLCh* base);
+  static uXmlInputSource newInstance(const UnicodeString* path);
 
   /**
    * @brief Creates inherited InputSource with the same type

@@ -5,6 +5,7 @@ Exception::Exception(const char* msg) noexcept : what_str(msg) {}
 Exception::Exception(const UnicodeString& msg) noexcept
 {
   msg.toUTF8String(what_str);
+  spdlog::error("{0}", msg);
 }
 
 const char* Exception::what() const noexcept

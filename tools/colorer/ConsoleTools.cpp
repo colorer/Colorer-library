@@ -89,7 +89,7 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
   const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
   const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
 
-  uXmlInputSource linkSource = XmlInputSource::newInstance(UStr::to_xmlch(&str).get(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource linkSource = XmlInputSource::newInstance(&str);
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   xml_parser.setErrorHandler(&error_handler);
@@ -188,7 +188,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     HRCParser* hrcParser = pf.getHRCParser();
-    fprintf(stderr, "\nloading file types...\n");
+    fprintf(stdout, "\nloading file types...\n");
     for (int idx = 0;; idx++) {
       FileType* type = hrcParser->enumerateFileTypes(idx);
       if (type == nullptr) {

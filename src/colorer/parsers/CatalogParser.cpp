@@ -20,10 +20,10 @@ void CatalogParser::parse(const UnicodeString* path)
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
 
-  uXmlInputSource catalogXIS = XmlInputSource::newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
+  uXmlInputSource catalogXIS = XmlInputSource::newInstance(path);
   xml_parser.parse(*catalogXIS->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw CatalogParserException("Error reading catalog.xml.");
+    throw CatalogParserException(*path + UnicodeString(" parse error"));
   }
   xercesc::DOMDocument* catalog = xml_parser.getDocument();
   xercesc::DOMElement* elem = catalog->getDocumentElement();
