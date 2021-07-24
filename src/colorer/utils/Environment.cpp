@@ -1,4 +1,10 @@
+#include <colorer/common/UStr.h>
 #include <colorer/utils/Environment.h>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <regex>
+#endif
 
 uUnicodeString Environment::getOSVariable(const char* name)
 {
@@ -25,5 +31,26 @@ uUnicodeString Environment::getOSVariable(const char* name)
     spdlog::debug("{0} = '{1}'", name, value);
     return std::make_unique<UnicodeString>(value);
   }
+#endif
+}
+
+uUnicodeString Environment::expandEnvironment(const UnicodeString* path)
+{
+#ifdef WIN32
+  std::wstring path_ws = UStr::to_stdwstr(path);
+  size_t i = ExpandEnvironmentStringsW(path_ws.c_str(), nullptr, 0);
+  auto temp = std::make_unique<wchar_t[]>(i);
+  ExpandEnvironmentStringsW(path_ws.c_str(), temp.get(), static_cast<DWORD>(i));
+  return std::make_unique<UnicodeString>(temp.get());
+#else
+  std::string text = UStr::to_stdstr(path);
+  static const std::regex env_re {R"--(\$\{([^}]+)\})--"};
+  std::smatch match;
+  while (std::regex_search(text, match, env_re)) {
+    auto const from = match[0];
+    auto const var_name = match[1].str().c_str();
+    text.replace(from.first, from.second, std::getenv(var_name));
+  }
+  return std::make_unique<UnicodeString>(text.c_str());
 #endif
 }

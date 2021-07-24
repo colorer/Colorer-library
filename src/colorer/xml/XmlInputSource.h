@@ -49,7 +49,6 @@ class XmlInputSource : public xercesc::InputSource
   ~XmlInputSource() override = default;
 
   static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
-  static XMLCh* ExpandEnvironment(const XMLCh* path);
   static bool isRelative(const UnicodeString* path);
   static uUnicodeString getClearPath(const UnicodeString* basePath, const UnicodeString* relPath);
   static bool isDirectory(const UnicodeString* path);
