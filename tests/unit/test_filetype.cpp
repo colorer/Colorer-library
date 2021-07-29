@@ -4,6 +4,11 @@
 
 TEST_CASE("Create FileType and set base properties")
 {
+  // disable logging
+  spdlog::drop_all();
+  auto log = spdlog::null_logger_mt("main");
+  spdlog::set_default_logger(log);
+  
   UnicodeString name("TestType");
   UnicodeString group("TestGroup");
   UnicodeString description("TestDescription");

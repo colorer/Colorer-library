@@ -1,5 +1,6 @@
 #include <colorer/common/UStr.h>
 #include <colorer/utils/Environment.h>
+#include <filesystem>
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -53,4 +54,12 @@ uUnicodeString Environment::expandEnvironment(const UnicodeString* path)
   }
   return std::make_unique<UnicodeString>(text.c_str());
 #endif
+}
+
+uUnicodeString Environment::normalizePath(const UnicodeString* path)
+{
+  auto expanded_string = Environment::expandEnvironment(path);
+  auto fpath = std::filesystem::path(UStr::to_stdstr(expanded_string));
+  fpath = fpath.lexically_normal();
+  return std::make_unique<UnicodeString>(fpath.c_str());
 }

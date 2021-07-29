@@ -14,7 +14,8 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports"
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports",
+        "COLORER_BUILD_TEST": "ON"
       },
       "environment": {
         "VCPKG_FEATURE_FLAGS": "manifests,versions"

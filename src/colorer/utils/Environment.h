@@ -8,6 +8,7 @@ class Environment
  public:
   static uUnicodeString getOSVariable(const char* name);
   static uUnicodeString expandEnvironment(const UnicodeString* path);
+  static uUnicodeString normalizePath(const UnicodeString* path);
 };
 
 #endif  // COLORER_ENVIRONMENT_H
