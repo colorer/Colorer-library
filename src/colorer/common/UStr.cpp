@@ -29,6 +29,11 @@ std::string UStr::to_stdstr(const UnicodeString* str)
   return out_str;
 }
 
+std::string UStr::to_stdstr(const uUnicodeString& str)
+{
+  return to_stdstr(str.get());
+}
+
 #ifdef _WINDOWS
 // wchar_t and UChar are the same size
 
@@ -85,12 +90,12 @@ bool UStr::isWhitespace(UChar c)
 
 UChar UStr::toLowerCase(UChar c)
 {
-  return (UChar)u_tolower(c);
+  return (UChar) u_tolower(c);
 }
 
 UChar UStr::toUpperCase(UChar c)
 {
-  return (UChar)u_toupper(c);
+  return (UChar) u_toupper(c);
 }
 
 icu::UnicodeSet* UStr::createCharClass(const UnicodeString& ccs, int pos, int* retPos, bool ignore_case)
@@ -280,14 +285,14 @@ UChar UStr::getEscapedChar(const UnicodeString& str, int pos, int& retPos)
         if (tmp < 0 || tmp > 0xFFFF)
           return BAD_WCHAR;
         retPos += val_len + 2;
-        return (UChar)tmp;
+        return (UChar) tmp;
       } else {
         UnicodeString dtmp = UnicodeString(str, pos + 2, 2);
         int tmp = getHexNumber(&dtmp);
         if (str.length() <= pos + 2 || tmp == -1)
           return BAD_WCHAR;
         retPos += 2;
-        return (UChar)tmp;
+        return (UChar) tmp;
       }
     }
     return str[pos + 1];

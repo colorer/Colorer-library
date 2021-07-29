@@ -13,6 +13,7 @@
 #include <colorer/parsers/ParserFactoryImpl.h>
 #include <colorer/utils/Environment.h>
 #include <colorer/viewer/TextLinesStore.h>
+#include <filesystem>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/BinFileInputStream.hpp>
 
@@ -38,29 +39,36 @@ ParserFactory::Impl::~Impl()
 void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 {
   if (!catalog_path || catalog_path->isEmpty()) {
+    spdlog::debug("loadCatalog for empty path");
+
     auto env = Environment::getOSVariable("COLORER_CATALOG");
     if (!env || env->isEmpty()) {
       throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
-    base_catalog_path = UnicodeString(*env);
+    base_catalog_path = Environment::normalizePath(env.get());
   } else {
-    base_catalog_path = UnicodeString(*catalog_path);
+    spdlog::debug("loadCatalog for {0}", *catalog_path);
+    base_catalog_path = Environment::normalizePath(catalog_path);
   }
 
-  parseCatalog(base_catalog_path);
+  parseCatalog(*base_catalog_path);
   spdlog::debug("start load hrc files");
   for (const auto& location : hrc_locations) {
     try {
       spdlog::debug("try load '{0}'", location);
-      auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
-      if (XmlInputSource::isDirectory(clear_path.get())) {
-        std::vector<UnicodeString> paths;
-        XmlInputSource::getFileFromDir(clear_path.get(), paths);
-        for (const auto& files : paths) {
-          loadHrc(&files, &base_catalog_path);
+      if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
+        auto clear_path = XmlInputSource::getClearPath(base_catalog_path.get(), &location);
+        if (std::filesystem::is_directory(UStr::to_stdstr(clear_path))) {
+          for (auto& p : std::filesystem::directory_iterator(UStr::to_stdstr(clear_path))) {
+            if (std::filesystem::is_regular_file(p)) {
+              loadHrc(UnicodeString(p.path().c_str()), nullptr);
+            }
+          }
+        } else {
+          loadHrc(*clear_path, nullptr);
         }
       } else {
-        loadHrc(clear_path.get(), &base_catalog_path);
+        loadHrc(location, base_catalog_path.get());
       }
     } catch (const Exception& e) {
       spdlog::error("{0}", e.what());
@@ -70,9 +78,9 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
   spdlog::debug("end load hrc files");
 }
 
-void ParserFactory::Impl::loadHrc(const UnicodeString* hrc_path, const UnicodeString* base_path) const
+void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
 {
-  uXmlInputSource dfis = XmlInputSource::newInstance(UStr::to_xmlch(hrc_path).get(), UStr::to_xmlch(base_path).get());
+  uXmlInputSource dfis = XmlInputSource::newInstance(&hrc_path, base_path);
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception& e) {
@@ -181,7 +189,7 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
     if (idx.length() != 0) {
       uXmlInputSource dfis;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
+        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(base_catalog_path.get()).get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         spdlog::error("Can't load hrd:");
@@ -212,7 +220,7 @@ TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID
     if (idx.length() != 0) {
       uXmlInputSource dfis;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(&base_catalog_path).get());
+        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(base_catalog_path.get()).get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         spdlog::error("Can't load hrd: ");

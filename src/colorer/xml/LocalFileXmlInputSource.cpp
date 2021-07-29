@@ -7,7 +7,7 @@
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
   auto upath = UnicodeString(path);
-  auto clear_path = Environment::expandEnvironment(&upath);
+  auto clear_path = Environment::normalizePath(&upath);
   input_source = std::make_unique<xercesc::LocalFileInputSource>(base, UStr::to_xmlch(clear_path.get()).get());
 }
 

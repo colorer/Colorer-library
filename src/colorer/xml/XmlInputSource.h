@@ -3,10 +3,9 @@
 
 #include <colorer/Common.h>
 #include <xercesc/sax/InputSource.hpp>
-#include <xercesc/util/XMLUniDefs.hpp>
 
-const XMLCh kJar[] = {xercesc::chLatin_j, xercesc::chLatin_a, xercesc::chLatin_r, xercesc::chColon, xercesc::chNull};
-const XMLCh kPercent[] = {xercesc::chPercent, xercesc::chNull};
+const char16_t kJar[] = u"jar:\0";
+const char16_t kPercent[] = u"%\0";
 
 class XmlInputSource;
 
@@ -32,7 +31,7 @@ class XmlInputSource : public xercesc::InputSource
    * @param path Could be relative file location, absolute file
    */
   static uXmlInputSource newInstance(const XMLCh* path, const XMLCh* base);
-  static uXmlInputSource newInstance(const UnicodeString* path);
+  static uXmlInputSource newInstance(const UnicodeString* path, const UnicodeString* base = nullptr);
 
   /**
    * @brief Creates inherited InputSource with the same type
@@ -49,10 +48,9 @@ class XmlInputSource : public xercesc::InputSource
   ~XmlInputSource() override = default;
 
   static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
-  static bool isRelative(const UnicodeString* path);
   static uUnicodeString getClearPath(const UnicodeString* basePath, const UnicodeString* relPath);
-  static bool isDirectory(const UnicodeString* path);
-  static void getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files);
+
+  static bool isUriFile(const UnicodeString* path, const UnicodeString* base = nullptr);
 
   XmlInputSource(XmlInputSource const&) = delete;
   XmlInputSource& operator=(XmlInputSource const&) = delete;

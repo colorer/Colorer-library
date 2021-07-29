@@ -8,7 +8,7 @@
 
 void CatalogParser::parse(const UnicodeString* path)
 {
-  spdlog::debug("start parse catalog.xml");
+  spdlog::debug("start parse {0} as catalog.xml", *path);
   hrc_locations.clear();
   hrd_nodes.clear();
 

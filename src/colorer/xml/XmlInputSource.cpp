@@ -6,6 +6,7 @@
 #endif
 #include <colorer/utils/Environment.h>
 #include <filesystem>
+#include "XmlInputSource.h"
 
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* base)
 {
@@ -22,9 +23,13 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* b
   return std::make_unique<LocalFileXmlInputSource>(path, nullptr);
 }
 
-uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path)
+uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)
 {
-  return newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
+  if (base) {
+    return newInstance(UStr::to_xmlch(path).get(), UStr::to_xmlch(base).get());
+  } else {
+    return newInstance(UStr::to_xmlch(path).get(), static_cast<XMLCh*>(nullptr));
+  }
 }
 
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
@@ -44,39 +49,46 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
 
 uUnicodeString XmlInputSource::getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
-  auto basep = std::filesystem::path(UStr::to_stdstr(basePath));
-  auto relp = std::filesystem::path(UStr::to_stdstr(relPath));
-  basep = basep.parent_path() / relp;
-
-  auto newPath = std::make_unique<UnicodeString>(basep.c_str());
+  auto root_pos = basePath->lastIndexOf('/');
+  auto root_pos2 = basePath->lastIndexOf('\\');
+  if (root_pos2 > root_pos) {
+    root_pos = root_pos2;
+  }
+  if (root_pos == -1) {
+    root_pos = 0;
+  } else {
+    root_pos++;
+  }
+  auto newPath = std::make_unique<UnicodeString>();
+  newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
   return newPath;
-}
-
-bool XmlInputSource::isRelative(const UnicodeString* path)
-{
-  return std::filesystem::path(UStr::to_stdstr(path)).is_relative();
 }
 
 uUnicodeString XmlInputSource::getClearPath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
-  auto clear_path = Environment::expandEnvironment(relPath);
-  if (isRelative(clear_path.get())) {
-    clear_path = getAbsolutePath(basePath, clear_path.get());
-    if (clear_path->startsWith("file://")) {
-      clear_path = std::make_unique<UnicodeString>(*clear_path, 7);
-    }
+  std::filesystem::path fs_basepath;
+  if (basePath) {
+    auto clear_basepath = Environment::normalizePath(basePath);
+    fs_basepath = std::filesystem::path(UStr::to_stdstr(clear_basepath)).parent_path();
   }
-  return clear_path;
+  auto clear_relpath = Environment::expandEnvironment(relPath);
+
+  std::filesystem::path full_path;
+  if (fs_basepath.empty()) {
+    full_path = UStr::to_stdstr(clear_relpath);
+  } else {
+    full_path = fs_basepath / UStr::to_stdstr(clear_relpath);
+  }
+
+  full_path = full_path.lexically_normal();
+
+  return std::make_unique<UnicodeString>(full_path.c_str());
 }
 
-bool XmlInputSource::isDirectory(const UnicodeString* path)
+bool XmlInputSource::isUriFile(const UnicodeString* path, const UnicodeString* base)
 {
-  return std::filesystem::is_directory(UStr::to_stdstr(path));
-}
-
-void XmlInputSource::getFileFromDir(const UnicodeString* relPath, std::vector<UnicodeString>& files)
-{
-  for (auto& p : std::filesystem::directory_iterator(UStr::to_stdstr(relPath))) {
-    files.emplace_back(UnicodeString(p.path().c_str()));
+  if ((path->startsWith(u"jar:")) || (base && base->startsWith(u"jar:"))) {
+    return false;
   }
+  return true;
 }

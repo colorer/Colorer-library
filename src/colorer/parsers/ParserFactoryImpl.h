@@ -16,7 +16,7 @@ class ParserFactory::Impl
 
   void loadCatalog(const UnicodeString* catalog_path);
   HRCParser* getHRCParser() const;
-  TextParser* createTextParser();
+  static TextParser* createTextParser();
   StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
   TextHRDMapper* createTextMapper(const UnicodeString* nameID);
 
@@ -40,9 +40,9 @@ class ParserFactory::Impl
  private:
   void parseCatalog(const UnicodeString& catalog_path);
 
-  void loadHrc(const UnicodeString* hrc_path, const UnicodeString* base_path) const;
+  void loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const;
 
-  UnicodeString base_catalog_path;
+  uUnicodeString base_catalog_path;
   std::vector<UnicodeString> hrc_locations;
   std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
 
