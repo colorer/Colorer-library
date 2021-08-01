@@ -1,21 +1,11 @@
-#ifdef __unix__
-#include <dirent.h>
-#include <sys/stat.h>
-#endif
-#ifdef WIN32
-#include <io.h>
-#include <windows.h>
-#endif
-
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/CatalogParser.h>
 #include <colorer/parsers/HRCParserImpl.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
 #include <colorer/utils/Environment.h>
-#include <colorer/viewer/TextLinesStore.h>
 #include <filesystem>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/util/BinFileInputStream.hpp>
+
+namespace fs = std::filesystem;
 
 ParserFactory::Impl::Impl()
 {
@@ -57,10 +47,10 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
     try {
       spdlog::debug("try load '{0}'", location);
       if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
-        auto clear_path = XmlInputSource::getClearPath(base_catalog_path.get(), &location);
-        if (std::filesystem::is_directory(UStr::to_stdstr(clear_path))) {
-          for (auto& p : std::filesystem::directory_iterator(UStr::to_stdstr(clear_path))) {
-            if (std::filesystem::is_regular_file(p)) {
+        auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
+        if (fs::is_directory(UStr::to_stdstr(clear_path))) {
+          for (auto& p : fs::directory_iterator(UStr::to_stdstr(clear_path))) {
+            if (fs::is_regular_file(p)) {
               loadHrc(UnicodeString(p.path().c_str()), nullptr);
             }
           }
@@ -160,7 +150,7 @@ TextParser* ParserFactory::Impl::createTextParser()
 StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID)
 {
   const UnicodeString* class_id;
-  const UnicodeString class_default("rgb");
+  const UnicodeString class_default(u"rgb");
   if (classID == nullptr) {
     class_id = &class_default;
   } else {
@@ -168,13 +158,11 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
   }
 
   const UnicodeString* name_id;
-  const UnicodeString name_default("default");
-  UnicodeString name_env;
+  const UnicodeString name_default(u"default");
   if (nameID == nullptr) {
-    auto hrd = Environment::getOSVariable("COLORER5HRD");
+    auto hrd = Environment::getOSVariable("COLORER_HRD");
     if (hrd) {
-      name_env = UnicodeString(*hrd);
-      name_id = &name_env;
+      name_id = hrd.get();
     } else {
       name_id = &name_default;
     }
@@ -187,9 +175,8 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
   auto* mapper = new StyledHRDMapper();
   for (const auto& idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
-      uXmlInputSource dfis;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(base_catalog_path.get()).get());
+        auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         spdlog::error("Can't load hrd:");
@@ -203,10 +190,10 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
 TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
 {
   // fixed class 'text'
-  UnicodeString d_text = UnicodeString("text");
+  UnicodeString d_text = UnicodeString(u"text");
 
   const UnicodeString* name_id;
-  const UnicodeString name_default("default");
+  const UnicodeString name_default(u"default");
   if (nameID == nullptr) {
     name_id = &name_default;
   } else {
@@ -218,13 +205,13 @@ TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID
   auto* mapper = new TextHRDMapper();
   for (const auto& idx : hrd_node->hrd_location)
     if (idx.length() != 0) {
-      uXmlInputSource dfis;
       try {
-        dfis = XmlInputSource::newInstance(UStr::to_xmlch(&idx).get(), UStr::to_xmlch(base_catalog_path.get()).get());
+        auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
         spdlog::error("Can't load hrd: ");
         spdlog::error("{0}", e.what());
+        throw ParserFactoryException("Error load hrd");
       }
     }
   return mapper;

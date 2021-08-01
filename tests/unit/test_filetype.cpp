@@ -8,7 +8,7 @@ TEST_CASE("Create FileType and set base properties")
   spdlog::drop_all();
   auto log = spdlog::null_logger_mt("main");
   spdlog::set_default_logger(log);
-  
+
   UnicodeString name("TestType");
   UnicodeString group("TestGroup");
   UnicodeString description("TestDescription");
@@ -25,7 +25,6 @@ TEST_CASE("Create FileType and set base properties")
 SCENARIO("Set param value for FileType")
 {
   UnicodeString param1("param1");
-  UnicodeString param2("param2");
   UnicodeString def_value("value1");
   UnicodeString user_value("value2");
 
@@ -83,6 +82,7 @@ SCENARIO("Set param value for FileType")
     {
       THEN("return it value throws exception")
       {
+        UnicodeString param2("param2");
         REQUIRE_THROWS_AS(file_type.setParamValue(param2, &def_value), FileTypeException);
         REQUIRE_THROWS_AS(file_type.setParamDefaultValue(param2, &def_value), FileTypeException);
         REQUIRE_THROWS_AS(file_type.setParamDescription(param2, &def_value), FileTypeException);
@@ -124,6 +124,7 @@ TEST_CASE("Work with integer type of param value")
 
   CHECK(5 == file_type.getParamValueInt(param2));
   CHECK(5 == file_type.getParamValueInt(param3));
-  REQUIRE_NOTHROW(file_type.getParamValueInt(UnicodeString(nullptr)));
-  REQUIRE_NOTHROW(file_type.getParamValueInt(param1));
+  int ret;
+  REQUIRE_NOTHROW(ret = file_type.getParamValueInt(UnicodeString(nullptr)));
+  REQUIRE_NOTHROW(ret = file_type.getParamValueInt(param1));
 }

@@ -9,11 +9,11 @@ class ZipXmlInputSource : public XmlInputSource
 {
  public:
   ZipXmlInputSource(const XMLCh* path, const XMLCh* base);
-  ZipXmlInputSource(const XMLCh* path, XmlInputSource* base);
   ~ZipXmlInputSource() override;
   [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
-  uXmlInputSource createRelative(const XMLCh* relPath) const override;
   xercesc::InputSource* getInputSource() override;
+
+  static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
 
   ZipXmlInputSource(ZipXmlInputSource const&) = delete;
   ZipXmlInputSource& operator=(ZipXmlInputSource const&) = delete;

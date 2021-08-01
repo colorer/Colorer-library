@@ -1,14 +1,21 @@
 #include <colorer/Exception.h>
 #include <colorer/common/UStr.h>
-#include <colorer/utils/Environment.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
+#include <filesystem>
 #include <xercesc/util/BinFileInputStream.hpp>
 
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
   auto upath = UnicodeString(path);
-  auto clear_path = Environment::normalizePath(&upath);
-  input_source = std::make_unique<xercesc::LocalFileInputSource>(base, UStr::to_xmlch(clear_path.get()).get());
+  auto ubase = UnicodeString(base);
+  auto clear_path = XmlInputSource::getClearFilePath(&ubase, &upath);
+
+  if (std::filesystem::is_regular_file(UStr::to_stdstr(clear_path))) {
+    input_source = std::make_unique<xercesc::LocalFileInputSource>(UStr::to_xmlch(clear_path.get()).get());
+    // file is not open yet, only after makeStream
+  } else {
+    throw InputSourceException(*clear_path + " isn't regular file.");
+  }
 }
 
 xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
@@ -18,11 +25,6 @@ xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
     throw InputSourceException("Can't open file '" + UnicodeString(input_source->getSystemId()) + "'");
   }
   return stream.release();
-}
-
-uXmlInputSource LocalFileXmlInputSource::createRelative(const XMLCh* relPath) const
-{
-  return std::make_unique<LocalFileXmlInputSource>(relPath, input_source->getSystemId());
 }
 
 xercesc::InputSource* LocalFileXmlInputSource::getInputSource()

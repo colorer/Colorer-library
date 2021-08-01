@@ -340,7 +340,7 @@ void HRCParser::Impl::addPrototypeLocation(const xercesc::DOMElement* elem)
     spdlog::error("Bad 'location' link attribute in prototype '{0}'", *current_parse_prototype->pimpl->name.get());
     return;
   }
-  current_parse_prototype->pimpl->inputSource = XmlInputSource::newInstance(locationLink, current_input_source);
+  current_parse_prototype->pimpl->inputSource = current_input_source->createRelative(locationLink);
 }
 
 void HRCParser::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
@@ -952,7 +952,7 @@ void HRCParser::Impl::updateLinks()
 {
   while (structureChanged) {
     structureChanged = false;
-    for (auto & scheme_it : schemeHash) {
+    for (auto& scheme_it : schemeHash) {
       SchemeImpl* scheme = scheme_it.second;
       if (!scheme->fileType->pimpl->loadDone) {
         continue;

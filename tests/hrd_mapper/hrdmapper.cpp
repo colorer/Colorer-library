@@ -10,7 +10,7 @@ void testTextHrd()
 
   UnicodeString file = R"(./data/tags.hrd)";
 
-  auto dfis = XmlInputSource::newInstance(UStr::to_xmlch(&file).get(), (XMLCh*) nullptr);
+  auto dfis = XmlInputSource::newInstance(&file);
 
   TextHRDMapper thrd;
   thrd.loadRegionMappings(dfis.get());
@@ -28,7 +28,7 @@ void testStyledHrd()
 
   UnicodeString file = R"(./data/blue.hrd)";
 
-  auto dfis = XmlInputSource::newInstance(UStr::to_xmlch(&file).get(), (XMLCh*) nullptr);
+  auto dfis = XmlInputSource::newInstance(&file);
 
   StyledHRDMapper shrd;
   shrd.loadRegionMappings(dfis.get());

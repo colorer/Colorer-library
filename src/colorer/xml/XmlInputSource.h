@@ -18,14 +18,6 @@ class XmlInputSource : public xercesc::InputSource
 {
  public:
   /**
-   * @brief Statically creates instance of uXmlInputSource object,
-   * possibly based on parent source stream.
-   * @param base Base stream, used to resolve relative paths.
-   * @param path Could be relative file location, absolute file
-   */
-  static uXmlInputSource newInstance(const XMLCh* path, XmlInputSource* base);
-
-  /**
    * @brief Tries statically create instance of InputSource object,
    * according to passed path string.
    * @param path Could be relative file location, absolute file
@@ -38,17 +30,13 @@ class XmlInputSource : public xercesc::InputSource
    * relatively to the current.
    * @param relPath Relative URI part.
    */
-  virtual uXmlInputSource createRelative(const XMLCh* relPath) const = 0;
+  virtual uXmlInputSource createRelative(const XMLCh* relPath);
 
-  virtual xercesc::InputSource* getInputSource()
-  {
-    return nullptr;
-  }
+  virtual xercesc::InputSource* getInputSource() = 0;
 
   ~XmlInputSource() override = default;
 
-  static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
-  static uUnicodeString getClearPath(const UnicodeString* basePath, const UnicodeString* relPath);
+  static uUnicodeString getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);
 
   static bool isUriFile(const UnicodeString* path, const UnicodeString* base = nullptr);
 

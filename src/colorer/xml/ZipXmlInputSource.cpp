@@ -8,15 +8,6 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, const XMLCh* base)
   create(path, base);
 }
 
-ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, XmlInputSource* base)
-{
-  const XMLCh* base_path = nullptr;
-  if (base) {
-    base_path = base->getInputSource()->getSystemId();
-  }
-  create(path, base_path);
-}
-
 void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
   if (!path || *path == '\0') {
@@ -46,7 +37,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 
     auto in_base = std::make_unique<UnicodeString>(UnicodeString(base), base_idx + 1);
     UnicodeString d_path = UnicodeString(path);
-    in_jar_location = XmlInputSource::getAbsolutePath(in_base.get(), &d_path);
+    in_jar_location = getAbsolutePath(in_base.get(), &d_path);
 
   } else {
     throw InputSourceException("Can't create jar source");
@@ -64,11 +55,6 @@ ZipXmlInputSource::~ZipXmlInputSource()
   jar_input_source->delref();
 }
 
-uXmlInputSource ZipXmlInputSource::createRelative(const XMLCh* relPath) const
-{
-  return std::make_unique<ZipXmlInputSource>(relPath, this->getSystemId());
-}
-
 xercesc::InputSource* ZipXmlInputSource::getInputSource()
 {
   return this;
@@ -77,6 +63,23 @@ xercesc::InputSource* ZipXmlInputSource::getInputSource()
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 {
   return new UnZip(jar_input_source->getSrc(), jar_input_source->getSize(), in_jar_location.get());
+}
+
+uUnicodeString ZipXmlInputSource::getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath)
+{
+  auto root_pos = basePath->lastIndexOf('/');
+  auto root_pos2 = basePath->lastIndexOf('\\');
+  if (root_pos2 > root_pos) {
+    root_pos = root_pos2;
+  }
+  if (root_pos == -1) {
+    root_pos = 0;
+  } else {
+    root_pos++;
+  }
+  auto newPath = std::make_unique<UnicodeString>();
+  newPath->append(UnicodeString(*basePath, 0, root_pos)).append(*relPath);
+  return newPath;
 }
 
 UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path) : mPos(0), mBoundary(0), stream(nullptr), len(0)
