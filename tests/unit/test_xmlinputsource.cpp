@@ -16,8 +16,10 @@ TEST_CASE("Test create instance")
     REQUIRE_THROWS_WITH(XmlInputSource::newInstance(u"", u""), Catch::Contains("path is empty"));
     REQUIRE_THROWS_WITH(XmlInputSource::newInstance(u"", u"c:\\windows"), Catch::Contains("path is empty"));
 
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&UnicodeString(u"../"), nullptr), Catch::Contains("isn't regular file"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&UnicodeString(u"../"), &UnicodeString(u"c:\\windows")), Catch::Contains("isn't regular file"));
+    auto s1 = UnicodeString(u"../");
+    auto s2 = UnicodeString(u"c:\\windows");
+    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&s1, nullptr), Catch::Contains("isn't regular file"));
+    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&s1, &s2), Catch::Contains("isn't regular file"));
   }
   xercesc::XMLPlatformUtils::Terminate();
 }
@@ -36,7 +38,8 @@ TEST_CASE("Test open instance")
     std::ofstream(test_file.c_str()).close();
 
     uXmlInputSource a;
-    REQUIRE_NOTHROW(a = XmlInputSource::newInstance(&UnicodeString(test_file.c_str()), nullptr));
+    auto s1 = UnicodeString(test_file.c_str());
+    REQUIRE_NOTHROW(a = XmlInputSource::newInstance(&s1, nullptr));
     REQUIRE_NOTHROW(a->makeStream());
   }
   std::error_code ec;
