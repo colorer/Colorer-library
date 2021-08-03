@@ -43,6 +43,16 @@ Ubuntu example
     cmake ..
     cmake --build .
 
+CentOS Example
+
+    sudo yum install libicu-devel xerces-c-devel spdlog-devel fmt-devel zlib-devel minizip1.2-devel
+    git clone https://github.com/colorer/Colorer-library.git
+    cd Colorer-library
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build .
+
 ### Options for build
 This options available for build
 
