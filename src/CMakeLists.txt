@@ -176,11 +176,11 @@ set_target_properties(colorer_lib PROPERTIES
     )
 
 target_link_libraries(colorer_lib
-    PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
+    PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog stdc++fs
     )
 
 if(COLORER_FEATURE_JARINPUTSOURCE)
-  target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+  target_link_libraries(colorer_lib PUBLIC minizip::minizip stdc++fs)
 endif()
 
 
