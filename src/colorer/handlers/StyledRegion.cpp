@@ -21,7 +21,7 @@ StyledRegion::StyledRegion()
   style = RD_NONE;
 }
 
-StyledRegion::StyledRegion(const StyledRegion& rd)
+StyledRegion::StyledRegion(const StyledRegion& rd) : RegionDefine()
 {
   operator=(rd);
 }
