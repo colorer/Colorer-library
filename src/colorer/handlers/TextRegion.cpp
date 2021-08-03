@@ -16,7 +16,7 @@ TextRegion::TextRegion()
   type = RegionDefine::TEXT_REGION;
 }
 
-TextRegion::TextRegion(const TextRegion& rd)
+TextRegion::TextRegion(const TextRegion& rd) : RegionDefine()
 {
   operator=(rd);
 }
