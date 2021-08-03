@@ -25,7 +25,7 @@ class SharedXmlInputSource
   SharedXmlInputSource& operator=(SharedXmlInputSource&&) = delete;
 
  private:
-  explicit SharedXmlInputSource(uXmlInputSource& source);
+  explicit SharedXmlInputSource(uXmlInputSource source);
   ~SharedXmlInputSource();
 
   static std::unordered_map<UnicodeString, SharedXmlInputSource*>* isHash;

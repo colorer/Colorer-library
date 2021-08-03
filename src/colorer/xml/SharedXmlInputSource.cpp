@@ -18,7 +18,7 @@ int SharedXmlInputSource::delref()
   return ref_count;
 }
 
-SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource& source)
+SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
 {
   ref_count = 1;
   input_source = std::move(source);
@@ -55,8 +55,8 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     sis->addref();
     return sis;
   } else {
-    auto* sis = new SharedXmlInputSource(tempis);
-    isHash->insert(std::make_pair(UnicodeString(sis->getInputSource()->getSystemId()), sis));
+    auto* sis = new SharedXmlInputSource(std::move(tempis));
+    isHash->emplace(std::make_pair(d_id, sis));
     return sis;
   }
 }

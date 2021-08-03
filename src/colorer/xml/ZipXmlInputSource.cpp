@@ -10,17 +10,15 @@ ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, const XMLCh* base)
 
 void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
 {
-  if (!path || *path == '\0') {
-    throw InputSourceException("Can't create jar source");
-  }
+  const auto kJar_len = xercesc::XMLString::stringLen(kJar);
   if (xercesc::XMLString::startsWith(path, kJar)) {
     int path_idx = xercesc::XMLString::lastIndexOf(path, '!');
     if (path_idx == -1) {
       throw InputSourceException("Bad jar uri format: " + UnicodeString(path));
     }
 
-    auto bpath = std::make_unique<XMLCh[]>(path_idx - 4 + 1);
-    xercesc::XMLString::subString(bpath.get(), path, 4, path_idx);
+    auto bpath = std::make_unique<XMLCh[]>(path_idx - kJar_len + 1);
+    xercesc::XMLString::subString(bpath.get(), path, kJar_len, path_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), base);
 
     in_jar_location = std::make_unique<UnicodeString>(UnicodeString(path), path_idx + 1);
@@ -31,8 +29,8 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
       throw InputSourceException("Bad jar uri format: " + UnicodeString(path));
     }
 
-    auto bpath = std::make_unique<XMLCh[]>(base_idx - 4 + 1);
-    xercesc::XMLString::subString(bpath.get(), base, 4, base_idx);
+    auto bpath = std::make_unique<XMLCh[]>(base_idx - kJar_len + 1);
+    xercesc::XMLString::subString(bpath.get(), base, kJar_len, base_idx);
     jar_input_source = SharedXmlInputSource::getSharedInputSource(bpath.get(), nullptr);
 
     auto in_base = std::make_unique<UnicodeString>(UnicodeString(base), base_idx + 1);
@@ -46,7 +44,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
   UnicodeString str("jar:");
   str.append(UnicodeString(jar_input_source->getInputSource()->getSystemId()));
   str.append("!");
-  str.append(*in_jar_location.get());
+  str.append(*in_jar_location);
   setSystemId(UStr::to_xmlch(&str).get());
 }
 
@@ -125,7 +123,7 @@ UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path) : mP
     unzClose(fid);
     throw InputSourceException("Bad JAR file CRC");
   }
-  ret = unzClose(fid);
+  unzClose(fid);
 }
 
 XMLFilePos UnZip::curPos() const
