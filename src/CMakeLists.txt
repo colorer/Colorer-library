@@ -183,6 +183,9 @@ if(COLORER_FEATURE_JARINPUTSOURCE)
   target_link_libraries(colorer_lib PUBLIC minizip::minizip)
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+  target_link_libraries(colorer_lib PUBLIC stdc++fs)
+endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${MAIN_FLAGS_CXX_DEBUG}>)
