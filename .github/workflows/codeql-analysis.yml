@@ -2,15 +2,10 @@ name: "CodeQL"
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
 
 env:
   BUILD_TYPE: Release
-  
+
 jobs:
   analyze:
     name: Analyze
