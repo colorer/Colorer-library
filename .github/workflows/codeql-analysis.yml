@@ -8,7 +8,9 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ master ]
 
-
+env:
+  BUILD_TYPE: Release
+  
 jobs:
   analyze:
     name: Analyze
