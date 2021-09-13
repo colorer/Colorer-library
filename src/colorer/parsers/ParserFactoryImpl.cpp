@@ -50,7 +50,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
         auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
         if (fs::is_directory(UStr::to_stdstr(clear_path))) {
           for (auto& p : fs::directory_iterator(UStr::to_stdstr(clear_path))) {
-            if (fs::is_regular_file(p)) {
+            if (fs::is_regular_file(p) && p.path().extension() == ".hrc") {
               loadHrc(UnicodeString(p.path().c_str()), nullptr);
             }
           }
