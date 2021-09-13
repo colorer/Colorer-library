@@ -1,0 +1,74 @@
+# Библиотека схем
+
+Основной частью библиотеки colorer является библиотека схем.
+
+**Библиотека схем** - это набор описаний схем типов файлов и стилей раскраски, используемых библиотекой colorer для работы с файлами.\
+**Cхема** - файлы с расширешнием hrc. Hrc это формат описания структуры типа файла, который разбирает colorer. В файле описывается как логически разделить его на отдельные регионы,
+к которым потом будут применяться стили раскраски.\
+**Стиль раскраски** - файлы с расширешнием hrd. Hrd используются для сопоставление регионов, полученных на выходе разборы структуры файла по hrc-схеме, цветам или заменяющей их
+информации. Цвета могут быть заданы в любом формате - интерпретация зависит от целевой программы, использующей библиотеку.\
+**catalog.xml** - центральный файл бибилиотеки схем. В нём описываются пути до hrc и hrd файлов.
+
+# catalog.xml
+
+Для старта работы в colorer необходимо передать путь до catalog.xml. Формат xml файла имеет фиксированную структуру, описанную
+в [catalog.xsd](https://colorer.github.io/schema/v1/catalog.xsd). Пример:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog [
+        <!ENTITY catalog-console SYSTEM "hrd/catalog-console.xml">
+        <!ENTITY catalog-rgb SYSTEM "hrd/catalog-rgb.xml">
+        <!ENTITY catalog-text SYSTEM "hrd/catalog-text.xml">
+        ]>
+<catalog xmlns="http://colorer.github.io/schema/v1/catalog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://colorer.github.io/schema/v1/catalog https://colorer.github.io/schema/v1/catalog.xsd">
+    <hrc-sets>
+        <location link="hrc/proto.hrc"/>
+        <location link="hrc/auto"/>
+    </hrc-sets>
+    <hrd-sets>
+        &catalog-console;
+        &catalog-rgb;
+        &catalog-text;
+    </hrd-sets>
+</catalog>
+```
+
+В библиотеке схем широко используется возможность синтаксиса xml по вставке одного файла в другой - entity. Запись вида
+
+```
+<!ENTITY catalog-console SYSTEM "hrd/catalog-console.xml">
+```
+
+в начале файла говорит о том, что вместо `&catalog-console;` в xml файле будет подставляться содержимое файла `hrd/catalog-console.xml`. В случае относительного пути, путь
+смотрится от текущего файла.
+
+В блоке `hrc-sets` задаются пути до hrc файлов. Это может быть путь как до конкретного файла, так и до папки. В случае указания пути до папки производится поиск файлов с
+расширением `.hrc` только на первом уровне, во вложенные папки не заходит.
+
+В блоке `hrd-sets` задаются пути до файлов цветовых стилей.
+
+Если упростить структуру файла, убрав вставки внешних файлов, то catalog.xml выглядит так:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://colorer.github.io/schema/v1/catalog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://colorer.github.io/schema/v1/catalog https://colorer.github.io/schema/v1/catalog.xsd">
+    <hrc-sets>
+        <location link="hrc/proto.hrc"/>
+        <location link="hrc/auto"/>
+    </hrc-sets>
+    <hrd-sets>
+        <hrd class="console" name="default" description="Aqua on blue">
+            <location link="hrd/console/default.hrd"/>
+        </hrd>
+        <hrd class="rgb" name="default" description="White (crimsoned)">
+            <location link="hrd/rgb/white.hrd"/>
+        </hrd>
+        <hrd class="text" name="tags" description="HTML italic, underline indention">
+            <location link="hrd/text/tags.hrd"/>
+        </hrd>
+    </hrd-sets>
+</catalog>
+```
