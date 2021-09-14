@@ -12,6 +12,8 @@ set(SRC_COLORER
     colorer/RegionHandler.h
     colorer/Scheme.h
     colorer/TextParser.h
+    colorer/base/BaseNames.h
+    colorer/base/XmlTagDefs.h
     colorer/common/Encodings.cpp
     colorer/common/Encodings.h
     colorer/common/Exception.cpp
@@ -81,7 +83,6 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.cpp
     colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
-    colorer/parsers/XmlTagDefs.h
     colorer/utils/Environment.cpp
     colorer/utils/Environment.h
     colorer/version.h
@@ -100,7 +101,8 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.cpp
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
-    colorer/xml/XmlParserErrorHandler.h)
+    colorer/xml/XmlParserErrorHandler.h
+    )
 
 if(COLORER_USE_HTTPINPUTSOURCE AND WIN32)
   set(COLORER_FEATURE_HTTPINPUTSOURCE 1)

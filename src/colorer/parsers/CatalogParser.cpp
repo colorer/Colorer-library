@@ -1,6 +1,6 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/CatalogParser.h>
-#include <colorer/parsers/XmlTagDefs.h>
+#include <colorer/base/XmlTagDefs.h>
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
@@ -93,8 +93,9 @@ void CatalogParser::parseHrdSetsBlock(const xercesc::DOMNode* elem)
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
         auto hrd = parseHRDSetsChild(subelem);
-        if (hrd)
+        if (hrd) {
           hrd_nodes.push_back(std::move(hrd));
+        }
       }
       continue;
     }

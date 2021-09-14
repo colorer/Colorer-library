@@ -50,7 +50,7 @@ uUnicodeString XmlInputSource::getClearFilePath(const UnicodeString* basePath, c
 
 bool XmlInputSource::isUriFile(const UnicodeString* path, const UnicodeString* base)
 {
-  if ((path->startsWith(u"jar:")) || (base && base->startsWith(u"jar:"))) {
+  if ((path->startsWith(kJar)) || (base && base->startsWith(kJar))) {
     return false;
   }
   return true;

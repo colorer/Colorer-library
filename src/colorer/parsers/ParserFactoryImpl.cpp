@@ -4,6 +4,7 @@
 #include <colorer/parsers/ParserFactoryImpl.h>
 #include <colorer/utils/Environment.h>
 #include <filesystem>
+#include <colorer/base/BaseNames.h>
 
 namespace fs = std::filesystem;
 
@@ -32,7 +33,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
     spdlog::debug("loadCatalog for empty path");
 
     auto env = Environment::getOSVariable("COLORER_CATALOG");
-    if (!env || env->isEmpty()) {
+    if (env->isEmpty()) {
       throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
     base_catalog_path = Environment::normalizePath(env.get());
@@ -93,16 +94,7 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
   }
 }
 
-size_t ParserFactory::Impl::countHRD(const UnicodeString& classID)
-{
-  auto hash = hrd_nodes.find(classID);
-  if (hash == hrd_nodes.end()) {
-    return 0;
-  }
-  return hash->second->size();
-}
-
-std::vector<UnicodeString> ParserFactory::Impl::enumHRDClasses()
+[[maybe_unused]] std::vector<UnicodeString> ParserFactory::Impl::enumHRDClasses()
 {
   std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
@@ -150,15 +142,33 @@ TextParser* ParserFactory::Impl::createTextParser()
 StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID)
 {
   const UnicodeString* class_id;
-  const UnicodeString class_default(u"rgb");
+  const UnicodeString class_default(HrdClassRgb);
   if (classID == nullptr) {
     class_id = &class_default;
   } else {
     class_id = classID;
   }
 
+  auto* mapper = new StyledHRDMapper();
+  fillMapper(class_id, nameID, mapper);
+
+  return mapper;
+}
+
+TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
+{
+  UnicodeString class_id = UnicodeString(HrdClassText);
+
+  auto* mapper = new TextHRDMapper();
+  fillMapper(&class_id, nameID, mapper);
+
+  return mapper;
+}
+
+void ParserFactory::Impl::fillMapper(const UnicodeString* classID, const UnicodeString* nameID, RegionMapper* mapper)
+{
   const UnicodeString* name_id;
-  const UnicodeString name_default(u"default");
+  const UnicodeString name_default(HrdNameDefault);
   if (nameID == nullptr) {
     auto hrd = Environment::getOSVariable("COLORER_HRD");
     if (hrd) {
@@ -170,40 +180,9 @@ StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* cl
     name_id = nameID;
   }
 
-  auto hrd_node = getHRDNode(*class_id, *name_id);
+  auto hrd_node = getHRDNode(*classID, *name_id);
 
-  auto* mapper = new StyledHRDMapper();
-  for (const auto& idx : hrd_node->hrd_location)
-    if (idx.length() != 0) {
-      try {
-        auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
-        mapper->loadRegionMappings(dfis.get());
-      } catch (Exception& e) {
-        spdlog::error("Can't load hrd:");
-        spdlog::error("{0}", e.what());
-        throw ParserFactoryException("Error load hrd");
-      }
-    }
-  return mapper;
-}
-
-TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
-{
-  // fixed class 'text'
-  UnicodeString d_text = UnicodeString(u"text");
-
-  const UnicodeString* name_id;
-  const UnicodeString name_default(u"default");
-  if (nameID == nullptr) {
-    name_id = &name_default;
-  } else {
-    name_id = nameID;
-  }
-
-  auto hrd_node = getHRDNode(d_text, *name_id);
-
-  auto* mapper = new TextHRDMapper();
-  for (const auto& idx : hrd_node->hrd_location)
+  for (const auto& idx : hrd_node->hrd_location) {
     if (idx.length() != 0) {
       try {
         auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
@@ -214,7 +193,7 @@ TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID
         throw ParserFactoryException("Error load hrd");
       }
     }
-  return mapper;
+  }
 }
 
 void ParserFactory::Impl::addHrd(std::unique_ptr<HRDNode> hrd)

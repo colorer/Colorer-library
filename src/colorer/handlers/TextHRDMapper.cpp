@@ -1,6 +1,6 @@
 #include <colorer/Exception.h>
 #include <colorer/handlers/TextHRDMapper.h>
-#include <colorer/parsers/XmlTagDefs.h>
+#include <colorer/base/XmlTagDefs.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -67,7 +67,6 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
         if (*sval != xercesc::chNull) {
           eback = std::make_unique<UnicodeString>(sval);
         }
-
 
         auto rdef = std::make_unique<TextRegion>(stext, etext, sback, eback);
         regionDefines.emplace(name, std::move(rdef));

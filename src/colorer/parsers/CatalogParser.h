@@ -1,5 +1,5 @@
-#ifndef _COLORER_CATALOGPARSER_H_
-#define _COLORER_CATALOGPARSER_H_
+#ifndef COLORER_CATALOGPARSER_H
+#define COLORER_CATALOGPARSER_H
 
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
@@ -37,4 +37,4 @@ class CatalogParserException : public Exception
   explicit CatalogParserException(const UnicodeString& msg) noexcept : Exception("[CatalogParserException] " + msg) {}
 };
 
-#endif  //_COLORER_CATALOGPARSER_H_
+#endif  // COLORER_CATALOGPARSER_H

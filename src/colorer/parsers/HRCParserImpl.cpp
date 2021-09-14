@@ -1,7 +1,7 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/FileTypeImpl.h>
 #include <colorer/parsers/HRCParserImpl.h>
-#include <colorer/parsers/XmlTagDefs.h>
+#include <colorer/base/XmlTagDefs.h>
 #include <colorer/xml/BaseEntityResolver.h>
 #include <colorer/xml/XmlParserErrorHandler.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>

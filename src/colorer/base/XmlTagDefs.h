@@ -1,5 +1,5 @@
-#ifndef _COLORER_XMLTAGDEFS_H_
-#define _COLORER_XMLTAGDEFS_H_
+#ifndef COLORER_XMLTAGDEFS_H
+#define COLORER_XMLTAGDEFS_H
 
 /* catalog.xml
 
@@ -146,4 +146,4 @@ const char16_t hrdAssignAttrEBack[] = u"eback\0";
 const char16_t hrdAssignAttrSText[] = u"stext\0";
 const char16_t hrdAssignAttrEText[] = u"etext\0";
 
-#endif  // _COLORER_XMLTAGDEFS_H_
+#endif  // COLORER_XMLTAGDEFS_H

@@ -1,5 +1,5 @@
-#ifndef _COLORER_PARSERFACTORY_H_
-#define _COLORER_PARSERFACTORY_H_
+#ifndef COLORER_PARSERFACTORY_H
+#define COLORER_PARSERFACTORY_H
 
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
@@ -97,4 +97,4 @@ class ParserFactoryException : public Exception
   explicit ParserFactoryException(const UnicodeString& msg) noexcept : Exception("[ParserFactoryException] " + msg) {}
 };
 
-#endif  // _COLORER_PARSERFACTORY_H_
+#endif  // COLORER_PARSERFACTORY_H
