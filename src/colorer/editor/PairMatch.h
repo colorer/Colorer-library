@@ -1,23 +1,24 @@
 #ifndef _COLORER_PAIRMATCH_H_
 #define _COLORER_PAIRMATCH_H_
 
-#include<colorer/handlers/LineRegionsSupport.h>
+#include <colorer/handlers/LineRegionsSupport.h>
 
 /**
  * Representation of pair match in text.
  * Contains information about two regions on two lines.
  * @ingroup colorer_editor
  */
-class PairMatch{
-public:
+class PairMatch
+{
+ public:
   /**
    * Region's start position as a cloned LineRegion object.
    */
-  LineRegion *start;
+  LineRegion* start;
   /**
    * Region's end position as a cloned LineRegion object.
    */
-  LineRegion *end;
+  LineRegion* end;
   /**
    * Starting Line of pair
    */
@@ -39,26 +40,28 @@ public:
    * Default constructor.
    * Clears all fields
    */
-  PairMatch(LineRegion *startRef, int lineNo, bool topPosition){
+  PairMatch(LineRegion* startRef, int lineNo, bool topPosition)
+  {
     start = end = nullptr;
     this->startRef = startRef;
     sline = lineNo;
     pairBalance = -1;
     this->topPosition = false;
-    if (topPosition){
+    if (topPosition) {
       pairBalance = 1;
       this->topPosition = true;
     }
     eline = -1;
   }
 
-  virtual ~PairMatch(){
+  virtual ~PairMatch()
+  {
     delete start;
     delete end;
   }
 
-
-  LineRegion *getStartRef(){
+  LineRegion* getStartRef()
+  {
     return startRef;
   }
 
@@ -66,9 +69,10 @@ public:
    * Sets a start region properties. Passed object is cloned to keep
    * pair match properties consistent between parse stages
    */
-  void setStart(LineRegion *pair){
+  void setStart(const LineRegion* pair)
+  {
     delete start;
-    if (pair != nullptr){
+    if (pair != nullptr) {
       start = new LineRegion(*pair);
     }
   }
@@ -77,19 +81,19 @@ public:
    * Sets an end region properties. Passed object is cloned to keep
    * pair match properties consistent between parse stages
    */
-  void setEnd(LineRegion *pair){
+  void setEnd(const LineRegion* pair)
+  {
     delete end;
-    if (pair != nullptr){
+    if (pair != nullptr) {
       end = new LineRegion(*pair);
     }
   }
-private:
+
+ private:
   /**
    * Region's start position as a reference to inparse sequence.
    */
-  LineRegion *startRef;
+  LineRegion* startRef;
 };
 
 #endif
-
-

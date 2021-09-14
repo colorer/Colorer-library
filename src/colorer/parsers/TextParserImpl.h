@@ -61,11 +61,11 @@ class TextParser::Impl
   void addRegion(int lno, int sx, int ex, const Region* region);
   void enterScheme(int lno, int sx, int ex, const Region* region);
   void leaveScheme(int lno, int sx, int ex, const Region* region);
-  void enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode);
-  void leaveScheme(int lno, SMatches* match, const SchemeNode* schemeNode);
+  void enterScheme(int lno, const SMatches* match, const SchemeNode* schemeNode);
+  void leaveScheme(int, const SMatches* match, const SchemeNode* schemeNode);
 
   int searchKW(const SchemeNode* node, int no, int lowLen, int hiLen);
-  int searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen);
+  int searchRE(const SchemeImpl* cscheme, int no, int lowLen, int hiLen);
   bool colorize(CRegExp* root_end_re, bool lowContentPriority);
 };
 

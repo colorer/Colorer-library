@@ -20,7 +20,7 @@ class ParsedLineWriter
              Only region references are used there.
   */
   static void tokenWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                         UnicodeString* line, LineRegion* lineRegions);
+                         const UnicodeString* line, LineRegion* lineRegions);
 
   /** Write specified line of text using list of LineRegion's.
       This method uses text fields of LineRegion class to enwrap each line
@@ -34,7 +34,7 @@ class ParsedLineWriter
       @param lineRegions Linked list of LineRegion structures
   */
   static void markupWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                          UnicodeString* line, LineRegion* lineRegions);
+                          const UnicodeString* line, LineRegion* lineRegions);
 
   /** Write specified line of text using list of LineRegion's.
       This method uses integer fields of LineRegion class
@@ -46,7 +46,7 @@ class ParsedLineWriter
       @param lineRegions Linked list of LineRegion structures
   */
   static void htmlRGBWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash,
-                           UnicodeString* line, LineRegion* lineRegions);
+                           const UnicodeString* line, LineRegion* lineRegions);
 
   /** Puts into stream style attributes from RegionDefine object.
    */

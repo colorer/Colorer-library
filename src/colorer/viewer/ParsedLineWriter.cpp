@@ -1,7 +1,7 @@
 #include <colorer/viewer/ParsedLineWriter.h>
 
 void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                                  UnicodeString* line, LineRegion* lineRegions)
+                                  const UnicodeString* line, LineRegion* lineRegions)
 {
   int pos = 0;
   for (LineRegion* l1 = lineRegions; l1; l1 = l1->next) {
@@ -39,7 +39,7 @@ void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std:
 }
 
 void ParsedLineWriter::markupWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                                   UnicodeString* line, LineRegion* lineRegions)
+                                   const UnicodeString* line, LineRegion* lineRegions)
 {
   int pos = 0;
   for (LineRegion* l1 = lineRegions; l1; l1 = l1->next) {
@@ -71,7 +71,7 @@ void ParsedLineWriter::markupWrite(Writer* markupWriter, Writer* textWriter, std
 }
 
 void ParsedLineWriter::htmlRGBWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash,
-                                    UnicodeString* line, LineRegion* lineRegions)
+                                    const UnicodeString* line, LineRegion* lineRegions)
 {
   int pos = 0;
   for (LineRegion* l1 = lineRegions; l1; l1 = l1->next) {

@@ -159,7 +159,7 @@ void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region
   }
 }
 
-void TextParser::Impl::enterScheme(int lno, SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::enterScheme(int lno, const SMatches* match, const SchemeNode* schemeNode)
 {
   if (schemeNode->innerRegion) {
     enterScheme(lno, match->e[0], match->e[0], schemeNode->region);
@@ -175,7 +175,7 @@ void TextParser::Impl::enterScheme(int lno, SMatches* match, const SchemeNode* s
   }
 }
 
-void TextParser::Impl::leaveScheme(int /*lno*/, SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::leaveScheme(int /*lno*/, const SMatches* match, const SchemeNode* schemeNode)
 {
   if (schemeNode->innerRegion) {
     leaveScheme(gy, match->s[0], match->s[0], schemeNode->region);
@@ -275,7 +275,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
   return MATCH_NOTHING;
 }
 
-int TextParser::Impl::searchRE(SchemeImpl* cscheme, int no, int lowLen, int hiLen)
+int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 {
   int i, re_result;
   SchemeImpl* ssubst = nullptr;
