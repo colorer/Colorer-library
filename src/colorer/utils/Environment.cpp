@@ -61,5 +61,8 @@ uUnicodeString Environment::normalizePath(const UnicodeString* path)
   auto expanded_string = Environment::expandEnvironment(path);
   auto fpath = std::filesystem::path(UStr::to_stdstr(expanded_string));
   fpath = fpath.lexically_normal();
+  if (std::filesystem::is_symlink(fpath)) {
+    fpath = std::filesystem::read_symlink(fpath);
+  }
   return std::make_unique<UnicodeString>(fpath.c_str());
 }
