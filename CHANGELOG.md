@@ -1,3 +1,14 @@
+## [1.3.0] - 2021-XX-XX
+
+### Added
+
+- Add work with symlinks. If file is symlink, for example catalog.xml, we work with real file and full path for it ([#10](https://github.com/colorer/Colorer-library/issues/10))
+- Add work with system envirements in path to files
+
+### Changed
+
+- In base/hrc/auto folder (and same in catalog.xml) search only *.hrc files ([#20](https://github.com/colorer/Colorer-library/issues/20))
+
 ## [1.2.1] - 2021-04-03
 
 First auto builded release
