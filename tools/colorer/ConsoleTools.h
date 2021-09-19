@@ -40,8 +40,8 @@ class HtmlEscapesWriter : public Writer
 class ConsoleTools
 {
  public:
-  ConsoleTools();
-  ~ConsoleTools();
+  ConsoleTools() = default;
+  ~ConsoleTools() = default;
 
   /// Is copyright header present in html output.
   void setCopyrightHeader(bool use);

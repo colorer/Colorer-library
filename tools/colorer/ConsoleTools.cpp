@@ -12,12 +12,7 @@
 #include <memory>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-
-using namespace xercesc;
-
-ConsoleTools::ConsoleTools() = default;
-
-ConsoleTools::~ConsoleTools() = default;
+#include <colorer/base/BaseNames.h>
 
 void ConsoleTools::setCopyrightHeader(bool use)
 {
@@ -61,16 +56,7 @@ void ConsoleTools::setOutputFileName(const UnicodeString& str)
 
 void ConsoleTools::setCatalogPath(const UnicodeString& str)
 {
-#if defined _WIN32
-  // replace the environment variables to their values
-  size_t i = ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), nullptr, 0);
-  char* temp = new char[i];
-  ExpandEnvironmentStrings(UStr::to_stdstr(&str).c_str(), temp, static_cast<DWORD>(i));
-  catalogPath = std::make_unique<UnicodeString>(temp);
-  delete[] temp;
-#else
-  catalogPath.reset(new UnicodeString(str));
-#endif
+  catalogPath = std::make_unique<UnicodeString>(str);
 }
 
 void ConsoleTools::setHRDName(const UnicodeString& str)
@@ -80,14 +66,14 @@ void ConsoleTools::setHRDName(const UnicodeString& str)
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
-  const XMLCh kTagDoclinks[] = {chLatin_d, chLatin_o, chLatin_k, chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
-  const XMLCh kTagLinks[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chLatin_s, chNull};
-  const XMLCh kTagLink[] = {chLatin_l, chLatin_i, chLatin_n, chLatin_k, chNull};
-  const XMLCh kLinksAttrUrl[] = {chLatin_u, chLatin_r, chLatin_l, chNull};
-  const XMLCh kLinkAttrUrl[] = {chLatin_u, chLatin_r, chLatin_l, chNull};
-  const XMLCh kLinksAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-  const XMLCh kLinkAttrScheme[] = {chLatin_s, chLatin_c, chLatin_h, chLatin_e, chLatin_m, chLatin_e, chNull};
-  const XMLCh kLinkAttrToken[] = {chLatin_t, chLatin_o, chLatin_k, chLatin_e, chLatin_n, chNull};
+  const char16_t kTagDoclinks[] = u"doclinks\0";
+  const char16_t kTagLinks[] = u"links\0";
+  const char16_t kTagLink[] = u"link\0";
+  const char16_t kLinksAttrUrl[] = u"url\0";
+  const char16_t kLinkAttrUrl[] = u"url\0";
+  const char16_t kLinksAttrScheme[] = u"scheme\0";
+  const char16_t kLinkAttrScheme[] = u"scheme\0";
+  const char16_t kLinkAttrToken[] = u"tokrn\0";
 
   uXmlInputSource linkSource = XmlInputSource::newInstance(&str);
   xercesc::XercesDOMParser xml_parser;
@@ -188,7 +174,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     HRCParser* hrcParser = pf.getHRCParser();
-    fprintf(stdout, "\nloading file types...\n");
+    fprintf(stdout, "loading file types...\n");
     for (int idx = 0;; idx++) {
       FileType* type = hrcParser->enumerateFileTypes(idx);
       if (type == nullptr) {
@@ -379,7 +365,7 @@ void ConsoleTools::genOutput(bool useTokens)
     RegionMapper* mapper = nullptr;
     if (!useTokens) {
       try {
-        UnicodeString drgb = UnicodeString("rgb");
+        UnicodeString drgb = UnicodeString(HrdClassRgb);
         mapper = pf.createStyledMapper(&drgb, hrdName.get());
       } catch (ParserFactoryException&) {
         useMarkup = true;
@@ -434,7 +420,7 @@ void ConsoleTools::genOutput(bool useTokens)
     }
 
     if (copyrightHeader) {
-      commonWriter->write("Created with colorer-take5 library. Type '");
+      commonWriter->write("Created with colorer library. Type '");
       commonWriter->write(type->getName());
       commonWriter->write("'\n\n");
     }
@@ -442,14 +428,13 @@ void ConsoleTools::genOutput(bool useTokens)
     int lni = 0;
     int lwidth = 1;
     int lncount = (int) textLinesStore.getLineCount();
-    for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++)
-      ;
-
+    for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++) {
+    }
     for (int i = 0; i < lncount; i++) {
       if (lineNumbers) {
         int iwidth = 1;
-        for (lni = i / 10; lni > 0; lni = lni / 10, iwidth++)
-          ;
+        for (lni = i / 10; lni > 0; lni = lni / 10, iwidth++) {
+        }
         for (lni = iwidth; lni < lwidth; lni++) {
           commonWriter->write(0x0020);
         }

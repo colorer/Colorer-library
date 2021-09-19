@@ -178,10 +178,10 @@ void readArgs(int argc, char* argv[])
 }
 
 /** Prints usage. */
-void printError()
+void printUsage()
 {
-  fprintf(stderr,
-          "Usage: colorer (command) (parameters) (logging parameters) [<filename>]\n"
+  fprintf(stdout,
+          "Usage: colorer COMMAND [PARAMETERS] [LOGGING PARAMETERS] [FILE]\n"
           " Commands:\n"
           "  -l         Lists all available languages\n"
           "  -lt        Lists all available languages (HRC types)\n"
@@ -207,6 +207,7 @@ void printError()
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
           "  -el<name>  Log level (off, debug, info, warning, error). Default value is off.\n");
+  fprintf(stdout, "\ncolorer console tools, version %s\nhome page: <https://github.com/colorer/Colorer-library>", COLORER_VERSION);
 }
 
 void initConsoleTools(ConsoleTools& ct)
@@ -241,11 +242,6 @@ int workIt()
   ConsoleTools ct;
   initConsoleTools(ct);
 
-  if (settings.copyright) {
-    fprintf(stdout, "\nColorer console tools, version %s\n", COLORER_VERSION);
-    fprintf(stdout, "%s \n\n", COLORER_COPYRIGHT);
-  }
-
   try {
     switch (settings.job) {
       case JT_REGTEST:
@@ -276,7 +272,7 @@ int workIt()
         ct.forward();
         break;
       default:
-        printError();
+        printUsage();
         break;
     }
   } catch (Exception& e) {
