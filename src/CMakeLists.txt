@@ -53,8 +53,6 @@ set(SRC_COLORER
     colorer/io/FileWriter.h
     colorer/io/InputSource.cpp
     colorer/io/InputSource.h
-    colorer/io/SharedInputSource.cpp
-    colorer/io/SharedInputSource.h
     colorer/io/StreamWriter.cpp
     colorer/io/StreamWriter.h
     colorer/io/Writer.cpp
@@ -104,21 +102,11 @@ set(SRC_COLORER
     colorer/xml/XmlParserErrorHandler.h
     )
 
-if(COLORER_USE_HTTPINPUTSOURCE AND WIN32)
-  set(COLORER_FEATURE_HTTPINPUTSOURCE 1)
-  set(SRC_COLORER_HTTP
-      colorer/io/HTTPInputSource.cpp
-      colorer/io/HTTPInputSource.h
-      )
-endif()
-
 if(COLORER_USE_JARINPUTSOURCE)
   set(COLORER_FEATURE_JARINPUTSOURCE 1)
   set(SRC_COLORER_JAR
-      colorer/io/JARInputSource.cpp
-      colorer/io/JARInputSource.h
-      colorer/io/MemoryFile.cpp
-      colorer/io/MemoryFile.h
+      colorer/xml/MemoryFile.cpp
+      colorer/xml/MemoryFile.h
       colorer/xml/ZipXmlInputSource.cpp
       colorer/xml/ZipXmlInputSource.h
       )

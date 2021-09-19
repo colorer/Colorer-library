@@ -39,7 +39,6 @@ option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
 # library features
-option(COLORER_USE_HTTPINPUTSOURCE "Use http inputsource, only Windows" OFF)
 option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 
