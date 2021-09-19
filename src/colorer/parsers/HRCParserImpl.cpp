@@ -874,11 +874,12 @@ void HRCParser::Impl::addKeyword(SchemeNode* scheme_node, const Region* brgn, co
   scheme_node->kwList->kwList[pos].region = rgn;
   scheme_node->kwList->kwList[pos].isSymbol = (type == 2);
   scheme_node->kwList->kwList[pos].ssShorter = -1;
-  scheme_node->kwList->firstChar->add(param[0]);
+  auto first_char = scheme_node->kwList->firstChar.get();
+  first_char->add(param[0]);
   if (!scheme_node->kwList->matchCase) {
-    scheme_node->kwList->firstChar->add(u_toupper(param[0]));
-    scheme_node->kwList->firstChar->add(u_tolower(param[0]));
-    scheme_node->kwList->firstChar->add(u_totitle(param[0]));
+    first_char->add(u_toupper(param[0]));
+    first_char->add(u_tolower(param[0]));
+    first_char->add(u_totitle(param[0]));
   }
   scheme_node->kwList->num++;
   if (scheme_node->kwList->minKeywordLength > scheme_node->kwList->kwList[pos].keyword->length()) {

@@ -2,9 +2,6 @@
 
 /////////////////////////////////////////////////////////////////////////
 // parser's cache structures
-ParseCache::ParseCache()
-{
-}
 
 ParseCache::~ParseCache()
 {
@@ -33,19 +30,19 @@ ParseCache::~ParseCache()
 
 ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
 {
-  ParseCache* r1 = nullptr, *r2 = nullptr, *tmp = this;
+  ParseCache *r1 = nullptr, *r2 = nullptr, *tmp = this;
   *cache = nullptr;
   while (tmp) {
     CTRACE(spdlog::trace("[TPCache] searchLine() tmp:{0},{1}-{2}", *tmp->scheme->getName(), tmp->sline, tmp->eline));
     if (tmp->sline <= ln && tmp->eline >= ln) {
-	  if (tmp->children) {
-		r1 = tmp->children->searchLine(ln, &r2);
-	  }
+      if (tmp->children) {
+        r1 = tmp->children->searchLine(ln, &r2);
+      }
       if (r1) {
         *cache = r2;
         return r1;
       }
-      *cache = r2; // last child
+      *cache = r2;  // last child
       return tmp;
     }
     if (tmp->sline <= ln) {
@@ -69,7 +66,7 @@ VTList::VTList()
 
 VTList::~VTList()
 {
-//  FAULT(next == this);
+  //  FAULT(next == this);
   // deletes only from root
   if (!prev && next) {
     next->deltree();
@@ -106,7 +103,7 @@ bool VTList::push(SchemeNode* node)
 bool VTList::pop()
 {
   VTList* ditem;
-//  FAULT(last == this);
+  //  FAULT(last == this);
   ditem = last;
   if (ditem->next) {
     ditem->next->prev = ditem->prev;
@@ -143,7 +140,7 @@ SchemeImpl* VTList::pushvirt(SchemeImpl* scheme)
 void VTList::popvirt()
 {
   VTList* that = last->next;
-//  FAULT(!last->next || !that->shadowlast);
+  //  FAULT(!last->next || !that->shadowlast);
   last = that->shadowlast;
   that->shadowlast = nullptr;
 }
@@ -178,8 +175,8 @@ VirtualEntryVector** VTList::store()
 
 bool VTList::restore(VirtualEntryVector** store)
 {
-  VTList* prevpos=nullptr;
-  VTList *pos = this;
+  VTList* prevpos = nullptr;
+  VTList* pos = this;
   if (next || prev || !store) {
     return false;
   }
@@ -195,6 +192,3 @@ bool VTList::restore(VirtualEntryVector** store)
   last = pos;
   return true;
 }
-
-
-

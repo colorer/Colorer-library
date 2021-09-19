@@ -76,10 +76,11 @@ void TextConsoleViewer::view()
           continue;
         if (len + X > csbi.dwSize.X)
           len = csbi.dwSize.X - X;
-        WORD color = (WORD) (l1->styled()->fore + (l1->styled()->back << 4));
-        if (!l1->styled()->isForeSet)
+        auto styled_region = l1->styled();
+        WORD color = (WORD) (styled_region->fore + (styled_region->back << 4));
+        if (!styled_region->isForeSet)
           color = (color & 0xF0) + (background & 0xF);
-        if (!l1->styled()->isBackSet)
+        if (!styled_region->isBackSet)
           color = (color & 0xF) + (background & 0xF0);
         for (int li = 0; li < len; li++) buffer[Y * csbi.dwSize.X + X + li].Attributes = color;
       }

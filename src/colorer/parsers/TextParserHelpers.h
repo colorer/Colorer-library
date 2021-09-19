@@ -78,7 +78,7 @@ class ParseCache
   ParseCache* next = nullptr;
   ParseCache* prev = nullptr;
   ParseCache* parent = nullptr;
-  ParseCache();
+  ParseCache() = default;
   ~ParseCache();
   /**
    * Searched a cache position for the specified line number.

@@ -34,8 +34,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   regionCompact = false;
   currentFileType = nullptr;
 
-  validationProcess = false;
-
   UnicodeString def_text = UnicodeString("def:Text");
   UnicodeString def_syntax = UnicodeString("def:Syntax");
   UnicodeString def_special = UnicodeString("def:Special");
@@ -55,8 +53,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
 BaseEditor::~BaseEditor()
 {
   textParser->breakParse();
-  while (validationProcess) {
-  }  /// @todo wait until validation is finished
   if (internalRM) {
     delete regionMapper;
   }

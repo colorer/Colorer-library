@@ -70,8 +70,7 @@ CRegExp::~CRegExp()
 {
   delete tree_root;
 #ifndef NAMED_MATCHES_IN_HASH
-  for (int bp = 0; bp < cnMatch; bp++)
-    delete brnames[bp];
+  for (int bp = 0; bp < cnMatch; bp++) delete brnames[bp];
 #endif
 }
 
@@ -84,8 +83,7 @@ EError CRegExp::setRELow(const UnicodeString& expr)
   delete tree_root;
   tree_root = nullptr;
 #ifndef NAMED_MATCHES_IN_HASH
-  for (int bp = 0; bp < cnMatch; bp++)
-    delete brnames[bp];
+  for (int bp = 0; bp < cnMatch; bp++) delete brnames[bp];
 #endif
 
   cMatch = 0;
@@ -586,7 +584,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
           delete retmp;
       }
       reword->op = ReWord;
-      reword->un.word = new UnicodeString(wcword,  wsize);
+      reword->un.word = new UnicodeString(wcword, wsize);
       delete[] wcword;
       reword->next = reafterword;
       if (reafterword)
@@ -671,7 +669,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
 // parsing
 ////////////////////////////////////////////////////////////////////////////
 
-bool CRegExp::isWordBoundary(int& toParse)
+bool CRegExp::isWordBoundary(int toParse)
 {
   int before = 0;
   int after = 0;
@@ -681,7 +679,7 @@ bool CRegExp::isWordBoundary(int& toParse)
     before = 1;
   return before + after == 1;
 }
-bool CRegExp::isNWordBoundary(int& toParse)
+bool CRegExp::isNWordBoundary(int toParse)
 {
   return !isWordBoundary(toParse);
 }
@@ -694,8 +692,9 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
     case ReAnyChr:
       if (toParse >= end)
         return false;
-      if (!singleLine && (pattern[toParse] == 0x0A || pattern[toParse] == 0x0B || pattern[toParse] == 0x0C || pattern[toParse] == 0x0D ||
-                          pattern[toParse] == 0x85 || pattern[toParse] == 0x2028 || pattern[toParse] == 0x2029))
+      if (!singleLine &&
+          (pattern[toParse] == 0x0A || pattern[toParse] == 0x0B || pattern[toParse] == 0x0C || pattern[toParse] == 0x0D || pattern[toParse] == 0x85 ||
+           pattern[toParse] == 0x2028 || pattern[toParse] == 0x2029))
         return false;
       toParse++;
       return true;
@@ -862,7 +861,6 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (leftenter) {
               re->s = toParse;
               re = re->un.param;
-              leftenter = true;
               continue;
             }
             if (re->param0 == -1)
@@ -916,7 +914,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (ignoreCase) {
-              if (!UnicodeString(pattern, toParse, wlen).caseCompare(*re->un.word,0)==0) {
+              if (!UnicodeString(pattern, toParse, wlen).caseCompare(*re->un.word, 0) == 0) {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 continue;
               }
@@ -1185,7 +1183,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (!re->param0) {
               insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_RangeN_step2, &re->un.param, nullptr, toParse);
               continue;
-            }else {
+            } else {
               // go into
               re->param0--;
             }
@@ -1225,7 +1223,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (!re->param0) {
               insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_NGRangeN_step2, &re->next, &re, toParse);
               continue;
-            }else
+            } else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1292,7 +1290,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           continue;
           break;
         case rea_RangeNM_step3:
-          action = -1;
+          action = -1;  //-V1037
           re->param1++;
           check_stack(false, &re, &prev, &toParse, &leftenter, &action);
           continue;

@@ -40,14 +40,14 @@ class PairMatch
    * Default constructor.
    * Clears all fields
    */
-  PairMatch(LineRegion* startRef, int lineNo, bool topPosition)
+  PairMatch(LineRegion* startRef, int lineNo, bool _topPosition)
   {
     start = end = nullptr;
     this->startRef = startRef;
     sline = lineNo;
     pairBalance = -1;
     this->topPosition = false;
-    if (topPosition) {
+    if (_topPosition) {
       pairBalance = 1;
       this->topPosition = true;
     }

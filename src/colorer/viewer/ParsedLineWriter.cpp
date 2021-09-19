@@ -54,15 +54,16 @@ void ParsedLineWriter::markupWrite(Writer* markupWriter, Writer* textWriter, std
       textWriter->write(line, pos, l1->start - pos);
       pos = l1->start;
     }
-    if (l1->texted()->start_back != nullptr)
-      markupWriter->write(*l1->texted()->start_back);
-    if (l1->texted()->start_text != nullptr)
-      markupWriter->write(*l1->texted()->start_text);
+    auto texted_region = l1->texted();
+    if (texted_region->start_back != nullptr)
+      markupWriter->write(*texted_region->start_back);
+    if (texted_region->start_text != nullptr)
+      markupWriter->write(*texted_region->start_text);
     textWriter->write(line, pos, end - l1->start);
-    if (l1->texted()->end_text != nullptr)
-      markupWriter->write(*l1->texted()->end_text);
-    if (l1->texted()->end_back != nullptr)
-      markupWriter->write(*l1->texted()->end_back);
+    if (texted_region->end_text != nullptr)
+      markupWriter->write(*texted_region->end_text);
+    if (texted_region->end_back != nullptr)
+      markupWriter->write(*texted_region->end_back);
     pos += end - l1->start;
   }
   if (pos < line->length()) {

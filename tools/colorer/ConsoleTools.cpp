@@ -428,12 +428,14 @@ void ConsoleTools::genOutput(bool useTokens)
     int lni = 0;
     int lwidth = 1;
     int lncount = (int) textLinesStore.getLineCount();
-    for (lni = lncount / 10; lni > 0; lni = lni / 10, lwidth++) {
+    for (lni = lncount / 10; lni > 0; lni = lni / 10) {
+      lwidth++;
     }
     for (int i = 0; i < lncount; i++) {
       if (lineNumbers) {
         int iwidth = 1;
-        for (lni = i / 10; lni > 0; lni = lni / 10, iwidth++) {
+        for (lni = i / 10; lni > 0; lni = lni / 10) {
+          iwidth++;
         }
         for (lni = iwidth; lni < lwidth; lni++) {
           commonWriter->write(0x0020);

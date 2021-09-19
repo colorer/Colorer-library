@@ -427,7 +427,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
             forward = ResF;
             parent = ResP;
           } else {
-            OldCacheF->eline = gy;
+            OldCacheF->eline = gy; //-V522
             OldCacheF->vcache = vtlist->store();
             forward = OldCacheF;
             parent = OldCacheP;

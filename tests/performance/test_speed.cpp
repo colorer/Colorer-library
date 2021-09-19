@@ -11,19 +11,20 @@ UnicodeString* testFile = nullptr;
 
 void printError()
 {
-  fwprintf(stderr, L"\nUsage: speed_test (command) (parameters)\n"
-                   L" Commands:\n"
-                   L"  -t<n>      Run the test number <n>\n"
-                   L" Parameters:\n"
-                   L"  -c<n>      Number of test runs\n"
-                   L"  -b<path>   Uses specified 'catalog.xml' file\n"
-                   L"  -f<path>   Test file\n\n"
-                   L" Test:\n"
-                   L"   1         TestParserFactoryConstructor\n"
-                   L"   2         TestParserFactoryHRCParser\n"
-                   L"   3         TestParserFactoryStyledMapper\n"
-                   L"   4         TestParserFactoryLoadAllHRCScheme\n"
-                   L"   5         TestColoringFile\n");
+  fwprintf(stderr,
+           L"\nUsage: speed_test (command) (parameters)\n"
+           L" Commands:\n"
+           L"  -t<n>      Run the test number <n>\n"
+           L" Parameters:\n"
+           L"  -c<n>      Number of test runs\n"
+           L"  -b<path>   Uses specified 'catalog.xml' file\n"
+           L"  -f<path>   Test file\n\n"
+           L" Test:\n"
+           L"   1         TestParserFactoryConstructor\n"
+           L"   2         TestParserFactoryHRCParser\n"
+           L"   3         TestParserFactoryStyledMapper\n"
+           L"   4         TestParserFactoryLoadAllHRCScheme\n"
+           L"   5         TestColoringFile\n");
 }
 
 int init(int argc, char* argv[])
@@ -101,8 +102,9 @@ int main(int argc, char* argv[])
         TestColoringFile(loops, catalogPath, testFile);
         break;
     }
-  } catch (Exception &e) {
+  } catch (Exception& e) {
     fprintf(stderr, "%s\n", e.what());
     return -1;
-  };
+  }
+  return 0;
 }

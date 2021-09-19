@@ -1,5 +1,6 @@
 #include <colorer/xml/SharedXmlInputSource.h>
 #include <xercesc/util/BinFileInputStream.hpp>
+#include <colorer/Exception.h>
 
 std::unordered_map<UnicodeString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
 
@@ -24,6 +25,9 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
   input_source = std::move(source);
   auto pStream = input_source->makeStream();
   std::unique_ptr<xercesc::BinFileInputStream> bfis(dynamic_cast<xercesc::BinFileInputStream*>(pStream));
+  if (bfis == nullptr) {
+    throw InputSourceException("can`t read " + UnicodeString(input_source->getSystemId()));
+  }
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
   bfis->readBytes(mSrc.get(), mSize);
