@@ -59,7 +59,7 @@ uUnicodeString Environment::expandEnvironment(const UnicodeString* path)
 uUnicodeString Environment::normalizePath(const UnicodeString* path)
 {
   auto expanded_string = Environment::expandEnvironment(path);
-  auto fpath = std::filesystem::path(UStr::to_stdstr(expanded_string));
+  auto fpath = std::filesystem::path(UStr::to_stdwstr(expanded_string));
   fpath = fpath.lexically_normal();
   if (std::filesystem::is_symlink(fpath)) {
     fpath = std::filesystem::read_symlink(fpath);

@@ -30,17 +30,17 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
 uUnicodeString XmlInputSource::getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
   std::filesystem::path fs_basepath;
-  if (basePath) {
+  if (basePath && !basePath->isEmpty()) {
     auto clear_basepath = Environment::normalizePath(basePath);
-    fs_basepath = std::filesystem::path(UStr::to_stdstr(clear_basepath)).parent_path();
+    fs_basepath = std::filesystem::path(UStr::to_stdwstr(clear_basepath)).parent_path();
   }
   auto clear_relpath = Environment::expandEnvironment(relPath);
 
   std::filesystem::path full_path;
   if (fs_basepath.empty()) {
-    full_path = UStr::to_stdstr(clear_relpath);
+    full_path = UStr::to_stdwstr(clear_relpath);
   } else {
-    full_path = fs_basepath / UStr::to_stdstr(clear_relpath);
+    full_path = fs_basepath / UStr::to_stdwstr(clear_relpath);
   }
 
   full_path = full_path.lexically_normal();

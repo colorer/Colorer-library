@@ -15,6 +15,7 @@ class UStr
   [[nodiscard]] static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
 #ifdef _WINDOWS
   [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString* str);
+  [[nodiscard]] static std::wstring to_stdwstr(const uUnicodeString& str);
 #endif
 
   static bool isLowerCase(UChar c);
