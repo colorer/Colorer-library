@@ -4,6 +4,7 @@
 #include <colorer/Common.h>
 #include <unicode/uniset.h>
 #include <xercesc/util/XMLString.hpp>
+#include <filesystem>
 
 class UStr
 {
@@ -13,6 +14,7 @@ class UStr
   [[nodiscard]] static std::string to_stdstr(const uUnicodeString& str);
   [[nodiscard]] static std::string to_stdstr(const XMLCh* str);
   [[nodiscard]] static std::unique_ptr<XMLCh[]> to_xmlch(const UnicodeString* str);
+  [[nodiscard]] static std::filesystem::path to_filepath(const uUnicodeString& str);
 #ifdef _WINDOWS
   [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString* str);
   [[nodiscard]] static std::wstring to_stdwstr(const uUnicodeString& str);

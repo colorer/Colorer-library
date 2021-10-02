@@ -3,6 +3,7 @@
 
 #include <colorer/Common.h>
 #include <xercesc/sax/InputSource.hpp>
+#include <filesystem>
 
 const char16_t kJar[] = u"jar:\0";
 const char16_t kPercent[] = u"%\0";
@@ -36,7 +37,7 @@ class XmlInputSource : public xercesc::InputSource
 
   ~XmlInputSource() override = default;
 
-  static uUnicodeString getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);
+  static std::filesystem::path getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);
 
   static bool isUriFile(const UnicodeString* path, const UnicodeString* base = nullptr);
 
