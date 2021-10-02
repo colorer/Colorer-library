@@ -22,13 +22,13 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.parse(*is->getInputSource());
 
   if (error_handler.getSawErrors()) {
-    throw Exception("Error loading HRD file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
+    throw Exception("Error loading HRD file '" + *is->getPath() + "'");
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + UnicodeString(is->getInputSource()->getSystemId()));
+    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + *is->getPath());
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
@@ -42,8 +42,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
         UnicodeString name(xname);
         auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
-                       UnicodeString(is->getInputSource()->getSystemId()));
+          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name, *is->getPath());
           regionDefines.erase(tp);
         }
         std::shared_ptr<const UnicodeString> stext;

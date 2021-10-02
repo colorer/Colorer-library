@@ -46,6 +46,7 @@ void ZipXmlInputSource::create(const XMLCh* path, const XMLCh* base)
   str.append("!");
   str.append(*in_jar_location);
   setSystemId(UStr::to_xmlch(&str).get());
+  source_path = std::make_unique<UnicodeString>(str);
 }
 
 ZipXmlInputSource::~ZipXmlInputSource()

@@ -60,3 +60,8 @@ uXmlInputSource XmlInputSource::createRelative(const XMLCh* relPath)
 {
   return newInstance(relPath, this->getInputSource()->getSystemId());
 }
+
+UnicodeString* XmlInputSource::getPath() const
+{
+  return source_path.get();
+}

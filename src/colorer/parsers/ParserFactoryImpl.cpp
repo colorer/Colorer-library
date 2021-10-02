@@ -75,7 +75,7 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeSt
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception& e) {
-    spdlog::error("Can't load hrc: {0}", UStr::to_stdstr(dfis->getInputSource()->getSystemId()));
+    spdlog::error("Can't load hrc: {0}", *dfis->getPath());
     spdlog::error("{0}", e.what());
   }
 }

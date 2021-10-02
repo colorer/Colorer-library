@@ -93,15 +93,13 @@ void HRCParser::Impl::loadFileType(FileType* filetype)
     spdlog::error("Can't open source stream: {0}", e.what());
     thisType->pimpl->load_broken = true;
   } catch (HRCParserException& e) {
-    spdlog::error("{0} [{1}]", e.what(),
-                  thisType->pimpl->inputSource ? UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()) : "");
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *thisType->pimpl->inputSource->getPath() : "");
     thisType->pimpl->load_broken = true;
   } catch (Exception& e) {
-    spdlog::error("{0} [{1}]", e.what(),
-                  thisType->pimpl->inputSource ? UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()) : "");
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *thisType->pimpl->inputSource->getPath() : "");
     thisType->pimpl->load_broken = true;
   } catch (...) {
-    spdlog::error("Unknown exception while loading {0}", UStr::to_stdstr(thisType->pimpl->inputSource->getInputSource()->getSystemId()));
+    spdlog::error("Unknown exception while loading {0}", *thisType->pimpl->inputSource->getPath());
     thisType->pimpl->load_broken = true;
   }
 
@@ -181,7 +179,7 @@ const Region* HRCParser::Impl::getRegion(const UnicodeString* name)
 
 void HRCParser::Impl::parseHRC(XmlInputSource* is)
 {
-  spdlog::debug("begin parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
+  spdlog::debug("begin parse '{0}'", *is->getPath());
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
@@ -191,14 +189,13 @@ void HRCParser::Impl::parseHRC(XmlInputSource* is)
   xml_parser.setSkipDTDValidation(true);
   xml_parser.parse(*is->getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HRCParserException("Error reading hrc file '" + UnicodeString(is->getInputSource()->getSystemId()) + "'");
+    throw HRCParserException("Error reading hrc file '" + *is->getPath() + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (!root || !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
-    throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " +
-                             UnicodeString(is->getInputSource()->getSystemId()));
+    throw HRCParserException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + *is->getPath());
   }
   if (versionName == nullptr) {
     versionName = new UnicodeString(root->getAttribute(hrcHrcAttrVersion));
@@ -218,7 +215,7 @@ void HRCParser::Impl::parseHRC(XmlInputSource* is)
     updateStarted = false;
   }
 
-  spdlog::debug("end parse '{0}'", UStr::to_stdstr(is->getInputSource()->getSystemId()));
+  spdlog::debug("end parse '{0}'", *is->getPath());
 }
 
 void HRCParser::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
@@ -259,8 +256,7 @@ void HRCParser::Impl::parseHrcBlockElements(xercesc::DOMNode* elem)
       // not read anotation
       return;
     }
-    spdlog::warn("Unused element '{0}'. Current file {1}.", UStr::to_stdstr(elem->getNodeName()),
-                 UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
+    spdlog::warn("Unused element '{0}'. Current file {1}.", UStr::to_stdstr(elem->getNodeName()), *current_input_source->getPath());
   }
 }
 
@@ -368,13 +364,13 @@ void HRCParser::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
       prior = w->getValue();
       if (prior < 0) {
         spdlog::warn("Weight must be greater than 0. Current value {0}. Default value will be used. Current file {1}.", prior,
-                     UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
+                     *current_input_source->getPath());
       }
       delete w;
     } catch (xercesc::NumberFormatException& toCatch) {
       spdlog::warn("Weight '{0}' is not valid for the prototype '{1}'. Message: {2}. Default value will be used. Current file {3}.",
                    UStr::to_stdstr(weight), *current_parse_prototype->getName(), UStr::to_stdstr(toCatch.getMessage()),
-                   UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
+                   *current_input_source->getPath());
     }
   }
   auto* ftc = new FileTypeChooser(ctype, prior, matchRE);
@@ -1092,8 +1088,7 @@ UnicodeString* HRCParser::Impl::qualifyForeignName(const UnicodeString* name, Qu
       delete qname;
     }
     if (logErrors) {
-      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name,
-                    UStr::to_stdstr(current_input_source->getInputSource()->getSystemId()));
+      spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name, *current_input_source->getPath());
     }
   }
   return nullptr;

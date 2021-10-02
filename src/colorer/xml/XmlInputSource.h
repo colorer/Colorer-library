@@ -41,6 +41,8 @@ class XmlInputSource : public xercesc::InputSource
 
   static bool isUriFile(const UnicodeString* path, const UnicodeString* base = nullptr);
 
+  [[nodiscard]] UnicodeString* getPath() const;
+
   XmlInputSource(XmlInputSource const&) = delete;
   XmlInputSource& operator=(XmlInputSource const&) = delete;
   XmlInputSource(XmlInputSource&&) = delete;
@@ -48,6 +50,7 @@ class XmlInputSource : public xercesc::InputSource
 
  protected:
   XmlInputSource() = default;
+  uUnicodeString source_path;
 };
 
 #endif  //_COLORER_XMLINPUTSOURCE_H_
