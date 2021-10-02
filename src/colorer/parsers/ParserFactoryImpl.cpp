@@ -49,14 +49,14 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
       spdlog::debug("try load '{0}'", location);
       if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
         auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
-        if (fs::is_directory(UStr::to_stdstr(clear_path))) {
-          for (auto& p : fs::directory_iterator(UStr::to_stdstr(clear_path))) {
+        if (fs::is_directory(clear_path)) {
+          for (auto& p : fs::directory_iterator(clear_path)) {
             if (fs::is_regular_file(p) && p.path().extension() == ".hrc") {
               loadHrc(UnicodeString(p.path().c_str()), nullptr);
             }
           }
         } else {
-          loadHrc(*clear_path, nullptr);
+          loadHrc(UnicodeString(clear_path.c_str()), nullptr);
         }
       } else {
         loadHrc(location, base_catalog_path.get());
@@ -75,7 +75,7 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeSt
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception& e) {
-    spdlog::error("Can't load hrc: {0}", UStr::to_stdstr(dfis->getInputSource()->getSystemId()));
+    spdlog::error("Can't load hrc: {0}", *dfis->getPath());
     spdlog::error("{0}", e.what());
   }
 }

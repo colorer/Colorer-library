@@ -26,7 +26,7 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
   auto pStream = input_source->makeStream();
   std::unique_ptr<xercesc::BinFileInputStream> bfis(dynamic_cast<xercesc::BinFileInputStream*>(pStream));
   if (bfis == nullptr) {
-    throw InputSourceException("can`t read " + UnicodeString(input_source->getSystemId()));
+    throw InputSourceException("can`t read " + *input_source->getPath());
   }
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
@@ -35,9 +35,8 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  UnicodeString d_id = UnicodeString(input_source->getInputSource()->getSystemId());
   //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
-  isHash->erase(d_id);
+  isHash->erase(*input_source->getPath());
   if (isHash->empty()) {
     delete isHash;
     isHash = nullptr;

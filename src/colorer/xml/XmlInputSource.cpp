@@ -27,25 +27,25 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-uUnicodeString XmlInputSource::getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath)
+std::filesystem::path XmlInputSource::getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath)
 {
   std::filesystem::path fs_basepath;
-  if (basePath) {
-    auto clear_basepath = Environment::normalizePath(basePath);
-    fs_basepath = std::filesystem::path(UStr::to_stdstr(clear_basepath)).parent_path();
+  if (basePath && !basePath->isEmpty()) {
+    auto clear_basepath = Environment::normalizeFsPath(basePath);
+    fs_basepath = std::filesystem::path(clear_basepath).parent_path();
   }
-  auto clear_relpath = Environment::expandEnvironment(relPath);
+  auto clear_relpath = Environment::normalizeFsPath(relPath);
 
   std::filesystem::path full_path;
   if (fs_basepath.empty()) {
-    full_path = UStr::to_stdstr(clear_relpath);
+    full_path = clear_relpath;
   } else {
-    full_path = fs_basepath / UStr::to_stdstr(clear_relpath);
+    full_path = fs_basepath / clear_relpath;
   }
 
   full_path = full_path.lexically_normal();
 
-  return std::make_unique<UnicodeString>(full_path.c_str());
+  return full_path;
 }
 
 bool XmlInputSource::isUriFile(const UnicodeString* path, const UnicodeString* base)
@@ -59,4 +59,9 @@ bool XmlInputSource::isUriFile(const UnicodeString* path, const UnicodeString* b
 uXmlInputSource XmlInputSource::createRelative(const XMLCh* relPath)
 {
   return newInstance(relPath, this->getInputSource()->getSystemId());
+}
+
+UnicodeString* XmlInputSource::getPath() const
+{
+  return source_path.get();
 }
