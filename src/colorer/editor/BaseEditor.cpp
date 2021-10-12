@@ -170,7 +170,6 @@ FileType* BaseEditor::chooseFileType(const UnicodeString* fileName)
 
     currentFileType = chooseFileTypeCh(fileName, chooseStr, chooseLen);
   }
-  setFileType(currentFileType);
   return currentFileType;
 }
 
