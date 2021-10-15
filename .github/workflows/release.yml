@@ -132,7 +132,7 @@ jobs:
         shell: bash
         working-directory: build
         run: >
-          cmake $GITHUB_WORKSPACE -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          cmake $GITHUB_WORKSPACE -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DVCPKG_BUILD_TYPE=$BUILD_TYPE -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
           -DVCPKG_FEATURE_FLAGS=versions -DCMAKE_INSTALL_PREFIX=./install/colorer
