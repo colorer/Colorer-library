@@ -155,3 +155,10 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
 }
 #endif
 
+bool XmlInputSource::isUriFile(const String* path, const String* base)
+{
+  if ((path->startsWith(SString("jar:"))) || (base && base->startsWith(SString("jar:")))) {
+    return false;
+  }
+  return true;
+}
