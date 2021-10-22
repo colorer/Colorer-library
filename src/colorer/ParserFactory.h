@@ -42,6 +42,7 @@ class ParserFactory
    * @throw ParserFactoryException If can't load specified catalog.
    */
   void loadCatalog(const UnicodeString* catalog_path);
+  void loadHrcPath(const UnicodeString& location);
   /**
    * Creates and loads HRCParser instance from catalog.xml file.
    * This method can detect directory entries, and sequentally load their

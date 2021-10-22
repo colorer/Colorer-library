@@ -15,6 +15,7 @@ class ParserFactory::Impl
   ~Impl();
 
   void loadCatalog(const UnicodeString* catalog_path);
+  void loadHrcPath(const UnicodeString& location);
   [[nodiscard]] HRCParser* getHRCParser() const;
   static TextParser* createTextParser();
   StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);

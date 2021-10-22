@@ -45,28 +45,33 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
   parseCatalog(*base_catalog_path);
   spdlog::debug("start load hrc files");
   for (const auto& location : hrc_locations) {
-    try {
-      spdlog::debug("try load '{0}'", location);
-      if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
-        auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
-        if (fs::is_directory(clear_path)) {
-          for (auto& p : fs::directory_iterator(clear_path)) {
-            if (fs::is_regular_file(p) && p.path().extension() == ".hrc") {
-              loadHrc(UnicodeString(p.path().c_str()), nullptr);
-            }
-          }
-        } else {
-          loadHrc(UnicodeString(clear_path.c_str()), nullptr);
-        }
-      } else {
-        loadHrc(location, base_catalog_path.get());
-      }
-    } catch (const Exception& e) {
-      spdlog::error("{0}", e.what());
-    }
+    loadHrcPath(location);
   }
 
   spdlog::debug("end load hrc files");
+}
+
+void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
+{
+  try {
+    spdlog::debug("try load '{0}'", location);
+    if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
+      auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
+      if (fs::is_directory(clear_path)) {
+        for (auto& p : fs::directory_iterator(clear_path)) {
+          if (fs::is_regular_file(p) && p.path().extension() == ".hrc") {
+            loadHrc(UnicodeString(p.path().c_str()), nullptr);
+          }
+        }
+      } else {
+        loadHrc(UnicodeString(clear_path.c_str()), nullptr);
+      }
+    } else {
+      loadHrc(location, base_catalog_path.get());
+    }
+  } catch (const Exception& e) {
+    spdlog::error("{0}", e.what());
+  }
 }
 
 void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
