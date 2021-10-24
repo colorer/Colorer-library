@@ -29,7 +29,7 @@ xercesc::BinInputStream* LocalFileXmlInputSource::makeStream() const
   return stream.release();
 }
 
-xercesc::InputSource* LocalFileXmlInputSource::getInputSource()
+xercesc::InputSource* LocalFileXmlInputSource::getInputSource() const
 {
   return input_source.get();
 }

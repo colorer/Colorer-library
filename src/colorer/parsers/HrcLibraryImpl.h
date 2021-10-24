@@ -33,13 +33,11 @@ class HrcLibrary::Impl
   const Region* getRegion(const UnicodeString* name);
 
  protected:
-  friend class FileType;
-
   enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
   std::unordered_map<UnicodeString, FileType*> fileTypeHash;
-  // types, not packages
+  // only types
   std::vector<FileType*> fileTypeVector;
 
   std::unordered_map<UnicodeString, SchemeImpl*> schemeHash;
@@ -49,9 +47,6 @@ class HrcLibrary::Impl
   std::unordered_map<UnicodeString, const Region*> regionNamesHash;
   std::unordered_map<UnicodeString, UnicodeString*> schemeEntitiesHash;
 
-  UnicodeString* versionName = nullptr;
-
-  FileType* current_parse_prototype = nullptr;
   FileType* current_parse_type = nullptr;
   XmlInputSource* current_input_source = nullptr;
   bool structureChanged = false;
@@ -59,14 +54,14 @@ class HrcLibrary::Impl
 
   void unloadFileType(FileType* filetype);
 
-  void parseHRC(XmlInputSource* is);
+  void parseHRC(const XmlInputSource& is);
   void parseHrcBlock(const xercesc::DOMElement* elem);
   void parseHrcBlockElements(xercesc::DOMNode* elem);
   void addPrototype(const xercesc::DOMElement* elem);
-  void parsePrototypeBlock(const xercesc::DOMElement* elem);
-  void addPrototypeLocation(const xercesc::DOMElement* elem);
-  void addPrototypeDetectParam(const xercesc::DOMElement* elem);
-  void addPrototypeParameters(const xercesc::DOMNode* elem);
+  void parsePrototypeBlock(const xercesc::DOMElement* elem, FileType* current_parse_prototype);
+  void addPrototypeLocation(const xercesc::DOMElement* elem, FileType* current_parse_prototype);
+  void addPrototypeDetectParam(const xercesc::DOMElement* elem, FileType* current_parse_prototype);
+  void addPrototypeParameters(const xercesc::DOMNode* elem, FileType* current_parse_prototype);
   void addType(const xercesc::DOMElement* elem);
   void parseTypeBlock(const xercesc::DOMNode* elem);
   void addTypeRegion(const xercesc::DOMElement* elem);
@@ -92,6 +87,9 @@ class HrcLibrary::Impl
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
+
+ private:
+  [[nodiscard]] static inline bool isEmpty(const XMLCh* string);
 };
 
 #endif

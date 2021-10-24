@@ -54,9 +54,9 @@ ZipXmlInputSource::~ZipXmlInputSource()
   jar_input_source->delref();
 }
 
-xercesc::InputSource* ZipXmlInputSource::getInputSource()
+xercesc::InputSource* ZipXmlInputSource::getInputSource() const
 {
-  return this;
+  return (xercesc::InputSource*) this;
 }
 
 xercesc::BinInputStream* ZipXmlInputSource::makeStream() const

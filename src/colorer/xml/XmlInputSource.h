@@ -33,7 +33,7 @@ class XmlInputSource : public xercesc::InputSource
    */
   virtual uXmlInputSource createRelative(const XMLCh* relPath);
 
-  virtual xercesc::InputSource* getInputSource() = 0;
+  virtual xercesc::InputSource* getInputSource() const = 0;
 
   ~XmlInputSource() override = default;
 

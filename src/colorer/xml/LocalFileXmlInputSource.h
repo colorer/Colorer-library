@@ -13,7 +13,7 @@ class LocalFileXmlInputSource : public XmlInputSource
   LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base);
   ~LocalFileXmlInputSource() override = default;
   [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
-  xercesc::InputSource* getInputSource() override;
+  xercesc::InputSource* getInputSource() const override;
 
   LocalFileXmlInputSource(LocalFileXmlInputSource const&) = delete;
   LocalFileXmlInputSource& operator=(LocalFileXmlInputSource const&) = delete;

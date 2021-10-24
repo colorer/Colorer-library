@@ -34,8 +34,6 @@ HrcLibrary::Impl::~Impl()
   for (const auto& it : schemeEntitiesHash) {
     delete it.second;
   }
-
-  delete versionName;
 }
 
 void HrcLibrary::Impl::loadSource(XmlInputSource* is)
@@ -47,7 +45,7 @@ void HrcLibrary::Impl::loadSource(XmlInputSource* is)
   XmlInputSource* istemp = current_input_source;
   current_input_source = is;
   try {
-    parseHRC(is);
+    parseHRC(*is);
   } catch (Exception&) {
     current_input_source = istemp;
     throw;
@@ -177,9 +175,9 @@ const Region* HrcLibrary::Impl::getRegion(const UnicodeString* name)
 
 // protected methods
 
-void HrcLibrary::Impl::parseHRC(XmlInputSource* is)
+void HrcLibrary::Impl::parseHRC(const XmlInputSource& is)
 {
-  spdlog::debug("begin parse '{0}'", *is->getPath());
+  spdlog::debug("begin parse '{0}'", *is.getPath());
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
   BaseEntityResolver resolver;
@@ -187,18 +185,15 @@ void HrcLibrary::Impl::parseHRC(XmlInputSource* is)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*is->getInputSource());
+  xml_parser.parse(*is.getInputSource());
   if (error_handler.getSawErrors()) {
-    throw HrcLibraryException("Error reading hrc file '" + *is->getPath() + "'");
+    throw HrcLibraryException("Error reading hrc file '" + *is.getPath() + "'");
   }
   xercesc::DOMDocument* doc = xml_parser.getDocument();
   xercesc::DOMElement* root = doc->getDocumentElement();
 
   if (!root || !xercesc::XMLString::equals(root->getNodeName(), hrcTagHrc)) {
-    throw HrcLibraryException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + *is->getPath());
-  }
-  if (versionName == nullptr) {
-    versionName = new UnicodeString(root->getAttribute(hrcHrcAttrVersion));
+    throw HrcLibraryException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " + *is.getPath());
   }
 
   bool globalUpdateStarted = false;
@@ -215,20 +210,15 @@ void HrcLibrary::Impl::parseHRC(XmlInputSource* is)
     updateStarted = false;
   }
 
-  spdlog::debug("end parse '{0}'", *is->getPath());
+  spdlog::debug("end parse '{0}'", *is.getPath());
 }
 
 void HrcLibrary::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(node);
-      if (sub_elem) {
-        parseHrcBlockElements(sub_elem);
-      }
-      continue;
-    }
-    if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      parseHrcBlockElements(node);
+    } else if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       for (xercesc::DOMNode* sub_node = node->getFirstChild(); sub_node != nullptr; sub_node = sub_node->getNextSibling()) {
         parseHrcBlockElements(sub_node);
       }
@@ -240,23 +230,17 @@ void HrcLibrary::Impl::parseHrcBlockElements(xercesc::DOMNode* elem)
 {
   if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
     auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(elem);
-    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype)) {
-      addPrototype(sub_elem);
-      return;
+    if (sub_elem) {
+      if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype) || xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
+        addPrototype(sub_elem);
+      } else if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagType)) {
+        addType(sub_elem);
+      } else if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
+        // not read annotation
+      } else {
+        spdlog::warn("Unused element '{0}'. Current file {1}.", UStr::to_stdstr(elem->getNodeName()), *current_input_source->getPath());
+      }
     }
-    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
-      addPrototype(sub_elem);
-      return;
-    }
-    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagType)) {
-      addType(sub_elem);
-      return;
-    }
-    if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
-      // not read anotation
-      return;
-    }
-    spdlog::warn("Unused element '{0}'. Current file {1}.", UStr::to_stdstr(elem->getNodeName()), *current_input_source->getPath());
   }
 }
 
@@ -265,84 +249,87 @@ void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
   const XMLCh* typeName = elem->getAttribute(hrcPrototypeAttrName);
   const XMLCh* typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
   const XMLCh* typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
-  if (*typeName == '\0') {
-    spdlog::error("unnamed prototype");
+  if (isEmpty(typeName)) {
+    spdlog::error("Found unnamed prototype. Skipped.");
     return;
   }
-  if (typeDescription == nullptr) {
-    typeDescription = typeName;
-  }
-  FileType* f = nullptr;
+
   UnicodeString tname = UnicodeString(typeName);
   auto ft = fileTypeHash.find(tname);
   if (ft != fileTypeHash.end()) {
-    f = ft->second;
+    unloadFileType(ft->second);
+    spdlog::warn("Duplicate prototype '{0}'. First version unloaded, current is loading.", tname);
   }
-  if (f != nullptr) {
-    unloadFileType(f);
-    spdlog::warn("Duplicate prototype '{0}'", tname);
-    //  return;
-  }
+
   auto* type = new FileType();
-  // TODO make 'group' mandatory
-  type->pimpl->name = std::make_unique<UnicodeString>(tname);
-  type->pimpl->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
+  auto& ptype = type->pimpl;
+
+  ptype->name = std::make_unique<UnicodeString>(tname);
+
   if (typeGroup != nullptr) {
-    type->pimpl->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
+    ptype->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
+  } else {
+    ptype->group = std::make_unique<UnicodeString>(*ptype->name);
   }
+
+  if (typeDescription != nullptr) {
+    ptype->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
+  } else {
+    ptype->description = std::make_unique<UnicodeString>(*ptype->name);
+  }
+
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
-    type->pimpl->isPackage = true;
+    ptype->isPackage = true;
   }
-  current_parse_prototype = type;
-  parsePrototypeBlock(elem);
 
-  type->pimpl->protoLoaded = true;
-  std::pair<UnicodeString, FileType*> pp(*type->getName(), type);
-  fileTypeHash.emplace(pp);
+  parsePrototypeBlock(elem, type);
+  ptype->protoLoaded = true;
 
-  if (!type->pimpl->isPackage) {
+  fileTypeHash.emplace(*type->getName(), type);
+
+  if (!ptype->isPackage) {
     fileTypeVector.push_back(type);
   }
 }
 
-void HrcLibrary::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem)
+void HrcLibrary::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem, FileType* current_parse_prototype)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem) {
         if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagLocation)) {
-          addPrototypeLocation(subelem);
-          continue;
-        }
-        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
-            xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline)) {
-          addPrototypeDetectParam(subelem);
-          continue;
-        }
-        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)) {
-          addPrototypeParameters(subelem);
-          continue;
+          addPrototypeLocation(subelem, current_parse_prototype);
+        } else if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
+                   xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline)) {
+          addPrototypeDetectParam(subelem, current_parse_prototype);
+        } else if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)) {
+          addPrototypeParameters(subelem, current_parse_prototype);
+        } else if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
+          // not read annotation
+        } else {
+          spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.", UStr::to_stdstr(elem->getNodeName()),
+                       *current_parse_prototype->pimpl->name, *current_input_source->getPath());
         }
       }
     }
   }
 }
 
-void HrcLibrary::Impl::addPrototypeLocation(const xercesc::DOMElement* elem)
+void HrcLibrary::Impl::addPrototypeLocation(const xercesc::DOMElement* elem, FileType* current_parse_prototype)
 {
   const XMLCh* locationLink = elem->getAttribute(hrcLocationAttrLink);
-  if (*locationLink == '\0') {
-    spdlog::error("Bad 'location' link attribute in prototype '{0}'", *current_parse_prototype->pimpl->name.get());
+  if (isEmpty(locationLink)) {
+    spdlog::error("Bad 'location' link attribute in prototype '{0}'", *current_parse_prototype->pimpl->name);
     return;
   }
   current_parse_prototype->pimpl->inputSource = current_input_source->createRelative(locationLink);
 }
 
-void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
+void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem, FileType* current_parse_prototype)
 {
   if (elem->getFirstChild() == nullptr || elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE) {
-    spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name.get());
+    spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name);
     return;
   }
   const XMLCh* match = ((xercesc::DOMText*) elem->getFirstChild())->getData();
@@ -350,7 +337,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   auto* matchRE = new CRegExp(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
-    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *current_parse_prototype->pimpl->name.get());
+    spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch, *current_parse_prototype->pimpl->name);
     delete matchRE;
     return;
   }
@@ -358,15 +345,15 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
                                                                                                        : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype ? 1 : 2;
   const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
-  if (weight[0] != '\0') {
+  if (!isEmpty(weight)) {
     try {
-      auto w = new xercesc::XMLDouble(weight);
-      prior = w->getValue();
-      if (prior < 0) {
-        spdlog::warn("Weight must be greater than 0. Current value {0}. Default value will be used. Current file {1}.", prior,
+      auto w = xercesc::XMLDouble(weight);
+      if (w.getValue() < 0) {
+        spdlog::warn("Weight must be greater than 0. Current value {0}. Default value will be used. Current file {1}.", w.getValue(),
                      *current_input_source->getPath());
+      } else {
+        prior = w.getValue();
       }
-      delete w;
     } catch (xercesc::NumberFormatException& toCatch) {
       spdlog::warn("Weight '{0}' is not valid for the prototype '{1}'. Message: {2}. Default value will be used. Current file {3}.",
                    UStr::to_stdstr(weight), *current_parse_prototype->getName(), UStr::to_stdstr(toCatch.getMessage()),
@@ -377,7 +364,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem)
   current_parse_prototype->pimpl->chooserVector.push_back(ftc);
 }
 
-void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem)
+void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem, FileType* current_parse_prototype)
 {
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -386,21 +373,23 @@ void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem)
         const XMLCh* name = subelem->getAttribute(hrcParamAttrName);
         const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
         const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
-        if (*name == '\0' || *value == '\0') {
+        if (isEmpty(name) || isEmpty(value)) {
           spdlog::warn("Bad parameter in prototype '{0}'", *current_parse_prototype->getName());
           continue;
         }
         UnicodeString d_name = UnicodeString(name);
         TypeParameter* tp = current_parse_prototype->pimpl->addParam(&d_name);
         tp->default_value = std::make_unique<UnicodeString>(value);
-        if (*descr != '\0') {
+        if (!isEmpty(descr)) {
           tp->description = std::make_unique<UnicodeString>(descr);
         }
+      } else {
+        spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.", UStr::to_stdstr(elem->getNodeName()),
+                     *current_parse_prototype->pimpl->name, *current_input_source->getPath());
       }
-      continue;
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      addPrototypeParameters(node);
+      addPrototypeParameters(node, current_parse_prototype);
     }
   }
 }
@@ -1181,4 +1170,9 @@ const Region* HrcLibrary::Impl::getNCRegion(const xercesc::DOMElement* el, const
   }
   UnicodeString dpar = UnicodeString(par);
   return getNCRegion(&dpar, true);
+}
+
+bool HrcLibrary::Impl::isEmpty(const XMLCh* string)
+{
+  return *string == '\0';
 }

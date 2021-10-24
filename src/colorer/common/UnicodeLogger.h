@@ -22,7 +22,6 @@ struct formatter<icu::UnicodeString>
     return format_to(ctx.out(), "{0}", result8);
   }
 };
-
 }  // namespace fmt
 
 #endif  // COLORER_UNICODELOGGER_H

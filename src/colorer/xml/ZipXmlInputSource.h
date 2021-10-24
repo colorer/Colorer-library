@@ -11,7 +11,7 @@ class ZipXmlInputSource : public XmlInputSource
   ZipXmlInputSource(const XMLCh* path, const XMLCh* base);
   ~ZipXmlInputSource() override;
   [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
-  xercesc::InputSource* getInputSource() override;
+  xercesc::InputSource* getInputSource() const override;
 
   static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
 
