@@ -1,6 +1,6 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/CatalogParser.h>
-#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/HrcLibraryImpl.h>
 #include <colorer/parsers/ParserFactoryImpl.h>
 #include <colorer/utils/Environment.h>
 #include <filesystem>
@@ -17,7 +17,7 @@ ParserFactory::Impl::Impl()
   RegExpStack = nullptr;
   RegExpStack_Size = 0;
 
-  hrc_parser = new HRCParser();
+  hrc_parser = new HrcLibrary();
 }
 
 ParserFactory::Impl::~Impl()
@@ -134,7 +134,7 @@ const HRDNode* ParserFactory::Impl::getHRDNode(const UnicodeString& classID, con
   throw ParserFactoryException("can't find HRDName '" + nameID + "'");
 }
 
-HRCParser* ParserFactory::Impl::getHRCParser() const
+HrcLibrary* ParserFactory::Impl::getHrcLibrary() const
 {
   return hrc_parser;
 }

@@ -21,7 +21,7 @@
  */
 class BaseEditor : public RegionHandler
 {
-public:
+ public:
   /**
    * Initial constructor.
    * Creates uninitialized base editor functionality support.
@@ -121,7 +121,7 @@ public:
    * @param pos Position in line, where paired region to be searched.
    *        Paired Region is found, if it includes specified position
    *        or ends directly at one char before line position.
-  */
+   */
   PairMatch* searchLocalPair(int lineNo, int pos);
 
   /**
@@ -150,7 +150,6 @@ public:
    * @param pm PairMatch object to free.
    */
   void releasePairMatch(PairMatch* pm);
-
 
   /**
    * Return parsed and colored LineRegions of requested line.
@@ -232,7 +231,7 @@ public:
   const Region* def_PairEnd;
 
   /** Basic HRC region mapping */
-  const RegionDefine* rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
+  const RegionDefine *rd_def_Text, *rd_def_HorzCross, *rd_def_VertCross;
 
   void startParsing(size_t lno) override;
   void endParsing(size_t lno) override;
@@ -244,11 +243,10 @@ public:
   bool haveInvalidLine();
   void setMaxBlockSize(int max_block_size);
 
-private:
-
+ private:
   FileType* chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen);
 
-  HRCParser* hrcParser;
+  HrcLibrary* hrcLibrary;
   TextParser* textParser;
   ParserFactory* parserFactory;
   LineSource* lineSource;
@@ -271,6 +269,7 @@ private:
 
  public:
   int getInvalidLine() const;
+
  private:
   bool internalRM;
   bool regionCompact;
@@ -286,5 +285,3 @@ private:
 };
 
 #endif
-
-

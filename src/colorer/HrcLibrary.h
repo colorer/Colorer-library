@@ -1,5 +1,5 @@
-#ifndef _COLORER_HRCPARSER_H_
-#define _COLORER_HRCPARSER_H_
+#ifndef _COLORER_HRCLIBRARY_H_
+#define _COLORER_HRCLIBRARY_H_
 
 #include <colorer/Exception.h>
 #include <colorer/FileType.h>
@@ -10,18 +10,18 @@
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer
 */
-class HRCParserException : public Exception
+class HrcLibraryException : public Exception
 {
  public:
-  explicit HRCParserException(const UnicodeString& msg) noexcept : Exception("[HRCParserException] " + msg) {}
+  explicit HrcLibraryException(const UnicodeString& msg) noexcept : Exception("[HrcLibraryException] " + msg) {}
 };
 
-/** Abstract template of HRCParser class implementation.
+/** Abstract template of HrcLibrary class implementation.
     Defines basic operations of loading and accessing
     HRC information.
     @ingroup colorer
 */
-class HRCParser
+class HrcLibrary
 {
  public:
   /** Loads HRC from specified InputSource stream.
@@ -68,8 +68,8 @@ class HRCParser
   */
   const Region* getRegion(const UnicodeString* name);
 
-  ~HRCParser() = default;
-  HRCParser();
+  ~HrcLibrary() = default;
+  HrcLibrary();
 
  private:
   class Impl;

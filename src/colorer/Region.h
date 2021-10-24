@@ -55,7 +55,7 @@ class Region
   }
   /**
     Basic constructor.
-    Used only by HRCParser.
+    Used only by HrcLibrary.
   */
   Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, size_t _id)
   {

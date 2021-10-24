@@ -1,7 +1,7 @@
 #ifndef _COLORER_TEXTPARSERPELPERS_H_
 #define _COLORER_TEXTPARSERPELPERS_H_
 
-#include <colorer/parsers/HRCParserImpl.h>
+#include <colorer/parsers/HrcLibraryImpl.h>
 
 #if !defined COLORERMODE || defined NAMED_MATCHES_IN_HASH
 #error need (COLORERMODE & !NAMED_MATCHES_IN_HASH) in cregexp

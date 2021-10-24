@@ -10,16 +10,16 @@
 
 class FileType;
 
-
 /** Scheme storage implementation.
     Manages the vector of SchemeNode's.
     @ingroup colorer_parsers
 */
 class SchemeImpl : public Scheme
 {
-  friend class HRCParser;
+  friend class HrcLibrary;
   friend class TextParser;
-public:
+
+ public:
   [[nodiscard]] const UnicodeString* getName() const override
   {
     return schemeName.get();
@@ -30,8 +30,7 @@ public:
     return fileType;
   }
 
-
-protected:
+ protected:
   uUnicodeString schemeName;
   std::vector<SchemeNode*> nodes;
   FileType* fileType;
@@ -51,5 +50,3 @@ protected:
 };
 
 #endif
-
-

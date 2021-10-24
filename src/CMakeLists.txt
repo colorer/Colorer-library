@@ -5,7 +5,7 @@ set(SRC_COLORER
     colorer/Common.h
     colorer/Exception.h
     colorer/FileType.h
-    colorer/HRCParser.h
+    colorer/HrcLibrary.h
     colorer/LineSource.h
     colorer/ParserFactory.h
     colorer/Region.h
@@ -63,9 +63,9 @@ set(SRC_COLORER
     colorer/parsers/FileTypeChooser.h
     colorer/parsers/FileTypeImpl.cpp
     colorer/parsers/FileTypeImpl.h
-    colorer/parsers/HRCParser.cpp
-    colorer/parsers/HRCParserImpl.cpp
-    colorer/parsers/HRCParserImpl.h
+    colorer/parsers/HrcLibrary.cpp
+    colorer/parsers/HrcLibraryImpl.cpp
+    colorer/parsers/HrcLibraryImpl.h
     colorer/parsers/HRDNode.h
     colorer/parsers/KeywordList.cpp
     colorer/parsers/KeywordList.h

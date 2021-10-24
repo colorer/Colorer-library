@@ -1,7 +1,7 @@
-#ifndef _COLORER_HRCPARSERIMPL_H_
-#define _COLORER_HRCPARSERIMPL_H_
+#ifndef _COLORER_HRCLIBRARYIMPL_H_
+#define _COLORER_HRCLIBRARYIMPL_H_
 
-#include <colorer/HRCParser.h>
+#include <colorer/HrcLibrary.h>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/parsers/SchemeImpl.h>
 #include <colorer/xml/XmlInputSource.h>
@@ -9,13 +9,13 @@
 
 class FileType;
 
-/** Implementation of HRCParser.
+/** Implementation of HrcLibrary.
     Reads and mantains HRC database of syntax rules,
     used by TextParser implementations to make
     realtime text syntax parsing.
     @ingroup colorer_parsers
 */
-class HRCParser::Impl
+class HrcLibrary::Impl
 {
  public:
   Impl();

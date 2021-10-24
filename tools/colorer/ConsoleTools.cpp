@@ -173,10 +173,10 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     writer = new StreamWriter(stdout, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    HRCParser* hrcParser = pf.getHRCParser();
+    HrcLibrary* hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "loading file types...\n");
     for (int idx = 0;; idx++) {
-      FileType* type = hrcParser->enumerateFileTypes(idx);
+      FileType* type = hrcLibrary->enumerateFileTypes(idx);
       if (type == nullptr) {
         break;
       }
@@ -191,7 +191,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
       }
 
       if (load) {
-        hrcParser->loadFileType(type);
+        hrcLibrary->loadFileType(type);
       }
     }
     delete writer;
@@ -201,15 +201,15 @@ void ConsoleTools::listTypes(bool load, bool useNames)
   }
 }
 
-FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
+FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSource)
 {
   FileType* type = nullptr;
   if (typeDescription) {
-    type = hrcParser->getFileType(typeDescription.get());
+    type = hrcLibrary->getFileType(typeDescription.get());
     if (type == nullptr) {
       // don`t found type by name, check by description or part of description
       for (int idx = 0;; idx++) {
-        type = hrcParser->enumerateFileTypes(idx);
+        type = hrcLibrary->enumerateFileTypes(idx);
         if (type == nullptr) {
           break;
         }
@@ -253,7 +253,7 @@ FileType* ConsoleTools::selectType(HRCParser* hrcParser, LineSource* lineSource)
       }
       file_name = std::make_unique<UnicodeString>(fnpath, slash_idx + 1);
     }
-    type = hrcParser->chooseFileType(file_name.get(), &textStart, 0);
+    type = hrcLibrary->chooseFileType(file_name.get(), &textStart, 0);
   }
   return type;
 }
@@ -273,7 +273,7 @@ void ConsoleTools::profile(int loopCount)
   // HRD RegionMapper linking
   UnicodeString dcons = UnicodeString("console");
   baseEditor.setRegionMapper(&dcons, hrdName.get());
-  FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
+  FileType* type = selectType(pf.getHrcLibrary(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
 
@@ -302,7 +302,7 @@ void ConsoleTools::viewFile()
     // HRD RegionMapper linking
     UnicodeString dcons = UnicodeString("console");
     baseEditor.setRegionMapper(&dcons, hrdName.get());
-    FileType* type = selectType(pf.getHRCParser(), &textLinesStore);
+    FileType* type = selectType(pf.getHrcLibrary(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
@@ -359,7 +359,7 @@ void ConsoleTools::genOutput(bool useTokens)
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     // HRC loading
-    HRCParser* hrcParser = pf.getHRCParser();
+    HrcLibrary* hrcLibrary = pf.getHrcLibrary();
     // HRD RegionMapper creation
     bool useMarkup = false;
     RegionMapper* mapper = nullptr;
@@ -379,7 +379,7 @@ void ConsoleTools::genOutput(bool useTokens)
     baseEditor.setRegionMapper(mapper);
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
     // Choosing file type
-    FileType* type = selectType(hrcParser, &textLinesStore);
+    FileType* type = selectType(hrcLibrary, &textLinesStore);
     baseEditor.setFileType(type);
 
     //  writing result into HTML colored stream...

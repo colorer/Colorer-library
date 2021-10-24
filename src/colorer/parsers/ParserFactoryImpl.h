@@ -1,7 +1,7 @@
 #ifndef COLORER_PARSERFACTORYIMPL_H
 #define COLORER_PARSERFACTORYIMPL_H
 
-#include <colorer/HRCParser.h>
+#include <colorer/HrcLibrary.h>
 #include <colorer/ParserFactory.h>
 #include <colorer/TextParser.h>
 #include <colorer/handlers/StyledHRDMapper.h>
@@ -16,7 +16,7 @@ class ParserFactory::Impl
 
   void loadCatalog(const UnicodeString* catalog_path);
   void loadHrcPath(const UnicodeString& location);
-  [[nodiscard]] HRCParser* getHRCParser() const;
+  [[nodiscard]] HrcLibrary* getHrcLibrary() const;
   static TextParser* createTextParser();
   StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
   TextHRDMapper* createTextMapper(const UnicodeString* nameID);
@@ -44,7 +44,7 @@ class ParserFactory::Impl
   std::vector<UnicodeString> hrc_locations;
   std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
 
-  HRCParser* hrc_parser;
+  HrcLibrary* hrc_parser;
 };
 
 #endif  // COLORER_PARSERFACTORYIMPL_H

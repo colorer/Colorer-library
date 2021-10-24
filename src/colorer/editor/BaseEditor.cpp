@@ -15,7 +15,7 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   parserFactory = parserFactory_;
   lineSource = lineSource_;
 
-  hrcParser = parserFactory->getHRCParser();
+  hrcLibrary = parserFactory->getHrcLibrary();
   textParser = parserFactory->createTextParser();
 
   textParser->setRegionHandler(this);
@@ -39,11 +39,11 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   UnicodeString def_special = UnicodeString("def:Special");
   UnicodeString def_pstart = UnicodeString("def:PairStart");
   UnicodeString def_pend = UnicodeString("def:PairEnd");
-  def_Text = hrcParser->getRegion(&def_text);
-  def_Syntax = hrcParser->getRegion(&def_syntax);
-  def_Special = hrcParser->getRegion(&def_special);
-  def_PairStart = hrcParser->getRegion(&def_pstart);
-  def_PairEnd = hrcParser->getRegion(&def_pend);
+  def_Text = hrcLibrary->getRegion(&def_text);
+  def_Syntax = hrcLibrary->getRegion(&def_syntax);
+  def_Special = hrcLibrary->getRegion(&def_special);
+  def_PairStart = hrcLibrary->getRegion(&def_pstart);
+  def_PairEnd = hrcLibrary->getRegion(&def_pend);
 
   setRegionCompact(regionCompact);
 
@@ -115,14 +115,14 @@ void BaseEditor::setFileType(FileType* ftype)
 {
   spdlog::debug("[BaseEditor] setFileType: {0}", *ftype->getName());
   currentFileType = ftype;
-  hrcParser->loadFileType(ftype);
+  hrcLibrary->loadFileType(ftype);
   textParser->setFileType(currentFileType);
   invalidLine = 0;
 }
 
 FileType* BaseEditor::setFileType(const UnicodeString& fileType)
 {
-  currentFileType = hrcParser->getFileType(&fileType);
+  currentFileType = hrcLibrary->getFileType(&fileType);
   setFileType(currentFileType);
   return currentFileType;
 }
@@ -143,7 +143,7 @@ FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int choose
       break;
     }
   }
-  currentFileType = hrcParser->chooseFileType(fileName, &textStart);
+  currentFileType = hrcLibrary->chooseFileType(fileName, &textStart);
 
   int chooseStrNext = currentFileType->getParamValueInt("firstlines", chooseStr);
   int chooseLenNext = currentFileType->getParamValueInt("firstlinebytes", chooseLen);
@@ -157,12 +157,12 @@ FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int choose
 FileType* BaseEditor::chooseFileType(const UnicodeString* fileName)
 {
   if (lineSource == nullptr) {
-    currentFileType = hrcParser->chooseFileType(fileName, nullptr);
+    currentFileType = hrcLibrary->chooseFileType(fileName, nullptr);
   } else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
     UnicodeString ds_def = UnicodeString("default");
-    FileType* def = hrcParser->getFileType(&ds_def);
+    FileType* def = hrcLibrary->getFileType(&ds_def);
     if (def) {
       chooseStr = def->getParamValueInt("firstlines", chooseStr);
       chooseLen = def->getParamValueInt("firstlinebytes", chooseLen);

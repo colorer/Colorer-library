@@ -8,9 +8,9 @@ void ParserFactory::loadCatalog(const UnicodeString* catalog_path)
   pimpl->loadCatalog(catalog_path);
 }
 
-HRCParser* ParserFactory::getHRCParser() const
+HrcLibrary* ParserFactory::getHrcLibrary() const
 {
-  return pimpl->getHRCParser();
+  return pimpl->getHrcLibrary();
 }
 
 TextParser* ParserFactory::createTextParser()

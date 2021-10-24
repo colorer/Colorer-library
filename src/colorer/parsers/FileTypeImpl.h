@@ -2,7 +2,7 @@
 #define _COLORER_FILETYPEIMPL_H_
 
 #include <colorer/FileType.h>
-#include <colorer/HRCParser.h>
+#include <colorer/HrcLibrary.h>
 #include <colorer/parsers/FileTypeChooser.h>
 #include <colorer/parsers/SchemeImpl.h>
 #include <memory>

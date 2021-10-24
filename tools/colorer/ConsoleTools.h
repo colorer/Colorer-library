@@ -87,7 +87,7 @@ class ConsoleTools
   */
   void listTypes(bool load, bool useNames);
 
-  FileType* selectType(HRCParser* hrcParser, LineSource* lineSource);
+  FileType* selectType(HrcLibrary* hrcLibrary, LineSource* lineSource);
 
   /** Views file in console window, using TextConsoleViewer class
    */

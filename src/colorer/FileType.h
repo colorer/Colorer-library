@@ -13,7 +13,7 @@
  */
 class FileType
 {
-  friend class HRCParser;
+  friend class HrcLibrary;
   friend class TextParser;
 
  public:

@@ -3,7 +3,7 @@
 
 #include <colorer/Common.h>
 #include <colorer/Exception.h>
-#include <colorer/HRCParser.h>
+#include <colorer/HrcLibrary.h>
 #include <colorer/TextParser.h>
 #include <colorer/common/spimpl.h>
 #include <colorer/handlers/StyledHRDMapper.h>
@@ -13,7 +13,7 @@
 /**
  * Maintains catalog of HRC and HRD references.
  * This class searches and loads <code>catalog.xml</code> file
- * and creates HRCParser, StyledHRDMapper, TextHRDMapper and TextParser instances
+ * and creates HrcLibrary, StyledHRDMapper, TextHRDMapper and TextParser instances
  * with information, loaded from specified sources.
  *
  * If no path were passed to it's constructor,
@@ -44,14 +44,14 @@ class ParserFactory
   void loadCatalog(const UnicodeString* catalog_path);
   void loadHrcPath(const UnicodeString& location);
   /**
-   * Creates and loads HRCParser instance from catalog.xml file.
+   * Creates and loads HrcLibrary instance from catalog.xml file.
    * This method can detect directory entries, and sequentally load their
-   * contents into created HRCParser instance.
+   * contents into created HrcLibrary instance.
    * In other cases it uses InputSource#newInstance() method to
    * create input data stream.
-   * Only one HRCParser instance is created for each ParserFactory instance.
+   * Only one HrcLibrary instance is created for each ParserFactory instance.
    */
-  [[nodiscard]] HRCParser* getHRCParser() const;
+  [[nodiscard]] HrcLibrary* getHrcLibrary() const;
 
   /**
    * Creates TextParser instance

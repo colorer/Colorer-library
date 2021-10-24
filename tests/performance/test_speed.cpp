@@ -21,7 +21,7 @@ void printError()
            L"  -f<path>   Test file\n\n"
            L" Test:\n"
            L"   1         TestParserFactoryConstructor\n"
-           L"   2         TestParserFactoryHRCParser\n"
+           L"   2         TestParserFactoryHrcLibrary\n"
            L"   3         TestParserFactoryStyledMapper\n"
            L"   4         TestParserFactoryLoadAllHRCScheme\n"
            L"   5         TestColoringFile\n");
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         TestParserFactoryConstructor(loops, catalogPath);
         break;
       case JT_TEST2:
-        TestParserFactoryHRCParser(loops, catalogPath);
+        TestParserFactoryHrcLibrary(loops, catalogPath);
         break;
       case JT_TEST3:
         TestParserFactoryStyledMapper(loops, catalogPath);

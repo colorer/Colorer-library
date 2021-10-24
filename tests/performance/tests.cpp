@@ -30,20 +30,20 @@ void TestParserFactoryConstructor(int count, UnicodeString* catalogPath)
 }
 
 /*
- *  speed test a ParserFactory->getHRCParser
+ *  speed test a ParserFactory->getHrcLibrary
  *  load proto.hrc
  */
-void TestParserFactoryHRCParser(int count, UnicodeString* catalogPath)
+void TestParserFactoryHrcLibrary(int count, UnicodeString* catalogPath)
 {
-  cout << "TestParserFactoryHRCParser" << endl;
+  cout << "TestParserFactoryHrcLibrary" << endl;
   double all_time = 0;
   for (int i = 0; i <= count; i++) {
     ParserFactory parserFactoryLocal;
     parserFactoryLocal.loadCatalog(catalogPath);
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    HRCParser* hrcParserLocal = parserFactoryLocal.getHRCParser();
-    (void)hrcParserLocal; // hide warning
+    HrcLibrary* hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
+    (void) hrcLibraryLocal;  // hide warning
     // stop timer
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -94,12 +94,12 @@ void TestParserFactoryLoadAllHRCScheme(int count, UnicodeString* catalogPath)
   for (int i = 0; i <= count; i++) {
     ParserFactory parserFactoryLocal;
     parserFactoryLocal.loadCatalog(catalogPath);
-    HRCParser* hrcParserLocal = parserFactoryLocal.getHRCParser();
+    HrcLibrary* hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     for (int idx = 0;; idx++) {
-      FileType* type = hrcParserLocal->enumerateFileTypes(idx);
+      FileType* type = hrcLibraryLocal->enumerateFileTypes(idx);
       if (type == nullptr)
         break;
       type->getBaseScheme();
@@ -115,7 +115,7 @@ void TestParserFactoryLoadAllHRCScheme(int count, UnicodeString* catalogPath)
   cout << "the average time for " << count << " tests " << all_time / count << " sec." << endl;
 }
 
-FileType* selectType(HRCParser* hrcParser, LineSource* lineSource, UnicodeString* testFile)
+FileType* selectType(HrcLibrary* hrcLibrary, LineSource* lineSource, UnicodeString* testFile)
 {
   FileType* type;
 
@@ -131,7 +131,7 @@ FileType* selectType(HRCParser* hrcParser, LineSource* lineSource, UnicodeString
     if (totalLength > 500)
       break;
   }
-  type = hrcParser->chooseFileType(testFile, &textStart, 0);
+  type = hrcLibrary->chooseFileType(testFile, &textStart, 0);
 
   return type;
 }
@@ -154,7 +154,7 @@ void TestColoringFile(int count, UnicodeString* catalogPath, UnicodeString* test
     // HRD RegionMapper linking
     auto console = UnicodeString("console");
     baseEditor.setRegionMapper(&console, nullptr);
-    FileType* type = selectType(parserFactoryLocal.getHRCParser(), &textLinesStore, testFile);
+    FileType* type = selectType(parserFactoryLocal.getHrcLibrary(), &textLinesStore, testFile);
     type->getBaseScheme();
     baseEditor.setFileType(type);
 
@@ -162,7 +162,7 @@ void TestColoringFile(int count, UnicodeString* catalogPath, UnicodeString* test
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     baseEditor.modifyLineEvent(0);
-    baseEditor.lineCountEvent((int)textLinesStore.getLineCount());
+    baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
     baseEditor.validate(-1, false);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
