@@ -38,7 +38,7 @@ jobs:
         uses: battila7/get-version-action@v2
 
       - name: Install dependency
-        run: sudo apt-get -y install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
+        run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
 
       - name: Create Build folder
         run: cmake -E make_directory build
