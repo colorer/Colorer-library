@@ -112,7 +112,6 @@ jobs:
         run: |
           cd external\vcpkg
           .\bootstrap-vcpkg.bat
-          curl -LO https://github.com/colorer/github_tools/releases/download/vcpkg12.09.2021/vcpkg.exe
 
       - name: Setup NuGet Credentials for vpckg cache
         shell: bash
