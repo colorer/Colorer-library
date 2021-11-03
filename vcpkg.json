@@ -5,11 +5,11 @@
   "dependencies": [
     {
       "name": "xerces-c",
-      "version>=": "3.2.3-1"
+      "version>=": "3.2.3#3"
     },
     {
       "name": "spdlog",
-      "version>=": "1.8.5#2"
+      "version>=": "1.8.5#4"
     },
     "minizip",
     {
@@ -21,5 +21,5 @@
       ]
     }
   ],
-  "builtin-baseline": "a3db16a4475b963cacf0260068c497fb72c8f3c0"
+  "builtin-baseline": "7375bb408f2278d2f1875c259beef93332697ba7"
 }
