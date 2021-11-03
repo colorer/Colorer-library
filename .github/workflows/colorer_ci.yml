@@ -32,8 +32,10 @@ jobs:
       - name: Configure CMake
         working-directory: ${{runner.workspace}}/build
         run: >
-          cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          -DCOLORER_BUILD_TEST=ON -DCOLORER_USE_VCPKG=OFF
+          cmake $GITHUB_WORKSPACE -G "Ninja"
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_USE_VCPKG=OFF
           -DCOLORER_BUILD_ARCH=x64
 
       - name: Build
@@ -51,9 +53,9 @@ jobs:
         arch: [ x64, x86 ]
         include:
           - arch: x64
-            triplet: x64-windows-static
+            triplet: x64-windows-static-rel
           - arch: x86
-            triplet: x86-windows-static
+            triplet: x86-windows-static-rel
 
     runs-on: windows-2019
     steps:
@@ -93,10 +95,15 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         # add -DVCPKG_INSTALL_OPTIONS="--debug" for debug output
         run: >
-          cmake $GITHUB_WORKSPACE -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DVCPKG_BUILD_TYPE=$BUILD_TYPE -DCOLORER_BUILD_TEST=ON
-          -DCOLORER_BUILD_ARCH=${{ matrix.arch }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
-          -DVCPKG_FEATURE_FLAGS=versions
+          cmake $GITHUB_WORKSPACE -G "Ninja"
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
+          -DVCPKG_OVERLAY_TRIPLETS=$GITHUB_WORKSPACE/external/vcpkg-triplets
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          -DVCPKG_FEATURE_FLAGS=manifests,versions
 
       - name: Build
         working-directory: ${{runner.workspace}}/build
