@@ -8,12 +8,12 @@ TextRegion::TextRegion(std::shared_ptr<const UnicodeString>& _start_text, std::s
   end_text = std::move(_end_text);
   start_back = std::move(_start_back);
   end_back = std::move(_end_back);
-  type = RegionDefine::TEXT_REGION;
+  type = RegionDefine::RegionDefineType::TEXT_REGION;
 }
 
 TextRegion::TextRegion()
 {
-  type = RegionDefine::TEXT_REGION;
+  type = RegionDefine::RegionDefineType::TEXT_REGION;
 }
 
 TextRegion::TextRegion(const TextRegion& rd) : RegionDefine()
@@ -33,7 +33,7 @@ const TextRegion* TextRegion::cast(const RegionDefine* rd)
 {
   if (rd == nullptr)
     return nullptr;
-  if (rd->type != RegionDefine::TEXT_REGION) {
+  if (rd->type != RegionDefine::RegionDefineType::TEXT_REGION) {
     throw Exception("Bad type cast exception into TextRegion");
   }
   const auto* tr = (const TextRegion*) (rd);

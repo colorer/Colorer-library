@@ -3,7 +3,7 @@
 
 StyledRegion::StyledRegion(bool _isForeSet, bool _isBackSet, unsigned int _fore, unsigned int _back, unsigned int _style)
 {
-  type = RegionDefine::STYLED_REGION;
+  type = RegionDefine::RegionDefineType::STYLED_REGION;
   isForeSet = _isForeSet;
   isBackSet = _isBackSet;
   fore = _fore;
@@ -13,7 +13,7 @@ StyledRegion::StyledRegion(bool _isForeSet, bool _isBackSet, unsigned int _fore,
 
 StyledRegion::StyledRegion()
 {
-  type = RegionDefine::STYLED_REGION;
+  type = RegionDefine::RegionDefineType::STYLED_REGION;
   isForeSet = false;
   isBackSet = false;
   fore = 0;
@@ -38,7 +38,7 @@ const StyledRegion* StyledRegion::cast(const RegionDefine* rd)
 {
   if (rd == nullptr)
     return nullptr;
-  if (rd->type != RegionDefine::STYLED_REGION)
+  if (rd->type != RegionDefine::RegionDefineType::STYLED_REGION)
     throw Exception("Bad type cast exception into StyledRegion");
   const auto* sr = (const StyledRegion*) (rd);
   return sr;

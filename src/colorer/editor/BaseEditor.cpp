@@ -415,7 +415,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
 {
   int parseFrom, parseTo;
   bool layoutChanged = false;
-  TextParser::TextParseMode tpmode = TextParser::TPM_CACHE_READ;
+  TextParser::TextParseMode tpmode = TextParser::TextParseMode::TPM_CACHE_READ;
 
   if (lno == -1 || lno > lineCount) {
     lno = lineCount - 1;
@@ -471,14 +471,14 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     /* Text modification only event */
     if (invalidLine <= parseTo) {
       parseFrom = invalidLine;
-      tpmode = TextParser::TPM_CACHE_UPDATE;
+      tpmode = TextParser::TextParseMode::TPM_CACHE_UPDATE;
     }
   }
 
   /* Text modification general ajustment */
   if (invalidLine <= parseFrom) {
     parseFrom = invalidLine;
-    tpmode = TextParser::TPM_CACHE_UPDATE;
+    tpmode = TextParser::TextParseMode::TPM_CACHE_UPDATE;
   }
 
   if (parseTo > lineCount) {
@@ -487,10 +487,10 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
 
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
-    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TextParser::TPM_CACHE_READ ? "READ" : "UPDATE");
+    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TextParser::TextParseMode::TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
-    if (tpmode == TextParser::TPM_CACHE_UPDATE) {
+    if (tpmode == TextParser::TextParseMode::TPM_CACHE_UPDATE) {
       invalidLine = stopLine + 1;
     }
     spdlog::debug("[BaseEditor] validate:parsed: invalidLine={0}", invalidLine);

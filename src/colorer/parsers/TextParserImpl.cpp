@@ -43,7 +43,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   invisibleSchemesFilled = false;
   schemeStart = -1;
   breakParsing = false;
-  updateCache = (mode == TPM_CACHE_UPDATE);
+  updateCache = (mode == TextParseMode::TPM_CACHE_UPDATE);
 
   CTRACE(spdlog::trace("[TextParserImpl] parse from={0}, num={1}", from, num));
   /* Check for initial bad conditions */
@@ -61,7 +61,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   forward = nullptr;
   cache->scheme = baseScheme;
 
-  if (mode == TPM_CACHE_READ || mode == TPM_CACHE_UPDATE) {
+  if (mode == TextParseMode::TPM_CACHE_READ || mode == TextParseMode::TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
     if (parent != nullptr) {
       CTRACE(spdlog::trace("[TPCache] searchLine() parent:{0},{1}-{2}", *parent->scheme->getName(), parent->sline, parent->eline));
@@ -295,9 +295,9 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
     CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
                          schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
-      case SchemeNode::SNT_EMPTY:
+      case SchemeNode::SchemeNodeType::SNT_EMPTY:
         break;
-      case SchemeNode::SNT_INHERIT:
+      case SchemeNode::SchemeNodeType::SNT_INHERIT:
         if (!schemeNode->scheme) {
           break;
         }
@@ -317,13 +317,13 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         }
         break;
 
-      case SchemeNode::SNT_KEYWORDS:
+      case SchemeNode::SchemeNodeType::SNT_KEYWORDS:
         if (searchKW(schemeNode, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
 
-      case SchemeNode::SNT_RE:
+      case SchemeNode::SchemeNodeType::SNT_RE:
         if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
           break;
         }
@@ -342,7 +342,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         gx = match.e[0];
         return MATCH_RE;
 
-      case SchemeNode::SNT_SCHEME: {
+      case SchemeNode::SchemeNodeType::SNT_SCHEME: {
         if (!schemeNode->scheme) {
           break;
         }

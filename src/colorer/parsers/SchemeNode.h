@@ -23,9 +23,9 @@ typedef std::vector<VirtualEntry*> VirtualEntryVector;
 class SchemeNode
 {
  public:
-  enum SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
+  enum class SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
 
-  SchemeNodeType type = SNT_EMPTY;
+  SchemeNodeType type = SchemeNodeType::SNT_EMPTY;
 
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;

@@ -53,7 +53,7 @@ typedef class SMatchHash
 } * PMatchHash;
 #endif
 
-enum EOps {
+enum class EOps {
   ReBlockOps,
   ReMul,        // *
   RePlus,       // +
@@ -90,7 +90,7 @@ enum EOps {
   ReBkBrackName  // \p{name}
 };
 
-enum EMetaSymbols {
+enum class EMetaSymbols {
   ReBadMeta,
   ReAnyChr,  // .
   ReSoL,     // ^
@@ -117,7 +117,7 @@ enum EMetaSymbols {
   ReChrLast,
 };
 
-enum EError { EOK = 0, EERROR, ESYNTAX, EBRACKETS, EENUM, EOP };
+enum class EError { EOK = 0, EERROR, ESYNTAX, EBRACKETS, EENUM, EOP };
 
 /// @ingroup cregexp
 struct SMatches
@@ -160,7 +160,7 @@ class SRegInfo
   int s = 0;
   int e = 0;
 
-  EOps op = ReEmpty;
+  EOps op = EOps::ReEmpty;
 };
 
 struct StackElem
@@ -324,9 +324,9 @@ class CRegExp
   bool singleLine = false;
   bool multiLine = false;
   SRegInfo* tree_root = nullptr;
-  EError error = EOK;
+  EError error = EError::EOK;
   UChar firstChar = 0;
-  EMetaSymbols firstMetaChar = ReBadMeta;
+  EMetaSymbols firstMetaChar = EMetaSymbols::ReBadMeta;
 #ifdef COLORERMODE
   CRegExp* backRE = nullptr;
   const UnicodeString* backStr = nullptr;

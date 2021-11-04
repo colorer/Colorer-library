@@ -33,7 +33,7 @@ class HrcLibrary::Impl
   const Region* getRegion(const UnicodeString* name);
 
  protected:
-  enum QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
+  enum class QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };
 
   // types and packages
   std::unordered_map<UnicodeString, FileType*> fileTypeHash;

@@ -7,11 +7,11 @@
 #include "ConsoleTools.h"
 
 /** Internal run action type */
-enum JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
+enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
 
 struct setting
 {
-  JobType job = JT_NOTHING;
+  JobType job = JobType::JT_NOTHING;
   std::unique_ptr<UnicodeString> catalog;
   std::unique_ptr<UnicodeString> input_file;
   std::unique_ptr<UnicodeString> output_file;
@@ -39,30 +39,30 @@ void readArgs(int argc, char* argv[])
     }
 
     if (argv[i][1] == 'p') {
-      settings.job = JT_PROFILE;
+      settings.job = JobType::JT_PROFILE;
       if (argv[i][2]) {
         settings.profile_loops = atoi(argv[i] + 2);
       }
       continue;
     }
     if (argv[i][1] == 'r') {
-      settings.job = JT_REGTEST;
+      settings.job = JobType::JT_REGTEST;
       continue;
     }
     if (argv[i][1] == 'f') {
-      settings.job = JT_FORWARD;
+      settings.job = JobType::JT_FORWARD;
       continue;
     }
     if (argv[i][1] == 'v') {
-      settings.job = JT_VIEW;
+      settings.job = JobType::JT_VIEW;
       continue;
     }
     if (argv[i][1] == 'h' && argv[i][2] == 't') {
-      settings.job = JT_GEN_TOKENS;
+      settings.job = JobType::JT_GEN_TOKENS;
       continue;
     }
     if (argv[i][1] == 'h') {
-      settings.job = JT_GEN;
+      settings.job = JobType::JT_GEN;
       continue;
     }
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
@@ -79,15 +79,15 @@ void readArgs(int argc, char* argv[])
       continue;
     }
     if (argv[i][1] == 'l' && argv[i][2] == 'l') {
-      settings.job = JT_LIST_LOAD;
+      settings.job = JobType::JT_LIST_LOAD;
       continue;
     }
     if (argv[i][1] == 'l' && argv[i][2] == 't') {
-      settings.job = JT_LIST_TYPE_NAMES;
+      settings.job = JobType::JT_LIST_TYPE_NAMES;
       continue;
     }
     if (argv[i][1] == 'l') {
-      settings.job = JT_LIST_TYPES;
+      settings.job = JobType::JT_LIST_TYPES;
       continue;
     }
 
@@ -244,31 +244,31 @@ int workIt()
 
   try {
     switch (settings.job) {
-      case JT_REGTEST:
+      case JobType::JT_REGTEST:
         ConsoleTools::RETest();
         break;
-      case JT_PROFILE:
+      case JobType::JT_PROFILE:
         ct.profile(settings.profile_loops);
         break;
-      case JT_LIST_LOAD:
+      case JobType::JT_LIST_LOAD:
         ct.listTypes(true, false);
         break;
-      case JT_LIST_TYPES:
+      case JobType::JT_LIST_TYPES:
         ct.listTypes(false, false);
         break;
-      case JT_LIST_TYPE_NAMES:
+      case JobType::JT_LIST_TYPE_NAMES:
         ct.listTypes(false, true);
         break;
-      case JT_VIEW:
+      case JobType::JT_VIEW:
         ct.viewFile();
         break;
-      case JT_GEN:
+      case JobType::JT_GEN:
         ct.genOutput();
         break;
-      case JT_GEN_TOKENS:
+      case JobType::JT_GEN_TOKENS:
         ct.genTokenOutput();
         break;
-      case JT_FORWARD:
+      case JobType::JT_FORWARD:
         ct.forward();
         break;
       default:

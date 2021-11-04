@@ -17,7 +17,7 @@ class RegionDefine
    *
    * @ingroup colorer_handlers
    */
-  enum RegionDefineType {
+  enum class RegionDefineType {
     UNKNOWN_REGION = 0,
     STYLED_REGION = 1,
     TEXT_REGION = 2,

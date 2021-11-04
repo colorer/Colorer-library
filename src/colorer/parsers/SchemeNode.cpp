@@ -9,7 +9,7 @@ SchemeNode::SchemeNode()
 
 SchemeNode::~SchemeNode()
 {
-  if (type == SNT_INHERIT) {
+  if (type == SchemeNodeType::SNT_INHERIT) {
     for (auto it : virtualEntryVector) {
       delete it;
     }

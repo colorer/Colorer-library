@@ -343,7 +343,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem, 
   }
   FileTypeChooser::ChooserType ctype = xercesc::XMLString::equals(elem->getNodeName(), hrcTagFilename) ? FileTypeChooser::ChooserType::CT_FILENAME
                                                                                                        : FileTypeChooser::ChooserType::CT_FIRSTLINE;
-  double prior = ctype ? 1 : 2;
+  double prior = ctype == FileTypeChooser::ChooserType::CT_FILENAME ? 1 : 2;
   const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
   if (!isEmpty(weight)) {
     try {
@@ -483,7 +483,7 @@ void HrcLibrary::Impl::addTypeRegion(const xercesc::DOMElement* elem)
     return;
   }
   UnicodeString d_regionparent = UnicodeString(regionParent);
-  UnicodeString* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QNT_DEFINE, true);
+  UnicodeString* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr, QualifyNameType::QNT_DEFINE, true);
   if (regionNamesHash.find(*qname1) != regionNamesHash.end()) {
     spdlog::warn("Duplicate region '{0}' definition in type '{1}'", *qname1, *current_parse_type->getName());
     delete qname1;
@@ -605,10 +605,10 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
     return;
   }
   auto* scheme_node = new SchemeNode();
-  scheme_node->type = SchemeNode::SNT_INHERIT;
+  scheme_node->type = SchemeNode::SchemeNodeType::SNT_INHERIT;
   scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
   UnicodeString dnqSchemeName = UnicodeString(nqSchemeName);
-  UnicodeString* schemeName = qualifyForeignName(&dnqSchemeName, QNT_SCHEME, false);
+  UnicodeString* schemeName = qualifyForeignName(&dnqSchemeName, QualifyNameType::QNT_SCHEME, false);
   if (schemeName == nullptr) {
     //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of '")+nqSchemeName+"'. possible inherit loop with
     //        '"+scheme->schemeName+"'"); delete next; continue;
@@ -667,7 +667,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
   auto scheme_node = std::make_unique<SchemeNode>();
   UnicodeString dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = UnicodeString("low").compare(dhrcRegexpAttrPriority) == 0;
-  scheme_node->type = SchemeNode::SNT_RE;
+  scheme_node->type = SchemeNode::SchemeNodeType::SNT_RE;
   scheme_node->start = std::make_unique<CRegExp>(entMatchParam.get());
   if (!scheme_node->start || !scheme_node->start->isOk()) {
     spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *entMatchParam, *scheme->schemeName.get());
@@ -757,7 +757,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
   scheme_node->lowPriority = UnicodeString("low").compare(attr_pr) == 0;
   scheme_node->lowContentPriority = UnicodeString("low").compare(attr_cpr) == 0;
   scheme_node->innerRegion = UnicodeString("yes").compare(attr_ireg) == 0;
-  scheme_node->type = SchemeNode::SNT_SCHEME;
+  scheme_node->type = SchemeNode::SchemeNodeType::SNT_SCHEME;
   scheme_node->start = std::make_unique<CRegExp>(startParam.get());
   scheme_node->start->setPositionMoves(false);
   if (!scheme_node->start->isOk()) {
@@ -810,7 +810,7 @@ void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOME
   scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
   scheme_node->kwList->num = 0;
   scheme_node->kwList->matchCase = isCase;
-  scheme_node->type = SchemeNode::SNT_KEYWORDS;
+  scheme_node->type = SchemeNode::SchemeNodeType::SNT_KEYWORDS;
 
   for (xercesc::DOMNode* keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
     if (keywrd->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -947,9 +947,9 @@ void HrcLibrary::Impl::updateLinks()
       current_parse_type = scheme->fileType;
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
         SchemeNode* snode = scheme->nodes[sni];
-        if (snode->schemeName != nullptr && (snode->type == SchemeNode::SNT_SCHEME || snode->type == SchemeNode::SNT_INHERIT) &&
+        if (snode->schemeName != nullptr && (snode->type == SchemeNode::SchemeNodeType::SNT_SCHEME || snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) &&
             snode->scheme == nullptr) {
-          UnicodeString* schemeName = qualifyForeignName(snode->schemeName.get(), QNT_SCHEME, true);
+          UnicodeString* schemeName = qualifyForeignName(snode->schemeName.get(), QualifyNameType::QNT_SCHEME, true);
           if (schemeName != nullptr) {
             snode->scheme = schemeHash.find(*schemeName)->second;
           } else {
@@ -958,10 +958,10 @@ void HrcLibrary::Impl::updateLinks()
           delete schemeName;
           snode->schemeName.reset();
         }
-        if (snode->type == SchemeNode::SNT_INHERIT) {
+        if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
           for (auto vt : snode->virtualEntryVector) {
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
-              UnicodeString* vsn = qualifyForeignName(vt->virtSchemeName.get(), QNT_SCHEME, true);
+              UnicodeString* vsn = qualifyForeignName(vt->virtSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
               if (vsn) {
                 vt->virtScheme = schemeHash.find(*vsn)->second;
               } else {
@@ -971,7 +971,7 @@ void HrcLibrary::Impl::updateLinks()
               vt->virtSchemeName.reset();
             }
             if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
-              UnicodeString* vsn = qualifyForeignName(vt->substSchemeName.get(), QNT_SCHEME, true);
+              UnicodeString* vsn = qualifyForeignName(vt->substSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
               if (vsn) {
                 vt->substScheme = schemeHash.find(*vsn)->second;
               } else {
@@ -1017,15 +1017,15 @@ UnicodeString* HrcLibrary::Impl::qualifyOwnName(const UnicodeString* name)
 
 bool HrcLibrary::Impl::checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype, bool logErrors)
 {
-  if (qntype == QNT_DEFINE && regionNamesHash.find(*name) == regionNamesHash.end()) {
+  if (qntype == QualifyNameType::QNT_DEFINE && regionNamesHash.find(*name) == regionNamesHash.end()) {
     if (logErrors)
       spdlog::error("region '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
-  } else if (qntype == QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
+  } else if (qntype == QualifyNameType::QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
     if (logErrors)
       spdlog::error("entity '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
-  } else if (qntype == QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
+  } else if (qntype == QualifyNameType::QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
     if (logErrors)
       spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", *name, *parseType->pimpl->name.get());
     return false;
@@ -1110,7 +1110,7 @@ uUnicodeString HrcLibrary::Impl::useEntities(const UnicodeString* name)
     }
     UnicodeString enname(*name, epos + 1, elpos - epos - 1);
 
-    UnicodeString* qEnName = qualifyForeignName(&enname, QNT_ENTITY, true);
+    UnicodeString* qEnName = qualifyForeignName(&enname, QualifyNameType::QNT_ENTITY, true);
     const UnicodeString* enval = nullptr;
     if (qEnName != nullptr) {
       enval = schemeEntitiesHash.find(*qEnName)->second;
@@ -1137,7 +1137,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
     return nullptr;
   }
   const Region* reg;
-  UnicodeString* qname = qualifyForeignName(name, QNT_DEFINE, logErrors);
+  UnicodeString* qname = qualifyForeignName(name, QualifyNameType::QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
   }

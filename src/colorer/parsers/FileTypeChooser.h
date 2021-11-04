@@ -10,7 +10,7 @@
 class FileTypeChooser
 {
 public:
-  enum ChooserType { CT_FILENAME, CT_FIRSTLINE };
+  enum class ChooserType { CT_FILENAME, CT_FIRSTLINE };
 
   /** Creates choose entry.
       @param type If 0 - filename RE, if 1 - firstline RE
@@ -41,12 +41,12 @@ inline FileTypeChooser::FileTypeChooser(ChooserType type_, double prior, CRegExp
 
 inline bool FileTypeChooser::isFileName() const
 {
-  return type == CT_FILENAME;
+  return type == ChooserType::CT_FILENAME;
 }
 
 inline bool FileTypeChooser::isFileContent() const
 {
-  return type == CT_FIRSTLINE;
+  return type == ChooserType::CT_FIRSTLINE;
 }
 
 inline double FileTypeChooser::getPriority() const

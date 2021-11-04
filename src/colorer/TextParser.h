@@ -27,7 +27,7 @@ class TextParser
    * List of available parse modes
    * @ingroup colorer
    */
-  enum TextParseMode {
+  enum class TextParseMode {
     /**
      * Parser will start execution from the root
      * document's scheme, no cache information will be used
