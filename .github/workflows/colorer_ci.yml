@@ -72,7 +72,7 @@ jobs:
           .\bootstrap-vcpkg.bat
 
       - name: Add C++ build tools to PATH
-        uses: ilammy/msvc-dev-cmd@v1.5.0
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
 
