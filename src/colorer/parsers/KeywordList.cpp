@@ -2,10 +2,6 @@
 
 KeywordList::KeywordList()
 {
-  num = 0;
-  matchCase = false;
-  minKeywordLength = 0;
-  kwList = nullptr;
   firstChar = std::make_unique<icu::UnicodeSet>();
 }
 
@@ -16,12 +12,12 @@ KeywordList::~KeywordList()
 
 int kwCompare(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->compare(*((KeywordInfo*)e2)->keyword);
+  return ((KeywordInfo*) e1)->keyword->compare(*((KeywordInfo*) e2)->keyword);
 }
 
 int kwCompareI(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*)e1)->keyword->caseCompare(*((KeywordInfo*)e2)->keyword,U_FOLD_CASE_DEFAULT);
+  return ((KeywordInfo*) e1)->keyword->caseCompare(*((KeywordInfo*) e2)->keyword, U_FOLD_CASE_DEFAULT);
 }
 
 void KeywordList::sortList()
@@ -31,9 +27,9 @@ void KeywordList::sortList()
   }
 
   if (matchCase) {
-    qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompare);
+    qsort((void*) kwList, num, sizeof(KeywordInfo), &kwCompare);
   } else {
-    qsort((void*)kwList, num, sizeof(KeywordInfo), &kwCompareI);
+    qsort((void*) kwList, num, sizeof(KeywordInfo), &kwCompareI);
   }
 }
 
@@ -52,7 +48,7 @@ void KeywordList::substrIndex()
         break;
       }
       if (kwList[ii].keyword->length() < kwList[i].keyword->length() &&
-          UnicodeString(*kwList[i].keyword, 0, kwList[ii].keyword->length()).compare(*kwList[ii].keyword)==0) {
+          UnicodeString(*kwList[i].keyword, 0, kwList[ii].keyword->length()).compare(*kwList[ii].keyword) == 0) {
         kwList[i].ssShorter = ii;
         break;
       }

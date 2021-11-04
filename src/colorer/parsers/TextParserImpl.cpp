@@ -291,7 +291,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
     return MATCH_NOTHING;
   }
   int idx = 0;
-  for (auto schemeNode : cscheme->nodes) {
+  for (auto const& schemeNode : cscheme->nodes) {
     CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
                          schemeNodeTypeNames[schemeNode->type]));
     switch (schemeNode->type) {
@@ -303,7 +303,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         }
         ssubst = vtlist->pushvirt(schemeNode->scheme);
         if (!ssubst) {
-          bool b = vtlist->push(schemeNode);
+          bool b = vtlist->push(schemeNode.get());
           re_result = searchRE(schemeNode->scheme, no, lowLen, hiLen);
           if (b) {
             vtlist->pop();
@@ -318,7 +318,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         break;
 
       case SchemeNode::SchemeNodeType::SNT_KEYWORDS:
-        if (searchKW(schemeNode, no, lowLen, hiLen) == MATCH_RE) {
+        if (searchKW(schemeNode.get(), no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
@@ -382,7 +382,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
           OldCacheF->eline = 0x7FFFFFFF;
           OldCacheF->scheme = ssubst;
           OldCacheF->matchstart = match;
-          OldCacheF->clender = schemeNode;
+          OldCacheF->clender = schemeNode.get();
           OldCacheF->backLine = backLine;
         }
 
@@ -400,12 +400,12 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         schemeStart = gx;
         schemeNode->end->setBackTrace(backLine, &match);
 
-        enterScheme(no, &match, schemeNode);
+        enterScheme(no, &match, schemeNode.get());
 
         colorize(schemeNode->end.get(), schemeNode->lowContentPriority);
 
         if (gy < gy2) {
-          leaveScheme(gy, &matchend, schemeNode);
+          leaveScheme(gy, &matchend, schemeNode.get());
         }
         gx = matchend.e[0];
         /* (empty-block.test) Check if the consumed scheme is zero-length */
@@ -427,7 +427,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
             forward = ResF;
             parent = ResP;
           } else {
-            OldCacheF->eline = gy; //-V522
+            OldCacheF->eline = gy;  //-V522
             OldCacheF->vcache = vtlist->store();
             forward = OldCacheF;
             parent = OldCacheP;

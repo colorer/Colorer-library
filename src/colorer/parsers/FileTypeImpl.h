@@ -13,9 +13,6 @@
 class TypeParameter
 {
  public:
-  TypeParameter() = default;
-  ~TypeParameter() = default;
-
   /* parameter name*/
   uUnicodeString name;
   /* parameter description*/
@@ -34,9 +31,6 @@ class TypeParameter
 class FileType::Impl
 {
  public:
-  Impl() = default;
-  ~Impl();
-
   [[nodiscard]] const UnicodeString* getName() const;
   [[nodiscard]] const UnicodeString* getGroup() const;
   [[nodiscard]] const UnicodeString* getDescription() const;
@@ -95,8 +89,8 @@ class FileType::Impl
   bool isPackage = false;
   SchemeImpl* baseScheme = nullptr;
 
-  std::vector<FileTypeChooser*> chooserVector;
-  std::unordered_map<UnicodeString, TypeParameter*> paramsHash;
+  std::vector<std::unique_ptr<FileTypeChooser>> chooserVector;
+  std::unordered_map<UnicodeString, std::unique_ptr<TypeParameter>> paramsHash;
   std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
 };

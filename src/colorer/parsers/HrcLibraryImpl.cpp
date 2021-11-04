@@ -360,8 +360,8 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem, 
                    *current_input_source->getPath());
     }
   }
-  auto* ftc = new FileTypeChooser(ctype, prior, matchRE);
-  current_parse_prototype->pimpl->chooserVector.push_back(ftc);
+  auto ftc = std::make_unique<FileTypeChooser>(ctype, prior, matchRE);
+  current_parse_prototype->pimpl->chooserVector.emplace_back(std::move(ftc));
 }
 
 void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem, FileType* current_parse_prototype)
@@ -604,7 +604,7 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
     spdlog::error("empty scheme name in inheritance operator in scheme '{0}'", *scheme->schemeName.get());
     return;
   }
-  auto* scheme_node = new SchemeNode();
+  auto scheme_node = std::make_unique<SchemeNode>();
   scheme_node->type = SchemeNode::SchemeNodeType::SNT_INHERIT;
   scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
   UnicodeString dnqSchemeName = UnicodeString(nqSchemeName);
@@ -635,7 +635,7 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
       }
     }
   }
-  scheme->nodes.push_back(scheme_node);
+  scheme->nodes.push_back(std::move(scheme_node));
 }
 
 void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -681,7 +681,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
     scheme_node->regions[0] = scheme_node->region;
   }
 
-  scheme->nodes.push_back(scheme_node.release());
+  scheme->nodes.push_back(std::move(scheme_node));
 }
 
 void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -749,7 +749,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
     spdlog::error("block with bad scheme attribute in scheme '{0}'", *scheme->schemeName.get());
     return;
   }
-  auto* scheme_node = new SchemeNode();
+  auto scheme_node = std::make_unique<SchemeNode>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   UnicodeString attr_pr = UnicodeString(elem->getAttribute(hrcBlockAttrPriority));
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
@@ -772,10 +772,10 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
   }
 
   // !! EE
-  loadBlockRegions(scheme_node, elem);
-  loadRegions(scheme_node, eStart, true);
-  loadRegions(scheme_node, eEnd, false);
-  scheme->nodes.push_back(scheme_node);
+  loadBlockRegions(scheme_node.get(), elem);
+  loadRegions(scheme_node.get(), eStart, true);
+  loadRegions(scheme_node.get(), eEnd, false);
+  scheme->nodes.push_back(std::move(scheme_node));
 }
 
 void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -786,7 +786,7 @@ void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOME
     return;
   }
 
-  auto* scheme_node = new SchemeNode();
+  auto scheme_node = std::make_unique<SchemeNode>();
   UnicodeString dhrcKeywordsAttrIgnorecase = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
   UnicodeString dhrcKeywordsAttrPriority = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
   bool isCase = UnicodeString("yes").compare(dhrcKeywordsAttrIgnorecase) != 0;
@@ -814,13 +814,13 @@ void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOME
 
   for (xercesc::DOMNode* keywrd = elem->getFirstChild(); keywrd; keywrd = keywrd->getNextSibling()) {
     if (keywrd->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      addKeyword(scheme_node, brgn, dynamic_cast<xercesc::DOMElement*>(keywrd));
+      addKeyword(scheme_node.get(), brgn, dynamic_cast<xercesc::DOMElement*>(keywrd));
       continue;
     }
     if (keywrd->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
       for (xercesc::DOMNode* keywrd2 = keywrd->getFirstChild(); keywrd2; keywrd2 = keywrd2->getNextSibling()) {
         if (keywrd2->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-          addKeyword(scheme_node, brgn, dynamic_cast<xercesc::DOMElement*>(keywrd2));
+          addKeyword(scheme_node.get(), brgn, dynamic_cast<xercesc::DOMElement*>(keywrd2));
         }
       }
     }
@@ -828,7 +828,7 @@ void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOME
   scheme_node->kwList->sortList();
   scheme_node->kwList->substrIndex();
   scheme_node->kwList->firstChar->freeze();
-  scheme->nodes.push_back(scheme_node);
+  scheme->nodes.push_back(std::move(scheme_node));
 }
 
 void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem)
@@ -946,8 +946,9 @@ void HrcLibrary::Impl::updateLinks()
       FileType* old_parseType = current_parse_type;
       current_parse_type = scheme->fileType;
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
-        SchemeNode* snode = scheme->nodes[sni];
-        if (snode->schemeName != nullptr && (snode->type == SchemeNode::SchemeNodeType::SNT_SCHEME || snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) &&
+        auto& snode = scheme->nodes[sni];
+        if (snode->schemeName != nullptr &&
+            (snode->type == SchemeNode::SchemeNodeType::SNT_SCHEME || snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) &&
             snode->scheme == nullptr) {
           UnicodeString* schemeName = qualifyForeignName(snode->schemeName.get(), QualifyNameType::QNT_SCHEME, true);
           if (schemeName != nullptr) {

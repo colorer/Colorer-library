@@ -18,7 +18,6 @@ class FileType
 
  public:
   FileType();
-  ~FileType() = default;
 
   void addParam(const UnicodeString* name);
   void addParam(const UnicodeString& name);

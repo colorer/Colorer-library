@@ -1,20 +1,6 @@
 #include <colorer/common/UStr.h>
 #include <colorer/parsers/FileTypeImpl.h>
 
-FileType::Impl::~Impl()
-{
-  for (auto it : chooserVector) {
-    delete it;
-  }
-  chooserVector.clear();
-
-  for (const auto& it : paramsHash) {
-    delete it.second;
-  }
-  paramsHash.clear();
-  importVector.clear();
-}
-
 const UnicodeString* FileType::Impl::getName() const
 {
   return name.get();
@@ -186,7 +172,7 @@ double FileType::Impl::getPriority(const UnicodeString* fileName, const UnicodeS
 {
   SMatches match {};
   double cur_prior = 0;
-  for (auto ftc : chooserVector) {
+  for (auto const& ftc : chooserVector) {
     if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match))
       cur_prior += ftc->getPriority();
     if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match))

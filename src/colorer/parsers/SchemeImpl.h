@@ -32,20 +32,12 @@ class SchemeImpl : public Scheme
 
  protected:
   uUnicodeString schemeName;
-  std::vector<SchemeNode*> nodes;
-  FileType* fileType;
+  std::vector<std::unique_ptr<SchemeNode>> nodes;
+  FileType* fileType = nullptr;
 
   explicit SchemeImpl(const UnicodeString* sn)
   {
     schemeName = std::make_unique<UnicodeString>(*sn);
-    fileType = nullptr;
-  }
-
-  ~SchemeImpl() override
-  {
-    for (auto it : nodes) {
-      delete it;
-    }
   }
 };
 

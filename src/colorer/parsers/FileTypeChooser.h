@@ -9,7 +9,7 @@
 */
 class FileTypeChooser
 {
-public:
+ public:
   enum class ChooserType { CT_FILENAME, CT_FIRSTLINE };
 
   /** Creates choose entry.
@@ -18,8 +18,6 @@ public:
       @param re Associated regular expression
   */
   FileTypeChooser(ChooserType type, double prior, CRegExp* re);
-  /** Default destructor */
-  ~FileTypeChooser() = default;
   /** Returns type of chooser */
   [[nodiscard]] bool isFileName() const;
   /** Returns type of chooser */
@@ -28,16 +26,14 @@ public:
   [[nodiscard]] double getPriority() const;
   /** Returns associated regular expression */
   [[nodiscard]] CRegExp* getRE() const;
-private:
+
+ private:
   std::unique_ptr<CRegExp> reg_matcher;
   ChooserType type;
   double priority;
 };
 
-inline FileTypeChooser::FileTypeChooser(ChooserType type_, double prior, CRegExp* re):
-  reg_matcher(re), type(type_), priority(prior)
-{
-}
+inline FileTypeChooser::FileTypeChooser(ChooserType type_, double prior, CRegExp* re) : reg_matcher(re), type(type_), priority(prior) {}
 
 inline bool FileTypeChooser::isFileName() const
 {
@@ -59,6 +55,4 @@ inline CRegExp* FileTypeChooser::getRE() const
   return reg_matcher.get();
 }
 
-#endif //_COLORER_FILETYPECHOOSER_H_
-
-
+#endif  //_COLORER_FILETYPECHOOSER_H_
