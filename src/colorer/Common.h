@@ -15,7 +15,7 @@ typedef std::unique_ptr<UnicodeString> uUnicodeString;
 #include <colorer/common/Features.h>
 #define BAD_WCHAR (0xFFFF)
 
-#ifdef COLORER_ENABLE_TRACE
+#ifdef COLORER_USE_DEEPTRACE
 #define CTRACE(info) info
 #else
 #define CTRACE(info)

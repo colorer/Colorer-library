@@ -55,6 +55,16 @@
         "COLORER_BUILD_ARCH": "x86",
         "COLORER_BUILD_TEST": "ON"
       }
+    },
+    {
+      "name": "x64-debug-trace",
+      "description": "enable deep trace",
+      "inherits": [
+        "x64-debug"
+      ],
+      "cacheVariables": {
+        "COLORER_USE_DEEPTRACE": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -66,6 +76,11 @@
     {
       "name": "x86",
       "configurePreset": "x86-debug",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "x64-trace",
+      "configurePreset": "x64-debug-trace",
       "inheritConfigureEnvironment": true
     }
   ]
