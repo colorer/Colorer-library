@@ -74,6 +74,7 @@ jobs:
 
     env:
       BUILD_TYPE: Release
+      X_VCPKG_NUGET_ID_PREFIX: 'colorer'
       VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
     runs-on: windows-2019
@@ -118,7 +119,7 @@ jobs:
         run: >
           cmake $GITHUB_WORKSPACE -G "Ninja"
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_BUILD_TEST=OFF
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
@@ -134,6 +135,7 @@ jobs:
 
       - name: Install
         working-directory: build
+        shell: bash
         run: cmake --install . --config $BUILD_TYPE
 
       - name: Set the pack file name
@@ -143,10 +145,11 @@ jobs:
           echo "colorer_name=colorer.${{ matrix.arch }}.${{ steps.get_version.outputs.version }}.7z" >> $GITHUB_ENV
 
       - name: pack plugin
+        shell: bash
         working-directory: build
         run: |
-          7z a ${{ env.colorer_lib_name }} .\install\colorer\*
-          7z a ${{ env.colorer_name }} .\install\colorer\bin\colorer.exe
+          7z a ${{ env.colorer_lib_name }} ./install/colorer/*
+          7z a ${{ env.colorer_name }} ./install/colorer/bin/colorer.exe
 
       - name: Upload result to cache
         uses: actions/upload-artifact@v2
