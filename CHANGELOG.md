@@ -3,7 +3,7 @@
 ### Added
 
 - Add work with symlinks. If file is symlink, for example catalog.xml, we work with real file and full path for it ([#10](https://github.com/colorer/Colorer-library/issues/10))
-- Add work with system envirements in path to files
+- Add work with system environments in path to files
 
 ### Changed
 
@@ -11,7 +11,7 @@
 
 ## [1.2.1] - 2021-04-03
 
-First auto builded release
+First auto built release
 
 ## [1.2.0] - 2021-09-09
 
