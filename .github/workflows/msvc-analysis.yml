@@ -47,11 +47,14 @@ jobs:
           -username "${{ secrets.PACKAGES_GITHUB_USER }}"
           -password "${{ secrets.PACKAGES_GITHUB_TOKEN }}"
 
+      - name: Create Build forlder
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
       - name: Configure CMake
         shell: bash
+        working-directory: ${{runner.workspace}}/build
         run: >
-          cmake $GITHUB_WORKSPACE -B ${{ env.build }}
-          -G "Ninja"
+          cmake $GITHUB_WORKSPACE
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           -DCOLORER_BUILD_TEST=ON
           -DCOLORER_BUILD_ARCH=x64
@@ -70,7 +73,7 @@ jobs:
         # Provide a unique ID to access the sarif output path
         id: run-analysis
         with:
-          cmakeBuildDirectory: ${{ env.build }}
+          cmakeBuildDirectory: ${{runner.workspace}}/build
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
 
