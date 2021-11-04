@@ -56,7 +56,7 @@ jobs:
         run: >
           cmake $GITHUB_WORKSPACE
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_BUILD_TEST=OFF
           -DCOLORER_BUILD_ARCH=x64
           -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
@@ -76,6 +76,7 @@ jobs:
           cmakeBuildDirectory: ${{runner.workspace}}/build
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
+          ignoredPaths: ${{ github.workspace }}/external;${{ github.workspace }}/tests
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
