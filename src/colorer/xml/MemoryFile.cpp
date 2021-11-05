@@ -6,7 +6,7 @@ voidpf ZCALLBACK mem_open_file_func(voidpf opaque, const char* /*filename*/, int
   MemoryFile* mf = (MemoryFile*) opaque;
   mf->error = 0;
   mf->pointer = 0;
-  return (voidpf) 0x666888;
+  return (voidpf) 0x666888; //-V566
 }
 
 uLong ZCALLBACK mem_read_file_func(voidpf opaque, voidpf /*stream*/, void* buf, uLong size)

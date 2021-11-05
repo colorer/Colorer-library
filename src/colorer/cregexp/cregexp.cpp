@@ -565,8 +565,8 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
     SRegInfo* reafterword = next;
     SRegInfo* resymb;
     int wsize = 0;
-    for (resymb = next; resymb && resymb->op == EOps::ReSymb; resymb = resymb->next, wsize++)
-      ;
+    for (resymb = next; resymb && resymb->op == EOps::ReSymb; resymb = resymb->next, wsize++) {
+    }
     if (resymb && resymb->op > EOps::ReBlockOps && resymb->op < EOps::ReSymbolOps) {
       wsize--;
       resymb = resymb->prev;
@@ -589,7 +589,6 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
       reword->next = reafterword;
       if (reafterword)
         reafterword->prev = reword;
-      next = reword;
       continue;
     }
 
@@ -1281,7 +1280,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           break;
         case rea_RangeN_step2:
           action = -1;
-          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, toParse);
+          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, toParse); //-V522
           continue;
           break;
         case rea_RangeNM_step2:

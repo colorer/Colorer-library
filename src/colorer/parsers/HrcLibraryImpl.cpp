@@ -85,19 +85,20 @@ void HrcLibrary::Impl::loadFileType(FileType* filetype)
 
   thisType->pimpl->input_source_loading = true;
 
+  auto& input_source = thisType->pimpl->inputSource;
   try {
-    loadSource(thisType->pimpl->inputSource.get());
+    loadSource(input_source.get());
   } catch (InputSourceException& e) {
     spdlog::error("Can't open source stream: {0}", e.what());
     thisType->pimpl->load_broken = true;
   } catch (HrcLibraryException& e) {
-    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *thisType->pimpl->inputSource->getPath() : "");
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *input_source->getPath() : "");
     thisType->pimpl->load_broken = true;
   } catch (Exception& e) {
-    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *thisType->pimpl->inputSource->getPath() : "");
+    spdlog::error("{0} [{1}]", e.what(), thisType->pimpl->inputSource ? *input_source->getPath() : "");
     thisType->pimpl->load_broken = true;
   } catch (...) {
-    spdlog::error("Unknown exception while loading {0}", *thisType->pimpl->inputSource->getPath());
+    spdlog::error("Unknown exception while loading {0}", *input_source->getPath());
     thisType->pimpl->load_broken = true;
   }
 
@@ -805,9 +806,9 @@ void HrcLibrary::Impl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOME
   }
 
   scheme_node->kwList = std::make_unique<KeywordList>();
-  scheme_node->kwList->num = getSchemeKeywordsCount(elem);
+  auto count = getSchemeKeywordsCount(elem);
 
-  scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
+  scheme_node->kwList->kwList = new KeywordInfo[count];
   scheme_node->kwList->num = 0;
   scheme_node->kwList->matchCase = isCase;
   scheme_node->type = SchemeNode::SchemeNodeType::SNT_KEYWORDS;
