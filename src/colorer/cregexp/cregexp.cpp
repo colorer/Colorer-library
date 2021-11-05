@@ -23,7 +23,7 @@ SRegInfo::~SRegInfo()
         break;
 #ifdef NAMED_MATCHES_IN_HASH
       case EOps::ReNamedBrackets:
-      case ReBkBrackName:
+      case EOps::ReBkBrackName:
         if (namedata)
           delete namedata;
 #endif
@@ -495,7 +495,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
 #ifdef CHECKNAMES
           if (getBracketNo(br_name) != -1) {
             delete br_name;
-            return EBRACKETS;
+            return EError::EBRACKETS;
           }
 #endif
           if (cnMatch < NAMED_MATCHES_NUM) {
@@ -508,7 +508,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
 #ifdef CHECKNAMES
           if (br_name->length() && namedMatches && namedMatches->getItem(br_name)) {
             delete br_name;
-            return EBRACKETS;
+            return EError::EBRACKETS;
           }
 #endif
           next->param0 = 0;
@@ -1280,7 +1280,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           break;
         case rea_RangeN_step2:
           action = -1;
-          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, toParse); //-V522
+          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, toParse);  //-V522
           continue;
           break;
         case rea_RangeNM_step2:

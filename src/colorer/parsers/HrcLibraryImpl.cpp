@@ -344,7 +344,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem, 
   }
   FileTypeChooser::ChooserType ctype = xercesc::XMLString::equals(elem->getNodeName(), hrcTagFilename) ? FileTypeChooser::ChooserType::CT_FILENAME
                                                                                                        : FileTypeChooser::ChooserType::CT_FIRSTLINE;
-  double prior = ctype == FileTypeChooser::ChooserType::CT_FILENAME ? 1 : 2;
+  double prior = ctype == FileTypeChooser::ChooserType::CT_FILENAME ? 2 : 1;
   const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
   if (!isEmpty(weight)) {
     try {
