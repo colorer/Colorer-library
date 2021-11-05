@@ -2,7 +2,8 @@
 /.idea
 /cmake-build*
 /.PVS-Studio
-*.PVS-Studio.cfg
+*.PVS-Studio.*
+
 
 # build
 /bin

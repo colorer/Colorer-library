@@ -64,6 +64,8 @@ class RegionDefine
 
   /** Default Destructor */
   virtual ~RegionDefine() = default;
+  RegionDefine(RegionDefine&&) = delete;
+  RegionDefine& operator=(RegionDefine&&) = delete;
 
  protected:
   RegionDefine() = default;

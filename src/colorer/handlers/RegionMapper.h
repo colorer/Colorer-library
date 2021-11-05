@@ -52,8 +52,10 @@ class RegionMapper
    */
   const RegionDefine* getRegionDefine(const UnicodeString& name) const;
 
+  RegionMapper(RegionMapper&&) = delete;
   RegionMapper(const RegionMapper&) = delete;
   RegionMapper& operator=(const RegionMapper&) = delete;
+  RegionMapper& operator=(RegionMapper&&) = delete;
 
  protected:
   // all RegionDefine

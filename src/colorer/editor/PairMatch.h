@@ -89,6 +89,11 @@ class PairMatch
     }
   }
 
+  PairMatch(PairMatch&&) = delete;
+  PairMatch(const PairMatch&) = delete;
+  PairMatch& operator=(const PairMatch&) = delete;
+  PairMatch& operator=(PairMatch&&) = delete;
+
  private:
   /**
    * Region's start position as a reference to inparse sequence.

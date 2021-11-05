@@ -82,9 +82,14 @@ class RegionHandler
   */
   virtual void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) = 0;
 
+  virtual ~RegionHandler() = default;
+  RegionHandler(RegionHandler&&) = delete;
+  RegionHandler(const RegionHandler&) = delete;
+  RegionHandler& operator=(const RegionHandler&) = delete;
+  RegionHandler& operator=(RegionHandler&&) = delete;
+
  protected:
   RegionHandler() = default;
-  virtual ~RegionHandler() = default;
 };
 
 #endif

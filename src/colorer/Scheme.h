@@ -17,9 +17,14 @@ public:
   /** Returns reference to FileType, this scheme belongs to.
   */
   [[nodiscard]] virtual FileType* getFileType() const = 0;
+
+  virtual ~Scheme() = default;
+  Scheme(Scheme&&) = delete;
+  Scheme(const Scheme&) = delete;
+  Scheme& operator=(const Scheme&) = delete;
+  Scheme& operator=(Scheme&&) = delete;
 protected:
   Scheme() = default;
-  virtual ~Scheme() = default;
 };
 
 #endif

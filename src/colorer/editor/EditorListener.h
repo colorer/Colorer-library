@@ -15,7 +15,12 @@ class EditorListener
    */
   virtual void modifyEvent(size_t topLine) = 0;
 
+  EditorListener() = default;
   virtual ~EditorListener() = default;
+  EditorListener(EditorListener&&) = delete;
+  EditorListener(const EditorListener&) = delete;
+  EditorListener& operator=(const EditorListener&) = delete;
+  EditorListener& operator=(EditorListener&&) = delete;
 };
 
 #endif

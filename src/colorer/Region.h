@@ -68,6 +68,10 @@ class Region
   }
 
   virtual ~Region() = default;
+  Region(Region&&) = delete;
+  Region(const Region&) = delete;
+  Region& operator=(const Region&) = delete;
+  Region& operator=(Region&&) = delete;
 
  protected:
   /** Internal members */

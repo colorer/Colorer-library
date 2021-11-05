@@ -39,9 +39,14 @@ public:
    * @return Unicode string, enwrapped into String class.
    */
   virtual UnicodeString* getLine([[maybe_unused]] size_t lno) = 0;
+
+  virtual ~LineSource() = default;
+  LineSource(LineSource&&) = delete;
+  LineSource(const LineSource&) = delete;
+  LineSource& operator=(const LineSource&) = delete;
+  LineSource& operator=(LineSource&&) = delete;
 protected:
   LineSource() = default;
-  virtual ~LineSource() = default;
 };
 
 #endif
