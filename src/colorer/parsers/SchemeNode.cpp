@@ -1,7 +1,5 @@
 #include <colorer/parsers/SchemeNode.h>
 
-const char* schemeNodeTypeNames[] = {"EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT"};
-
 SchemeNode::SchemeNode()
 {
   virtualEntryVector.reserve(5);

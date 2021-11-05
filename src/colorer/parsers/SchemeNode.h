@@ -8,8 +8,6 @@
 #include <colorer/parsers/VirtualEntry.h>
 #include <vector>
 
-extern const char* schemeNodeTypeNames[];
-
 class SchemeImpl;
 typedef std::vector<VirtualEntry*> VirtualEntryVector;
 
@@ -24,6 +22,7 @@ class SchemeNode
 {
  public:
   enum class SchemeNodeType { SNT_EMPTY, SNT_RE, SNT_SCHEME, SNT_KEYWORDS, SNT_INHERIT };
+  static constexpr std::string_view schemeNodeTypeNames[] = {"EMPTY", "RE", "SCHEME", "KEYWORDS", "INHERIT"};
 
   SchemeNodeType type = SchemeNodeType::SNT_EMPTY;
 
