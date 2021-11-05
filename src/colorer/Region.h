@@ -19,12 +19,12 @@ class Region
   /** Full Qualified region name (<code>def:Text</code> for example) */
   [[nodiscard]] virtual const UnicodeString* getName() const
   {
-    return name;
+    return name.get();
   }
   /** Region description */
   [[nodiscard]] virtual const UnicodeString* getDescription() const
   {
-    return description;
+    return description.get();
   }
   /** Direct region ancestor (parent) */
   [[nodiscard]] virtual const Region* getParent() const
@@ -59,24 +59,20 @@ class Region
   */
   Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, size_t _id)
   {
-    name = new UnicodeString(*_name);
-    description = nullptr;
+    name = std::make_unique<UnicodeString>(*_name);
     if (_description != nullptr) {
-      description = new UnicodeString(*_description);
+      description = std::make_unique<UnicodeString>(*_description);
     }
     parent = _parent;
     id = _id;
   }
 
-  virtual ~Region()
-  {
-    delete name;
-    delete description;
-  }
+  virtual ~Region() = default;
 
  protected:
   /** Internal members */
-  UnicodeString *name, *description;
+  uUnicodeString name;
+  uUnicodeString description;
   const Region* parent;
   size_t id;
 };

@@ -1070,12 +1070,11 @@ UnicodeString* HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name, Q
         loadFileType(importer);
       }
 
-      auto* qname = new UnicodeString(*tname);
+      auto qname = std::make_unique<UnicodeString>(*tname);
       qname->append(":").append(*name);
-      if (checkNameExist(qname, importer, qntype, false)) {
-        return qname;
+      if (checkNameExist(qname.get(), importer, qntype, false)) {
+        return qname.release();
       }
-      delete qname;
     }
     if (logErrors) {
       spdlog::error("unqualified name '{0}' doesn't belong to any imported type [{1}]", *name, *current_input_source->getPath());

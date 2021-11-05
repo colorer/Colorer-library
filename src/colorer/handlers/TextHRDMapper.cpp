@@ -103,13 +103,12 @@ void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefin
     return;
 
   const TextRegion* rd_new = TextRegion::cast(rd);
-  RegionDefine* new_region = new TextRegion(*rd_new);
+  auto new_region = std::make_unique<TextRegion>(*rd_new);
 
   auto rd_old_it = regionDefines.find(name);
   if (rd_old_it == regionDefines.end()) {
-    std::pair<UnicodeString, RegionDefine*> pp(name, new_region);
-    regionDefines.emplace(pp);
+    regionDefines.emplace(std::make_pair(name, std::move(new_region)));
   } else {
-    rd_old_it->second.reset(new_region);
+    rd_old_it->second = std::move(new_region);
   }
 }
