@@ -1,4 +1,4 @@
-#include <colorer/parsers/KeywordList.h>
+#include "colorer/parsers/KeywordList.h"
 
 KeywordList::KeywordList()
 {

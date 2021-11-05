@@ -1,6 +1,6 @@
-#include <colorer/xml/SharedXmlInputSource.h>
+#include "colorer/xml/SharedXmlInputSource.h"
 #include <xercesc/util/BinFileInputStream.hpp>
-#include <colorer/Exception.h>
+#include "colorer/Exception.h"
 
 std::unordered_map<UnicodeString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
 

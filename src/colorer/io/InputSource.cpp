@@ -1,5 +1,5 @@
-#include <colorer/io/InputSource.h>
-#include <colorer/io/FileInputSource.h>
+#include "colorer/io/InputSource.h"
+#include "colorer/io/FileInputSource.h"
 
 using namespace colorer;
 

@@ -1,7 +1,7 @@
 #ifndef _COLORER_STREAMWRITER_H_
 #define _COLORER_STREAMWRITER_H_
 
-#include <colorer/io/Writer.h>
+#include "colorer/io/Writer.h"
 #include <cstdio>
 
 /** Writes data into operating system output stream.

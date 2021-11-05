@@ -1,5 +1,5 @@
-#include <colorer/parsers/FileTypeImpl.h>
-#include <colorer/parsers/TextParserImpl.h>
+#include "colorer/parsers/FileTypeImpl.h"
+#include "colorer/parsers/TextParserImpl.h"
 
 TextParser::TextParser() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 

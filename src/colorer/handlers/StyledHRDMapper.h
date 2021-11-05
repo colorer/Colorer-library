@@ -1,8 +1,8 @@
 #ifndef _COLORER_STYLEDHRDMAPPER_H_
 #define _COLORER_STYLEDHRDMAPPER_H_
 
-#include <colorer/handlers/RegionMapper.h>
-#include <colorer/handlers/StyledRegion.h>
+#include "colorer/handlers/RegionMapper.h"
+#include "colorer/handlers/StyledRegion.h"
 
 /** HRD files reader.
     HRD Files format contains mappings of HRC syntax regions into

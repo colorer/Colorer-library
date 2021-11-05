@@ -1,4 +1,4 @@
-#include <colorer/viewer/ParsedLineWriter.h>
+#include "colorer/viewer/ParsedLineWriter.h"
 
 void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
                                   const UnicodeString* line, LineRegion* lineRegions)

@@ -1,7 +1,7 @@
 #ifndef _COLORER_PAIRMATCH_H_
 #define _COLORER_PAIRMATCH_H_
 
-#include <colorer/handlers/LineRegionsSupport.h>
+#include "colorer/handlers/LineRegionsSupport.h"
 
 /**
  * Representation of pair match in text.

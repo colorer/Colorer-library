@@ -1,9 +1,9 @@
-#include <colorer/common/UStr.h>
-#include <colorer/parsers/CatalogParser.h>
-#include <colorer/base/XmlTagDefs.h>
-#include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XmlInputSource.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
+#include "colorer/common/UStr.h"
+#include "colorer/parsers/CatalogParser.h"
+#include "colorer/base/XmlTagDefs.h"
+#include "colorer/xml/BaseEntityResolver.h"
+#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/XmlParserErrorHandler.h"
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
 void CatalogParser::parse(const UnicodeString* path)

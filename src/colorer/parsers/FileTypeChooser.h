@@ -1,7 +1,7 @@
 #ifndef _COLORER_FILETYPECHOOSER_H_
 #define _COLORER_FILETYPECHOOSER_H_
 
-#include <colorer/cregexp/cregexp.h>
+#include "colorer/cregexp/cregexp.h"
 
 /** Stores regular expressions of filename and firstline
     elements and helps to detect file type.

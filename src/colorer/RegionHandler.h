@@ -1,8 +1,8 @@
 #ifndef _COLORER_REGIONHANDLER_H_
 #define _COLORER_REGIONHANDLER_H_
 
-#include <colorer/Region.h>
-#include <colorer/Scheme.h>
+#include "colorer/Region.h"
+#include "colorer/Scheme.h"
 
 /** Handles parse information, passed from TextParser.
     TextParser class generates calls of this class methods

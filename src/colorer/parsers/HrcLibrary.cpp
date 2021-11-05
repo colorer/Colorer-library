@@ -1,5 +1,5 @@
-#include <colorer/HrcLibrary.h>
-#include <colorer/parsers/HrcLibraryImpl.h>
+#include "colorer/HrcLibrary.h"
+#include "colorer/parsers/HrcLibraryImpl.h"
 
 HrcLibrary::HrcLibrary() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 

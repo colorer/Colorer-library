@@ -1,5 +1,5 @@
-#include <colorer/Exception.h>
-#include <colorer/common/Encodings.h>
+#include "colorer/Exception.h"
+#include "colorer/common/Encodings.h"
 #include <unicode/ucnv.h>
 
 uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)

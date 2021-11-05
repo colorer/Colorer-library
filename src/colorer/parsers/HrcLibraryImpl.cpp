@@ -1,9 +1,9 @@
-#include <colorer/common/UStr.h>
-#include <colorer/parsers/FileTypeImpl.h>
-#include <colorer/parsers/HrcLibraryImpl.h>
-#include <colorer/base/XmlTagDefs.h>
-#include <colorer/xml/BaseEntityResolver.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
+#include "colorer/common/UStr.h"
+#include "colorer/parsers/FileTypeImpl.h"
+#include "colorer/parsers/HrcLibraryImpl.h"
+#include "colorer/base/XmlTagDefs.h"
+#include "colorer/xml/BaseEntityResolver.h"
+#include "colorer/xml/XmlParserErrorHandler.h"
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>

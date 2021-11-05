@@ -1,7 +1,7 @@
 #ifndef _COLORER_STYLEDREGION_H_
 #define _COLORER_STYLEDREGION_H_
 
-#include <colorer/handlers/RegionDefine.h>
+#include "colorer/handlers/RegionDefine.h"
 
 /**
  * Contains information about region mapping into real colors.

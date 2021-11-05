@@ -1,4 +1,4 @@
-#include <colorer/editor/Outliner.h>
+#include "colorer/editor/Outliner.h"
 
 Outliner::Outliner(BaseEditor* baseEditor, const Region* searchRegion)
 {

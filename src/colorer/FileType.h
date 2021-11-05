@@ -1,10 +1,10 @@
 #ifndef _COLORER_FILETYPE_H_
 #define _COLORER_FILETYPE_H_
 
-#include <colorer/Common.h>
-#include <colorer/Exception.h>
-#include <colorer/Scheme.h>
-#include <colorer/common/spimpl.h>
+#include "colorer/Common.h"
+#include "colorer/Exception.h"
+#include "colorer/Scheme.h"
+#include "colorer/common/spimpl.h"
 #include <vector>
 
 /**

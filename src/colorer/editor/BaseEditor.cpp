@@ -1,6 +1,6 @@
-#include <colorer/common/UnicodeLogger.h>
-#include <colorer/editor/BaseEditor.h>
-#include <colorer/parsers/TextParserImpl.h>
+#include "colorer/common/UnicodeLogger.h"
+#include "colorer/editor/BaseEditor.h"
+#include "colorer/parsers/TextParserImpl.h"
 
 #define IDLE_PARSE(time) (100 + (time) *4)
 

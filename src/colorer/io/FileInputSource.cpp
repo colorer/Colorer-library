@@ -13,8 +13,8 @@
 #define O_BINARY 0x0
 #endif
 
-#include <colorer/common/UStr.h>
-#include <colorer/io/FileInputSource.h>
+#include "colorer/common/UStr.h"
+#include "colorer/io/FileInputSource.h"
 
 FileInputSource::FileInputSource(const UnicodeString* basePath, FileInputSource* base)
 {

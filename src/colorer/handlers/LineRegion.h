@@ -1,11 +1,11 @@
 #ifndef _COLORER_LINEREGION_H_
 #define _COLORER_LINEREGION_H_
 
-#include <colorer/Scheme.h>
-#include <colorer/handlers/RegionDefine.h>
-#include <colorer/handlers/StyledRegion.h>
-#include <colorer/handlers/TextRegion.h>
-#include <colorer/Region.h>
+#include "colorer/Scheme.h"
+#include "colorer/handlers/RegionDefine.h"
+#include "colorer/handlers/StyledRegion.h"
+#include "colorer/handlers/TextRegion.h"
+#include "colorer/Region.h"
 
 /** Defines region position properties.
     These properties are created dynamically during text parsing

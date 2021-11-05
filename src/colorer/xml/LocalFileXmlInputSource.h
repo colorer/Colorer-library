@@ -1,7 +1,7 @@
 #ifndef _COLORER_LOCALFILEINPUTSOURCE_H_
 #define _COLORER_LOCALFILEINPUTSOURCE_H_
 
-#include <colorer/xml/XmlInputSource.h>
+#include "colorer/xml/XmlInputSource.h"
 #include <xercesc/framework/LocalFileInputSource.hpp>
 
 /**

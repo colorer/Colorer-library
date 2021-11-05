@@ -1,4 +1,4 @@
-#include <colorer/handlers/RegionMapper.h>
+#include "colorer/handlers/RegionMapper.h"
 
 std::vector<const RegionDefine*> RegionMapper::enumerateRegionDefines() const
 {

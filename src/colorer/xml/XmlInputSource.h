@@ -1,7 +1,7 @@
 #ifndef _COLORER_XMLINPUTSOURCE_H_
 #define _COLORER_XMLINPUTSOURCE_H_
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <xercesc/sax/InputSource.hpp>
 #include <filesystem>
 

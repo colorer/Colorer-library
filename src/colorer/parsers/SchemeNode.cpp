@@ -1,4 +1,4 @@
-#include <colorer/parsers/SchemeNode.h>
+#include "colorer/parsers/SchemeNode.h"
 
 SchemeNode::SchemeNode()
 {

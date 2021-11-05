@@ -1,10 +1,10 @@
-#include <colorer/common/UStr.h>
-#include <colorer/parsers/CatalogParser.h>
-#include <colorer/parsers/HrcLibraryImpl.h>
-#include <colorer/parsers/ParserFactoryImpl.h>
-#include <colorer/utils/Environment.h>
+#include "colorer/common/UStr.h"
+#include "colorer/parsers/CatalogParser.h"
+#include "colorer/parsers/HrcLibraryImpl.h"
+#include "colorer/parsers/ParserFactoryImpl.h"
+#include "colorer/utils/Environment.h"
 #include <filesystem>
-#include <colorer/base/BaseNames.h>
+#include "colorer/base/BaseNames.h"
 
 namespace fs = std::filesystem;
 

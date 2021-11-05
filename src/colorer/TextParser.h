@@ -1,10 +1,10 @@
 #ifndef _COLORER_TEXTPARSER_H_
 #define _COLORER_TEXTPARSER_H_
 
-#include <colorer/FileType.h>
-#include <colorer/LineSource.h>
-#include <colorer/RegionHandler.h>
-#include <colorer/common/spimpl.h>
+#include "colorer/FileType.h"
+#include "colorer/LineSource.h"
+#include "colorer/RegionHandler.h"
+#include "colorer/common/spimpl.h"
 
 /**
  * Basic lexical/syntax parser interface.

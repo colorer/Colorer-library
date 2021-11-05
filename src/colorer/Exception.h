@@ -1,7 +1,7 @@
 #ifndef _COLORER_EXCEPTION_H__
 #define _COLORER_EXCEPTION_H__
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <exception>
 
 /** Exception class.

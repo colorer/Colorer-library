@@ -1,5 +1,5 @@
-#include <colorer/Exception.h>
-#include <colorer/io/StreamWriter.h>
+#include "colorer/Exception.h"
+#include "colorer/io/StreamWriter.h"
 #include <unicode/ustring.h>
 
 void StreamWriter::init(FILE* fstream, bool _useBOM)

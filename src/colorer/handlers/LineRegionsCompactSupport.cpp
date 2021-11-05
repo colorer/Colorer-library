@@ -1,4 +1,4 @@
-#include <colorer/handlers/LineRegionsCompactSupport.h>
+#include "colorer/handlers/LineRegionsCompactSupport.h"
 
 void LineRegionsCompactSupport::addLineRegion(size_t lno, LineRegion* ladd)
 {

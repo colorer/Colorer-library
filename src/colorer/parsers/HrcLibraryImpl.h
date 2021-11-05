@@ -1,10 +1,10 @@
 #ifndef _COLORER_HRCLIBRARYIMPL_H_
 #define _COLORER_HRCLIBRARYIMPL_H_
 
-#include <colorer/HrcLibrary.h>
-#include <colorer/cregexp/cregexp.h>
-#include <colorer/parsers/SchemeImpl.h>
-#include <colorer/xml/XmlInputSource.h>
+#include "colorer/HrcLibrary.h"
+#include "colorer/cregexp/cregexp.h"
+#include "colorer/parsers/SchemeImpl.h"
+#include "colorer/xml/XmlInputSource.h"
 #include <xercesc/dom/DOM.hpp>
 
 class FileType;

@@ -1,10 +1,10 @@
 #ifndef _COLORER_FILETYPEIMPL_H_
 #define _COLORER_FILETYPEIMPL_H_
 
-#include <colorer/FileType.h>
-#include <colorer/HrcLibrary.h>
-#include <colorer/parsers/FileTypeChooser.h>
-#include <colorer/parsers/SchemeImpl.h>
+#include "colorer/FileType.h"
+#include "colorer/HrcLibrary.h"
+#include "colorer/parsers/FileTypeChooser.h"
+#include "colorer/parsers/SchemeImpl.h"
 #include <memory>
 #include <unordered_map>
 #include <vector>

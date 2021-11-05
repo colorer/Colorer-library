@@ -2,7 +2,7 @@
 #define _COLORER_TEXTLINESSTORE_H_
 
 #include <vector>
-#include <colorer/LineSource.h>
+#include "colorer/LineSource.h"
 
 /** Reads array of text lines and
     makes it accessible with LineSource interface.

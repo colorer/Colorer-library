@@ -1,12 +1,12 @@
 #ifndef COLORER_PARSERFACTORYIMPL_H
 #define COLORER_PARSERFACTORYIMPL_H
 
-#include <colorer/HrcLibrary.h>
-#include <colorer/ParserFactory.h>
-#include <colorer/TextParser.h>
-#include <colorer/handlers/StyledHRDMapper.h>
-#include <colorer/handlers/TextHRDMapper.h>
-#include <colorer/parsers/HRDNode.h>
+#include "colorer/HrcLibrary.h"
+#include "colorer/ParserFactory.h"
+#include "colorer/TextParser.h"
+#include "colorer/handlers/StyledHRDMapper.h"
+#include "colorer/handlers/TextHRDMapper.h"
+#include "colorer/parsers/HRDNode.h"
 
 class ParserFactory::Impl
 {

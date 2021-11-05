@@ -1,5 +1,5 @@
-#include <colorer/common/UStr.h>
-#include <colorer/parsers/TextParserImpl.h>
+#include "colorer/common/UStr.h"
+#include "colorer/parsers/TextParserImpl.h"
 
 TextParser::Impl::Impl()
 {

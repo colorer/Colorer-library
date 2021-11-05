@@ -1,11 +1,11 @@
 #ifndef _COLORER_HRCLIBRARY_H_
 #define _COLORER_HRCLIBRARY_H_
 
-#include <colorer/Exception.h>
-#include <colorer/FileType.h>
-#include <colorer/Region.h>
-#include <colorer/common/spimpl.h>
-#include <colorer/xml/XmlInputSource.h>
+#include "colorer/Exception.h"
+#include "colorer/FileType.h"
+#include "colorer/Region.h"
+#include "colorer/common/spimpl.h"
+#include "colorer/xml/XmlInputSource.h"
 
 /** Informs application about internal HRC parsing problems.
     @ingroup colorer

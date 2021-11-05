@@ -1,5 +1,5 @@
-#include <colorer/Exception.h>
-#include <colorer/handlers/TextRegion.h>
+#include "colorer/Exception.h"
+#include "colorer/handlers/TextRegion.h"
 
 TextRegion::TextRegion(std::shared_ptr<const UnicodeString>& _start_text, std::shared_ptr<const UnicodeString>& _end_text,
                        std::shared_ptr<const UnicodeString>& _start_back, std::shared_ptr<const UnicodeString>& _end_back)

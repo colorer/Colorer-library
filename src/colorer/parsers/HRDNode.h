@@ -1,7 +1,7 @@
 #ifndef _COLORER_HRDNODE_H_
 #define _COLORER_HRDNODE_H_
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <vector>
 
 class HRDNode

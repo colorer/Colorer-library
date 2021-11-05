@@ -2,7 +2,7 @@
 #define _COLORER_OUTLINEITEM_H_
 
 #include <memory>
-#include <colorer/Region.h>
+#include "colorer/Region.h"
 
 /**
  * Item in outliner's list.

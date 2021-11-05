@@ -1,7 +1,7 @@
 #ifndef __CREGEXP__
 #define __CREGEXP__
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <unicode/uniset.h>
 
 /**

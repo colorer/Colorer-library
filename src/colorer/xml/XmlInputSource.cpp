@@ -1,10 +1,10 @@
-#include <colorer/Exception.h>
-#include <colorer/common/UStr.h>
-#include <colorer/xml/LocalFileXmlInputSource.h>
+#include "colorer/Exception.h"
+#include "colorer/common/UStr.h"
+#include "colorer/xml/LocalFileXmlInputSource.h"
 #if COLORER_FEATURE_JARINPUTSOURCE
-#include <colorer/xml/ZipXmlInputSource.h>
+#include "colorer/xml/ZipXmlInputSource.h"
 #endif
-#include <colorer/utils/Environment.h>
+#include "colorer/utils/Environment.h"
 #include <filesystem>
 
 uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)

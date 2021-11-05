@@ -1,8 +1,8 @@
 #ifndef _COLORER_TEXTPARSERIMPL_H_
 #define _COLORER_TEXTPARSERIMPL_H_
 
-#include <colorer/TextParser.h>
-#include <colorer/parsers/TextParserHelpers.h>
+#include "colorer/TextParser.h"
+#include "colorer/parsers/TextParserHelpers.h"
 
 #define MAX_RECURSION_LEVEL 100
 

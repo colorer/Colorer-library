@@ -1,7 +1,7 @@
-#include <colorer/Exception.h>
-#include <colorer/handlers/TextHRDMapper.h>
-#include <colorer/base/XmlTagDefs.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
+#include "colorer/Exception.h"
+#include "colorer/handlers/TextHRDMapper.h"
+#include "colorer/base/XmlTagDefs.h"
+#include "colorer/xml/XmlParserErrorHandler.h"
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 

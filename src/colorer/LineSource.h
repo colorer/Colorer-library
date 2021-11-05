@@ -1,7 +1,7 @@
 #ifndef _COLORER_LINESOURCE_H_
 #define _COLORER_LINESOURCE_H_
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 
 /**
  * Interface for editor line information requests.

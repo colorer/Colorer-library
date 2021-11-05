@@ -1,9 +1,9 @@
 #ifndef COLORER_CATALOGPARSER_H
 #define COLORER_CATALOGPARSER_H
 
-#include <colorer/Common.h>
-#include <colorer/Exception.h>
-#include <colorer/parsers/HRDNode.h>
+#include "colorer/Common.h"
+#include "colorer/Exception.h"
+#include "colorer/parsers/HRDNode.h"
 #include <vector>
 #include <xercesc/dom/DOM.hpp>
 

@@ -1,5 +1,5 @@
-#include <colorer/FileType.h>
-#include <colorer/parsers/FileTypeImpl.h>
+#include "colorer/FileType.h"
+#include "colorer/parsers/FileTypeImpl.h"
 
 FileType::FileType() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 

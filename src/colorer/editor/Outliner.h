@@ -1,10 +1,10 @@
 #ifndef _COLORER_OUTLINER_H_
 #define _COLORER_OUTLINER_H_
 
-#include <colorer/LineSource.h>
-#include <colorer/RegionHandler.h>
-#include <colorer/editor/BaseEditor.h>
-#include <colorer/editor/OutlineItem.h>
+#include "colorer/LineSource.h"
+#include "colorer/RegionHandler.h"
+#include "colorer/editor/BaseEditor.h"
+#include "colorer/editor/OutlineItem.h"
 
 /**
  * Used to create, store and maintain list or tree of different special regions.

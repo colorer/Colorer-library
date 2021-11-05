@@ -1,7 +1,7 @@
 #ifndef _COLORER_SCHEME_H_
 #define _COLORER_SCHEME_H_
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 class FileType;
 
 /** HRC Scheme instance information.

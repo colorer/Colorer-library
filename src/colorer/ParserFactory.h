@@ -1,14 +1,14 @@
 #ifndef COLORER_PARSERFACTORY_H
 #define COLORER_PARSERFACTORY_H
 
-#include <colorer/Common.h>
-#include <colorer/Exception.h>
-#include <colorer/HrcLibrary.h>
-#include <colorer/TextParser.h>
-#include <colorer/common/spimpl.h>
-#include <colorer/handlers/StyledHRDMapper.h>
-#include <colorer/handlers/TextHRDMapper.h>
-#include <colorer/parsers/HRDNode.h>
+#include "colorer/Common.h"
+#include "colorer/Exception.h"
+#include "colorer/HrcLibrary.h"
+#include "colorer/TextParser.h"
+#include "colorer/common/spimpl.h"
+#include "colorer/handlers/StyledHRDMapper.h"
+#include "colorer/handlers/TextHRDMapper.h"
+#include "colorer/parsers/HRDNode.h"
 
 /**
  * Maintains catalog of HRC and HRD references.

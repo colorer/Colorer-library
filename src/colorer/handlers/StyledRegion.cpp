@@ -1,5 +1,5 @@
-#include <colorer/Exception.h>
-#include <colorer/handlers/StyledRegion.h>
+#include "colorer/Exception.h"
+#include "colorer/handlers/StyledRegion.h"
 
 StyledRegion::StyledRegion(bool _isForeSet, bool _isBackSet, unsigned int _fore, unsigned int _back, unsigned int _style)
 {

@@ -1,6 +1,6 @@
-#include <colorer/Exception.h>
-#include <colorer/common/UStr.h>
-#include <colorer/xml/LocalFileXmlInputSource.h>
+#include "colorer/Exception.h"
+#include "colorer/common/UStr.h"
+#include "colorer/xml/LocalFileXmlInputSource.h"
 #include <filesystem>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include <memory>

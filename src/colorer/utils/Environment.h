@@ -1,7 +1,7 @@
 #ifndef COLORER_ENVIRONMENT_H
 #define COLORER_ENVIRONMENT_H
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <filesystem>
 
 class Environment

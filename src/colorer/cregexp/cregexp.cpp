@@ -1,5 +1,5 @@
-#include <colorer/common/UStr.h>
-#include <colorer/cregexp/cregexp.h>
+#include "colorer/common/UStr.h"
+#include "colorer/cregexp/cregexp.h"
 
 StackElem* RegExpStack = nullptr;
 int RegExpStack_Size;

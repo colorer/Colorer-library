@@ -1,11 +1,11 @@
 #ifndef _COLORER_SCHEMENODE_H_
 #define _COLORER_SCHEMENODE_H_
 
-#include <colorer/Common.h>
-#include <colorer/Region.h>
-#include <colorer/cregexp/cregexp.h>
-#include <colorer/parsers/KeywordList.h>
-#include <colorer/parsers/VirtualEntry.h>
+#include "colorer/Common.h"
+#include "colorer/Region.h"
+#include "colorer/cregexp/cregexp.h"
+#include "colorer/parsers/KeywordList.h"
+#include "colorer/parsers/VirtualEntry.h"
 #include <vector>
 
 class SchemeImpl;

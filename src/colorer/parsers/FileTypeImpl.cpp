@@ -1,5 +1,5 @@
-#include <colorer/common/UStr.h>
-#include <colorer/parsers/FileTypeImpl.h>
+#include "colorer/common/UStr.h"
+#include "colorer/parsers/FileTypeImpl.h"
 
 const UnicodeString* FileType::Impl::getName() const
 {

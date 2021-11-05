@@ -1,7 +1,7 @@
 #ifndef COLORER_COMMON_USTR_H_
 #define COLORER_COMMON_USTR_H_
 
-#include <colorer/Common.h>
+#include "colorer/Common.h"
 #include <unicode/uniset.h>
 #include <xercesc/util/XMLString.hpp>
 #include <filesystem>

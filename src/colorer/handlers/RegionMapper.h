@@ -1,10 +1,10 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
-#include <colorer/Region.h>
-#include <colorer/handlers/RegionDefine.h>
-#include <colorer/io/Writer.h>
-#include <colorer/xml/XmlInputSource.h>
+#include "colorer/Region.h"
+#include "colorer/handlers/RegionDefine.h"
+#include "colorer/io/Writer.h"
+#include "colorer/xml/XmlInputSource.h"
 #include <vector>
 
 /** Abstract RegionMapper.

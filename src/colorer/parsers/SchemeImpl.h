@@ -1,12 +1,12 @@
 #ifndef _COLORER_HRCPARSERPELPERS_H_
 #define _COLORER_HRCPARSERPELPERS_H_
 
-#include <colorer/Scheme.h>
-#include <colorer/cregexp/cregexp.h>
-#include <colorer/parsers/SchemeNode.h>
+#include "colorer/Scheme.h"
+#include "colorer/cregexp/cregexp.h"
+#include "colorer/parsers/SchemeNode.h"
 #include <memory>
 #include <vector>
-#include <colorer/TextParser.h>
+#include "colorer/TextParser.h"
 
 class FileType;
 

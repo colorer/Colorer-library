@@ -1,7 +1,7 @@
 #ifndef _COLORER_FILEINPUTSOURCE_H_
 #define _COLORER_FILEINPUTSOURCE_H_
 
-#include <colorer/io/InputSource.h>
+#include "colorer/io/InputSource.h"
 
 /** Reads data from file with OS services.
     @ingroup common_io
