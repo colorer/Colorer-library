@@ -9,7 +9,7 @@ on:
 
 env:
   # Path to the CMake build directory.
-  build: '${{ github.workspace }}/build'
+  BUILD_TYPE: Release
   X_VCPKG_NUGET_ID_PREFIX: 'colorer'
   VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
@@ -34,7 +34,7 @@ jobs:
       - name: Add C++ build tools to PATH
         uses: ilammy/msvc-dev-cmd@v1.5.0
         with:
-          arch: ${{ matrix.arch }}
+          arch: amd64
 
       - name: Setup NuGet Credentials for vpckg cache
         shell: bash
