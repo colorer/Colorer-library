@@ -13,7 +13,7 @@
     "minizip",
     {
       "name": "icu",
-      "version>=": "68.2#1",
+      "version>=": "69.1.1#1",
       "default-features": false,
       "features": [
         "data-archive"
