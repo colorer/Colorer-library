@@ -42,8 +42,7 @@ void TestParserFactoryHrcLibrary(int count, UnicodeString* catalogPath)
     parserFactoryLocal.loadCatalog(catalogPath);
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    HrcLibrary* hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
-    (void) hrcLibraryLocal;  // hide warning
+    auto& hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
     // stop timer
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -70,7 +69,7 @@ void TestParserFactoryStyledMapper(int count, UnicodeString* catalogPath)
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     auto console = UnicodeString("console");
-    RegionMapper* regionMapperLocal = parserFactoryLocal.createStyledMapper(&console, nullptr);
+    auto regionMapperLocal = parserFactoryLocal.createStyledMapper(&console, nullptr);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(t2 - t1);
@@ -79,7 +78,6 @@ void TestParserFactoryStyledMapper(int count, UnicodeString* catalogPath)
       all_time = all_time + time_span.count();
       cout << time_span.count() << endl;
     }
-    delete regionMapperLocal;
   }
   cout << "the average time for " << count << " tests " << all_time / count << " sec." << endl;
 }
@@ -94,12 +92,12 @@ void TestParserFactoryLoadAllHRCScheme(int count, UnicodeString* catalogPath)
   for (int i = 0; i <= count; i++) {
     ParserFactory parserFactoryLocal;
     parserFactoryLocal.loadCatalog(catalogPath);
-    HrcLibrary* hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
+    auto& hrcLibraryLocal = parserFactoryLocal.getHrcLibrary();
     // start timer
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     for (int idx = 0;; idx++) {
-      FileType* type = hrcLibraryLocal->enumerateFileTypes(idx);
+      FileType* type = hrcLibraryLocal.enumerateFileTypes(idx);
       if (type == nullptr)
         break;
       type->getBaseScheme();
@@ -154,7 +152,7 @@ void TestColoringFile(int count, UnicodeString* catalogPath, UnicodeString* test
     // HRD RegionMapper linking
     auto console = UnicodeString("console");
     baseEditor.setRegionMapper(&console, nullptr);
-    FileType* type = selectType(parserFactoryLocal.getHrcLibrary(), &textLinesStore, testFile);
+    FileType* type = selectType(&parserFactoryLocal.getHrcLibrary(), &textLinesStore, testFile);
     type->getBaseScheme();
     baseEditor.setFileType(type);
 
