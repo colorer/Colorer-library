@@ -1,4 +1,3 @@
-#include "colorer/common/UnicodeLogger.h"
 #include "colorer/editor/BaseEditor.h"
 #include "colorer/parsers/TextParserImpl.h"
 
@@ -15,7 +14,6 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   parserFactory = parserFactory_;
   lineSource = lineSource_;
 
-  hrcLibrary = parserFactory->getHrcLibrary();
   textParser = parserFactory->createTextParser();
 
   textParser->setRegionHandler(this);
@@ -39,11 +37,13 @@ BaseEditor::BaseEditor(ParserFactory* parserFactory_, LineSource* lineSource_)
   UnicodeString def_special = UnicodeString("def:Special");
   UnicodeString def_pstart = UnicodeString("def:PairStart");
   UnicodeString def_pend = UnicodeString("def:PairEnd");
-  def_Text = hrcLibrary->getRegion(&def_text);
-  def_Syntax = hrcLibrary->getRegion(&def_syntax);
-  def_Special = hrcLibrary->getRegion(&def_special);
-  def_PairStart = hrcLibrary->getRegion(&def_pstart);
-  def_PairEnd = hrcLibrary->getRegion(&def_pend);
+
+  auto& hrcLibrary = parserFactory->getHrcLibrary();
+  def_Text = hrcLibrary.getRegion(&def_text);
+  def_Syntax = hrcLibrary.getRegion(&def_syntax);
+  def_Special = hrcLibrary.getRegion(&def_special);
+  def_PairStart = hrcLibrary.getRegion(&def_pstart);
+  def_PairEnd = hrcLibrary.getRegion(&def_pend);
 
   setRegionCompact(regionCompact);
 
@@ -57,7 +57,6 @@ BaseEditor::~BaseEditor()
     delete regionMapper;
   }
   delete lrSupport;
-  delete textParser;
 }
 
 void BaseEditor::setRegionCompact(bool compact)
@@ -83,7 +82,7 @@ void BaseEditor::setRegionMapper(const UnicodeString* hrdClass, const UnicodeStr
   if (internalRM) {
     delete regionMapper;
   }
-  regionMapper = parserFactory->createStyledMapper(hrdClass, hrdName);
+  regionMapper = parserFactory->createStyledMapper(hrdClass, hrdName).release();
   internalRM = true;
   remapLRS(false);
 }
@@ -94,7 +93,8 @@ void BaseEditor::remapLRS(bool recreate)
     delete lrSupport;
     if (regionCompact) {
       lrSupport = new LineRegionsCompactSupport();
-    } else {
+    }
+    else {
       lrSupport = new LineRegionsSupport();
     }
     lrSupport->resize(lrSize);
@@ -115,14 +115,14 @@ void BaseEditor::setFileType(FileType* ftype)
 {
   spdlog::debug("[BaseEditor] setFileType: {0}", *ftype->getName());
   currentFileType = ftype;
-  hrcLibrary->loadFileType(ftype);
+  parserFactory->getHrcLibrary().loadFileType(ftype);
   textParser->setFileType(currentFileType);
   invalidLine = 0;
 }
 
 FileType* BaseEditor::setFileType(const UnicodeString& fileType)
 {
-  currentFileType = hrcLibrary->getFileType(&fileType);
+  currentFileType = parserFactory->getHrcLibrary().getFileType(&fileType);
   setFileType(currentFileType);
   return currentFileType;
 }
@@ -143,7 +143,7 @@ FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int choose
       break;
     }
   }
-  currentFileType = hrcLibrary->chooseFileType(fileName, &textStart);
+  currentFileType = parserFactory->getHrcLibrary().chooseFileType(fileName, &textStart);
 
   int chooseStrNext = currentFileType->getParamValueInt("firstlines", chooseStr);
   int chooseLenNext = currentFileType->getParamValueInt("firstlinebytes", chooseLen);
@@ -157,12 +157,13 @@ FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int choose
 FileType* BaseEditor::chooseFileType(const UnicodeString* fileName)
 {
   if (lineSource == nullptr) {
-    currentFileType = hrcLibrary->chooseFileType(fileName, nullptr);
-  } else {
+    currentFileType = parserFactory->getHrcLibrary().chooseFileType(fileName, nullptr);
+  }
+  else {
     int chooseStr = CHOOSE_STR, chooseLen = CHOOSE_LEN;
 
     UnicodeString ds_def = UnicodeString("default");
-    FileType* def = hrcLibrary->getFileType(&ds_def);
+    FileType* def = parserFactory->getHrcLibrary().getFileType(&ds_def);
     if (def) {
       chooseStr = def->getParamValueInt("firstlines", chooseStr);
       chooseLen = def->getParamValueInt("firstlinebytes", chooseLen);
@@ -221,7 +222,9 @@ PairMatch* BaseEditor::getPairMatch(int lineNo, int linePos)
   }
   LineRegion* pair = nullptr;
   for (LineRegion* l1 = lrStart; l1; l1 = l1->next) {
-    if ((l1->region->hasParent(def_PairStart) || l1->region->hasParent(def_PairEnd)) && linePos >= l1->start && linePos <= l1->end) {
+    if ((l1->region->hasParent(def_PairStart) || l1->region->hasParent(def_PairEnd)) &&
+        linePos >= l1->start && linePos <= l1->end)
+    {
       pair = l1;
     }
   }
@@ -269,7 +272,8 @@ PairMatch* BaseEditor::searchLocalPair(int lineNo, int pos)
       if (lno > end_line) {
         break;
       }
-    } else {
+    }
+    else {
       if (pair->prev == slr->prev) {  // first region
         lno--;
         if (lno < wStart) {
@@ -328,7 +332,8 @@ PairMatch* BaseEditor::searchGlobalPair(int lineNo, int pos)
       if (lno > end_line) {
         break;
       }
-    } else {
+    }
+    else {
       if (pair->prev == slr->prev) {  // first region
         lno--;
         if (lno < 0) {
@@ -464,7 +469,8 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    spdlog::debug("[BaseEditor] newFirstLine={0}, parseFrom={1}, parseTo={2}", firstLine, parseFrom, parseTo);
+    spdlog::debug("[BaseEditor] newFirstLine={0}, parseFrom={1}, parseTo={2}", firstLine, parseFrom,
+                  parseTo);
   }
 
   if (!layoutChanged) {
@@ -487,7 +493,8 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
 
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
-    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TextParser::TextParseMode::TPM_CACHE_READ ? "READ" : "UPDATE");
+    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo,
+                  tpmode == TextParser::TextParseMode::TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
     if (tpmode == TextParser::TextParseMode::TPM_CACHE_UPDATE) {
@@ -542,7 +549,8 @@ void BaseEditor::addRegion(size_t lno, UnicodeString* line, int sx, int ex, cons
   }
 }
 
-void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region,
+                             const Scheme* scheme)
 {
   lrSupport->enterScheme(lno, line, sx, ex, region, scheme);
   for (auto& regionHandler : regionHandlers) {
@@ -550,7 +558,8 @@ void BaseEditor::enterScheme(size_t lno, UnicodeString* line, int sx, int ex, co
   }
 }
 
-void BaseEditor::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme)
+void BaseEditor::leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region,
+                             const Scheme* scheme)
 {
   lrSupport->leaveScheme(lno, line, sx, ex, region, scheme);
   for (auto& regionHandler : regionHandlers) {

@@ -1,8 +1,8 @@
 #include "colorer/cregexp/cregexp.h"
 #include "colorer/common/UStr.h"
 
-StackElem* RegExpStack = nullptr;
-int RegExpStack_Size;
+StackElem* CRegExp::RegExpStack {nullptr};
+int CRegExp::RegExpStack_Size {0};
 /////////////////////////////////////////////////////////////////////////////
 //
 SRegInfo::SRegInfo()
@@ -799,7 +799,7 @@ void CRegExp::check_stack(bool res, SRegInfo** re, SRegInfo** prev, int* toParse
     return;
   }
 
-  StackElem& ne = RegExpStack[--count_elem];
+  StackElem& ne = CRegExp::RegExpStack[--count_elem];
   if (res) {
     *action = ne.ifTrueReturn;
   }
@@ -817,17 +817,17 @@ void CRegExp::insert_stack(SRegInfo** re, SRegInfo** prev, int* toParse, bool* l
                            int toParse2)
 {
   if (RegExpStack_Size == 0) {
-    RegExpStack = new StackElem[INIT_MEM_SIZE];
+    CRegExp::RegExpStack = new StackElem[INIT_MEM_SIZE];
     RegExpStack_Size = INIT_MEM_SIZE;
   }
   if (RegExpStack_Size == count_elem) {
     RegExpStack_Size += MEM_INC;
     StackElem* s = new StackElem[RegExpStack_Size];
-    memcpy(s, RegExpStack, count_elem * sizeof(StackElem));
-    delete[] RegExpStack;
-    RegExpStack = s;
+    memcpy(s, CRegExp::RegExpStack, count_elem * sizeof(StackElem));
+    delete[] CRegExp::RegExpStack;
+    CRegExp::RegExpStack = s;
   }
-  StackElem& ne = RegExpStack[count_elem++];
+  StackElem& ne = CRegExp::RegExpStack[count_elem++];
   ne.re = *re;
   ne.prev = *prev;
   ne.toParse = *toParse;
@@ -1521,6 +1521,12 @@ bool CRegExp::setPositionMoves(bool moves)
   return true;
 }
 
+void CRegExp::clearRegExpStack()
+{
+  CRegExp::RegExpStack_Size = 0;
+  delete[] CRegExp::RegExpStack;
+}
+
 #ifndef NAMED_MATCHES_IN_HASH
 int CRegExp::getBracketNo(const UnicodeString* brname)
 {
@@ -1555,4 +1561,5 @@ bool CRegExp::getBackTrace(const UnicodeString** str, SMatches** trace)
   *trace = backTrace;
   return true;
 }
+
 #endif

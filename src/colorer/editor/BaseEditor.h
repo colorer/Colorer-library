@@ -1,13 +1,13 @@
 #ifndef _COLORER_BASEEDITOR_H_
 #define _COLORER_BASEEDITOR_H_
 
+#include "colorer/LineSource.h"
+#include "colorer/ParserFactory.h"
+#include "colorer/TextParser.h"
 #include "colorer/editor/EditorListener.h"
 #include "colorer/editor/PairMatch.h"
 #include "colorer/handlers/LineRegionsCompactSupport.h"
 #include "colorer/handlers/LineRegionsSupport.h"
-#include "colorer/ParserFactory.h"
-#include "colorer/LineSource.h"
-#include "colorer/TextParser.h"
 
 /**
  * Base Editor functionality.
@@ -237,8 +237,10 @@ class BaseEditor : public RegionHandler
   void endParsing(size_t lno) override;
   void clearLine(size_t lno, UnicodeString* line) override;
   void addRegion(size_t lno, UnicodeString* line, int sx, int ex, const Region* region) override;
-  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
-  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region, const Scheme* scheme) override;
+  void enterScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region,
+                   const Scheme* scheme) override;
+  void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region,
+                   const Scheme* scheme) override;
 
   bool haveInvalidLine();
   void setMaxBlockSize(int max_block_size);
@@ -246,8 +248,7 @@ class BaseEditor : public RegionHandler
  private:
   FileType* chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen);
 
-  HrcLibrary* hrcLibrary;
-  TextParser* textParser;
+  std::unique_ptr<TextParser> textParser;
   ParserFactory* parserFactory;
   LineSource* lineSource;
   RegionMapper* regionMapper;

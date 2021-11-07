@@ -1,13 +1,13 @@
-#ifndef _COLORER_HRDNODE_H_
-#define _COLORER_HRDNODE_H_
+#ifndef COLORER_HRDNODE_H
+#define COLORER_HRDNODE_H
 
-#include "colorer/Common.h"
 #include <vector>
+#include "colorer/Common.h"
 
-class HRDNode
+class HrdNode
 {
  public:
-  HRDNode() = default;
+  HrdNode() = default;
 
   UnicodeString hrd_class;
   UnicodeString hrd_name;
@@ -15,4 +15,4 @@ class HRDNode
   std::vector<UnicodeString> hrd_location;
 };
 
-#endif  //_COLORER_HRDNODE_H_
+#endif  // COLORER_HRDNODE_H

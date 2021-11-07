@@ -1,11 +1,11 @@
 #ifndef COLORER_CATALOGPARSER_H
 #define COLORER_CATALOGPARSER_H
 
-#include "colorer/Common.h"
-#include "colorer/Exception.h"
-#include "colorer/parsers/HRDNode.h"
 #include <vector>
 #include <xercesc/dom/DOM.hpp>
+#include "colorer/Common.h"
+#include "colorer/Exception.h"
+#include "colorer/parsers/HrdNode.h"
 
 class CatalogParser
 {
@@ -14,10 +14,10 @@ class CatalogParser
   ~CatalogParser() = default;
 
   void parse(const UnicodeString* path);
-  static std::unique_ptr<HRDNode> parseHRDSetsChild(const xercesc::DOMElement* elem);
+  static std::unique_ptr<HrdNode> parseHRDSetsChild(const xercesc::DOMElement* elem);
 
   std::vector<UnicodeString> hrc_locations;
-  std::vector<std::unique_ptr<HRDNode>> hrd_nodes;
+  std::vector<std::unique_ptr<HrdNode>> hrd_nodes;
 
   CatalogParser(CatalogParser const&) = delete;
   CatalogParser& operator=(CatalogParser const&) = delete;
@@ -34,7 +34,10 @@ class CatalogParser
 class CatalogParserException : public Exception
 {
  public:
-  explicit CatalogParserException(const UnicodeString& msg) noexcept : Exception("[CatalogParserException] " + msg) {}
+  explicit CatalogParserException(const UnicodeString& msg) noexcept
+      : Exception("[CatalogParserException] " + msg)
+  {
+  }
 };
 
 #endif  // COLORER_CATALOGPARSER_H

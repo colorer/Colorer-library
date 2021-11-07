@@ -20,7 +20,7 @@ class StyledHRDMapper : public RegionMapper
 
   /** Loads region defines from @c is InputSource
    */
-  void loadRegionMappings(XmlInputSource* is) override;
+  void loadRegionMappings(XmlInputSource& is) override;
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal
       to input one, because there could be multiple input

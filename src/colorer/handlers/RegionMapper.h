@@ -1,14 +1,15 @@
 #ifndef _COLORER_REGIONMAPPERIMPL_H_
 #define _COLORER_REGIONMAPPERIMPL_H_
 
+#include <vector>
 #include "colorer/Region.h"
 #include "colorer/handlers/RegionDefine.h"
 #include "colorer/io/Writer.h"
 #include "colorer/xml/XmlInputSource.h"
-#include <vector>
 
 /** Abstract RegionMapper.
-    Stores all region mappings in hashtable and sequental vector for Region -> RegionDefine mappings.
+    Stores all region mappings in hashtable and sequental vector for Region -> RegionDefine
+   mappings.
     @ingroup colorer_handlers
 */
 class RegionMapper
@@ -19,7 +20,7 @@ class RegionMapper
 
   /** Loads region defines from @c is InputSource
    */
-  virtual void loadRegionMappings(XmlInputSource* is) = 0;
+  virtual void loadRegionMappings(XmlInputSource& is) = 0;
 
   /** Saves all loaded region defines into @c writer.
       Note, that result document would not be equal

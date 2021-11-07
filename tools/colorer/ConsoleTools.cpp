@@ -1,4 +1,5 @@
 #include "ConsoleTools.h"
+#include <colorer/base/BaseNames.h>
 #include <colorer/common/Encodings.h>
 #include <colorer/common/UStr.h>
 #include <colorer/cregexp/cregexp.h>
@@ -12,7 +13,6 @@
 #include <memory>
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include <colorer/base/BaseNames.h>
 
 void ConsoleTools::setCopyrightHeader(bool use)
 {
@@ -93,14 +93,20 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
   }
 
   for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), kTagLinks)) {
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE &&
+        xercesc::XMLString::equals(curel->getNodeName(), kTagLinks))
+    {
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel);
       if (subelem) {
         const XMLCh* url = subelem->getAttribute(kLinksAttrUrl);
         const XMLCh* scheme = subelem->getAttribute(kLinksAttrScheme);
 
-        for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink; eachLink = eachLink->getNextSibling()) {
-          if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink)) {
+        for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink;
+             eachLink = eachLink->getNextSibling())
+        {
+          if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE &&
+              xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink))
+          {
             auto* subelem2 = dynamic_cast<xercesc::DOMElement*>(eachLink);
             if (subelem2) {
               const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
@@ -173,16 +179,17 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     writer = new StreamWriter(stdout, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    HrcLibrary* hrcLibrary = pf.getHrcLibrary();
+    auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "loading file types...\n");
     for (int idx = 0;; idx++) {
-      FileType* type = hrcLibrary->enumerateFileTypes(idx);
+      FileType* type = hrcLibrary.enumerateFileTypes(idx);
       if (type == nullptr) {
         break;
       }
       if (useNames) {
         writer->write(*type->getName() + "\n");
-      } else {
+      }
+      else {
         if (type->getGroup() != nullptr) {
           writer->write(*type->getGroup() + ": ");
         }
@@ -191,7 +198,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
       }
 
       if (load) {
-        hrcLibrary->loadFileType(type);
+        hrcLibrary.loadFileType(type);
       }
     }
     delete writer;
@@ -213,12 +220,17 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
         if (type == nullptr) {
           break;
         }
-        if (type->getDescription() && type->getDescription()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getDescription(), 0, typeDescription->length()).caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT)) {
+        if (type->getDescription() &&
+            type->getDescription()->length() >= typeDescription->length() &&
+            UnicodeString(*type->getDescription(), 0, typeDescription->length())
+                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+        {
           break;
         }
         if (type->getName()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getName(), 0, typeDescription->length()).caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT)) {
+            UnicodeString(*type->getName(), 0, typeDescription->length())
+                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+        {
           break;
         }
       }
@@ -273,7 +285,7 @@ void ConsoleTools::profile(int loopCount)
   // HRD RegionMapper linking
   UnicodeString dcons = UnicodeString("console");
   baseEditor.setRegionMapper(&dcons, hrdName.get());
-  FileType* type = selectType(pf.getHrcLibrary(), &textLinesStore);
+  FileType* type = selectType(&pf.getHrcLibrary(), &textLinesStore);
   type->getBaseScheme();
   baseEditor.setFileType(type);
 
@@ -302,7 +314,7 @@ void ConsoleTools::viewFile()
     // HRD RegionMapper linking
     UnicodeString dcons = UnicodeString("console");
     baseEditor.setRegionMapper(&dcons, hrdName.get());
-    FileType* type = selectType(pf.getHrcLibrary(), &textLinesStore);
+    FileType* type = selectType(&pf.getHrcLibrary(), &textLinesStore);
     baseEditor.setFileType(type);
     // Initial line count notify
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
@@ -311,7 +323,8 @@ void ConsoleTools::viewFile()
     const StyledRegion* rd = StyledRegion::cast(baseEditor.rd_def_Text);
     if (rd != nullptr && rd->isForeSet && rd->isBackSet) {
       background = (unsigned short) (rd->fore + (rd->back << 4));
-    } else {
+    }
+    else {
       background = 0x1F;
     }
     // File viewing in console window
@@ -334,11 +347,13 @@ void ConsoleTools::forward()
   try {
     if (outputFileName != nullptr) {
       outputFile = new FileWriter(outputFileName.get(), bomOutput);
-    } else {
+    }
+    else {
       outputFile = new StreamWriter(stdout, bomOutput);
     }
   } catch (Exception& e) {
-    fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
+    fprintf(stderr,
+            "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
     fprintf(stderr, "%s", e.what());
     return;
   }
@@ -359,10 +374,10 @@ void ConsoleTools::genOutput(bool useTokens)
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     // HRC loading
-    HrcLibrary* hrcLibrary = pf.getHrcLibrary();
+    auto& hrcLibrary = pf.getHrcLibrary();
     // HRD RegionMapper creation
     bool useMarkup = false;
-    RegionMapper* mapper = nullptr;
+    std::unique_ptr<RegionMapper> mapper;
     if (!useTokens) {
       try {
         UnicodeString drgb = UnicodeString(HrdClassRgb);
@@ -376,10 +391,10 @@ void ConsoleTools::genOutput(bool useTokens)
     BaseEditor baseEditor(&pf, &textLinesStore);
     // Using compact regions
     baseEditor.setRegionCompact(true);
-    baseEditor.setRegionMapper(mapper);
+    baseEditor.setRegionMapper(mapper.get());
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
     // Choosing file type
-    FileType* type = selectType(hrcLibrary, &textLinesStore);
+    FileType* type = selectType(&hrcLibrary, &textLinesStore);
     baseEditor.setFileType(type);
 
     //  writing result into HTML colored stream...
@@ -393,26 +408,31 @@ void ConsoleTools::genOutput(bool useTokens)
     try {
       if (outputFileName != nullptr) {
         commonWriter = new FileWriter(outputFileName.get(), bomOutput);
-      } else {
+      }
+      else {
         commonWriter = new StreamWriter(stdout, bomOutput);
       }
       if (htmlEscaping) {
         escapedWriter = new HtmlEscapesWriter(commonWriter);
-      } else {
+      }
+      else {
         escapedWriter = commonWriter;
       }
     } catch (Exception& e) {
-      fprintf(stderr, "can't open file '%s' for writing:\n", UStr::to_stdstr(outputFileName.get()).c_str());
+      fprintf(stderr, "can't open file '%s' for writing:\n",
+              UStr::to_stdstr(outputFileName.get()).c_str());
       fprintf(stderr, "%s", e.what());
       return;
     }
 
     if (htmlWrapping && useTokens) {
       commonWriter->write("<html>\n<head>\n<style></style>\n</head>\n<body><pre>\n");
-    } else if (htmlWrapping && rd != nullptr) {
+    }
+    else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
         commonWriter->write(*TextRegion::cast(rd)->start_text);
-      } else {
+      }
+      else {
         commonWriter->write("<html><body style='");
         ParsedLineWriter::writeStyle(commonWriter, StyledRegion::cast(rd));
         commonWriter->write("'><pre>\n");
@@ -444,21 +464,28 @@ void ConsoleTools::genOutput(bool useTokens)
         commonWriter->write(": ");
       }
       if (useTokens) {
-        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
-      } else if (useMarkup) {
-        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
-      } else {
-        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash,
+                                     textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+      }
+      else if (useMarkup) {
+        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, &docLinkHash,
+                                      textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+      }
+      else {
+        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash,
+                                       textLinesStore.getLine(i), baseEditor.getLineRegions(i));
       }
       commonWriter->write("\n");
     }
 
     if (htmlWrapping && useTokens) {
       commonWriter->write("</pre></body></html>\n");
-    } else if (htmlWrapping && rd != nullptr) {
+    }
+    else if (htmlWrapping && rd != nullptr) {
       if (useMarkup) {
         commonWriter->write(*TextRegion::cast(rd)->end_text);
-      } else {
+      }
+      else {
         commonWriter->write("</pre></body></html>\n");
       }
     }
@@ -467,8 +494,6 @@ void ConsoleTools::genOutput(bool useTokens)
       delete commonWriter;
     }
     delete escapedWriter;
-
-    delete mapper;
   } catch (Exception& e) {
     fprintf(stderr, "%s\n", e.what());
   } catch (...) {

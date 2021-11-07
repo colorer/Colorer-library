@@ -8,7 +8,7 @@
 #include "colorer/common/spimpl.h"
 #include "colorer/handlers/StyledHRDMapper.h"
 #include "colorer/handlers/TextHRDMapper.h"
-#include "colorer/parsers/HRDNode.h"
+#include "colorer/parsers/HrdNode.h"
 
 /**
  * Maintains catalog of HRC and HRD references.
@@ -51,12 +51,12 @@ class ParserFactory
    * create input data stream.
    * Only one HrcLibrary instance is created for each ParserFactory instance.
    */
-  [[nodiscard]] HrcLibrary* getHrcLibrary() const;
+  [[nodiscard]] HrcLibrary& getHrcLibrary() const;
 
   /**
    * Creates TextParser instance
    */
-  TextParser* createTextParser();
+  std::unique_ptr<TextParser> createTextParser();
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
    * @param classID Class identifier of loaded hrd instance.
@@ -64,7 +64,8 @@ class ParserFactory
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
+  std::unique_ptr<StyledHRDMapper> createStyledMapper(const UnicodeString* classID,
+                                                      const UnicodeString* nameID);
 
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
@@ -73,11 +74,11 @@ class ParserFactory
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  TextHRDMapper* createTextMapper(const UnicodeString* nameID);
+  std::unique_ptr<TextHRDMapper> createTextMapper(const UnicodeString* nameID);
 
-  std::vector<const HRDNode*> enumHRDInstances(const UnicodeString& classID);
-  void addHrd(std::unique_ptr<HRDNode> hrd);
-  const HRDNode* getHRDNode(const UnicodeString& classID, const UnicodeString& nameID);
+  std::vector<const HrdNode*> enumHrdInstances(const UnicodeString& classID);
+  void addHrd(std::unique_ptr<HrdNode> hrd);
+  const HrdNode& getHrdNode(const UnicodeString& classID, const UnicodeString& nameID);
 
   ParserFactory(const ParserFactory&) = delete;
   ParserFactory operator=(const ParserFactory&) = delete;

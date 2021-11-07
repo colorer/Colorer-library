@@ -15,13 +15,13 @@
 class TextHRDMapper : public RegionMapper
 {
  public:
-  TextHRDMapper()= default;
+  TextHRDMapper() = default;
   ~TextHRDMapper() override;
 
   /** Loads region definitions from HRD file.
    * Multiple files could be loaded.
    */
-  void loadRegionMappings(XmlInputSource* is) override;
+  void loadRegionMappings(XmlInputSource& is) override;
 
   /**
    * Saves all loaded region defines into @c writer.

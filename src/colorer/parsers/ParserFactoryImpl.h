@@ -6,7 +6,7 @@
 #include "colorer/TextParser.h"
 #include "colorer/handlers/StyledHRDMapper.h"
 #include "colorer/handlers/TextHRDMapper.h"
-#include "colorer/parsers/HRDNode.h"
+#include "colorer/parsers/HrdNode.h"
 
 class ParserFactory::Impl
 {
@@ -14,37 +14,44 @@ class ParserFactory::Impl
   Impl();
   ~Impl();
 
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl& e) = delete;
+  Impl(Impl&&) = delete;
+  Impl& operator=(Impl&&) = delete;
+
   void loadCatalog(const UnicodeString* catalog_path);
   void loadHrcPath(const UnicodeString& location);
-  [[nodiscard]] HrcLibrary* getHrcLibrary() const;
-  static TextParser* createTextParser();
-  StyledHRDMapper* createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
-  TextHRDMapper* createTextMapper(const UnicodeString* nameID);
+  [[nodiscard]] HrcLibrary& getHrcLibrary() const;
+  static std::unique_ptr<TextParser> createTextParser();
+  std::unique_ptr<StyledHRDMapper> createStyledMapper(const UnicodeString* classID,
+                                                      const UnicodeString* nameID);
+  std::unique_ptr<TextHRDMapper> createTextMapper(const UnicodeString* nameID);
 
   /**
    * Enumerates all declared hrd classes
    */
-  [[maybe_unused]] std::vector<UnicodeString> enumHRDClasses();
+  [[maybe_unused]] std::vector<UnicodeString> enumHrdClasses();
 
   /**
    * Enumerates all declared hrd instances of specified class
    */
-  std::vector<const HRDNode*> enumHRDInstances(const UnicodeString& classID);
+  std::vector<const HrdNode*> enumHrdInstances(const UnicodeString& classID);
 
-  const HRDNode* getHRDNode(const UnicodeString& classID, const UnicodeString& nameID);
+  const HrdNode& getHrdNode(const UnicodeString& classID, const UnicodeString& nameID);
 
-  void addHrd(std::unique_ptr<HRDNode> hrd);
+  void addHrd(std::unique_ptr<HrdNode> hrd);
 
  private:
   void parseCatalog(const UnicodeString& catalog_path);
   void loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const;
-  void fillMapper(const UnicodeString* classID, const UnicodeString* nameID, RegionMapper* mapper);
+  void fillMapper(const UnicodeString& classID, const UnicodeString* nameID, RegionMapper& mapper);
 
   uUnicodeString base_catalog_path;
   std::vector<UnicodeString> hrc_locations;
-  std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HRDNode>>>> hrd_nodes;
+  std::unordered_map<UnicodeString, std::unique_ptr<std::vector<std::unique_ptr<HrdNode>>>>
+      hrd_nodes;
 
-  HrcLibrary* hrc_parser;
+  HrcLibrary* hrc_library;
 };
 
 #endif  // COLORER_PARSERFACTORYIMPL_H

@@ -6,7 +6,7 @@ uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
 {
   const char* encoding;
 
-  // try detect encoding
+  // try to detect encoding
   UErrorCode status {U_ZERO_ERROR};
   int32_t signatureLength;
   encoding = ucnv_detectUnicodeSignature(data, len, &signatureLength, &status);

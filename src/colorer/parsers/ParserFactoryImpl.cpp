@@ -1,10 +1,10 @@
+#include "colorer/parsers/ParserFactoryImpl.h"
+#include <filesystem>
+#include "colorer/base/BaseNames.h"
 #include "colorer/common/UStr.h"
 #include "colorer/parsers/CatalogParser.h"
 #include "colorer/parsers/HrcLibraryImpl.h"
-#include "colorer/parsers/ParserFactoryImpl.h"
 #include "colorer/utils/Environment.h"
-#include <filesystem>
-#include "colorer/base/BaseNames.h"
 
 namespace fs = std::filesystem;
 
@@ -12,18 +12,13 @@ ParserFactory::Impl::Impl()
 {
   // init xercesc, need to work with xml string
   xercesc::XMLPlatformUtils::Initialize();
-
-  // cregexp.h
-  RegExpStack = nullptr;
-  RegExpStack_Size = 0;
-
-  hrc_parser = new HrcLibrary();
+  hrc_library = new HrcLibrary();
 }
 
 ParserFactory::Impl::~Impl()
 {
-  delete hrc_parser;
-  delete[] RegExpStack;
+  delete hrc_library;
+  CRegExp::clearRegExpStack();
   xercesc::XMLPlatformUtils::Terminate();
 }
 
@@ -37,7 +32,8 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
       throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
     base_catalog_path = Environment::normalizePath(env.get());
-  } else {
+  }
+  else {
     spdlog::debug("loadCatalog for {0}", *catalog_path);
     base_catalog_path = Environment::normalizePath(catalog_path);
   }
@@ -55,7 +51,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 {
   try {
     spdlog::debug("try load '{0}'", location);
-    if (XmlInputSource::isUriFile(base_catalog_path.get(), &location)) {
+    if (XmlInputSource::isUriFile(*base_catalog_path, &location)) {
       auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
       if (fs::is_directory(clear_path)) {
         for (auto& p : fs::directory_iterator(clear_path)) {
@@ -63,10 +59,12 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
             loadHrc(UnicodeString(p.path().c_str()), nullptr);
           }
         }
-      } else {
+      }
+      else {
         loadHrc(UnicodeString(clear_path.c_str()), nullptr);
       }
-    } else {
+    }
+    else {
       loadHrc(location, base_catalog_path.get());
     }
   } catch (const Exception& e) {
@@ -74,11 +72,12 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
   }
 }
 
-void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
+void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path,
+                                  const UnicodeString* base_path) const
 {
   uXmlInputSource dfis = XmlInputSource::newInstance(&hrc_path, base_path);
   try {
-    hrc_parser->loadSource(dfis.get());
+    hrc_library->loadSource(dfis.get());
   } catch (Exception& e) {
     spdlog::error("Can't load hrc: {0}", *dfis->getPath());
     spdlog::error("{0}", e.what());
@@ -92,14 +91,15 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
 
   hrc_locations.clear();
   hrd_nodes.clear();
-  std::copy(catalog_parser.hrc_locations.begin(), catalog_parser.hrc_locations.end(), std::back_inserter(hrc_locations));
+  std::copy(catalog_parser.hrc_locations.begin(), catalog_parser.hrc_locations.end(),
+            std::back_inserter(hrc_locations));
 
   for (auto& item : catalog_parser.hrd_nodes) {
     addHrd(std::move(item));
   }
 }
 
-[[maybe_unused]] std::vector<UnicodeString> ParserFactory::Impl::enumHRDClasses()
+[[maybe_unused]] std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses()
 {
   std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
@@ -109,10 +109,10 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
   return result;
 }
 
-std::vector<const HRDNode*> ParserFactory::Impl::enumHRDInstances(const UnicodeString& classID)
+std::vector<const HrdNode*> ParserFactory::Impl::enumHrdInstances(const UnicodeString& classID)
 {
   auto hash = hrd_nodes.find(classID);
-  std::vector<const HRDNode*> result;
+  std::vector<const HrdNode*> result;
   result.reserve(hash->second->size());
   for (auto& p : *hash->second) {
     result.push_back(p.get());
@@ -120,7 +120,8 @@ std::vector<const HRDNode*> ParserFactory::Impl::enumHRDInstances(const UnicodeS
   return result;
 }
 
-const HRDNode* ParserFactory::Impl::getHRDNode(const UnicodeString& classID, const UnicodeString& nameID)
+const HrdNode& ParserFactory::Impl::getHrdNode(const UnicodeString& classID,
+                                               const UnicodeString& nameID)
 {
   auto hash = hrd_nodes.find(classID);
   if (hash == hrd_nodes.end()) {
@@ -128,49 +129,52 @@ const HRDNode* ParserFactory::Impl::getHRDNode(const UnicodeString& classID, con
   }
   for (auto& p : *hash->second) {
     if (nameID.compare(p->hrd_name) == 0) {
-      return p.get();
+      return *p;
     }
   }
   throw ParserFactoryException("can't find HRDName '" + nameID + "'");
 }
 
-HrcLibrary* ParserFactory::Impl::getHrcLibrary() const
+HrcLibrary& ParserFactory::Impl::getHrcLibrary() const
 {
-  return hrc_parser;
+  return *hrc_library;
 }
 
-TextParser* ParserFactory::Impl::createTextParser()
+std::unique_ptr<TextParser> ParserFactory::Impl::createTextParser()
 {
-  return new TextParser();
+  return std::make_unique<TextParser>();
 }
 
-StyledHRDMapper* ParserFactory::Impl::createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID)
+std::unique_ptr<StyledHRDMapper> ParserFactory::Impl::createStyledMapper(
+    const UnicodeString* classID, const UnicodeString* nameID)
 {
   const UnicodeString* class_id;
   const UnicodeString class_default(HrdClassRgb);
   if (classID == nullptr) {
     class_id = &class_default;
-  } else {
+  }
+  else {
     class_id = classID;
   }
 
-  auto* mapper = new StyledHRDMapper();
-  fillMapper(class_id, nameID, mapper);
+  auto mapper = std::make_unique<StyledHRDMapper>();
+  fillMapper(*class_id, nameID, *mapper);
 
   return mapper;
 }
 
-TextHRDMapper* ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
+std::unique_ptr<TextHRDMapper> ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
 {
   UnicodeString class_id = UnicodeString(HrdClassText);
 
-  auto* mapper = new TextHRDMapper();
-  fillMapper(&class_id, nameID, mapper);
+  auto mapper = std::make_unique<TextHRDMapper>();
+  fillMapper(class_id, nameID, *mapper);
 
   return mapper;
 }
 
-void ParserFactory::Impl::fillMapper(const UnicodeString* classID, const UnicodeString* nameID, RegionMapper* mapper)
+void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const UnicodeString* nameID,
+                                     RegionMapper& mapper)
 {
   const UnicodeString* name_id;
   const UnicodeString name_default(HrdNameDefault);
@@ -178,20 +182,22 @@ void ParserFactory::Impl::fillMapper(const UnicodeString* classID, const Unicode
     auto hrd = Environment::getOSVariable("COLORER_HRD");
     if (hrd) {
       name_id = hrd.get();
-    } else {
+    }
+    else {
       name_id = &name_default;
     }
-  } else {
+  }
+  else {
     name_id = nameID;
   }
 
-  auto hrd_node = getHRDNode(*classID, *name_id);
+  auto hrd_node = getHrdNode(classID, *name_id);
 
-  for (const auto& idx : hrd_node->hrd_location) {
+  for (const auto& idx : hrd_node.hrd_location) {
     if (idx.length() != 0) {
       try {
         auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
-        mapper->loadRegionMappings(dfis.get());
+        mapper.loadRegionMappings(*dfis);
       } catch (Exception& e) {
         spdlog::error("Can't load hrd: ");
         spdlog::error("{0}", e.what());
@@ -201,10 +207,10 @@ void ParserFactory::Impl::fillMapper(const UnicodeString* classID, const Unicode
   }
 }
 
-void ParserFactory::Impl::addHrd(std::unique_ptr<HRDNode> hrd)
+void ParserFactory::Impl::addHrd(std::unique_ptr<HrdNode> hrd)
 {
   if (hrd_nodes.find(hrd->hrd_class) == hrd_nodes.end()) {
-    hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HRDNode>>>());
+    hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HrdNode>>>());
   }
   hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
 }

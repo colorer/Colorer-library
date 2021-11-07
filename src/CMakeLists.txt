@@ -66,7 +66,7 @@ set(SRC_COLORER
     colorer/parsers/HrcLibrary.cpp
     colorer/parsers/HrcLibraryImpl.cpp
     colorer/parsers/HrcLibraryImpl.h
-    colorer/parsers/HRDNode.h
+    colorer/parsers/HrdNode.h
     colorer/parsers/KeywordList.cpp
     colorer/parsers/KeywordList.h
     colorer/parsers/ParserFactory.cpp

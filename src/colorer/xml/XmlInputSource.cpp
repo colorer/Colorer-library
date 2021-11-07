@@ -1,11 +1,12 @@
+#include "colorer/xml/XmlInputSource.h"
 #include "colorer/Exception.h"
 #include "colorer/common/UStr.h"
 #include "colorer/xml/LocalFileXmlInputSource.h"
 #if COLORER_FEATURE_JARINPUTSOURCE
 #include "colorer/xml/ZipXmlInputSource.h"
 #endif
-#include "colorer/utils/Environment.h"
 #include <filesystem>
+#include "colorer/utils/Environment.h"
 
 uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)
 {
@@ -17,7 +18,9 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   if (!path || (*path == '\0')) {
     throw InputSourceException("XmlInputSource::newInstance: path is empty");
   }
-  if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
+  if (xercesc::XMLString::startsWith(path, kJar) ||
+      (base != nullptr && xercesc::XMLString::startsWith(base, kJar)))
+  {
 #if COLORER_FEATURE_JARINPUTSOURCE
     return std::make_unique<ZipXmlInputSource>(path, base);
 #else
@@ -27,7 +30,8 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-std::filesystem::path XmlInputSource::getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath)
+std::filesystem::path XmlInputSource::getClearFilePath(const UnicodeString* basePath,
+                                                       const UnicodeString* relPath)
 {
   std::filesystem::path fs_basepath;
   if (basePath && !basePath->isEmpty()) {
@@ -39,7 +43,8 @@ std::filesystem::path XmlInputSource::getClearFilePath(const UnicodeString* base
   std::filesystem::path full_path;
   if (fs_basepath.empty()) {
     full_path = clear_relpath;
-  } else {
+  }
+  else {
     full_path = fs_basepath / clear_relpath;
   }
 
@@ -48,9 +53,9 @@ std::filesystem::path XmlInputSource::getClearFilePath(const UnicodeString* base
   return full_path;
 }
 
-bool XmlInputSource::isUriFile(const UnicodeString* path, const UnicodeString* base)
+bool XmlInputSource::isUriFile(const UnicodeString& path, const UnicodeString* base)
 {
-  if ((path->startsWith(kJar)) || (base && base->startsWith(kJar))) {
+  if ((path.startsWith(kJar)) || (base && base->startsWith(kJar))) {
     return false;
   }
   return true;

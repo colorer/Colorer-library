@@ -1,16 +1,16 @@
-#include "colorer/Exception.h"
 #include "colorer/handlers/TextHRDMapper.h"
-#include "colorer/base/XmlTagDefs.h"
-#include "colorer/xml/XmlParserErrorHandler.h"
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
+#include "colorer/Exception.h"
+#include "colorer/base/XmlTagDefs.h"
+#include "colorer/xml/XmlParserErrorHandler.h"
 
 TextHRDMapper::~TextHRDMapper()
 {
   regionDefines.clear();
 }
 
-void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
+void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
 {
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
@@ -19,20 +19,23 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setLoadSchema(false);
   xml_parser.setSkipDTDValidation(true);
-  xml_parser.parse(*is->getInputSource());
+  xml_parser.parse(*is.getInputSource());
 
   if (error_handler.getSawErrors()) {
-    throw Exception("Error loading HRD file '" + *is->getPath() + "'");
+    throw Exception("Error loading HRD file '" + *is.getPath() + "'");
   }
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
   xercesc::DOMElement* hbase = hrdbase->getDocumentElement();
 
   if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
-    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + *is->getPath());
+    throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " +
+                    *is.getPath());
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE && xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign)) {
+    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE &&
+        xercesc::XMLString::equals(curel->getNodeName(), hrdTagAssign))
+    {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
         if (*xname == xercesc::chNull) {
@@ -42,7 +45,8 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource* is)
         UnicodeString name(xname);
         auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name, *is->getPath());
+          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
+                       *is.getPath());
           regionDefines.erase(tp);
         }
         std::shared_ptr<const UnicodeString> stext;
@@ -108,7 +112,8 @@ void TextHRDMapper::setRegionDefine(const UnicodeString& name, const RegionDefin
   auto rd_old_it = regionDefines.find(name);
   if (rd_old_it == regionDefines.end()) {
     regionDefines.emplace(std::make_pair(name, std::move(new_region)));
-  } else {
+  }
+  else {
     rd_old_it->second = std::move(new_region);
   }
 }

@@ -1,8 +1,8 @@
-#ifndef __CREGEXP__
-#define __CREGEXP__
+#ifndef COLORER_CREGEXP_H
+#define COLORER_CREGEXP_H
 
-#include "colorer/Common.h"
 #include <unicode/uniset.h>
+#include "colorer/Common.h"
 
 /**
     @addtogroup cregexp Regular Expressions
@@ -176,9 +176,6 @@ struct StackElem
   int ifFalseReturn;
 };
 
-extern StackElem* RegExpStack;
-extern int RegExpStack_Size;
-
 #define INIT_MEM_SIZE 512
 #define MEM_INC 128
 
@@ -307,14 +304,16 @@ class CRegExp
   bool parse(const UnicodeString* str, SMatches* mtch, SMatchHash* nmtch = nullptr);
   /** Runs RE parser against input string @c str
    */
-  bool parse(const UnicodeString* str, int pos, int eol, SMatches* mtch, SMatchHash* nmtch = nullptr, int soscheme = 0, int moves = -1);
+  bool parse(const UnicodeString* str, int pos, int eol, SMatches* mtch,
+             SMatchHash* nmtch = nullptr, int soscheme = 0, int moves = -1);
 #else
   /** Runs RE parser against input string @c str
    */
   bool parse(const UnicodeString* str, SMatches* mtch);
   /** Runs RE parser against input string @c str
    */
-  bool parse(const UnicodeString* str, int pos, int eol, SMatches* mtch, int soscheme = 0, int moves = -1);
+  bool parse(const UnicodeString* str, int pos, int eol, SMatches* mtch, int soscheme = 0,
+             int moves = -1);
 #endif
 
  private:
@@ -360,9 +359,16 @@ class CRegExp
   bool parseRE(int toParse);
 
   int count_elem;
-  void check_stack(bool res, SRegInfo** re, SRegInfo** prev, int* toParse, bool* leftenter, int* action);
-  void insert_stack(SRegInfo** re, SRegInfo** prev, int* toParse, bool* leftenter, int ifTrueReturn, int ifFalseReturn, SRegInfo** re2,
-                    SRegInfo** prev2, int toParse2);
+  void check_stack(bool res, SRegInfo** re, SRegInfo** prev, int* toParse, bool* leftenter,
+                   int* action);
+  void insert_stack(SRegInfo** re, SRegInfo** prev, int* toParse, bool* leftenter, int ifTrueReturn,
+                    int ifFalseReturn, SRegInfo** re2, SRegInfo** prev2, int toParse2);
+
+  static StackElem* RegExpStack;
+  static int RegExpStack_Size;
+
+ public:
+  static void clearRegExpStack();
 };
 
-#endif
+#endif  // COLORER_CREGEXP_H

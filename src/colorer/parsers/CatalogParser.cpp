@@ -1,10 +1,10 @@
-#include "colorer/common/UStr.h"
 #include "colorer/parsers/CatalogParser.h"
+#include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/base/XmlTagDefs.h"
+#include "colorer/common/UStr.h"
 #include "colorer/xml/BaseEntityResolver.h"
 #include "colorer/xml/XmlInputSource.h"
 #include "colorer/xml/XmlParserErrorHandler.h"
-#include <xercesc/parsers/XercesDOMParser.hpp>
 
 void CatalogParser::parse(const UnicodeString* path)
 {
@@ -29,7 +29,8 @@ void CatalogParser::parse(const UnicodeString* path)
   xercesc::DOMElement* elem = catalog->getDocumentElement();
 
   if (!elem || !xercesc::XMLString::equals(elem->getNodeName(), catTagCatalog)) {
-    throw CatalogParserException("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " + *path);
+    throw CatalogParserException(
+        "Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " + *path);
   }
 
   parseCatalogBlock(elem);
@@ -39,7 +40,8 @@ void CatalogParser::parse(const UnicodeString* path)
 
 void CatalogParser::parseCatalogBlock(const xercesc::DOMNode* elem)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
+       node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem) {
@@ -66,7 +68,8 @@ void CatalogParser::parseHrcSetsBlock(const xercesc::DOMNode* elem)
 
 void CatalogParser::addHrcSetsLocation(const xercesc::DOMNode* elem)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
+       node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
@@ -74,7 +77,8 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMNode* elem)
         if (*attr_value != xercesc::chNull) {
           hrc_locations.emplace_back(UnicodeString(attr_value));
           spdlog::debug("add hrc location: '{0}'", hrc_locations.back());
-        } else {
+        }
+        else {
           spdlog::warn("found hrc with empty location. skip it location.");
         }
       }
@@ -88,7 +92,8 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMNode* elem)
 
 void CatalogParser::parseHrdSetsBlock(const xercesc::DOMNode* elem)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
+       node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagHrd)) {
@@ -105,7 +110,7 @@ void CatalogParser::parseHrdSetsBlock(const xercesc::DOMNode* elem)
   }
 }
 
-std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
+std::unique_ptr<HrdNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElement* elem)
 {
   const XMLCh* xhrd_class = elem->getAttribute(catHrdAttrClass);
   const XMLCh* xhrd_name = elem->getAttribute(catHrdAttrName);
@@ -116,12 +121,13 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
     return nullptr;
   }
 
-  auto hrd_node = std::make_unique<HRDNode>();
+  auto hrd_node = std::make_unique<HrdNode>();
   hrd_node->hrd_class = UnicodeString(xhrd_class);
   hrd_node->hrd_name = UnicodeString(xhrd_name);
   hrd_node->hrd_description = UnicodeString(xhrd_desc);
 
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
+  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
+       node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       if (xercesc::XMLString::equals(node->getNodeName(), catTagLocation)) {
         auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
@@ -129,8 +135,10 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
           auto attr_value = subelem->getAttribute(catLocationAttrLink);
           if (*attr_value != xercesc::chNull) {
             hrd_node->hrd_location.emplace_back(UnicodeString(attr_value));
-            spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(), hrd_node->hrd_class, hrd_node->hrd_name);
-          } else {
+            spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(),
+                          hrd_node->hrd_class, hrd_node->hrd_name);
+          }
+          else {
             spdlog::warn("found hrd with empty location. skip it location.");
           }
         }
@@ -140,8 +148,10 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
 
   if (!hrd_node->hrd_location.empty()) {
     return hrd_node;
-  } else {
-    spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class, hrd_node->hrd_name);
+  }
+  else {
+    spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class,
+                 hrd_node->hrd_name);
     return nullptr;
   }
 }
