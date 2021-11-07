@@ -267,7 +267,7 @@ void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
   const XMLCh* typeName = elem->getAttribute(hrcPrototypeAttrName);
   const XMLCh* typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
   const XMLCh* typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
-  if (isEmpty(typeName)) {
+  if (UStr::isEmpty(typeName)) {
     spdlog::error("Found unnamed prototype. Skipped.");
     return;
   }
@@ -348,7 +348,7 @@ void HrcLibrary::Impl::addPrototypeLocation(const xercesc::DOMElement* elem,
                                             FileType* current_parse_prototype)
 {
   const XMLCh* locationLink = elem->getAttribute(hrcLocationAttrLink);
-  if (isEmpty(locationLink)) {
+  if (UStr::isEmpty(locationLink)) {
     spdlog::error("Bad 'location' link attribute in prototype '{0}'",
                   *current_parse_prototype->pimpl->name);
     return;
@@ -382,7 +382,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
       : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype == FileTypeChooser::ChooserType::CT_FILENAME ? 2 : 1;
   const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
-  if (!isEmpty(weight)) {
+  if (!UStr::isEmpty(weight)) {
     try {
       auto w = xercesc::XMLDouble(weight);
       if (w.getValue() < 0) {
@@ -417,14 +417,14 @@ void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem,
         const XMLCh* name = subelem->getAttribute(hrcParamAttrName);
         const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
         const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
-        if (isEmpty(name) || isEmpty(value)) {
+        if (UStr::isEmpty(name) || UStr::isEmpty(value)) {
           spdlog::warn("Bad parameter in prototype '{0}'", *current_parse_prototype->getName());
           continue;
         }
         UnicodeString d_name = UnicodeString(name);
         TypeParameter* tp = current_parse_prototype->pimpl->addParam(&d_name);
         tp->default_value = std::make_unique<UnicodeString>(value);
-        if (!isEmpty(descr)) {
+        if (!UStr::isEmpty(descr)) {
           tp->description = std::make_unique<UnicodeString>(descr);
         }
       }
@@ -1285,9 +1285,4 @@ const Region* HrcLibrary::Impl::getNCRegion(const xercesc::DOMElement* el, const
   }
   UnicodeString dpar = UnicodeString(par);
   return getNCRegion(&dpar, true);
-}
-
-bool HrcLibrary::Impl::isEmpty(const XMLCh* string)
-{
-  return *string == '\0';
 }

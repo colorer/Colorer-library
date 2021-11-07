@@ -1,11 +1,11 @@
 #ifndef _COLORER_HRCLIBRARYIMPL_H_
 #define _COLORER_HRCLIBRARYIMPL_H_
 
+#include <xercesc/dom/DOM.hpp>
 #include "colorer/HrcLibrary.h"
 #include "colorer/cregexp/cregexp.h"
 #include "colorer/parsers/SchemeImpl.h"
 #include "colorer/xml/XmlInputSource.h"
-#include <xercesc/dom/DOM.hpp>
 
 class FileType;
 
@@ -25,7 +25,8 @@ class HrcLibrary::Impl
   void loadFileType(FileType* filetype);
   FileType* getFileType(const UnicodeString* name);
   FileType* enumerateFileTypes(unsigned int index);
-  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine,
+                           int typeNo = 0);
   size_t getFileTypesCount();
 
   size_t getRegionCount();
@@ -80,16 +81,15 @@ class HrcLibrary::Impl
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
   UnicodeString* qualifyOwnName(const UnicodeString* name);
-  bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype, bool logErrors);
-  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype, bool logErrors);
+  bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
+                      bool logErrors);
+  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,
+                                    bool logErrors);
 
   void updateLinks();
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
-
- private:
-  [[nodiscard]] static inline bool isEmpty(const XMLCh* string);
 };
 
 #endif

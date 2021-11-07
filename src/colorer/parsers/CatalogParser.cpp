@@ -74,7 +74,7 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMNode* elem)
       auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
       if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), catTagLocation)) {
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
-        if (*attr_value != xercesc::chNull) {
+        if (!UStr::isEmpty(attr_value)) {
           hrc_locations.emplace_back(UnicodeString(attr_value));
           spdlog::debug("add hrc location: '{0}'", hrc_locations.back());
         }
@@ -116,7 +116,7 @@ std::unique_ptr<HrdNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   const XMLCh* xhrd_name = elem->getAttribute(catHrdAttrName);
   const XMLCh* xhrd_desc = elem->getAttribute(catHrdAttrDescription);
 
-  if (*xhrd_class == xercesc::chNull || *xhrd_name == xercesc::chNull) {
+  if (UStr::isEmpty(xhrd_class) || UStr::isEmpty(xhrd_name)) {
     spdlog::warn("found HRD with empty class/name. skip this record.");
     return nullptr;
   }
@@ -133,7 +133,7 @@ std::unique_ptr<HrdNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
         auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
         if (subelem) {
           auto attr_value = subelem->getAttribute(catLocationAttrLink);
-          if (*attr_value != xercesc::chNull) {
+          if (!UStr::isEmpty(attr_value)) {
             hrd_node->hrd_location.emplace_back(UnicodeString(attr_value));
             spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back(),
                           hrd_node->hrd_class, hrd_node->hrd_name);

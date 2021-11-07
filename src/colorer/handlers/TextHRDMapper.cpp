@@ -3,6 +3,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/Exception.h"
 #include "colorer/base/XmlTagDefs.h"
+#include "colorer/common/UStr.h"
 #include "colorer/xml/XmlParserErrorHandler.h"
 
 TextHRDMapper::~TextHRDMapper()
@@ -38,7 +39,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
     {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
-        if (*xname == xercesc::chNull) {
+        if (UStr::isEmpty(xname)) {
           continue;
         }
 
@@ -55,19 +56,19 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
         std::shared_ptr<const UnicodeString> eback;
         const XMLCh* sval;
         sval = subelem->getAttribute(hrdAssignAttrSText);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           stext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEText);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           etext = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrSBack);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           sback = std::make_unique<UnicodeString>(sval);
         }
         sval = subelem->getAttribute(hrdAssignAttrEBack);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           eback = std::make_unique<UnicodeString>(sval);
         }
 

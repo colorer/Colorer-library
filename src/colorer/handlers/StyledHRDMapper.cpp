@@ -40,7 +40,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
     {
       if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel)) {
         const XMLCh* xname = subelem->getAttribute(hrdAssignAttrName);
-        if (*xname == xercesc::chNull) {
+        if (UStr::isEmpty(xname)) {
           continue;
         }
 
@@ -55,20 +55,20 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
         unsigned int fore = 0;
         bool bfore = false;
         const XMLCh* sval = subelem->getAttribute(hrdAssignAttrFore);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           bfore = UStr::HexToUInt(UnicodeString(sval), &fore);
         }
 
         unsigned int back = 0;
         bool bback = false;
         sval = subelem->getAttribute(hrdAssignAttrBack);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           bback = UStr::HexToUInt(UnicodeString(sval), &back);
         }
 
         unsigned int style = 0;
         sval = subelem->getAttribute(hrdAssignAttrStyle);
-        if (*sval != xercesc::chNull) {
+        if (!UStr::isEmpty(sval)) {
           UStr::HexToUInt(UnicodeString(sval), &style);
         }
 

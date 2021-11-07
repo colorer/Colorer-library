@@ -20,6 +20,10 @@ class UStr
   [[nodiscard]] static std::wstring to_stdwstr(const uUnicodeString& str);
 #endif
 
+  inline static bool isEmpty(const XMLCh* string)
+  {
+    return *string == '\0';
+  }
   static bool isLowerCase(UChar c);
   static bool isUpperCase(UChar c);
   static bool isLetter(UChar c);
