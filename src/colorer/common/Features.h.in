@@ -1,5 +1,5 @@
-#ifndef _COLORER_FEATURES_H_
-#define _COLORER_FEATURES_H_
+#ifndef COLORER_FEATURES_H
+#define COLORER_FEATURES_H
 
 #cmakedefine COLORER_USE_DEEPTRACE
 
@@ -8,4 +8,4 @@
 */
 #cmakedefine01 COLORER_FEATURE_JARINPUTSOURCE
 
-#endif
+#endif // COLORER_FEATURES_H

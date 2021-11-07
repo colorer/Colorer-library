@@ -1,8 +1,8 @@
-#ifndef _COLORER_EXCEPTION_H__
-#define _COLORER_EXCEPTION_H__
+#ifndef COLORER_EXCEPTION_H
+#define COLORER_EXCEPTION_H
 
-#include "colorer/Common.h"
 #include <exception>
+#include "colorer/Common.h"
 
 /** Exception class.
     Defines throwable exception.
@@ -12,23 +12,20 @@ class Exception : public std::exception
 {
  public:
   explicit Exception(const char* msg) noexcept;
-  /** Creates exception with string message
-   */
   explicit Exception(const UnicodeString& msg) noexcept;
 
-  /** Default destructor
-   */
   ~Exception() noexcept override = default;
 
+  Exception(const Exception&) = delete;
   Exception& operator=(const Exception& e) = delete;
+  Exception(Exception&&) = delete;
+  Exception& operator=(Exception&&) = delete;
 
   /** Returns exception message
    */
   [[nodiscard]] const char* what() const noexcept override;
 
  protected:
-  /** Internal message container
-   */
   std::string what_str;
 };
 
@@ -42,4 +39,4 @@ class InputSourceException : public Exception
   explicit InputSourceException(const UnicodeString& msg) noexcept;
 };
 
-#endif
+#endif  // COLORER_EXCEPTION_H

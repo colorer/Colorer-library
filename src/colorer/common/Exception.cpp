@@ -1,6 +1,6 @@
 #include "colorer/Exception.h"
 
-Exception::Exception(const char* msg) noexcept : what_str(msg) {}
+Exception::Exception(const char* msg) noexcept : what_str {msg} {}
 
 Exception::Exception(const UnicodeString& msg) noexcept
 {
@@ -12,4 +12,7 @@ const char* Exception::what() const noexcept
   return what_str.c_str();
 }
 
-InputSourceException::InputSourceException(const UnicodeString& msg) noexcept : Exception("[InputSourceException] " + msg) {}
+InputSourceException::InputSourceException(const UnicodeString& msg) noexcept
+    : Exception("[InputSourceException] " + msg)
+{
+}

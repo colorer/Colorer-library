@@ -1,8 +1,8 @@
 #ifndef COLORER_UNICODESTRING_H
 #define COLORER_UNICODESTRING_H
 
-#include <memory>
 #include <unicode/unistr.h>
+#include <memory>
 
 namespace std {
 // Specializations for unordered containers

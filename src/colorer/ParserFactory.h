@@ -45,7 +45,7 @@ class ParserFactory
   void loadHrcPath(const UnicodeString& location);
   /**
    * Creates and loads HrcLibrary instance from catalog.xml file.
-   * This method can detect directory entries, and sequentally load their
+   * This method can detect directory entries, and sequentially load their
    * contents into created HrcLibrary instance.
    * In other cases it uses InputSource#newInstance() method to
    * create input data stream.
@@ -80,7 +80,9 @@ class ParserFactory
   const HRDNode* getHRDNode(const UnicodeString& classID, const UnicodeString& nameID);
 
   ParserFactory(const ParserFactory&) = delete;
-  void operator=(const ParserFactory&) = delete;
+  ParserFactory operator=(const ParserFactory&) = delete;
+  ParserFactory(ParserFactory&&) = delete;
+  ParserFactory& operator=(ParserFactory&&) = delete;
 
  private:
   class Impl;
@@ -89,13 +91,17 @@ class ParserFactory
 };
 
 /** Exception, thrown by ParserFactory class methods.
-    Indicates some (mostly fatal) errors in loading of catalog file (catalog.xml), or in creating parsers objects.
-    @ingroup colorer
-*/
+ *  Indicates some (mostly fatal) errors in loading of catalog file (catalog.xml), or in creating
+ * parsers objects.
+ *   @ingroup colorer
+ */
 class ParserFactoryException : public Exception
 {
  public:
-  explicit ParserFactoryException(const UnicodeString& msg) noexcept : Exception("[ParserFactoryException] " + msg) {}
+  explicit ParserFactoryException(const UnicodeString& msg) noexcept
+      : Exception("[ParserFactoryException] " + msg)
+  {
+  }
 };
 
 #endif  // COLORER_PARSERFACTORY_H

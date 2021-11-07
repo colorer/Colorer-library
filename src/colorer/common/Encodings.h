@@ -1,5 +1,5 @@
-#ifndef COLORER_COMMON_ENCODINGS_H_
-#define COLORER_COMMON_ENCODINGS_H_
+#ifndef COLORER_COMMON_ENCODINGS_H
+#define COLORER_COMMON_ENCODINGS_H
 
 #include "colorer/Common.h"
 
@@ -11,4 +11,4 @@ class Encodings
   static uUnicodeString toUnicodeString(char* data, int32_t len);
 };
 
-#endif  // COLORER_COMMON_ENCODINGS_H_
+#endif  // COLORER_COMMON_ENCODINGS_H

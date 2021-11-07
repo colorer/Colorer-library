@@ -1,10 +1,10 @@
-#ifndef COLORER_COMMON_USTR_H_
-#define COLORER_COMMON_USTR_H_
+#ifndef COLORER_USTR_H
+#define COLORER_USTR_H
 
-#include "colorer/Common.h"
 #include <unicode/uniset.h>
-#include <xercesc/util/XMLString.hpp>
 #include <filesystem>
+#include <xercesc/util/XMLString.hpp>
+#include "colorer/Common.h"
 
 class UStr
 {
@@ -30,7 +30,8 @@ class UStr
   static UChar toLowerCase(UChar c);
   static UChar toUpperCase(UChar c);
 
-  static icu::UnicodeSet* createCharClass(const UnicodeString& ccs, int pos, int* retPos, bool ignore_case);
+  static std::unique_ptr<icu::UnicodeSet> createCharClass(const UnicodeString& ccs, int pos,
+                                                          int* retPos, bool ignore_case);
   /** \\x{2028} \\x23 \\c  - into wchar
     @param str String to parse Escape sequence.
     @param pos Position, where sequence starts.
@@ -52,9 +53,9 @@ class UStr
           base passed string remains valid until
           accessing it.
 */
-  static UnicodeString* getCurlyContent(const UnicodeString& str, int pos);
+  static uUnicodeString getCurlyContent(const UnicodeString& str, int pos);
 
   static bool HexToUInt(const UnicodeString& str_hex, unsigned int* result);
 };
 
-#endif  // COLORER_COMMON_USTR_H_
+#endif  // COLORER_USTR_H
