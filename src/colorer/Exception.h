@@ -16,10 +16,10 @@ class Exception : public std::exception
 
   ~Exception() noexcept override = default;
 
-  Exception(const Exception&) = delete;
-  Exception& operator=(const Exception& e) = delete;
-  Exception(Exception&&) = delete;
-  Exception& operator=(Exception&&) = delete;
+  Exception(const Exception&) = default;
+  Exception& operator=(const Exception& e) = default;
+  Exception(Exception&&) = default;
+  Exception& operator=(Exception&&) = default;
 
   /** Returns exception message
    */
