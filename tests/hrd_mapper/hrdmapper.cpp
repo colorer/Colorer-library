@@ -13,11 +13,12 @@ void testTextHrd()
   auto dfis = XmlInputSource::newInstance(&file);
 
   TextHRDMapper thrd;
-  thrd.loadRegionMappings(dfis.get());
+  thrd.loadRegionMappings(*dfis);
 
   auto region = thrd.getRegionDefine("def:Date");
   auto t_region = TextRegion::cast(region);
-  std::cout << "start=" << UStr::to_stdstr(t_region->start_text.get()) << " end=" << UStr::to_stdstr(t_region->end_text.get()) << "\n";
+  std::cout << "start=" << UStr::to_stdstr(t_region->start_text.get())
+            << " end=" << UStr::to_stdstr(t_region->end_text.get()) << "\n";
 
   thrd.saveRegionMappings(&writer);
 }
@@ -31,11 +32,12 @@ void testStyledHrd()
   auto dfis = XmlInputSource::newInstance(&file);
 
   StyledHRDMapper shrd;
-  shrd.loadRegionMappings(dfis.get());
+  shrd.loadRegionMappings(*dfis);
 
   auto region = shrd.getRegionDefine("def:PairEnd");
   auto s_region = StyledRegion::cast(region);
-  std::cout << "fore=" << s_region->fore << " back=" << s_region->back << " style=" << s_region->style << "\n";
+  std::cout << "fore=" << s_region->fore << " back=" << s_region->back
+            << " style=" << s_region->style << "\n";
 
   shrd.saveRegionMappings(&writer);
 }
