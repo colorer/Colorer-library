@@ -1,5 +1,5 @@
-#ifndef _COLORER_HRCLIBRARY_H_
-#define _COLORER_HRCLIBRARY_H_
+#ifndef COLORER_HRCLIBRARY_H
+#define COLORER_HRCLIBRARY_H
 
 #include "colorer/Exception.h"
 #include "colorer/FileType.h"
@@ -13,7 +13,10 @@
 class HrcLibraryException : public Exception
 {
  public:
-  explicit HrcLibraryException(const UnicodeString& msg) noexcept : Exception("[HrcLibraryException] " + msg) {}
+  explicit HrcLibraryException(const UnicodeString& msg) noexcept
+      : Exception("[HrcLibraryException] " + msg)
+  {
+  }
 };
 
 /** Abstract template of HrcLibrary class implementation.
@@ -24,6 +27,8 @@ class HrcLibraryException : public Exception
 class HrcLibrary
 {
  public:
+  HrcLibrary();
+
   /** Loads HRC from specified InputSource stream.
       Referred HRC file can contain prototypes and
       real types definitions. If it contains just prototype definition,
@@ -53,7 +58,8 @@ class HrcLibrary
       @param typeNo Sequential number of type, if more than one type
                     satisfy these input parameters.
   */
-  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
+  FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine,
+                           int typeNo = 0);
 
   size_t getFileTypesCount();
 
@@ -68,13 +74,10 @@ class HrcLibrary
   */
   const Region* getRegion(const UnicodeString* name);
 
-  ~HrcLibrary() = default;
-  HrcLibrary();
-
  private:
   class Impl;
 
   spimpl::unique_impl_ptr<Impl> pimpl;
 };
 
-#endif
+#endif  // COLORER_HRCLIBRARY_H

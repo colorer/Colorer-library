@@ -223,13 +223,12 @@ void HrcLibrary::Impl::parseHRC(const XmlInputSource& is)
 
 void HrcLibrary::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
-       node = node->getNextSibling()) {
+  for (auto node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       parseHrcBlockElements(node);
     }
     else if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      for (xercesc::DOMNode* sub_node = node->getFirstChild(); sub_node != nullptr;
+      for (auto sub_node = node->getFirstChild(); sub_node != nullptr;
            sub_node = sub_node->getNextSibling())
       {
         parseHrcBlockElements(sub_node);
@@ -238,11 +237,10 @@ void HrcLibrary::Impl::parseHrcBlock(const xercesc::DOMElement* elem)
   }
 }
 
-void HrcLibrary::Impl::parseHrcBlockElements(xercesc::DOMNode* elem)
+void HrcLibrary::Impl::parseHrcBlockElements(const xercesc::DOMNode* elem)
 {
   if (elem->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-    auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(elem);
-    if (sub_elem) {
+    if (auto sub_elem = dynamic_cast<const xercesc::DOMElement*>(elem)) {
       if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPrototype) ||
           xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage))
       {
@@ -264,11 +262,11 @@ void HrcLibrary::Impl::parseHrcBlockElements(xercesc::DOMNode* elem)
 
 void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
 {
-  const XMLCh* typeName = elem->getAttribute(hrcPrototypeAttrName);
-  const XMLCh* typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
-  const XMLCh* typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
+  const auto typeName = elem->getAttribute(hrcPrototypeAttrName);
+  const auto typeGroup = elem->getAttribute(hrcPrototypeAttrGroup);
+  const auto typeDescription = elem->getAttribute(hrcPrototypeAttrDescription);
   if (UStr::isEmpty(typeName)) {
-    spdlog::error("Found unnamed prototype. Skipped.");
+    spdlog::error("Found unnamed prototype/package. Skipped.");
     return;
   }
 
@@ -283,30 +281,19 @@ void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
   auto& ptype = type->pimpl;
 
   ptype->name = std::make_unique<UnicodeString>(tname);
-
-  if (typeGroup != nullptr) {
-    ptype->group = std::make_unique<UnicodeString>(UnicodeString(typeGroup));
-  }
-  else {
-    ptype->group = std::make_unique<UnicodeString>(*ptype->name);
-  }
-
-  if (typeDescription != nullptr) {
-    ptype->description = std::make_unique<UnicodeString>(UnicodeString(typeDescription));
-  }
-  else {
-    ptype->description = std::make_unique<UnicodeString>(*ptype->name);
-  }
+  ptype->group = UStr::isEmpty(typeGroup) ? std::make_unique<UnicodeString>(*ptype->name)
+                                          : std::make_unique<UnicodeString>(typeGroup);
+  ptype->description = UStr::isEmpty(typeDescription)
+      ? std::make_unique<UnicodeString>(*ptype->name)
+      : std::make_unique<UnicodeString>(typeDescription);
 
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
     ptype->isPackage = true;
   }
 
   parsePrototypeBlock(elem, type);
-  ptype->protoLoaded = true;
 
-  fileTypeHash.emplace(*type->getName(), type);
-
+  fileTypeHash.emplace(tname, type);
   if (!ptype->isPackage) {
     fileTypeVector.push_back(type);
   }
@@ -315,21 +302,22 @@ void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
 void HrcLibrary::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem,
                                            FileType* current_parse_prototype)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
-       node = node->getNextSibling()) {
+  for (auto node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
-      if (subelem) {
-        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagLocation)) {
-          addPrototypeLocation(subelem, current_parse_prototype);
+      if (auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(node)) {
+        if (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagLocation)) {
+          addPrototypeLocation(sub_elem, current_parse_prototype);
         }
-        else if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFilename) ||
-                 xercesc::XMLString::equals(subelem->getNodeName(), hrcTagFirstline))
+        else if (!current_parse_prototype->pimpl->isPackage &&
+                 (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagFilename) ||
+                  xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagFirstline)))
         {
-          addPrototypeDetectParam(subelem, current_parse_prototype);
+          addPrototypeDetectParam(sub_elem, current_parse_prototype);
         }
-        else if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParametrs)) {
-          addPrototypeParameters(subelem, current_parse_prototype);
+        else if (!current_parse_prototype->pimpl->isPackage &&
+                 (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagParametrs)))
+        {
+          addPrototypeParameters(sub_elem, current_parse_prototype);
         }
         else if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagAnnotation)) {
           // not read annotation
@@ -366,22 +354,26 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
                  *current_parse_prototype->pimpl->name);
     return;
   }
-  const XMLCh* match = ((xercesc::DOMText*) elem->getFirstChild())->getData();
-  UnicodeString dmatch = UnicodeString(match);
-  auto* matchRE = new CRegExp(&dmatch);
+  auto elem_text = dynamic_cast<xercesc::DOMText*>(elem->getFirstChild());
+  if (!elem_text) {
+    spdlog::error("Fault read value of {0} in {1}", UStr::to_stdstr(elem->getNodeName()),
+                  *current_parse_prototype->pimpl->name);
+    return;
+  }
+
+  UnicodeString dmatch = UnicodeString(elem_text->getData());
+  auto matchRE = std::make_unique<CRegExp>(&dmatch);
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
     spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch,
                  *current_parse_prototype->pimpl->name);
-    delete matchRE;
     return;
   }
-  FileTypeChooser::ChooserType ctype =
-      xercesc::XMLString::equals(elem->getNodeName(), hrcTagFilename)
+  auto ctype = xercesc::XMLString::equals(elem->getNodeName(), hrcTagFilename)
       ? FileTypeChooser::ChooserType::CT_FILENAME
       : FileTypeChooser::ChooserType::CT_FIRSTLINE;
   double prior = ctype == FileTypeChooser::ChooserType::CT_FILENAME ? 2 : 1;
-  const XMLCh* weight = elem->getAttribute(hrcFilenameAttrWeight);
+  auto weight = elem->getAttribute(hrcFilenameAttrWeight);
   if (!UStr::isEmpty(weight)) {
     try {
       auto w = xercesc::XMLDouble(weight);
@@ -402,36 +394,35 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
           UStr::to_stdstr(toCatch.getMessage()), *current_input_source->getPath());
     }
   }
-  auto ftc = std::make_unique<FileTypeChooser>(ctype, prior, matchRE);
+  auto ftc = std::make_unique<FileTypeChooser>(ctype, prior, matchRE.release());
   current_parse_prototype->pimpl->chooserVector.emplace_back(std::move(ftc));
 }
 
 void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem,
                                               FileType* current_parse_prototype)
 {
-  for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
-       node = node->getNextSibling()) {
+  for (auto node = elem->getFirstChild(); node != nullptr; node = node->getNextSibling()) {
     if (node->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      auto* subelem = dynamic_cast<xercesc::DOMElement*>(node);
-      if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
-        const XMLCh* name = subelem->getAttribute(hrcParamAttrName);
-        const XMLCh* value = subelem->getAttribute(hrcParamAttrValue);
-        const XMLCh* descr = subelem->getAttribute(hrcParamAttrDescription);
-        if (UStr::isEmpty(name) || UStr::isEmpty(value)) {
-          spdlog::warn("Bad parameter in prototype '{0}'", *current_parse_prototype->getName());
-          continue;
+      if (auto* subelem = dynamic_cast<xercesc::DOMElement*>(node)) {
+        if (xercesc::XMLString::equals(subelem->getNodeName(), hrcTagParam)) {
+          auto name = subelem->getAttribute(hrcParamAttrName);
+          auto value = subelem->getAttribute(hrcParamAttrValue);
+          auto descr = subelem->getAttribute(hrcParamAttrDescription);
+          if (UStr::isEmpty(name) || UStr::isEmpty(value)) {
+            spdlog::warn("Bad parameter in prototype '{0}'", *current_parse_prototype->getName());
+            continue;
+          }
+          auto& tp =
+              current_parse_prototype->pimpl->addParam(UnicodeString(name), UnicodeString(value));
+          if (!UStr::isEmpty(descr)) {
+            tp.description = std::make_unique<UnicodeString>(descr);
+          }
         }
-        UnicodeString d_name = UnicodeString(name);
-        TypeParameter* tp = current_parse_prototype->pimpl->addParam(&d_name);
-        tp->default_value = std::make_unique<UnicodeString>(value);
-        if (!UStr::isEmpty(descr)) {
-          tp->description = std::make_unique<UnicodeString>(descr);
+        else {
+          spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.",
+                       UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name,
+                       *current_input_source->getPath());
         }
-      }
-      else {
-        spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.",
-                     UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name,
-                     *current_input_source->getPath());
       }
     }
     if (node->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {

@@ -17,6 +17,7 @@ ParserFactory::Impl::Impl()
 
 ParserFactory::Impl::~Impl()
 {
+  // hrc library has link to xercesc classes (SharedXmlInputSource) and need to free before xercesc
   delete hrc_library;
   CRegExp::clearRegExpStack();
   xercesc::XMLPlatformUtils::Terminate();

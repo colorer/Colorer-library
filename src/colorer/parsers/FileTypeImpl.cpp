@@ -1,5 +1,5 @@
-#include "colorer/common/UStr.h"
 #include "colorer/parsers/FileTypeImpl.h"
+#include "colorer/common/UStr.h"
 
 const UnicodeString* FileType::Impl::getName() const
 {
@@ -62,7 +62,7 @@ const UnicodeString* FileType::Impl::getParamValue(const UnicodeString& param_na
     if (tp->second->user_value) {
       return tp->second->user_value.get();
     }
-    return tp->second->default_value.get();
+    return tp->second->value.get();
   }
   return nullptr;
 }
@@ -76,7 +76,8 @@ int FileType::Impl::getParamValueInt(const UnicodeString& param_name, int def) c
     try {
       val = std::stoi(param_str, nullptr);
     } catch (std::exception&) {
-      spdlog::error("Error parse param {0} with value {1} to integer number", param_name, param_str);
+      spdlog::error("Error parse param {0} with value {1} to integer number", param_name,
+                    param_str);
     }
   }
   return val;
@@ -86,7 +87,7 @@ const UnicodeString* FileType::Impl::getParamDefaultValue(const UnicodeString& p
 {
   auto tp = paramsHash.find(param_name);
   if (tp != paramsHash.end()) {
-    return tp->second->default_value.get();
+    return tp->second->value.get();
   }
   return nullptr;
 }
@@ -100,12 +101,11 @@ const UnicodeString* FileType::Impl::getParamUserValue(const UnicodeString& para
   return nullptr;
 }
 
-TypeParameter* FileType::Impl::addParam(const UnicodeString* param_name)
+TypeParameter& FileType::Impl::addParam(const UnicodeString& param_name, const UnicodeString& value)
 {
-  auto tp = std::make_unique<TypeParameter>();
-  tp->name = std::make_unique<UnicodeString>(*param_name);
-  auto [it, status] = paramsHash.emplace(std::make_pair(*param_name, std::move(tp)));
-  return it->second.get();
+  auto tp = std::make_unique<TypeParameter>(param_name, value);
+  auto [it, status] = paramsHash.emplace(std::make_pair(param_name, std::move(tp)));
+  return *it->second;
 }
 
 void FileType::Impl::setParamValue(const UnicodeString& param_name, const UnicodeString* value)
@@ -114,25 +114,32 @@ void FileType::Impl::setParamValue(const UnicodeString& param_name, const Unicod
   if (tp != paramsHash.end()) {
     if (value) {
       tp->second->user_value = std::make_unique<UnicodeString>(*value);
-    } else {
+    }
+    else {
       tp->second->user_value.reset();
     }
-  } else {
-    throw FileTypeException("Don`t set value " + *value + " for parameter \"" + param_name + "\". Parameter not exists.");
+  }
+  else {
+    throw FileTypeException("Don`t set value " + *value + " for parameter \"" + param_name +
+                            "\". Parameter not exists.");
   }
 }
 
-void FileType::Impl::setParamDefaultValue(const UnicodeString& param_name, const UnicodeString* value)
+void FileType::Impl::setParamDefaultValue(const UnicodeString& param_name,
+                                          const UnicodeString* value)
 {
   auto tp = paramsHash.find(param_name);
   if (tp != paramsHash.end()) {
     if (value) {
-      tp->second->default_value = std::make_unique<UnicodeString>(*value);
-    } else {
-      tp->second->default_value.reset();
+      tp->second->value = std::make_unique<UnicodeString>(*value);
     }
-  } else {
-    throw FileTypeException("Don`t set value " + *value + " for parameter \"" + param_name + "\". Parameter not exists.");
+    else {
+      throw FileTypeException("Don`t set null value for parameter \"" + param_name + "\"");
+    }
+  }
+  else {
+    throw FileTypeException("Don`t set value " + *value + " for parameter \"" + param_name +
+                            "\". Parameter not exists.");
   }
 }
 
@@ -141,19 +148,18 @@ void FileType::Impl::setParamUserValue(const UnicodeString& param_name, const Un
   setParamValue(param_name, value);
 }
 
-void FileType::Impl::setParamDescription(const UnicodeString& param_name, const UnicodeString* value)
+void FileType::Impl::setParamDescription(const UnicodeString& param_name,
+                                         const UnicodeString* t_description)
 {
   auto tp = paramsHash.find(param_name);
   if (tp != paramsHash.end()) {
-    tp->second->description = std::make_unique<UnicodeString>(*value);
-  } else {
-    throw FileTypeException("Don`t set value " + *value + " for description of parameter \"" + param_name + "\". Parameter not exists.");
+    tp->second->description = std::make_unique<UnicodeString>(*t_description);
   }
-}
-
-void FileType::Impl::removeParamValue(const UnicodeString& param_name)
-{
-  paramsHash.erase(param_name);
+  else {
+    throw FileTypeException("Don`t set value " + *t_description +
+                            " for description of parameter \"" + param_name +
+                            "\". Parameter not exists.");
+  }
 }
 
 size_t FileType::Impl::getParamCount() const
@@ -161,26 +167,17 @@ size_t FileType::Impl::getParamCount() const
   return paramsHash.size();
 }
 
-size_t FileType::Impl::getParamUserValueCount() const
-{
-  size_t count = 0;
-  for (const auto& it : paramsHash) {
-    if (it.second->user_value) {
-      count++;
-    }
-  }
-  return count;
-}
-
-double FileType::Impl::getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const
+double FileType::Impl::getPriority(const UnicodeString* fileName,
+                                   const UnicodeString* fileContent) const
 {
   SMatches match {};
-  double cur_prior = 0;
+  double cur_prior {0};
   for (auto const& ftc : chooserVector) {
-    if (fileName != nullptr && ftc->isFileName() && ftc->getRE()->parse(fileName, &match)) {
+    if (ftc->isFileName() && fileName != nullptr && ftc->getRE()->parse(fileName, &match)) {
       cur_prior += ftc->getPriority();
     }
-    if (fileContent != nullptr && ftc->isFileContent() && ftc->getRE()->parse(fileContent, &match)) {
+    else if (ftc->isFileContent() && fileContent != nullptr &&
+             ftc->getRE()->parse(fileContent, &match)) {
       cur_prior += ftc->getPriority();
     }
   }

@@ -1,5 +1,5 @@
-#ifndef _COLORER_XML_PARSER_ERROR_HANDLER_H_
-#define _COLORER_XML_PARSER_ERROR_HANDLER_H_
+#ifndef COLORER_XML_PARSER_ERROR_HANDLER_H
+#define COLORER_XML_PARSER_ERROR_HANDLER_H
 
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
@@ -8,9 +8,7 @@
 class XmlParserErrorHandler : public xercesc::ErrorHandler
 {
  public:
-  XmlParserErrorHandler() : fSawErrors(false) {}
-
-  ~XmlParserErrorHandler() override = default;
+  XmlParserErrorHandler() : fSawErrors {false} {}
 
   void warning(const xercesc::SAXParseException& toCatch) override;
   void error(const xercesc::SAXParseException& toCatch) override;
@@ -26,14 +24,4 @@ class XmlParserErrorHandler : public xercesc::ErrorHandler
   bool fSawErrors;
 };
 
-inline bool XmlParserErrorHandler::getSawErrors() const
-{
-  return fSawErrors;
-}
-
-inline void XmlParserErrorHandler::resetErrors()
-{
-  fSawErrors = false;
-}
-
-#endif  // _COLORER_XML_PARSER_ERROR_HANDLER_H_
+#endif  // COLORER_XML_PARSER_ERROR_HANDLER_H

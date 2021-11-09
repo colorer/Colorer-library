@@ -57,7 +57,7 @@ class HrcLibrary::Impl
 
   void parseHRC(const XmlInputSource& is);
   void parseHrcBlock(const xercesc::DOMElement* elem);
-  void parseHrcBlockElements(xercesc::DOMNode* elem);
+  void parseHrcBlockElements(const xercesc::DOMNode* elem);
   void addPrototype(const xercesc::DOMElement* elem);
   void parsePrototypeBlock(const xercesc::DOMElement* elem, FileType* current_parse_prototype);
   void addPrototypeLocation(const xercesc::DOMElement* elem, FileType* current_parse_prototype);

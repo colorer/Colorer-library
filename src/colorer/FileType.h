@@ -1,11 +1,11 @@
-#ifndef _COLORER_FILETYPE_H_
-#define _COLORER_FILETYPE_H_
+#ifndef COLORER_FILETYPE_H
+#define COLORER_FILETYPE_H
 
+#include <vector>
 #include "colorer/Common.h"
 #include "colorer/Exception.h"
 #include "colorer/Scheme.h"
 #include "colorer/common/spimpl.h"
-#include <vector>
 
 /**
  * HRC FileType (or prototype) instance.
@@ -19,8 +19,8 @@ class FileType
  public:
   FileType();
 
-  void addParam(const UnicodeString* name);
-  void addParam(const UnicodeString& name);
+  void addParam(const UnicodeString* name, const UnicodeString* value);
+  void addParam(const UnicodeString& name, const UnicodeString& value);
   void setName(const UnicodeString* name);
   void setGroup(const UnicodeString* group);
   void setDescription(const UnicodeString* description);
@@ -108,7 +108,10 @@ class FileType
 class FileTypeException : public Exception
 {
  public:
-  explicit FileTypeException(const UnicodeString& msg) noexcept : Exception("[FileTypeException] " + msg) {}
+  explicit FileTypeException(const UnicodeString& msg) noexcept
+      : Exception("[FileTypeException] " + msg)
+  {
+  }
 };
 
-#endif
+#endif  // COLORER_FILETYPE_H

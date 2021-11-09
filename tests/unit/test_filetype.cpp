@@ -26,12 +26,18 @@ SCENARIO("Set param value for FileType")
 {
   UnicodeString param1("param1");
   UnicodeString def_value("value1");
+  UnicodeString def_value2("dvalue1");
   UnicodeString user_value("value2");
 
   GIVEN("A simple FileType with one parameter")
   {
     FileType file_type;
-    file_type.addParam(&param1);
+    REQUIRE_THROWS_AS(file_type.addParam(&param1, nullptr), FileTypeException);
+  }
+  GIVEN("A simple FileType with two parameter")
+  {
+    FileType file_type;
+    file_type.addParam(&param1, &def_value2);
 
     WHEN("set only default value for parameter")
     {
@@ -54,17 +60,16 @@ SCENARIO("Set param value for FileType")
       THEN("return this value as value, but not default")
       {
         CHECK(file_type.getParamValue(param1)->compare(def_value) == 0);
-        CHECK(file_type.getParamDefaultValue(param1) == nullptr);
+        CHECK(file_type.getParamDefaultValue(param1)->compare(def_value2) == 0);
       }
     }
     WHEN("set nullptr as default value ")
     {
       file_type.setParamDefaultValue(param1, &def_value);
-      file_type.setParamDefaultValue(param1, nullptr);
 
-      THEN("return nullptr as default")
+      THEN("exception to set null value")
       {
-        CHECK(file_type.getParamDefaultValue(param1) == nullptr);
+        REQUIRE_THROWS_AS(file_type.setParamDefaultValue(param1, nullptr), FileTypeException);
       }
     }
     WHEN("set nullptr as value ")
@@ -75,7 +80,7 @@ SCENARIO("Set param value for FileType")
       THEN("return default and user value equal nullptr")
       {
         CHECK(file_type.getParamUserValue(param1) == nullptr);
-        CHECK(file_type.getParamValue(param1) == nullptr);
+        CHECK(file_type.getParamValue(param1)->compare(def_value2) == 0);
       }
     }
     WHEN("FileType don`t contains param2")
@@ -92,9 +97,12 @@ SCENARIO("Set param value for FileType")
     {
       THEN("return nullptr param value throws exception")
       {
-        REQUIRE_THROWS_AS(file_type.setParamValue(UnicodeString(nullptr), &def_value), FileTypeException);
-        REQUIRE_THROWS_AS(file_type.setParamDefaultValue(UnicodeString(nullptr), &def_value), FileTypeException);
-        REQUIRE_THROWS_AS(file_type.setParamDescription(UnicodeString(nullptr), &def_value), FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamValue(UnicodeString(nullptr), &def_value),
+                          FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDefaultValue(UnicodeString(nullptr), &def_value),
+                          FileTypeException);
+        REQUIRE_THROWS_AS(file_type.setParamDescription(UnicodeString(nullptr), &def_value),
+                          FileTypeException);
       }
     }
   }
@@ -110,14 +118,15 @@ TEST_CASE("Work with integer type of param value")
   UnicodeString param1("param1");
   UnicodeString param2("param2");
   UnicodeString param3("param3");
+  UnicodeString def_value1("0");
   UnicodeString value1("value1");
   UnicodeString value2("5");
   UnicodeString value3("5.5");
 
   FileType file_type;
-  file_type.addParam(&param1);
-  file_type.addParam(&param2);
-  file_type.addParam(&param3);
+  file_type.addParam(param1, def_value1);
+  file_type.addParam(param2, def_value1);
+  file_type.addParam(param3, def_value1);
   file_type.setParamValue(param1, &value1);
   file_type.setParamValue(param2, &value2);
   file_type.setParamValue(param3, &value3);

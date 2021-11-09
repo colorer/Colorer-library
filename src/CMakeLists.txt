@@ -60,6 +60,7 @@ set(SRC_COLORER
     colorer/parsers/CatalogParser.cpp
     colorer/parsers/CatalogParser.h
     colorer/parsers/FileType.cpp
+    colorer/parsers/FileTypeChooser.cpp
     colorer/parsers/FileTypeChooser.h
     colorer/parsers/FileTypeImpl.cpp
     colorer/parsers/FileTypeImpl.h

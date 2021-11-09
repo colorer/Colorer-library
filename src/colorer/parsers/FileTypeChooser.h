@@ -1,5 +1,5 @@
-#ifndef _COLORER_FILETYPECHOOSER_H_
-#define _COLORER_FILETYPECHOOSER_H_
+#ifndef COLORER_FILETYPECHOOSER_H
+#define COLORER_FILETYPECHOOSER_H
 
 #include "colorer/cregexp/cregexp.h"
 
@@ -17,7 +17,7 @@ class FileTypeChooser
       @param prior Priority of this rule
       @param re Associated regular expression
   */
-  FileTypeChooser(ChooserType type, double prior, CRegExp* re);
+  FileTypeChooser(ChooserType type, double priority, CRegExp* re);
   /** Returns type of chooser */
   [[nodiscard]] bool isFileName() const;
   /** Returns type of chooser */
@@ -28,31 +28,9 @@ class FileTypeChooser
   [[nodiscard]] CRegExp* getRE() const;
 
  private:
-  std::unique_ptr<CRegExp> reg_matcher;
-  ChooserType type;
-  double priority;
+  ChooserType m_type;
+  double m_priority;
+  std::unique_ptr<CRegExp> m_reg_matcher;
 };
 
-inline FileTypeChooser::FileTypeChooser(ChooserType type_, double prior, CRegExp* re) : reg_matcher(re), type(type_), priority(prior) {}
-
-inline bool FileTypeChooser::isFileName() const
-{
-  return type == ChooserType::CT_FILENAME;
-}
-
-inline bool FileTypeChooser::isFileContent() const
-{
-  return type == ChooserType::CT_FIRSTLINE;
-}
-
-inline double FileTypeChooser::getPriority() const
-{
-  return priority;
-}
-
-inline CRegExp* FileTypeChooser::getRE() const
-{
-  return reg_matcher.get();
-}
-
-#endif  //_COLORER_FILETYPECHOOSER_H_
+#endif  // COLORER_FILETYPECHOOSER_H

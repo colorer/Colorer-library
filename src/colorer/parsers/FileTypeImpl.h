@@ -1,24 +1,28 @@
-#ifndef _COLORER_FILETYPEIMPL_H_
-#define _COLORER_FILETYPEIMPL_H_
+#ifndef COLORER_FILETYPEIMPL_H
+#define COLORER_FILETYPEIMPL_H
 
+#include <unordered_map>
+#include <vector>
 #include "colorer/FileType.h"
 #include "colorer/HrcLibrary.h"
 #include "colorer/parsers/FileTypeChooser.h"
 #include "colorer/parsers/SchemeImpl.h"
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 /* structure for storing data of scheme parameter*/
 class TypeParameter
 {
  public:
+  TypeParameter(const UnicodeString& t_name, const UnicodeString& t_value)
+  {
+    name = std::make_unique<UnicodeString>(t_name);
+    value = std::make_unique<UnicodeString>(t_value);
+  }
   /* parameter name*/
   uUnicodeString name;
   /* parameter description*/
   uUnicodeString description;
   /* default value*/
-  uUnicodeString default_value;
+  uUnicodeString value;
   /* user value*/
   uUnicodeString user_value;
 };
@@ -48,14 +52,12 @@ class FileType::Impl
   void setParamValue(const UnicodeString& param_name, const UnicodeString* value);
   void setParamDefaultValue(const UnicodeString& param_name, const UnicodeString* value);
   void setParamUserValue(const UnicodeString& param_name, const UnicodeString* value);
-  void setParamDescription(const UnicodeString& param_name, const UnicodeString* value);
+  void setParamDescription(const UnicodeString& param_name, const UnicodeString* description);
 
   [[nodiscard]] std::vector<UnicodeString> enumParams() const;
   [[nodiscard]] size_t getParamCount() const;
-  [[nodiscard]] size_t getParamUserValueCount() const;
 
-  TypeParameter* addParam(const UnicodeString* param_name);
-  void removeParamValue(const UnicodeString& param_name);
+  TypeParameter& addParam(const UnicodeString& param_name, const UnicodeString& value);
 
   [[nodiscard]] Scheme* getBaseScheme() const;
   /**
@@ -72,26 +74,25 @@ class FileType::Impl
    */
   double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
 
-  /// is prototype component loaded
-  bool protoLoaded = false;
   /// is type component loaded
-  bool type_loaded = false;
+  bool type_loaded {false};
   /// is type references fully resolved
-  bool loadDone = false;
+  bool loadDone {false};
   /// is initial type load failed
-  bool load_broken = false;
+  bool load_broken {false};
   /// is this IS loading was started
-  bool input_source_loading = false;
+  bool input_source_loading {false};
 
   uUnicodeString name;
   uUnicodeString group;
   uUnicodeString description;
-  bool isPackage = false;
-  SchemeImpl* baseScheme = nullptr;
+  bool isPackage {false};
+  SchemeImpl* baseScheme {nullptr};
 
   std::vector<std::unique_ptr<FileTypeChooser>> chooserVector;
   std::unordered_map<UnicodeString, std::unique_ptr<TypeParameter>> paramsHash;
   std::vector<uUnicodeString> importVector;
   uXmlInputSource inputSource;
 };
-#endif
+
+#endif  // COLORER_FILETYPEIMPL_H

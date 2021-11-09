@@ -34,7 +34,6 @@ class ParserFactory
    * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
   ParserFactory();
-  ~ParserFactory() = default;
 
   /**
    * @param catalog_path Path to catalog.xml file. If null,
@@ -79,11 +78,6 @@ class ParserFactory
   std::vector<const HrdNode*> enumHrdInstances(const UnicodeString& classID);
   void addHrd(std::unique_ptr<HrdNode> hrd);
   const HrdNode& getHrdNode(const UnicodeString& classID, const UnicodeString& nameID);
-
-  ParserFactory(const ParserFactory&) = delete;
-  ParserFactory operator=(const ParserFactory&) = delete;
-  ParserFactory(ParserFactory&&) = delete;
-  ParserFactory& operator=(ParserFactory&&) = delete;
 
  private:
   class Impl;

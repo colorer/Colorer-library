@@ -48,14 +48,17 @@ int FileType::getParamValueInt(const UnicodeString& name, int def_value) const
   return pimpl->getParamValueInt(name, def_value);
 }
 
-void FileType::addParam(const UnicodeString* name)
+void FileType::addParam(const UnicodeString* name, const UnicodeString* value)
 {
-  pimpl->addParam(name);
+  if (name == nullptr || value == nullptr) {
+    throw FileTypeException("Parameter must have not empty name and value");
+  }
+  pimpl->addParam(*name, *value);
 }
 
-void FileType::addParam(const UnicodeString& name)
+void FileType::addParam(const UnicodeString& name, const UnicodeString& value)
 {
-  pimpl->addParam(&name);
+  pimpl->addParam(name, value);
 }
 
 size_t FileType::getParamCount() const
