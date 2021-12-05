@@ -1,9 +1,10 @@
-## [1.3.0] - 2021-XX-XX
+## [1.3.0] - 2021-05-12
 
 ### Added
 
-- Add work with symlinks. If file is symlink, for example catalog.xml, we work with real file and full path for it ([#10](https://github.com/colorer/Colorer-library/issues/10))
+- Add work with symlinks. If file is symlink, for example catalog.xml, we work with real file and full path to it ([#10](https://github.com/colorer/Colorer-library/issues/10))
 - Add work with system environments in path to files
+- Add work with zip entity. Support new type of schemes 'allpacked'
 
 ### Changed
 
