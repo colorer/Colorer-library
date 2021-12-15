@@ -1525,6 +1525,7 @@ void CRegExp::clearRegExpStack()
 {
   CRegExp::RegExpStack_Size = 0;
   delete[] CRegExp::RegExpStack;
+  CRegExp::RegExpStack = nullptr;
 }
 
 #ifndef NAMED_MATCHES_IN_HASH
