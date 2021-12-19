@@ -24,9 +24,10 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
   ref_count = 1;
   input_source = std::move(source);
   auto pStream = input_source->makeStream();
-  std::unique_ptr<xercesc::BinFileInputStream> bfis(dynamic_cast<xercesc::BinFileInputStream*>(pStream));
+  std::unique_ptr<xercesc::BinFileInputStream> bfis(
+      dynamic_cast<xercesc::BinFileInputStream*>(pStream));
   if (bfis == nullptr) {
-    throw InputSourceException("can`t read " + *input_source->getPath());
+    throw InputSourceException("can`t read " + input_source->getPath());
   }
   mSize = static_cast<XMLSize_t>(bfis->getSize());
   mSrc.reset(new XMLByte[mSize]);
@@ -36,14 +37,15 @@ SharedXmlInputSource::SharedXmlInputSource(uXmlInputSource source)
 SharedXmlInputSource::~SharedXmlInputSource()
 {
   //не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
-  isHash->erase(*input_source->getPath());
+  isHash->erase(input_source->getPath());
   if (isHash->empty()) {
     delete isHash;
     isHash = nullptr;
   }
 }
 
-SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* path, const XMLCh* base)
+SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* path,
+                                                                 const XMLCh* base)
 {
   uXmlInputSource tempis = XmlInputSource::newInstance(path, base);
 
@@ -57,7 +59,8 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const XMLCh* pa
     SharedXmlInputSource* sis = s->second;
     sis->addref();
     return sis;
-  } else {
+  }
+  else {
     auto* sis = new SharedXmlInputSource(std::move(tempis));
     isHash->emplace(std::make_pair(d_id, sis));
     return sis;

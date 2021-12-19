@@ -75,7 +75,7 @@ class FileType::Impl
   double getPriority(const UnicodeString* fileName, const UnicodeString* fileContent) const;
 
   /// is type component loaded
-  bool type_loaded {false};
+  bool type_loading {false};
   /// is type references fully resolved
   bool loadDone {false};
   /// is initial type load failed

@@ -1,5 +1,5 @@
-#ifndef _COLORER_REGION_H_
-#define _COLORER_REGION_H_
+#ifndef COLORER_REGION_H
+#define COLORER_REGION_H
 
 #include "colorer/Common.h"
 
@@ -17,14 +17,14 @@ class Region
 {
  public:
   /** Full Qualified region name (<code>def:Text</code> for example) */
-  [[nodiscard]] virtual const UnicodeString* getName() const
+  [[nodiscard]] virtual const UnicodeString& getName() const
   {
-    return name.get();
+    return *name;
   }
   /** Region description */
-  [[nodiscard]] virtual const UnicodeString* getDescription() const
+  [[nodiscard]] virtual const UnicodeString& getDescription() const
   {
-    return description.get();
+    return *description;
   }
   /** Direct region ancestor (parent) */
   [[nodiscard]] virtual const Region* getParent() const
@@ -57,9 +57,10 @@ class Region
     Basic constructor.
     Used only by HrcLibrary.
   */
-  Region(const UnicodeString* _name, const UnicodeString* _description, const Region* _parent, size_t _id)
+  Region(const UnicodeString& _name, const UnicodeString* _description, const Region* _parent,
+         size_t _id)
   {
-    name = std::make_unique<UnicodeString>(*_name);
+    name = std::make_unique<UnicodeString>(_name);
     if (_description != nullptr) {
       description = std::make_unique<UnicodeString>(*_description);
     }
@@ -81,4 +82,4 @@ class Region
   size_t id;
 };
 
-#endif
+#endif  // COLORER_REGION_H

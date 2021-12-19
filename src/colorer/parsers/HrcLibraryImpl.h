@@ -80,7 +80,7 @@ class HrcLibrary::Impl
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
-  UnicodeString* qualifyOwnName(const UnicodeString* name);
+  uUnicodeString qualifyOwnName(const UnicodeString& name);
   bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
                       bool logErrors);
   UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,

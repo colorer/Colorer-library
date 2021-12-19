@@ -1,5 +1,5 @@
-#ifndef _COLORER_SCHEME_H_
-#define _COLORER_SCHEME_H_
+#ifndef COLORER_SCHEME_H
+#define COLORER_SCHEME_H
 
 #include "colorer/Common.h"
 class FileType;
@@ -10,12 +10,12 @@ class FileType;
 */
 class Scheme
 {
-public:
+ public:
   /** Full qualified schema name.
-  */
+   */
   [[nodiscard]] virtual const UnicodeString* getName() const = 0;
   /** Returns reference to FileType, this scheme belongs to.
-  */
+   */
   [[nodiscard]] virtual FileType* getFileType() const = 0;
 
   virtual ~Scheme() = default;
@@ -23,10 +23,9 @@ public:
   Scheme(const Scheme&) = delete;
   Scheme& operator=(const Scheme&) = delete;
   Scheme& operator=(Scheme&&) = delete;
-protected:
+
+ protected:
   Scheme() = default;
 };
 
-#endif
-
-
+#endif  // COLORER_SCHEME_H

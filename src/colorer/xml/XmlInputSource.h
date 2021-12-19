@@ -43,7 +43,7 @@ class XmlInputSource : public xercesc::InputSource
 
   static bool isUriFile(const UnicodeString& path, const UnicodeString* base = nullptr);
 
-  [[nodiscard]] UnicodeString* getPath() const;
+  [[nodiscard]] UnicodeString& getPath() const;
 
   XmlInputSource(XmlInputSource const&) = delete;
   XmlInputSource& operator=(XmlInputSource const&) = delete;

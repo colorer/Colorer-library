@@ -29,7 +29,7 @@ const RegionDefine* RegionMapper::getRegionDefine(const Region* region) const
     regionDefinesCache.resize(region->getID() * 2);
   }
 
-  auto rd_new = regionDefines.find(*region->getName());
+  auto rd_new = regionDefines.find(region->getName());
   if (rd_new != regionDefines.end()) {
     regionDefinesCache.at(region->getID()) = rd_new->second.get();
     return rd_new->second.get();

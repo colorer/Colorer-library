@@ -1,7 +1,9 @@
 #include "colorer/viewer/ParsedLineWriter.h"
 
-void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                                  const UnicodeString* line, LineRegion* lineRegions)
+void ParsedLineWriter::tokenWrite(
+    Writer* markupWriter, Writer* textWriter,
+    std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/, const UnicodeString* line,
+    LineRegion* lineRegions)
 {
   int pos = 0;
   for (LineRegion* l1 = lineRegions; l1; l1 = l1->next) {
@@ -18,9 +20,10 @@ void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std:
     }
     markupWriter->write("<span class='");
 
-    const Region* region = l1->region;
+    auto region = l1->region;
     while (region != nullptr) {
-      UnicodeString token = UnicodeString(*region->getName()).findAndReplace(":", "-").findAndReplace(".", "-");
+      UnicodeString token =
+          UnicodeString(region->getName()).findAndReplace(":", "-").findAndReplace(".", "-");
       markupWriter->write(token);
       region = region->getParent();
       if (region != nullptr) {
@@ -38,8 +41,10 @@ void ParsedLineWriter::tokenWrite(Writer* markupWriter, Writer* textWriter, std:
   }
 }
 
-void ParsedLineWriter::markupWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/,
-                                   const UnicodeString* line, LineRegion* lineRegions)
+void ParsedLineWriter::markupWrite(
+    Writer* markupWriter, Writer* textWriter,
+    std::unordered_map<UnicodeString, UnicodeString*>* /*docLinkHash*/, const UnicodeString* line,
+    LineRegion* lineRegions)
 {
   int pos = 0;
   for (LineRegion* l1 = lineRegions; l1; l1 = l1->next) {
@@ -71,7 +76,8 @@ void ParsedLineWriter::markupWrite(Writer* markupWriter, Writer* textWriter, std
   }
 }
 
-void ParsedLineWriter::htmlRGBWrite(Writer* markupWriter, Writer* textWriter, std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash,
+void ParsedLineWriter::htmlRGBWrite(Writer* markupWriter, Writer* textWriter,
+                                    std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash,
                                     const UnicodeString* line, LineRegion* lineRegions)
 {
   int pos = 0;
@@ -88,12 +94,14 @@ void ParsedLineWriter::htmlRGBWrite(Writer* markupWriter, Writer* textWriter, st
       pos = l1->start;
     }
     if (!docLinkHash->empty())
-      writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start), true);
+      writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start),
+                true);
     writeStart(markupWriter, l1->styled());
     textWriter->write(line, pos, end - l1->start);
     writeEnd(markupWriter, l1->styled());
     if (!docLinkHash->empty())
-      writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start), false);
+      writeHref(markupWriter, docLinkHash, l1->scheme, UnicodeString(*line, pos, end - l1->start),
+                false);
     pos += end - l1->start;
   }
   if (pos < line->length()) {
@@ -138,8 +146,9 @@ void ParsedLineWriter::writeEnd(Writer* writer, const StyledRegion* lr)
   writer->write("</span>");
 }
 
-void ParsedLineWriter::writeHref(Writer* writer, std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash, const Scheme* scheme,
-                                 const UnicodeString& token, bool start)
+void ParsedLineWriter::writeHref(Writer* writer,
+                                 std::unordered_map<UnicodeString, UnicodeString*>* docLinkHash,
+                                 const Scheme* scheme, const UnicodeString& token, bool start)
 {
   UnicodeString* url = nullptr;
   if (scheme != nullptr) {

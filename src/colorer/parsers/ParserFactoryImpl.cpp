@@ -80,7 +80,7 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path,
   try {
     hrc_library->loadSource(dfis.get());
   } catch (Exception& e) {
-    spdlog::error("Can't load hrc: {0}", *dfis->getPath());
+    spdlog::error("Can't load hrc: {0}", dfis->getPath());
     spdlog::error("{0}", e.what());
   }
 }

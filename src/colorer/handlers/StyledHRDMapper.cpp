@@ -23,7 +23,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
   xml_parser.parse(*is.getInputSource());
 
   if (error_handler.getSawErrors()) {
-    throw Exception("Error loading HRD file '" + *is.getPath() + "'");
+    throw Exception("Error loading HRD file '" + is.getPath() + "'");
   }
 
   xercesc::DOMDocument* hrdbase = xml_parser.getDocument();
@@ -31,7 +31,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
 
   if (!hbase || !xercesc::XMLString::equals(hbase->getNodeName(), hrdTagHrd)) {
     throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " +
-                    *is.getPath());
+                    is.getPath());
   }
 
   for (xercesc::DOMNode* curel = hbase->getFirstChild(); curel; curel = curel->getNextSibling()) {
@@ -48,7 +48,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
         auto rd_new = regionDefines.find(name);
         if (rd_new != regionDefines.end()) {
           spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
-                       *is.getPath());
+                       is.getPath());
           regionDefines.erase(rd_new);
         }
 
