@@ -72,7 +72,7 @@ void HrcLibrary::Impl::unloadFileType(FileType* filetype)
       break;
     }
   }
-  fileTypeHash.erase(*filetype->getName());
+  fileTypeHash.erase(filetype->getName());
   delete filetype;
 }
 
@@ -276,15 +276,9 @@ void HrcLibrary::Impl::addPrototype(const xercesc::DOMElement* elem)
     spdlog::warn("Duplicate prototype '{0}'. First version unloaded, current is loading.", tname);
   }
 
-  auto* type = new FileType();
+  auto* type = new FileType(tname, UStr::isEmpty(typeGroup) ? tname : typeGroup,
+                            UStr::isEmpty(typeDescription) ? tname : typeDescription);
   auto& ptype = type->pimpl;
-
-  ptype->name = std::make_unique<UnicodeString>(tname);
-  ptype->group = UStr::isEmpty(typeGroup) ? std::make_unique<UnicodeString>(*ptype->name)
-                                          : std::make_unique<UnicodeString>(typeGroup);
-  ptype->description = UStr::isEmpty(typeDescription)
-      ? std::make_unique<UnicodeString>(*ptype->name)
-      : std::make_unique<UnicodeString>(typeDescription);
 
   if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagPackage)) {
     ptype->isPackage = true;
@@ -323,7 +317,7 @@ void HrcLibrary::Impl::parsePrototypeBlock(const xercesc::DOMElement* elem,
         }
         else {
           spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.",
-                       UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name,
+                       UStr::to_stdstr(elem->getNodeName()), current_parse_prototype->pimpl->name,
                        current_input_source->getPath());
         }
       }
@@ -337,7 +331,7 @@ void HrcLibrary::Impl::addPrototypeLocation(const xercesc::DOMElement* elem,
   const XMLCh* locationLink = elem->getAttribute(hrcLocationAttrLink);
   if (UStr::isEmpty(locationLink)) {
     spdlog::error("Bad 'location' link attribute in prototype '{0}'",
-                  *current_parse_prototype->pimpl->name);
+                  current_parse_prototype->pimpl->name);
     return;
   }
   current_parse_prototype->pimpl->inputSource = current_input_source->createRelative(locationLink);
@@ -350,13 +344,13 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
       elem->getFirstChild()->getNodeType() != xercesc::DOMNode::TEXT_NODE)
   {
     spdlog::warn("Bad '{0}' element in prototype '{1}'", UStr::to_stdstr(elem->getNodeName()),
-                 *current_parse_prototype->pimpl->name);
+                 current_parse_prototype->pimpl->name);
     return;
   }
   auto elem_text = dynamic_cast<xercesc::DOMText*>(elem->getFirstChild());
   if (!elem_text) {
     spdlog::error("Fault read value of {0} in {1}", UStr::to_stdstr(elem->getNodeName()),
-                  *current_parse_prototype->pimpl->name);
+                  current_parse_prototype->pimpl->name);
     return;
   }
 
@@ -365,7 +359,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
   matchRE->setPositionMoves(true);
   if (!matchRE->isOk()) {
     spdlog::warn("Fault compiling chooser RE '{0}' in prototype '{1}'", dmatch,
-                 *current_parse_prototype->pimpl->name);
+                 current_parse_prototype->pimpl->name);
     return;
   }
   auto ctype = xercesc::XMLString::equals(elem->getNodeName(), hrcTagFilename)
@@ -389,12 +383,11 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
       spdlog::warn(
           "Weight '{0}' is not valid for the prototype '{1}'. Message: {2}. Default value will be "
           "used. Current file {3}.",
-          UStr::to_stdstr(weight), *current_parse_prototype->getName(),
+          UStr::to_stdstr(weight), current_parse_prototype->getName(),
           UStr::to_stdstr(toCatch.getMessage()), current_input_source->getPath());
     }
   }
-  auto ftc = std::make_unique<FileTypeChooser>(ctype, prior, matchRE.release());
-  current_parse_prototype->pimpl->chooserVector.emplace_back(std::move(ftc));
+  current_parse_prototype->pimpl->chooserVector.emplace_back(ctype, prior, matchRE.release());
 }
 
 void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem,
@@ -408,18 +401,18 @@ void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem,
           auto value = subelem->getAttribute(hrcParamAttrValue);
           auto descr = subelem->getAttribute(hrcParamAttrDescription);
           if (UStr::isEmpty(name) || UStr::isEmpty(value)) {
-            spdlog::warn("Bad parameter in prototype '{0}'", *current_parse_prototype->getName());
+            spdlog::warn("Bad parameter in prototype '{0}'", current_parse_prototype->getName());
             continue;
           }
           auto& tp =
               current_parse_prototype->pimpl->addParam(UnicodeString(name), UnicodeString(value));
           if (!UStr::isEmpty(descr)) {
-            tp.description = std::make_unique<UnicodeString>(descr);
+            tp.description.emplace(descr);
           }
         }
         else {
           spdlog::warn("Unused element '{0}' in prototype '{1}'. Current file {2}.",
-                       UStr::to_stdstr(elem->getNodeName()), *current_parse_prototype->pimpl->name,
+                       UStr::to_stdstr(elem->getNodeName()), current_parse_prototype->pimpl->name,
                        current_input_source->getPath());
         }
       }
@@ -458,7 +451,7 @@ void HrcLibrary::Impl::addType(const xercesc::DOMElement* elem)
 
   parseTypeBlock(elem);
 
-  auto baseSchemeName = qualifyOwnName(*type->getName());
+  auto baseSchemeName = qualifyOwnName(type->getName());
   if (baseSchemeName != nullptr) {
     auto sh = schemeHash.find(*baseSchemeName);
     type->pimpl->baseScheme = sh == schemeHash.end() ? nullptr : sh->second;
@@ -514,7 +507,7 @@ void HrcLibrary::Impl::addTypeRegion(const xercesc::DOMElement* elem)
   }
   if (regionNamesHash.find(*qname1) != regionNamesHash.end()) {
     spdlog::warn("Duplicate region '{0}' definition in type '{1}'", *qname1,
-                 *current_parse_type->getName());
+                 current_parse_type->getName());
     return;
   }
 
@@ -526,7 +519,7 @@ void HrcLibrary::Impl::addTypeRegion(const xercesc::DOMElement* elem)
   const Region* region =
       new Region(*qname1, &regiondescr, getRegion(qname2), regionNamesVector.size());
   regionNamesVector.push_back(region);
-  regionNamesHash.emplace(std::make_pair(*qname1, region));
+  regionNamesHash.emplace(*qname1, region);
 
   delete qname2;
 }
@@ -543,7 +536,7 @@ void HrcLibrary::Impl::addTypeEntity(const xercesc::DOMElement* elem)
   auto qname1 = qualifyOwnName(UnicodeString(entityName));
   uUnicodeString qname2 = useEntities(&dentityValue);
   if (qname1 != nullptr && qname2 != nullptr) {
-    schemeEntitiesHash.emplace(std::make_pair(*qname1, qname2.release()));
+    schemeEntitiesHash.emplace(*qname1, qname2.release());
   }
 }
 
@@ -553,10 +546,10 @@ void HrcLibrary::Impl::addTypeImport(const xercesc::DOMElement* elem)
   UnicodeString typeparam = UnicodeString(typeParam);
   if (UStr::isEmpty(typeParam) || fileTypeHash.find(typeparam) == fileTypeHash.end()) {
     spdlog::error("Import with bad '{0}' attribute in type '{1}'", typeparam,
-                  *current_parse_type->pimpl->name);
+                  current_parse_type->pimpl->name);
     return;
   }
-  current_parse_type->pimpl->importVector.emplace_back(new UnicodeString(typeParam));
+  current_parse_type->pimpl->importVector.emplace_back(typeParam);
 }
 
 void HrcLibrary::Impl::addScheme(const xercesc::DOMElement* elem)
@@ -566,7 +559,7 @@ void HrcLibrary::Impl::addScheme(const xercesc::DOMElement* elem)
   // todo check schemeName
   auto qSchemeName = qualifyOwnName(dschemeName);
   if (qSchemeName == nullptr) {
-    spdlog::error("bad scheme name in type '{0}'", *current_parse_type->pimpl->name.get());
+    spdlog::error("bad scheme name in type '{0}'", current_parse_type->pimpl->name);
     return;
   }
   if (schemeHash.find(*qSchemeName) != schemeHash.end() ||
@@ -579,8 +572,7 @@ void HrcLibrary::Impl::addScheme(const xercesc::DOMElement* elem)
   auto* scheme = new SchemeImpl(qSchemeName.get());
   scheme->fileType = current_parse_type;
 
-  std::pair<UnicodeString, SchemeImpl*> pp(*scheme->getName(), scheme);
-  schemeHash.emplace(pp);
+  schemeHash.emplace(*scheme->getName(), scheme);
   const XMLCh* condIf = elem->getAttribute(hrcSchemeAttrIf);
   const XMLCh* condUnless = elem->getAttribute(hrcSchemeAttrUnless);
   const UnicodeString* p1 = current_parse_type->getParamValue(UnicodeString(condIf));
@@ -1066,9 +1058,9 @@ void HrcLibrary::Impl::updateLinks()
 uUnicodeString HrcLibrary::Impl::qualifyOwnName(const UnicodeString& name)
 {
   if (auto colon = name.indexOf(':') != -1) {
-    if (UnicodeString(name, 0, colon).compare(*current_parse_type->pimpl->name) != 0) {
+    if (UnicodeString(name, 0, colon).compare(current_parse_type->pimpl->name) != 0) {
       spdlog::error("type name qualifer in '{0}' doesn't match current type '{1}'", name,
-                    *current_parse_type->pimpl->name);
+                    current_parse_type->pimpl->name);
       return nullptr;
     }
     else {
@@ -1076,7 +1068,7 @@ uUnicodeString HrcLibrary::Impl::qualifyOwnName(const UnicodeString& name)
     }
   }
   else {
-    auto sbuf = std::make_unique<UnicodeString>(*current_parse_type->getName());
+    auto sbuf = std::make_unique<UnicodeString>(current_parse_type->getName());
     sbuf->append(":").append(name);
     return sbuf;
   }
@@ -1089,7 +1081,7 @@ bool HrcLibrary::Impl::checkNameExist(const UnicodeString* name, FileType* parse
   {
     if (logErrors)
       spdlog::error("region '{0}', referenced in type '{1}', is not defined", *name,
-                    *parseType->pimpl->name.get());
+                    parseType->pimpl->name);
     return false;
   }
   else if (qntype == QualifyNameType::QNT_ENTITY &&
@@ -1097,13 +1089,13 @@ bool HrcLibrary::Impl::checkNameExist(const UnicodeString* name, FileType* parse
   {
     if (logErrors)
       spdlog::error("entity '{0}', referenced in type '{1}', is not defined", *name,
-                    *parseType->pimpl->name.get());
+                    parseType->pimpl->name);
     return false;
   }
   else if (qntype == QualifyNameType::QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
     if (logErrors)
       spdlog::error("scheme '{0}', referenced in type '{1}', is not defined", *name,
-                    *parseType->pimpl->name.get());
+                    parseType->pimpl->name);
     return false;
   }
   return true;
@@ -1143,16 +1135,16 @@ UnicodeString* HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name,
          idx < static_cast<int>(current_parse_type->pimpl->importVector.size());
          idx++)
     {
-      const UnicodeString* tname = current_parse_type->getName();
+      auto tname = current_parse_type->getName();
       if (idx > -1) {
-        tname = current_parse_type->pimpl->importVector.at(idx).get();
+        tname = current_parse_type->pimpl->importVector.at(idx);
       }
-      FileType* importer = fileTypeHash.find(*tname)->second;
+      FileType* importer = fileTypeHash.find(tname)->second;
       if (!importer->pimpl->type_loading) {
         loadFileType(importer);
       }
 
-      auto qname = std::make_unique<UnicodeString>(*tname);
+      auto qname = std::make_unique<UnicodeString>(tname);
       qname->append(":").append(*name);
       if (checkNameExist(qname.get(), importer, qntype, false)) {
         return qname.release();

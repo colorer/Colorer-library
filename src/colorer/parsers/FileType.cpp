@@ -1,19 +1,23 @@
 #include "colorer/FileType.h"
 #include "colorer/parsers/FileTypeImpl.h"
 
-FileType::FileType() : pimpl(spimpl::make_unique_impl<Impl>()) {}
+FileType::FileType(UnicodeString name, UnicodeString group, UnicodeString description)
+    : pimpl(
+          spimpl::make_unique_impl<Impl>(std::move(name), std::move(group), std::move(description)))
+{
+}
 
-const UnicodeString* FileType::getName() const
+const UnicodeString& FileType::getName() const
 {
   return pimpl->getName();
 }
 
-const UnicodeString* FileType::getGroup() const
+const UnicodeString& FileType::getGroup() const
 {
   return pimpl->getGroup();
 }
 
-const UnicodeString* FileType::getDescription() const
+const UnicodeString& FileType::getDescription() const
 {
   return pimpl->getDescription();
 }

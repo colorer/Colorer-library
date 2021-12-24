@@ -12,14 +12,14 @@ TEST_CASE("Create FileType and set base properties")
   UnicodeString name("TestType");
   UnicodeString group("TestGroup");
   UnicodeString description("TestDescription");
-  FileType file_type;
+  FileType file_type(name, group, description);
   file_type.setName(&name);
   file_type.setGroup(&group);
   file_type.setDescription(&description);
 
-  CHECK(name.compare(*file_type.getName()) == 0);
-  CHECK(group.compare(*file_type.getGroup()) == 0);
-  CHECK(description.compare(*file_type.getDescription()) == 0);
+  CHECK(name.compare(file_type.getName()) == 0);
+  CHECK(group.compare(file_type.getGroup()) == 0);
+  CHECK(description.compare(file_type.getDescription()) == 0);
 }
 
 SCENARIO("Set param value for FileType")
@@ -29,14 +29,18 @@ SCENARIO("Set param value for FileType")
   UnicodeString def_value2("dvalue1");
   UnicodeString user_value("value2");
 
+  UnicodeString name("TestType");
+  UnicodeString group("TestGroup");
+  UnicodeString description("TestDescription");
+
   GIVEN("A simple FileType with one parameter")
   {
-    FileType file_type;
+    FileType file_type(name, group, description);
     REQUIRE_THROWS_AS(file_type.addParam(&param1, nullptr), FileTypeException);
   }
   GIVEN("A simple FileType with two parameter")
   {
-    FileType file_type;
+    FileType file_type(name, group, description);
     file_type.addParam(&param1, &def_value2);
 
     WHEN("set only default value for parameter")
@@ -123,7 +127,12 @@ TEST_CASE("Work with integer type of param value")
   UnicodeString value2("5");
   UnicodeString value3("5.5");
 
-  FileType file_type;
+  UnicodeString name("TestType");
+  UnicodeString group("TestGroup");
+  UnicodeString description("TestDescription");
+
+  FileType file_type(name, group, description);
+
   file_type.addParam(param1, def_value1);
   file_type.addParam(param2, def_value1);
   file_type.addParam(param3, def_value1);

@@ -113,7 +113,7 @@ void BaseEditor::remapLRS(bool recreate)
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  spdlog::debug("[BaseEditor] setFileType: {0}", *ftype->getName());
+  spdlog::debug("[BaseEditor] setFileType: {0}", ftype->getName());
   currentFileType = ftype;
   parserFactory->getHrcLibrary().loadFileType(ftype);
   textParser->setFileType(currentFileType);

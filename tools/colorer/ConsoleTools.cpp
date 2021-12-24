@@ -187,11 +187,11 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         break;
       }
       if (useNames) {
-        writer->write(*type->getName() + "\n");
+        writer->write(type->getName() + "\n");
       }
       else {
         if (type->getGroup() != nullptr) {
-          writer->write(*type->getGroup() + ": ");
+          writer->write(type->getGroup() + ": ");
         }
         writer->write(type->getDescription());
         writer->write("\n");
@@ -220,15 +220,14 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
         if (type == nullptr) {
           break;
         }
-        if (type->getDescription() &&
-            type->getDescription()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getDescription(), 0, typeDescription->length())
+        if (type->getDescription().length() >= typeDescription->length() &&
+            UnicodeString(type->getDescription(), 0, typeDescription->length())
                 .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
         {
           break;
         }
-        if (type->getName()->length() >= typeDescription->length() &&
-            UnicodeString(*type->getName(), 0, typeDescription->length())
+        if (type->getName().length() >= typeDescription->length() &&
+            UnicodeString(type->getName(), 0, typeDescription->length())
                 .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
         {
           break;

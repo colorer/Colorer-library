@@ -17,30 +17,30 @@ class FileType
   friend class TextParser;
 
  public:
-  FileType();
+  FileType(UnicodeString name, UnicodeString group, UnicodeString description);
 
   void addParam(const UnicodeString* name, const UnicodeString* value);
   void addParam(const UnicodeString& name, const UnicodeString& value);
-  void setName(const UnicodeString* name);
-  void setGroup(const UnicodeString* group);
-  void setDescription(const UnicodeString* description);
+  [[maybe_unused]] void setName(const UnicodeString* name);
+  [[maybe_unused]] void setGroup(const UnicodeString* group);
+  [[maybe_unused]] void setDescription(const UnicodeString* description);
 
   /**
    * Public name of file type (HRC 'name' attribute).
    * @return File type Name
    */
-  [[nodiscard]] const UnicodeString* getName() const;
+  [[nodiscard]] const UnicodeString& getName() const;
 
   /**
    * Public group name of file type (HRC 'group' attribute).
    * @return File type Group
    */
-  [[nodiscard]] const UnicodeString* getGroup() const;
+  [[nodiscard]] const UnicodeString& getGroup() const;
 
   /** Public description of file type (HRC 'description' attribute).
       @return File type Description
   */
-  [[nodiscard]] const UnicodeString* getDescription() const;
+  [[nodiscard]] const UnicodeString& getDescription() const;
 
   /** Returns the base scheme of this file type.
       Basically, this is the scheme with same public name, as it's type.

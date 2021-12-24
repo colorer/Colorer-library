@@ -1,6 +1,7 @@
 #ifndef COLORER_FILETYPEIMPL_H
 #define COLORER_FILETYPEIMPL_H
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 #include "colorer/FileType.h"
@@ -12,19 +13,17 @@
 class TypeParameter
 {
  public:
-  TypeParameter(const UnicodeString& t_name, const UnicodeString& t_value)
-  {
-    name = std::make_unique<UnicodeString>(t_name);
-    value = std::make_unique<UnicodeString>(t_value);
-  }
+  TypeParameter(UnicodeString t_name, UnicodeString t_value)
+      : name(std::move(t_name)), value(std::move(t_value)) {};
+
   /* parameter name*/
-  uUnicodeString name;
+  UnicodeString name;
   /* parameter description*/
-  uUnicodeString description;
+  std::optional<UnicodeString> description;
   /* default value*/
-  uUnicodeString value;
+  UnicodeString value;
   /* user value*/
-  uUnicodeString user_value;
+  std::optional<UnicodeString> user_value;
 };
 
 /**
@@ -35,9 +34,11 @@ class TypeParameter
 class FileType::Impl
 {
  public:
-  [[nodiscard]] const UnicodeString* getName() const;
-  [[nodiscard]] const UnicodeString* getGroup() const;
-  [[nodiscard]] const UnicodeString* getDescription() const;
+  Impl(UnicodeString name, UnicodeString group, UnicodeString description);
+
+  [[nodiscard]] const UnicodeString& getName() const;
+  [[nodiscard]] const UnicodeString& getGroup() const;
+  [[nodiscard]] const UnicodeString& getDescription() const;
 
   void setName(const UnicodeString* param_name);
   void setGroup(const UnicodeString* group_name);
@@ -83,15 +84,15 @@ class FileType::Impl
   /// is this IS loading was started
   bool input_source_loading {false};
 
-  uUnicodeString name;
-  uUnicodeString group;
-  uUnicodeString description;
+  UnicodeString name;
+  UnicodeString group;
+  UnicodeString description;
   bool isPackage {false};
   SchemeImpl* baseScheme {nullptr};
 
-  std::vector<std::unique_ptr<FileTypeChooser>> chooserVector;
-  std::unordered_map<UnicodeString, std::unique_ptr<TypeParameter>> paramsHash;
-  std::vector<uUnicodeString> importVector;
+  std::vector<FileTypeChooser> chooserVector;
+  std::unordered_map<UnicodeString, TypeParameter> paramsHash;
+  std::vector<UnicodeString> importVector;
   uXmlInputSource inputSource;
 };
 
