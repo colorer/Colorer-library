@@ -1316,8 +1316,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           break;
         case rea_RangeN_step2:
           action = -1;
-          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re,
-                       toParse);  //-V522
+          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, //-V522
+                       toParse);
           continue;
           break;
         case rea_RangeNM_step2:

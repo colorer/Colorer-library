@@ -1057,7 +1057,8 @@ void HrcLibrary::Impl::updateLinks()
 
 uUnicodeString HrcLibrary::Impl::qualifyOwnName(const UnicodeString& name)
 {
-  if (auto colon = name.indexOf(':') != -1) {
+  auto colon = name.indexOf(':');
+  if (colon != -1) {
     if (UnicodeString(name, 0, colon).compare(current_parse_type->pimpl->name) != 0) {
       spdlog::error("type name qualifer in '{0}' doesn't match current type '{1}'", name,
                     current_parse_type->pimpl->name);
