@@ -14,14 +14,15 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports"
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/external/vcpkg-triplets"
       },
       "environment": {
         "VCPKG_FEATURE_FLAGS": "manifests,versions"
       }
     },
     {
-      "name": "x64-debug",
+      "name": "x64-vc",
       "description": "Sets x64 arch, compilers, build type",
       "inherits": [
         "base"
@@ -31,7 +32,6 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "cl",
         "VCPKG_TARGET_TRIPLET": "x64-windows-static",
         "COLORER_BUILD_ARCH": "x64",
@@ -39,7 +39,7 @@
       }
     },
     {
-      "name": "x86-debug",
+      "name": "x86-vc",
       "description": "Sets x86 arch, compilers, build type",
       "inherits": [
         "base"
@@ -49,7 +49,6 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "cl",
         "VCPKG_TARGET_TRIPLET": "x86-windows-static",
         "COLORER_BUILD_ARCH": "x86",
@@ -57,10 +56,40 @@
       }
     },
     {
-      "name": "x64-debug-trace",
+      "name": "x64-vc-debug",
       "description": "enable deep trace",
       "inherits": [
-        "x64-debug"
+        "x64-vc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "x86-vc-debug",
+      "description": "enable deep trace",
+      "inherits": [
+        "x86-vc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "x64-vc-release",
+      "description": "x64 release",
+      "inherits": [
+        "x64-vc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "x64-vc-debug-trace",
+      "description": "enable deep trace",
+      "inherits": [
+        "x64-vc-debug"
       ],
       "cacheVariables": {
         "COLORER_USE_DEEPTRACE": "ON"
@@ -69,18 +98,23 @@
   ],
   "buildPresets": [
     {
-      "name": "x64",
-      "configurePreset": "x64-debug",
+      "name": "x64-vc-debug",
+      "configurePreset": "x64-vc-debug",
       "inheritConfigureEnvironment": true
     },
     {
-      "name": "x86",
-      "configurePreset": "x86-debug",
+      "name": "x86-vc-debug",
+      "configurePreset": "x86-vc-debug",
       "inheritConfigureEnvironment": true
     },
     {
-      "name": "x64-trace",
-      "configurePreset": "x64-debug-trace",
+      "name": "x64-vc-trace",
+      "configurePreset": "x64-vc-debug-trace",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "x64-vc-release",
+      "configurePreset": "x64-vc-release",
       "inheritConfigureEnvironment": true
     }
   ]
