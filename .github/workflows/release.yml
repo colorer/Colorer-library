@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get version
         id: get_version
@@ -55,7 +55,7 @@ jobs:
           tar -czvf ${{ env.colorer_name }} -C ./install/colorer/bin colorer
 
       - name: Upload result to cache
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: result
           path: ./build/*.tar.gz
@@ -80,7 +80,7 @@ jobs:
     runs-on: windows-2019
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
           fetch-depth: 0
@@ -152,7 +152,7 @@ jobs:
           7z a ${{ env.colorer_name }} ./install/colorer/bin/colorer.exe
 
       - name: Upload result to cache
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: result
           path: ./build/*.7z
