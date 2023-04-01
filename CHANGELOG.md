@@ -1,3 +1,9 @@
+## [1.3.1] - 2023-04-01
+
+### Fixed
+
+- Work with catalog.xml on fat32 filesystem ([#26](https://github.com/colorer/Colorer-library/issues/26))
+
 ## [1.3.0] - 2021-05-12
 
 ### Added
