@@ -1,7 +1,7 @@
 # Colorer library
 
 Colorer is a syntax highlighting library.
-[![build](https://github.com/colorer/Colorer-library/workflows/build/colorer_ci.yml/badge.svg)](https://github.com/colorer/Colorer-library/actions/workflows/colorer_ci.yml)
+[![build](https://github.com/colorer/Colorer-library/actions/workflows/colorer_ci.yml/badge.svg)](https://github.com/colorer/Colorer-library/actions/workflows/colorer_ci.yml)
 
 ## How to build from source
 
