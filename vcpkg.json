@@ -4,11 +4,15 @@
   "dependencies": [
     {
       "name": "xerces-c",
-      "version>=": "3.2.4#2"
+      "version>=": "3.2.5#0"
     },
     {
       "name": "spdlog",
-      "version>=": "1.11.0"
+      "version>=": "1.12.0"
+    },
+    {
+      "name": "fmt",
+      "version>=": "10.2.1"
     },
     "minizip",
     {
