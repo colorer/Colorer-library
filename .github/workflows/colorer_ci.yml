@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependency
         run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
@@ -60,10 +60,10 @@ jobs:
           - arch: x86
             triplet: x86-windows-static-rel
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # fetch all for vcpkg versions functionality

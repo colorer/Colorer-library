@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependency
         run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
@@ -51,7 +51,7 @@ jobs:
           tar -czvf ${{ env.colorer_name }} -C ./install/colorer/bin colorer
 
       - name: Upload result to cache
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: result
           path: ./build/*.tar.gz
@@ -73,20 +73,16 @@ jobs:
       X_VCPKG_NUGET_ID_PREFIX: 'colorer'
       VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Get version
-        id: get_version
-        uses: battila7/get-version-action@v2
-
       - name: Add C++ build tools to PATH
-        uses: ilammy/msvc-dev-cmd@v1.5.0
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
 
@@ -148,7 +144,7 @@ jobs:
           7z a ${{ env.colorer_name }} ./install/colorer/bin/colorer.exe
 
       - name: Upload result to cache
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: result
           path: ./build/*.7z
@@ -156,23 +152,19 @@ jobs:
 
   create-release:
     needs: [ubuntu-build, windows-build]
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
-
-      - name: Get version
-        id: get_version
-        uses: battila7/get-version-action@v2
+        uses: actions/checkout@v4
 
       - name: Download result
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: result
 
       - name: Create release
         shell: bash
-        run: gh release create ${{ steps.get_version.outputs.version }} -t "Colorer ${{ steps.get_version.outputs.version }}" -n "New version" ./*.7z ./*.tar.gz
+        run: gh release create ${{ github.ref_name }} -t "Colorer ${{ github.ref_name }}" -n "New version" ./*.7z ./*.tar.gz
         env:
           GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
