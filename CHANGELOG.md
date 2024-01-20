@@ -1,3 +1,9 @@
+## [1.3.2] - 2024-01-20
+
+### Fixed
+
+- Again: Work with catalog.xml on fat32 filesystem. Changed compiler version.
+
 ## [1.3.1] - 2023-04-01
 
 ### Fixed
