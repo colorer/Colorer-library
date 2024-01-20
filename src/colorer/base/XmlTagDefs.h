@@ -15,15 +15,15 @@
 </catalog>
 */
 
-const char16_t catTagCatalog[] = u"catalog\0";
-const char16_t catTagHrcSets[] = u"hrc-sets\0";
-const char16_t catTagLocation[] = u"location\0";
-const char16_t catLocationAttrLink[] = u"link\0";
-const char16_t catTagHrdSets[] = u"hrd-sets\0";
-const char16_t catTagHrd[] = u"hrd\0";
-const char16_t catHrdAttrClass[] = u"class\0";
-const char16_t catHrdAttrName[] = u"name\0";
-const char16_t catHrdAttrDescription[] = u"description\0";
+const XMLCh catTagCatalog[] = u"catalog\0";
+const XMLCh catTagHrcSets[] = u"hrc-sets\0";
+const XMLCh catTagLocation[] = u"location\0";
+const XMLCh catLocationAttrLink[] = u"link\0";
+const XMLCh catTagHrdSets[] = u"hrd-sets\0";
+const XMLCh catTagHrd[] = u"hrd\0";
+const XMLCh catHrdAttrClass[] = u"class\0";
+const XMLCh catHrdAttrName[] = u"name\0";
+const XMLCh catHrdAttrDescription[] = u"description\0";
 
 /* hrc file
 
@@ -63,71 +63,71 @@ const char16_t catHrdAttrDescription[] = u"description\0";
 </hrc>
 */
 
-const char16_t hrcTagHrc[] = u"hrc\0";
-const char16_t hrcHrcAttrVersion[] = u"version\0";
-const char16_t hrcTagAnnotation[] = u"annotation\0";
-const char16_t hrcTagPrototype[] = u"prototype\0";
-const char16_t hrcPrototypeAttrName[] = u"name\0";
-const char16_t hrcPrototypeAttrDescription[] = u"description\0";
-const char16_t hrcPrototypeAttrGroup[] = u"group\0";
-const char16_t hrcTagLocation[] = u"location\0";
-const char16_t hrcLocationAttrLink[] = u"link\0";
-const char16_t hrcTagFilename[] = u"filename\0";
-const char16_t hrcFilenameAttrWeight[] = u"weight\0";
-const char16_t hrcTagFirstline[] = u"firstline\0";
-const char16_t hrcFirstlineAttrWeight[] = u"weight\0";
-const char16_t hrcTagParametrs[] = u"parameters\0";
-const char16_t hrcTagParam[] = u"param\0";
-const char16_t hrcParamAttrName[] = u"name\0";
-const char16_t hrcParamAttrValue[] = u"value\0";
-const char16_t hrcParamAttrDescription[] = u"description\0";
-const char16_t hrcTagPackage[] = u"package\0";
-const char16_t hrcPackageAttrName[] = u"name\0";
-const char16_t hrcPackageAttrDescription[] = u"description\0";
-const char16_t hrcPackageAttrGroup[] = u"group\0";
-const char16_t hrcTagType[] = u"type\0";
-const char16_t hrcTypeAttrName[] = u"name\0";
-const char16_t hrcTagImport[] = u"import\0";
-const char16_t hrcImportAttrType[] = u"type\0";
-const char16_t hrcTagRegion[] = u"region\0";
-const char16_t hrcRegionAttrName[] = u"name\0";
-const char16_t hrcRegionAttrParent[] = u"parent\0";
-const char16_t hrcRegionAttrDescription[] = u"description\0";
-const char16_t hrcTagEntity[] = u"entity\0";
-const char16_t hrcEntityAttrName[] = u"name\0";
-const char16_t hrcEntityAttrValue[] = u"value\0";
-const char16_t hrcTagScheme[] = u"scheme\0";
-const char16_t hrcSchemeAttrName[] = u"name\0";
-const char16_t hrcSchemeAttrIf[] = u"if\0";
-const char16_t hrcSchemeAttrUnless[] = u"unless\0";
-const char16_t hrcTagKeywords[] = u"keywords\0";
-const char16_t hrcKeywordsAttrIgnorecase[] = u"ignorecase\0";
-const char16_t hrcKeywordsAttrPriority[] = u"priority\0";
-const char16_t hrcKeywordsAttrWorddiv[] = u"worddiv\0";
-const char16_t hrcKeywordsAttrRegion[] = u"region\0";
-const char16_t hrcTagWord[] = u"word\0";
-const char16_t hrcWordAttrName[] = u"name\0";
-const char16_t hrcWordAttrRegion[] = u"region\0";
-const char16_t hrcTagSymb[] = u"symb\0";
-const char16_t hrcSymbAttrName[] = u"name\0";
-const char16_t hrcSymbAttrRegion[] = u"region\0";
-const char16_t hrcTagRegexp[] = u"regexp\0";
-const char16_t hrcRegexpAttrMatch[] = u"match\0";
-const char16_t hrcRegexpAttrPriority[] = u"priority\0";
-const char16_t hrcRegexpAttrRegion[] = u"region\0";
-const char16_t hrcTagBlock[] = u"block\0";
-const char16_t hrcBlockAttrStart[] = u"start\0";
-const char16_t hrcBlockAttrEnd[] = u"end\0";
-const char16_t hrcBlockAttrScheme[] = u"scheme\0";
-const char16_t hrcBlockAttrPriority[] = u"priority\0";
-const char16_t hrcBlockAttrContentPriority[] = u"content-priority\0";
-const char16_t hrcBlockAttrInnerRegion[] = u"inner-region\0";
-const char16_t hrcBlockAttrMatch[] = u"match\0";
-const char16_t hrcTagInherit[] = u"inherit\0";
-const char16_t hrcInheritAttrScheme[] = u"scheme\0";
-const char16_t hrcTagVirtual[] = u"virtual\0";
-const char16_t hrcVirtualAttrScheme[] = u"scheme\0";
-const char16_t hrcVirtualAttrSubstScheme[] = u"subst-scheme\0";
+const XMLCh hrcTagHrc[] = u"hrc\0";
+const XMLCh hrcHrcAttrVersion[] = u"version\0";
+const XMLCh hrcTagAnnotation[] = u"annotation\0";
+const XMLCh hrcTagPrototype[] = u"prototype\0";
+const XMLCh hrcPrototypeAttrName[] = u"name\0";
+const XMLCh hrcPrototypeAttrDescription[] = u"description\0";
+const XMLCh hrcPrototypeAttrGroup[] = u"group\0";
+const XMLCh hrcTagLocation[] = u"location\0";
+const XMLCh hrcLocationAttrLink[] = u"link\0";
+const XMLCh hrcTagFilename[] = u"filename\0";
+const XMLCh hrcFilenameAttrWeight[] = u"weight\0";
+const XMLCh hrcTagFirstline[] = u"firstline\0";
+const XMLCh hrcFirstlineAttrWeight[] = u"weight\0";
+const XMLCh hrcTagParametrs[] = u"parameters\0";
+const XMLCh hrcTagParam[] = u"param\0";
+const XMLCh hrcParamAttrName[] = u"name\0";
+const XMLCh hrcParamAttrValue[] = u"value\0";
+const XMLCh hrcParamAttrDescription[] = u"description\0";
+const XMLCh hrcTagPackage[] = u"package\0";
+const XMLCh hrcPackageAttrName[] = u"name\0";
+const XMLCh hrcPackageAttrDescription[] = u"description\0";
+const XMLCh hrcPackageAttrGroup[] = u"group\0";
+const XMLCh hrcTagType[] = u"type\0";
+const XMLCh hrcTypeAttrName[] = u"name\0";
+const XMLCh hrcTagImport[] = u"import\0";
+const XMLCh hrcImportAttrType[] = u"type\0";
+const XMLCh hrcTagRegion[] = u"region\0";
+const XMLCh hrcRegionAttrName[] = u"name\0";
+const XMLCh hrcRegionAttrParent[] = u"parent\0";
+const XMLCh hrcRegionAttrDescription[] = u"description\0";
+const XMLCh hrcTagEntity[] = u"entity\0";
+const XMLCh hrcEntityAttrName[] = u"name\0";
+const XMLCh hrcEntityAttrValue[] = u"value\0";
+const XMLCh hrcTagScheme[] = u"scheme\0";
+const XMLCh hrcSchemeAttrName[] = u"name\0";
+const XMLCh hrcSchemeAttrIf[] = u"if\0";
+const XMLCh hrcSchemeAttrUnless[] = u"unless\0";
+const XMLCh hrcTagKeywords[] = u"keywords\0";
+const XMLCh hrcKeywordsAttrIgnorecase[] = u"ignorecase\0";
+const XMLCh hrcKeywordsAttrPriority[] = u"priority\0";
+const XMLCh hrcKeywordsAttrWorddiv[] = u"worddiv\0";
+const XMLCh hrcKeywordsAttrRegion[] = u"region\0";
+const XMLCh hrcTagWord[] = u"word\0";
+const XMLCh hrcWordAttrName[] = u"name\0";
+const XMLCh hrcWordAttrRegion[] = u"region\0";
+const XMLCh hrcTagSymb[] = u"symb\0";
+const XMLCh hrcSymbAttrName[] = u"name\0";
+const XMLCh hrcSymbAttrRegion[] = u"region\0";
+const XMLCh hrcTagRegexp[] = u"regexp\0";
+const XMLCh hrcRegexpAttrMatch[] = u"match\0";
+const XMLCh hrcRegexpAttrPriority[] = u"priority\0";
+const XMLCh hrcRegexpAttrRegion[] = u"region\0";
+const XMLCh hrcTagBlock[] = u"block\0";
+const XMLCh hrcBlockAttrStart[] = u"start\0";
+const XMLCh hrcBlockAttrEnd[] = u"end\0";
+const XMLCh hrcBlockAttrScheme[] = u"scheme\0";
+const XMLCh hrcBlockAttrPriority[] = u"priority\0";
+const XMLCh hrcBlockAttrContentPriority[] = u"content-priority\0";
+const XMLCh hrcBlockAttrInnerRegion[] = u"inner-region\0";
+const XMLCh hrcBlockAttrMatch[] = u"match\0";
+const XMLCh hrcTagInherit[] = u"inherit\0";
+const XMLCh hrcInheritAttrScheme[] = u"scheme\0";
+const XMLCh hrcTagVirtual[] = u"virtual\0";
+const XMLCh hrcVirtualAttrScheme[] = u"scheme\0";
+const XMLCh hrcVirtualAttrSubstScheme[] = u"subst-scheme\0";
 
 /* hrd file
 <hrd>
@@ -135,15 +135,15 @@ const char16_t hrcVirtualAttrSubstScheme[] = u"subst-scheme\0";
   <assign name="" stext="" etext="" sback="" eback=""/>
 </hrc>
 */
-const char16_t hrdTagHrd[] = u"hrd\0";
-const char16_t hrdTagAssign[] = u"assign\0";
-const char16_t hrdAssignAttrName[] = u"name\0";
-const char16_t hrdAssignAttrFore[] = u"fore\0";
-const char16_t hrdAssignAttrBack[] = u"back\0";
-const char16_t hrdAssignAttrStyle[] = u"style\0";
-const char16_t hrdAssignAttrSBack[] = u"sback\0";
-const char16_t hrdAssignAttrEBack[] = u"eback\0";
-const char16_t hrdAssignAttrSText[] = u"stext\0";
-const char16_t hrdAssignAttrEText[] = u"etext\0";
+const XMLCh hrdTagHrd[] = u"hrd\0";
+const XMLCh hrdTagAssign[] = u"assign\0";
+const XMLCh hrdAssignAttrName[] = u"name\0";
+const XMLCh hrdAssignAttrFore[] = u"fore\0";
+const XMLCh hrdAssignAttrBack[] = u"back\0";
+const XMLCh hrdAssignAttrStyle[] = u"style\0";
+const XMLCh hrdAssignAttrSBack[] = u"sback\0";
+const XMLCh hrdAssignAttrEBack[] = u"eback\0";
+const XMLCh hrdAssignAttrSText[] = u"stext\0";
+const XMLCh hrdAssignAttrEText[] = u"etext\0";
 
 #endif  // COLORER_XMLTAGDEFS_H
