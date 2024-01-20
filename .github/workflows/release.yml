@@ -16,10 +16,6 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Get version
-        id: get_version
-        uses: battila7/get-version-action@v2
-
       - name: Install dependency
         run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
 
@@ -45,8 +41,8 @@ jobs:
 
       - name: Set name for release archive
         run: |
-          echo "colorer_lib_name=colorer_lib.x64.${{ steps.get_version.outputs.version }}.tar.gz" >> $GITHUB_ENV
-          echo "colorer_name=colorer.x64.${{ steps.get_version.outputs.version }}.tar.gz" >> $GITHUB_ENV
+          echo "colorer_lib_name=colorer_lib.x64.${{ github.ref_name }}.tar.gz" >> $GITHUB_ENV
+          echo "colorer_name=colorer.x64.${{ github.ref_name }}.tar.gz" >> $GITHUB_ENV
 
       - name: pack plugin
         working-directory: build
@@ -141,8 +137,8 @@ jobs:
       - name: Set the pack file name
         shell: bash
         run: |
-          echo "colorer_lib_name=colorer_lib.${{ matrix.arch }}.${{ steps.get_version.outputs.version }}.7z" >> $GITHUB_ENV
-          echo "colorer_name=colorer.${{ matrix.arch }}.${{ steps.get_version.outputs.version }}.7z" >> $GITHUB_ENV
+          echo "colorer_lib_name=colorer_lib.${{ matrix.arch }}.${{ github.ref_name }}.7z" >> $GITHUB_ENV
+          echo "colorer_name=colorer.${{ matrix.arch }}.${{ github.ref_name }}.7z" >> $GITHUB_ENV
 
       - name: pack plugin
         shell: bash
