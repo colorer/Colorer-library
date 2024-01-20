@@ -171,7 +171,11 @@ target_link_libraries(colorer_lib
     )
 
 if(COLORER_FEATURE_JARINPUTSOURCE)
-  target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+    if(COLORER_USE_VCPKG)
+        target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
+    else()
+        target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+    endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)

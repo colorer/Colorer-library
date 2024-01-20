@@ -17,12 +17,12 @@
     "minizip",
     {
       "name": "icu",
-      "version>=": "72.1#1",
+      "version>=": "72.1#3",
       "default-features": false,
       "features": [
         "data-archive"
       ]
     }
   ],
-  "builtin-baseline": "d10d511f25620ca0f315cd83dcef6485efc63010"
+  "builtin-baseline": "53bef8994c541b6561884a8395ea35715ece75db"
 }
