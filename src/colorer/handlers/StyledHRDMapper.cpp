@@ -20,6 +20,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setLoadSchema(false);
   xml_parser.setSkipDTDValidation(true);
+  xml_parser.setDisableDefaultEntityResolution(true);
   xml_parser.parse(*is.getInputSource());
 
   if (error_handler.getSawErrors()) {

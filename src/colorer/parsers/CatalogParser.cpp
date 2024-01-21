@@ -19,6 +19,7 @@ void CatalogParser::parse(const UnicodeString* path)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
+  xml_parser.setDisableDefaultEntityResolution(true);
 
   uXmlInputSource catalogXIS = XmlInputSource::newInstance(path);
   xml_parser.parse(*catalogXIS->getInputSource());

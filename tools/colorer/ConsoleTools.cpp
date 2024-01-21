@@ -81,6 +81,7 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
   xml_parser.setErrorHandler(&error_handler);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
+  xml_parser.setDisableDefaultEntityResolution(true);
   xml_parser.parse(*linkSource->getInputSource());
   if (error_handler.getSawErrors()) {
     throw Exception("Error loading HRD file");

@@ -191,6 +191,7 @@ void HrcLibrary::Impl::parseHRC(const XmlInputSource& is)
   xml_parser.setXMLEntityResolver(&resolver);
   xml_parser.setLoadExternalDTD(false);
   xml_parser.setSkipDTDValidation(true);
+  xml_parser.setDisableDefaultEntityResolution(true);
   xml_parser.parse(*is.getInputSource());
   if (error_handler.getSawErrors()) {
     throw HrcLibraryException("Error reading hrc file '" + is.getPath() + "'");
