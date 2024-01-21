@@ -13,9 +13,9 @@
 struct KeywordInfo
 {
   std::unique_ptr<const UnicodeString> keyword;
-  const Region* region;
-  bool isSymbol;
-  int ssShorter;
+  const Region* region = nullptr;
+  bool isSymbol = false;
+  int ssShorter = -1;
 };
 
 /** List of keywords.
