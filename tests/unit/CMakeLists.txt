@@ -5,7 +5,9 @@ set(unit_tests_SRC
     test_main.cpp
     test_exception.cpp
     test_filetype.cpp
-    test_environment.cpp test_xmlinputsource.cpp)
+    test_environment.cpp
+    test_xmlinputsource.cpp
+    test_hrcparsing.cpp)
 
 add_executable(unit_tests ${unit_tests_SRC})
 
