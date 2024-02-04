@@ -17,6 +17,7 @@ class UStr
   [[nodiscard]] static std::filesystem::path to_filepath(const uUnicodeString& str);
 #ifdef _WINDOWS
   [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString* str);
+  [[nodiscard]] static std::wstring to_stdwstr(const UnicodeString& str);
   [[nodiscard]] static std::wstring to_stdwstr(const uUnicodeString& str);
 #endif
 
