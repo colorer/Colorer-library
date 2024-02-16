@@ -523,7 +523,7 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
         }
       }
       int oy = gy;
-      int re_result = searchRE(baseScheme, gy, matchend.s[0], matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
+      int re_result = searchRE(baseScheme, gy, matchend.s[0], matchend.s[0] + maxBlockSize > len ? maxBlockSize : matchend.s[0] + maxBlockSize);
       if ((re_result == MATCH_SCHEME && (oy != gy || matchend.s[0] < gx)) || (re_result == MATCH_RE && matchend.s[0] < gx)) {
         len = -1;
         ret = LINE_REPARSE;
