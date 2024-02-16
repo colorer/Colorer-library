@@ -40,7 +40,8 @@ TEST_CASE("Load hrc")
   xercesc::XMLPlatformUtils::Initialize();
   auto temp_path = fs::current_path();
   auto work_dir = temp_path / "test1.hrc";
-  auto file1 = XmlInputSource::newInstance(&UnicodeString(work_dir.c_str()), nullptr);
+  auto uwork_dir = UnicodeString(work_dir.c_str());
+  auto file1 = XmlInputSource::newInstance(&uwork_dir, nullptr);
   HrcLibrary lib;
   lib.loadSource(file1.get());
 }
