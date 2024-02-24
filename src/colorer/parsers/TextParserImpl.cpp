@@ -394,15 +394,16 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         SMatches o_matchend = matchend;
         SMatches* o_match;
         UnicodeString* o_str;
-        schemeNode->end->getBackTrace((const UnicodeString**) &o_str, &o_match);
+        auto scheme_end = schemeNode->end.get();
+        scheme_end->getBackTrace((const UnicodeString**) &o_str, &o_match);
 
         baseScheme = ssubst;
         schemeStart = gx;
-        schemeNode->end->setBackTrace(backLine, &match);
+        scheme_end->setBackTrace(backLine, &match);
 
         enterScheme(no, &match, schemeNode.get());
 
-        colorize(schemeNode->end.get(), schemeNode->lowContentPriority);
+        colorize(scheme_end, schemeNode->lowContentPriority);
 
         if (gy < gy2) {
           leaveScheme(gy, &matchend, schemeNode.get());
@@ -411,7 +412,7 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         /* (empty-block.test) Check if the consumed scheme is zero-length */
         zeroLength = (match.s[0] == matchend.e[0] && ogy == gy);
 
-        schemeNode->end->setBackTrace(o_str, o_match);
+        scheme_end->setBackTrace(o_str, o_match);
         matchend = o_matchend;
         schemeStart = o_schemeStart;
         baseScheme = o_scheme;

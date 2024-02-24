@@ -619,7 +619,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
         continue;
       }
       // foo|bar|*
-      if (next->next && next->next->op > EOps::ReBlockOps && next->next->op < EOps::ReSymbolOps) {
+      if (next->next->op > EOps::ReBlockOps && next->next->op < EOps::ReSymbolOps) {
         temp->prev = next;
         temp->next = next->next;
         next->next->prev = temp;
