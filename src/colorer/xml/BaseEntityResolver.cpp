@@ -7,5 +7,5 @@ xercesc::InputSource* BaseEntityResolver::resolveEntity(
 {
     auto input_source = XmlInputSource::newInstance(resourceIdentifier->getSystemId(),
                                                     resourceIdentifier->getBaseURI());
-    return input_source.release()->getInputSource();
+    return input_source.release();
 }
