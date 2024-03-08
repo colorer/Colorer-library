@@ -74,9 +74,9 @@ class HrcLibrary::Impl
   void addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   void addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  void addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
-  int getSchemeKeywordsCount(const xercesc::DOMNode* elem);
-  void addKeyword(SchemeNode* scheme_node, const Region* brgn, const xercesc::DOMElement* elem);
+  void parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
+  size_t getSchemeKeywordsCount(const xercesc::DOMNode* elem);
+  void addKeyword(SchemeNode* scheme_node, const Region* region, const xercesc::DOMElement* elem);
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
   void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
 
@@ -90,6 +90,8 @@ class HrcLibrary::Impl
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
+  void loopKeywords(const xercesc::DOMNode* elem, const Region* region,
+           const std::unique_ptr<SchemeNode>& scheme_node);
 };
 
 #endif

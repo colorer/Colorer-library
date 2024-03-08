@@ -1,8 +1,9 @@
 #include "colorer/parsers/KeywordList.h"
 
-KeywordList::KeywordList()
+KeywordList::KeywordList(size_t list_size)
 {
   firstChar = std::make_unique<icu::UnicodeSet>();
+  kwList = new KeywordInfo[list_size];
 }
 
 KeywordList::~KeywordList()

@@ -1,5 +1,5 @@
-#ifndef _COLORER_KEYWORDLIST_H_
-#define _COLORER_KEYWORDLIST_H_
+#ifndef COLORER_KEYWORDLIST_H
+#define COLORER_KEYWORDLIST_H
 
 #include "colorer/Common.h"
 #include "colorer/Region.h"
@@ -24,15 +24,15 @@ struct KeywordInfo
 class KeywordList
 {
  public:
-  int num = 0;
   bool matchCase = false;
+  int num = 0;
   int minKeywordLength = 0;
   std::unique_ptr<icu::UnicodeSet> firstChar;
   KeywordInfo* kwList = nullptr;
-  KeywordList();
+  explicit KeywordList(size_t list_size);
   ~KeywordList();
   void sortList();
   void substrIndex();
 };
 
-#endif  //_COLORER_KEYWORDLIST_H_
+#endif  //COLORER_KEYWORDLIST_H

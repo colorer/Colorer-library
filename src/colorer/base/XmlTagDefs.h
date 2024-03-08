@@ -146,4 +146,10 @@ const XMLCh hrdAssignAttrEBack[] = u"eback\0";
 const XMLCh hrdAssignAttrSText[] = u"stext\0";
 const XMLCh hrdAssignAttrEText[] = u"etext\0";
 
+/*
+ * attributes value
+ */
+const XMLCh value_low[] = u"low\0";
+const XMLCh value_yes[] = u"yes\0";
+
 #endif  // COLORER_XMLTAGDEFS_H

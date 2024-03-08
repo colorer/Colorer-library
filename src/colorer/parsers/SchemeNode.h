@@ -44,7 +44,7 @@ class SchemeNode
   bool lowPriority = false;
   bool lowContentPriority = false;
 
-  SchemeNode() = default;
+  explicit SchemeNode(SchemeNodeType type);
   ~SchemeNode();
 };
 
