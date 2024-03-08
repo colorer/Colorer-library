@@ -29,7 +29,7 @@ class SchemeNode
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;
 
-  VirtualEntryVector virtualEntryVector;
+  std::unique_ptr<VirtualEntryVector> virtualEntryVector;
   std::unique_ptr<KeywordList> kwList;
   std::unique_ptr<icu::UnicodeSet> worddiv;
 
@@ -44,7 +44,7 @@ class SchemeNode
   bool lowPriority = false;
   bool lowContentPriority = false;
 
-  SchemeNode();
+  SchemeNode() = default;
   ~SchemeNode();
 };
 
