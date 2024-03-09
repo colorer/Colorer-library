@@ -13,6 +13,7 @@
 */
 struct KeywordInfo
 {
+  enum class KeywordType { KT_WORD, KT_SYMB };
   std::unique_ptr<const UnicodeString> keyword;
   const Region* region = nullptr;
   bool isSymbol = false;

@@ -821,7 +821,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
   XMLCh rg_tmpl[] = u"region\0";
   const Region* region = getNCRegion(elem, rg_tmpl);
   if (region == nullptr) {
-    spdlog::error("there is no 'region' attribute in keywords block of scheme '{0}'. skip it.",
+    spdlog::error("there is no 'region' attribute in keywords block of scheme '{0}', skip it.",
                   *scheme->schemeName);
     return;
   }
@@ -847,46 +847,48 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
   auto ignorecase_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
   scheme_node->kwList->matchCase = UnicodeString(value_yes).compare(ignorecase_string) != 0;
 
-  loopKeywords(elem, region, scheme_node);
+  loopSchemeKeywords(elem, scheme, scheme_node, region);
   scheme_node->kwList->firstChar->freeze();
 
+  // TODO unique keywords in list
   scheme_node->kwList->sortList();
   scheme_node->kwList->substrIndex();
   scheme->nodes.push_back(std::move(scheme_node));
 }
 
-void HrcLibrary::Impl::loopKeywords(const xercesc::DOMNode* elem, const Region* region,
-                                    const std::unique_ptr<SchemeNode>& scheme_node)
+void HrcLibrary::Impl::loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
+                                          const std::unique_ptr<SchemeNode>& scheme_node,
+                                          const Region* region)
 {
   for (auto keyword = elem->getFirstChild(); keyword; keyword = keyword->getNextSibling()) {
     if (keyword->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
       auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(keyword);
       if (sub_elem) {
-        addKeyword(scheme_node.get(), region, sub_elem);
+        if (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagWord)) {
+          addSchemeKeyword(sub_elem, scheme, scheme_node.get(), region,
+                           KeywordInfo::KeywordType::KT_WORD);
+        }
+        else if (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagSymb)) {
+          addSchemeKeyword(sub_elem, scheme, scheme_node.get(), region,
+                           KeywordInfo::KeywordType::KT_SYMB);
+        }
       }
     }
     else if (keyword->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      loopKeywords(keyword, region, scheme_node);
+      loopSchemeKeywords(keyword, scheme, scheme_node, region);
     }
   }
 }
 
-void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* region,
-                                  const xercesc::DOMElement* elem)
+void HrcLibrary::Impl::addSchemeKeyword(const xercesc::DOMElement* elem, const SchemeImpl* scheme,
+                                        SchemeNode* scheme_node, const Region* region,
+                                        KeywordInfo::KeywordType keyword_type)
 {
-  int type;
-  if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagWord)) {
-    type = 1;
-  }
-  else if (xercesc::XMLString::equals(elem->getNodeName(), hrcTagSymb)) {
-    type = 2;
-  }
-  else {
-    return;
-  }
-
   const XMLCh* keyword_value = elem->getAttribute(hrcWordAttrName);
   if (UStr::isEmpty(keyword_value)) {
+    spdlog::warn(
+        "the 'name' attribute in the '{1}' element of scheme '{0}' is empty or missing, skip it.",
+        scheme->schemeName, keyword_type == KeywordInfo::KeywordType::KT_WORD ? "word" : "symb");
     return;
   }
 
@@ -899,7 +901,7 @@ void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* region,
   KeywordInfo& list = scheme_node->kwList->kwList[scheme_node->kwList->count];
   list.keyword = std::make_unique<UnicodeString>(keyword_value);
   list.region = rgn;
-  list.isSymbol = (type == 2);
+  list.isSymbol = (keyword_type == KeywordInfo::KeywordType::KT_SYMB);
   auto first_char = scheme_node->kwList->firstChar.get();
   first_char->add(keyword_value[0]);
   if (!scheme_node->kwList->matchCase) {
@@ -916,19 +918,22 @@ void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* region,
 size_t HrcLibrary::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
 {
   size_t result = 0;
-  for (xercesc::DOMNode* keywrd_count = elem->getFirstChild(); keywrd_count;
-       keywrd_count = keywrd_count->getNextSibling())
+  for (xercesc::DOMNode* keyword = elem->getFirstChild(); keyword;
+       keyword = keyword->getNextSibling())
   {
-    if (keywrd_count->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
-      if (xercesc::XMLString::equals(keywrd_count->getNodeName(), hrcTagWord) ||
-          xercesc::XMLString::equals(keywrd_count->getNodeName(), hrcTagSymb))
+    if (keyword->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
+      auto* sub_elem = dynamic_cast<xercesc::DOMElement*>(keyword);
+      if (sub_elem &&
+          (xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagWord) ||
+           xercesc::XMLString::equals(sub_elem->getNodeName(), hrcTagSymb)) &&
+          !UStr::isEmpty(sub_elem->getAttribute(hrcWordAttrName)))
       {
         result++;
       }
       continue;
     }
-    if (keywrd_count->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
-      result += getSchemeKeywordsCount(keywrd_count);
+    if (keyword->getNodeType() == xercesc::DOMNode::ENTITY_REFERENCE_NODE) {
+      result += getSchemeKeywordsCount(keyword);
     }
   }
   return result;
@@ -1236,7 +1241,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
 const Region* HrcLibrary::Impl::getNCRegion(const xercesc::DOMElement* el, const XMLCh* tag)
 {
   const XMLCh* par = el->getAttribute(tag);
-  if (*par == '\0') {
+  if (UStr::isEmpty(par)) {
     return nullptr;
   }
   UnicodeString dpar = UnicodeString(par);
