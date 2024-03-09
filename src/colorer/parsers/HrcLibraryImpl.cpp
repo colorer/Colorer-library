@@ -896,7 +896,7 @@ void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* region,
     rgn = getNCRegion(elem, hrcWordAttrRegion);
   }
 
-  KeywordInfo& list = scheme_node->kwList->kwList[scheme_node->kwList->num];
+  KeywordInfo& list = scheme_node->kwList->kwList[scheme_node->kwList->count];
   list.keyword = std::make_unique<UnicodeString>(keyword_value);
   list.region = rgn;
   list.isSymbol = (type == 2);
@@ -907,7 +907,7 @@ void HrcLibrary::Impl::addKeyword(SchemeNode* scheme_node, const Region* region,
     first_char->add(u_tolower(keyword_value[0]));
     first_char->add(u_totitle(keyword_value[0]));
   }
-  scheme_node->kwList->num++;
+  scheme_node->kwList->count++;
   if (scheme_node->kwList->minKeywordLength > list.keyword->length()) {
     scheme_node->kwList->minKeywordLength = list.keyword->length();
   }

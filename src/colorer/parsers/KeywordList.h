@@ -15,7 +15,7 @@ struct KeywordInfo
   std::unique_ptr<const UnicodeString> keyword;
   const Region* region = nullptr;
   bool isSymbol = false;
-  int ssShorter = -1;
+  int indexOfShorter = -1;
 };
 
 /** List of keywords.
@@ -25,8 +25,8 @@ class KeywordList
 {
  public:
   bool matchCase = false;
-  int num = 0;
-  int minKeywordLength = 0;
+  int count = 0;
+  int minKeywordLength = INT_MAX;
   std::unique_ptr<icu::UnicodeSet> firstChar;
   KeywordInfo* kwList = nullptr;
   explicit KeywordList(size_t list_size);

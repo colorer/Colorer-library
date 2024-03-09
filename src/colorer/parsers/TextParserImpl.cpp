@@ -203,19 +203,16 @@ void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)
 
 int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, int /*hilen*/)
 {
-  if (!node->kwList->num) {
+  if (node->kwList->count == 0 || node->kwList->minKeywordLength + gx > lowlen) {
     return MATCH_NOTHING;
   }
 
-  if (node->kwList->minKeywordLength + gx > lowlen) {
-    return MATCH_NOTHING;
-  }
   if (gx < lowlen && !node->kwList->firstChar->contains((*str)[gx])) {
     return MATCH_NOTHING;
   }
 
   int left = 0;
-  int right = node->kwList->num;
+  int right = node->kwList->count;
   while (true) {
     int pos = left + (right - left) / 2;
     int kwlen = node->kwList->kwList[pos].keyword->length();
@@ -223,29 +220,29 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
       kwlen = lowlen - gx;
     }
 
-    int cr;
+    int8_t compare_result;
     if (node->kwList->matchCase) {
-      cr = node->kwList->kwList[pos].keyword->compare(UnicodeString(*str, gx, kwlen));
+      compare_result = node->kwList->kwList[pos].keyword->compare(UnicodeString(*str, gx, kwlen));
     } else {
-      cr = node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen), 0);
+      compare_result =
+          node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen), 0);
     }
 
-    if (cr == 0 && right - left == 1) {
+    if (compare_result == 0 && right - left == 1) {
       bool badbound = false;
       if (!node->kwList->kwList[pos].isSymbol) {
         if (!node->worddiv) {
-          if (gx && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == '_')) {
-            badbound = true;
-          }
-          if (gx + kwlen < lowlen && (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == '_')) {
+          if ((gx > 0 && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == L'_')) ||
+              (gx + kwlen < lowlen &&
+               (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == L'_')))
+          {
             badbound = true;
           }
         } else {
           // custom check for word bound
-          if (gx && !node->worddiv->contains((*str)[gx - 1])) {
-            badbound = true;
-          }
-          if (gx + kwlen < lowlen && !node->worddiv->contains((*str)[gx + kwlen])) {
+          if ((gx > 0 && !node->worddiv->contains((*str)[gx - 1])) ||
+              (gx + kwlen < lowlen && !node->worddiv->contains((*str)[gx + kwlen])))
+          {
             badbound = true;
           }
         }
@@ -258,17 +255,17 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
       }
     }
     if (right - left == 1) {
-      left = node->kwList->kwList[pos].ssShorter;
+      left = node->kwList->kwList[pos].indexOfShorter;
       if (left != -1) {
         right = left + 1;
         continue;
       }
       break;
     }
-    if (cr == 1) {
+    if (compare_result == 1) {
       right = pos;
     }
-    if (cr == 0 || cr == -1) {
+    else {  // if (compare_result == 0 || compare_result == -1)
       left = pos;
     }
   }
