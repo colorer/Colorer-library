@@ -1,9 +1,10 @@
 #ifndef COLORER_KEYWORDLIST_H
 #define COLORER_KEYWORDLIST_H
 
+#include <unicode/uniset.h>
+#include <climits>
 #include "colorer/Common.h"
 #include "colorer/Region.h"
-#include <unicode/uniset.h>
 
 /** Information about one parsed keyword.
     Contains keyword, symbol specifier, region reference
