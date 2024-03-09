@@ -225,13 +225,14 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
       compare_result = node->kwList->kwList[pos].keyword->compare(UnicodeString(*str, gx, kwlen));
     } else {
       compare_result =
-          node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen), 0);
+          node->kwList->kwList[pos].keyword->caseCompare(UnicodeString(*str, gx, kwlen), U_FOLD_CASE_DEFAULT);
     }
 
     if (compare_result == 0 && right - left == 1) {
       bool badbound = false;
       if (!node->kwList->kwList[pos].isSymbol) {
         if (!node->worddiv) {
+          // default word bound
           if ((gx > 0 && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == L'_')) ||
               (gx + kwlen < lowlen &&
                (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == L'_')))
