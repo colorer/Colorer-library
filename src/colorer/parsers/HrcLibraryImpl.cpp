@@ -786,7 +786,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
     spdlog::error("block with bad scheme attribute in scheme '{0}'", *scheme->schemeName);
     return;
   }
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_SCHEME);
+  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_BLOCK);
   scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   UnicodeString attr_pr = UnicodeString(elem->getAttribute(hrcBlockAttrPriority));
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
@@ -821,30 +821,34 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
   XMLCh rg_tmpl[] = u"region\0";
   const Region* region = getNCRegion(elem, rg_tmpl);
   if (region == nullptr) {
-    spdlog::error("there is no 'region' attribute in keywords block of scheme '{0}', skip it.",
-                  *scheme->schemeName);
+    spdlog::error(
+        "there is no 'region' attribute in keywords block of scheme '{0}', skip this keywords "
+        "block.",
+        *scheme->schemeName);
     return;
   }
 
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_KEYWORDS);
-
-  auto priority_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
-  scheme_node->lowPriority = UnicodeString(value_low).compare(priority_string) == 0;
-
   const XMLCh* worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
+  std::unique_ptr<icu::UnicodeSet> us_worddiv;
   if (!UStr::isEmpty(worddiv)) {
     auto dworddiv = UnicodeString(worddiv);
     uUnicodeString entWordDiv = useEntities(&dworddiv);
-    scheme_node->worddiv = UStr::createCharClass(*entWordDiv.get(), 0, nullptr, false);
-    if (scheme_node->worddiv == nullptr) {
-      spdlog::error("fault compiling worddiv regexp '{0}' in keywords block of scheme '{1}'",
-                    *entWordDiv, *scheme->schemeName);
+    us_worddiv = UStr::createCharClass(*entWordDiv.get(), 0, nullptr, false);
+    if (us_worddiv == nullptr) {
+      spdlog::error(
+          "fault compiling worddiv regexp '{0}' in keywords block of scheme '{1}'. skip this "
+          "keywords block.",
+          *entWordDiv, *scheme->schemeName);
     }
   }
 
+  auto priority_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
   auto count = getSchemeKeywordsCount(elem);
-  scheme_node->kwList = std::make_unique<KeywordList>(count);
   auto ignorecase_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
+  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_KEYWORDS);
+  scheme_node->worddiv = std::move(us_worddiv);
+  scheme_node->lowPriority = UnicodeString(value_low).compare(priority_string) == 0;
+  scheme_node->kwList = std::make_unique<KeywordList>(count);
   scheme_node->kwList->matchCase = UnicodeString(value_yes).compare(ignorecase_string) != 0;
 
   loopSchemeKeywords(elem, scheme, scheme_node, region);
@@ -999,7 +1003,7 @@ void HrcLibrary::Impl::updateLinks()
       for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
         auto& snode = scheme->nodes[sni];
         if (snode->schemeName != nullptr &&
-            (snode->type == SchemeNode::SchemeNodeType::SNT_SCHEME ||
+            (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK ||
              snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) &&
             snode->scheme == nullptr)
         {
