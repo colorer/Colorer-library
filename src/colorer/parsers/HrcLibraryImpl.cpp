@@ -670,40 +670,51 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
 void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* matchParam = elem->getAttribute(hrcRegexpAttrMatch);
-  if (*matchParam == '\0') {
+  if (UStr::isEmpty(matchParam)) {
     for (xercesc::DOMNode* child = elem->getFirstChild(); child != nullptr;
          child = child->getNextSibling())
     {
       if (child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE) {
-        matchParam = ((xercesc::DOMCDATASection*) child)->getData();
+        auto cdata = dynamic_cast<xercesc::DOMCDATASection*>(child);
+        if (cdata) {
+          matchParam = cdata->getData();
+        }
         break;
       }
       if (child->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
-        const XMLCh* matchParam1;
-        matchParam1 = ((xercesc::DOMText*) child)->getData();
-        xercesc::XMLString::trim((XMLCh*) matchParam1);
-        if (*matchParam1 != '\0') {
-          matchParam = matchParam1;
-          break;
+        auto text = dynamic_cast<xercesc::DOMText*>(child);
+        if (text) {
+          const XMLCh* matchParam1 = text->getData();
+          xercesc::XMLString::trim((XMLCh*) matchParam1);
+          if (!UStr::isEmpty(matchParam1)) {
+            matchParam = matchParam1;
+            break;
+          }
         }
       }
     }
   }
-  if (matchParam == nullptr) {
-    spdlog::error("no 'match' in regexp in scheme '{0}'", *scheme->schemeName);
+
+  if (UStr::isEmpty(matchParam)) {
+    spdlog::error(
+        "there is no 'match' attribute in regexp of scheme '{0}', skip this regexp block.",
+        *scheme->schemeName);
     return;
   }
-  UnicodeString dmatchParam = UnicodeString(matchParam);
-  uUnicodeString entMatchParam = useEntities(&dmatchParam);
+
+  auto dmatchParam = UnicodeString(matchParam);
+  auto entMatchParam = useEntities(&dmatchParam);
+  auto regexp = std::make_unique<CRegExp>(entMatchParam.get());
+  if (!regexp->isOk()) {
+    spdlog::error("fault compiling regexp '{0}' of scheme '{1}', skip this regexp block.",
+                  *entMatchParam, *scheme->schemeName);
+    return;
+  }
+
   auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_RE);
-  UnicodeString dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
+  auto dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = UnicodeString(value_low).compare(dhrcRegexpAttrPriority) == 0;
-  scheme_node->start = std::make_unique<CRegExp>(entMatchParam.get());
-  if (!scheme_node->start || !scheme_node->start->isOk()) {
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *entMatchParam,
-                  *scheme->schemeName);
-    return;
-  }
+  scheme_node->start = std::move(regexp);
   scheme_node->start->setPositionMoves(false);
   scheme_node->end = nullptr;
 
