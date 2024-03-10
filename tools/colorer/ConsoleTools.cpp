@@ -209,6 +209,34 @@ void ConsoleTools::listTypes(bool load, bool useNames)
   }
 }
 
+void ConsoleTools::loadType()
+{
+  try {
+    ParserFactory pf;
+    pf.loadCatalog(catalogPath.get());
+    auto& hrcLibrary = pf.getHrcLibrary();
+    fprintf(stdout, "searching file type %s ...\n", UStr::to_stdstr(typeDescription).c_str());
+    bool result = false;
+    for (int idx = 0;; idx++) {
+      FileType* type = hrcLibrary.enumerateFileTypes(idx);
+      if (type == nullptr) {
+        break;
+      }
+      if (type->getName().compare(*typeDescription) == 0) {
+        fprintf(stdout, "file type is found, loading ...\n");
+        hrcLibrary.loadFileType(type);
+        result = true;
+        break;
+      }
+    }
+    if (!result) {
+      fprintf(stdout, "file type was not found\n");
+    }
+  } catch (Exception& e) {
+    fprintf(stderr, "%s\n", e.what());
+  }
+}
+
 FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSource)
 {
   FileType* type = nullptr;

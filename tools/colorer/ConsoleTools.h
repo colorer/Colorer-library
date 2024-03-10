@@ -86,6 +86,7 @@ class ConsoleTools
       optionally tries to load them.
   */
   void listTypes(bool load, bool useNames);
+  void loadType();
 
   FileType* selectType(HrcLibrary* hrcLibrary, LineSource* lineSource);
 

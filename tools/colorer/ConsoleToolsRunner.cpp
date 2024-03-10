@@ -7,7 +7,7 @@
 #include "ConsoleTools.h"
 
 /** Internal run action type */
-enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
+enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_LOAD_TYPE, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
 
 struct setting
 {
@@ -84,6 +84,10 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'l' && argv[i][2] == 't') {
       settings.job = JobType::JT_LIST_TYPE_NAMES;
+      continue;
+    }
+    if (argv[i][1] == 'l' && argv[i][2] == 'd') {
+      settings.job = JobType::JT_LOAD_TYPE;
       continue;
     }
     if (argv[i][1] == 'l') {
@@ -186,6 +190,7 @@ void printUsage()
           "  -l         Lists all available languages\n"
           "  -lt        Lists all available languages (HRC types)\n"
           "  -ll        Lists and loads full HRC database\n"
+          "  -ld        Load type from HRC database (-t<type>)\n"
           "  -r         RE tests\n"
           "  -h         Generates plain coloring from <filename> (uses 'rgb' hrd class)\n"
           "  -ht        Generates plain coloring from <filename> using tokens output\n"
@@ -258,6 +263,9 @@ int workIt()
         break;
       case JobType::JT_LIST_TYPE_NAMES:
         ct.listTypes(false, true);
+        break;
+      case JobType::JT_LOAD_TYPE:
+        ct.loadType();
         break;
       case JobType::JT_VIEW:
         ct.viewFile();
