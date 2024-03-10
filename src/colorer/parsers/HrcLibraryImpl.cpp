@@ -670,26 +670,34 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
 void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* matchParam = elem->getAttribute(hrcRegexpAttrMatch);
+
   if (UStr::isEmpty(matchParam)) {
+    // возможно match указан как ...
     for (xercesc::DOMNode* child = elem->getFirstChild(); child != nullptr;
          child = child->getNextSibling())
     {
       if (child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE) {
+        // ... блок CDATA:   <regexp>![CDATA[ match_regexp ]]</regexp>
         auto cdata = dynamic_cast<xercesc::DOMCDATASection*>(child);
         if (cdata) {
           matchParam = cdata->getData();
+          break;
         }
-        break;
       }
       if (child->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
+        // ... текстовый блок <regexp> match_regexp </regexp>
         auto text = dynamic_cast<xercesc::DOMText*>(child);
         if (text) {
           const XMLCh* matchParam1 = text->getData();
-          xercesc::XMLString::trim((XMLCh*) matchParam1);
-          if (!UStr::isEmpty(matchParam1)) {
+          auto temp_string = xercesc::XMLString::replicate(matchParam1);
+          // перед блоком CDATA могут быть пустые строки, учитываем это
+          xercesc::XMLString::trim((XMLCh*) temp_string);
+          if (!UStr::isEmpty(temp_string)) {
             matchParam = matchParam1;
+            xercesc::XMLString::release(&temp_string);
             break;
           }
+          xercesc::XMLString::release(&temp_string);
         }
       }
     }
@@ -698,7 +706,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
   if (UStr::isEmpty(matchParam)) {
     spdlog::error(
         "there is no 'match' attribute in regexp of scheme '{0}', skip this regexp block.",
-        *scheme->schemeName);
+        scheme->schemeName);
     return;
   }
 
@@ -707,7 +715,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
   auto regexp = std::make_unique<CRegExp>(entMatchParam.get());
   if (!regexp->isOk()) {
     spdlog::error("fault compiling regexp '{0}' of scheme '{1}', skip this regexp block.",
-                  *entMatchParam, *scheme->schemeName);
+                  entMatchParam, scheme->schemeName);
     return;
   }
 
@@ -956,7 +964,7 @@ size_t HrcLibrary::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
 
 void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
 {
-  char16_t rg_tmpl[] = u"region\0\0";
+  XMLCh rg_tmpl[] = u"region\0\0";
 
   if (el) {
     if (node->region == nullptr) {
