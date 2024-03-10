@@ -672,35 +672,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
   const XMLCh* matchParam = elem->getAttribute(hrcRegexpAttrMatch);
 
   if (UStr::isEmpty(matchParam)) {
-    // возможно match указан как ...
-    for (xercesc::DOMNode* child = elem->getFirstChild(); child != nullptr;
-         child = child->getNextSibling())
-    {
-      if (child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE) {
-        // ... блок CDATA:   <regexp>![CDATA[ match_regexp ]]</regexp>
-        auto cdata = dynamic_cast<xercesc::DOMCDATASection*>(child);
-        if (cdata) {
-          matchParam = cdata->getData();
-          break;
-        }
-      }
-      if (child->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
-        // ... текстовый блок <regexp> match_regexp </regexp>
-        auto text = dynamic_cast<xercesc::DOMText*>(child);
-        if (text) {
-          const XMLCh* matchParam1 = text->getData();
-          auto temp_string = xercesc::XMLString::replicate(matchParam1);
-          // перед блоком CDATA могут быть пустые строки, учитываем это
-          xercesc::XMLString::trim((XMLCh*) temp_string);
-          if (!UStr::isEmpty(temp_string)) {
-            matchParam = matchParam1;
-            xercesc::XMLString::release(&temp_string);
-            break;
-          }
-          xercesc::XMLString::release(&temp_string);
-        }
-      }
-    }
+    matchParam = getElementText(elem);
   }
 
   if (UStr::isEmpty(matchParam)) {
@@ -736,13 +708,13 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
 
 void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
-  const XMLCh* sParam = elem->getAttribute(hrcBlockAttrStart);
-  const XMLCh* eParam = elem->getAttribute(hrcBlockAttrEnd);
+  const XMLCh* start_param = elem->getAttribute(hrcBlockAttrStart);
+  const XMLCh* end_param = elem->getAttribute(hrcBlockAttrEnd);
 
-  xercesc::DOMElement *eStart = nullptr, *eEnd = nullptr;
+  xercesc::DOMElement *element_start = nullptr, *element_end = nullptr;
 
   for (xercesc::DOMNode* blkn = elem->getFirstChild();
-       blkn && !(*eParam != '\0' && *sParam != '\0'); blkn = blkn->getNextSibling())
+       blkn && !(!UStr::isEmpty(end_param) && !UStr::isEmpty(start_param)); blkn = blkn->getNextSibling())
   {
     xercesc::DOMElement* blkel;
     if (blkn->getNodeType() == xercesc::DOMNode::ELEMENT_NODE) {
@@ -759,80 +731,109 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
       p = blkel->getAttribute(hrcBlockAttrMatch);
     }
     else {
-      for (xercesc::DOMNode* child = blkel->getFirstChild(); child != nullptr;
-           child = child->getNextSibling())
-      {
-        if (child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE) {
-          p = ((xercesc::DOMCDATASection*) child)->getData();
-          break;
-        }
-        if (child->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
-          const XMLCh* p1;
-          p1 = ((xercesc::DOMText*) child)->getData();
-          xercesc::XMLString::trim((XMLCh*) p1);
-          if (*p1 != '\0') {
-            p = p1;
-            break;
-          }
-        }
-      }
+      p = getElementText(blkel);
     }
 
     if (xercesc::XMLString::equals(blkel->getNodeName(), hrcBlockAttrStart)) {
-      sParam = p;
-      eStart = blkel;
+      start_param = p;
+      element_start = blkel;
     }
-    if (xercesc::XMLString::equals(blkel->getNodeName(), hrcBlockAttrEnd)) {
-      eParam = p;
-      eEnd = blkel;
+    else if (xercesc::XMLString::equals(blkel->getNodeName(), hrcBlockAttrEnd)) {
+      end_param = p;
+      element_end = blkel;
     }
   }
 
-  uUnicodeString startParam;
-  uUnicodeString endParam;
-  UnicodeString dsParam = UnicodeString(sParam);
-  if (!(startParam = useEntities(&dsParam))) {
-    spdlog::error("'start' block attribute not found in scheme '{0}'", *scheme->schemeName);
+  if (UStr::isEmpty(start_param)) {
+    spdlog::error("there is no 'start' attribute in block of scheme '{0}', skip this block.",
+                  scheme->schemeName);
     return;
   }
-  UnicodeString deParam = UnicodeString(eParam);
-  if (!(endParam = useEntities(&deParam))) {
-    spdlog::error("'end' block attribute not found in scheme '{0}'", *scheme->schemeName);
+  if (UStr::isEmpty(end_param)) {
+    spdlog::error("there is no 'end' attribute in block of scheme '{0}', skip this block.",
+                  scheme->schemeName);
     return;
   }
   const XMLCh* schemeName = elem->getAttribute(hrcBlockAttrScheme);
-  if (*schemeName == '\0') {
-    spdlog::error("block with bad scheme attribute in scheme '{0}'", *scheme->schemeName);
+  if (UStr::isEmpty(schemeName)) {
+    spdlog::error("there is no 'scheme' attribute in block of scheme '{0}', skip this block.",
+                  scheme->schemeName);
     return;
   }
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_BLOCK);
-  scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
+
+  auto dsParam = UnicodeString(start_param);
+  uUnicodeString startParam = useEntities(&dsParam);
+  auto start_regexp = std::make_unique<CRegExp>(startParam.get());
+  start_regexp->setPositionMoves(false);
+  if (!start_regexp->isOk()) {
+    spdlog::error("fault compiling start regexp '{0}' in block of scheme '{1}', skip this block.",
+                  startParam, scheme->schemeName);
+    return;
+  }
+
+  auto deParam = UnicodeString(end_param);
+  uUnicodeString endParam = useEntities(&deParam);
+  auto end_regexp = std::make_unique<CRegExp>();
+  end_regexp->setPositionMoves(true);
+  end_regexp->setBackRE(start_regexp.get());
+  end_regexp->setRE(endParam.get());
+  if (!end_regexp->isOk()) {
+    spdlog::error("fault compiling end regexp '{0}' in block of scheme '{1}', skip this block.",
+                  startParam, scheme->schemeName);
+    return;
+  }
+
   UnicodeString attr_pr = UnicodeString(elem->getAttribute(hrcBlockAttrPriority));
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
   UnicodeString attr_ireg = UnicodeString(elem->getAttribute(hrcBlockAttrInnerRegion));
+
+  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_BLOCK);
+  scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   scheme_node->lowPriority = UnicodeString(value_low).compare(attr_pr) == 0;
   scheme_node->lowContentPriority = UnicodeString(value_low).compare(attr_cpr) == 0;
   scheme_node->innerRegion = UnicodeString(value_yes).compare(attr_ireg) == 0;
-  scheme_node->start = std::make_unique<CRegExp>(startParam.get());
-  scheme_node->start->setPositionMoves(false);
-  if (!scheme_node->start->isOk()) {
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *startParam,
-                  *scheme->schemeName);
-  }
-  scheme_node->end = std::make_unique<CRegExp>();
-  scheme_node->end->setPositionMoves(true);
-  scheme_node->end->setBackRE(scheme_node->start.get());
-  scheme_node->end->setRE(endParam.get());
-  if (!scheme_node->end->isOk()) {
-    spdlog::error("fault compiling regexp '{0}' in scheme '{1}'", *endParam,
-                  *scheme->schemeName);
-  }
+  scheme_node->start = std::move(start_regexp);
+  scheme_node->end = std::move(end_regexp);
 
-  // !! EE
   loadBlockRegions(scheme_node.get(), elem);
-  loadRegions(scheme_node.get(), eStart, true);
-  loadRegions(scheme_node.get(), eEnd, false);
+  loadRegions(scheme_node.get(), element_start, true);
+  loadRegions(scheme_node.get(), element_end, false);
   scheme->nodes.push_back(std::move(scheme_node));
+}
+
+const XMLCh* HrcLibrary::Impl::getElementText(const xercesc::DOMElement* blkel) const
+{
+  const XMLCh* p = nullptr;
+  // возможно текст указан как ...
+  for (xercesc::DOMNode* child = blkel->getFirstChild(); child != nullptr;
+       child = child->getNextSibling())
+  {
+    if (child->getNodeType() == xercesc::DOMNode::CDATA_SECTION_NODE) {
+      // ... блок CDATA:  например <regexp>![CDATA[ match_regexp ]]</regexp>
+      auto cdata = dynamic_cast<xercesc::DOMCDATASection*>(child);
+      if (cdata) {
+        p = cdata->getData();
+        break;
+      }
+    }
+    if (child->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
+      // ... текстовый блок <regexp> match_regexp </regexp>
+      auto text = dynamic_cast<xercesc::DOMText*>(child);
+      if (text) {
+        const XMLCh* p1 = text->getData();
+        auto temp_string = xercesc::XMLString::replicate(p1);
+        // перед блоком CDATA могут быть пустые строки, учитываем это
+        xercesc::XMLString::trim((XMLCh*) temp_string);
+        if (!UStr::isEmpty(temp_string)) {
+          p = p1;
+          xercesc::XMLString::release(&temp_string);
+          break;
+        }
+        xercesc::XMLString::release(&temp_string);
+      }
+    }
+  }
+  return p;
 }
 
 void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem)
@@ -962,7 +963,8 @@ size_t HrcLibrary::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
   return result;
 }
 
-void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el, bool st)
+void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
+                                   bool start_element)
 {
   XMLCh rg_tmpl[] = u"region\0\0";
 
@@ -974,7 +976,7 @@ void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* 
     for (int i = 0; i < REGIONS_NUM; i++) {
       rg_tmpl[6] = static_cast<XMLCh>((i < 0xA ? i : i + 39) + '0');
 
-      if (st) {
+      if (start_element) {
         node->regions[i] = getNCRegion(el, rg_tmpl);
       }
       else {
@@ -984,7 +986,7 @@ void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* 
   }
 
   for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
-    if (st) {
+    if (start_element) {
       node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
     }
     else {
@@ -995,11 +997,12 @@ void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* 
 
 void HrcLibrary::Impl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
 {
-  int i;
-  char16_t rg_tmpl[] = u"region\0\0\0";
+  // regions as attributes in main block element
+
+  XMLCh rg_tmpl[] = u"region\0\0\0";
 
   node->region = getNCRegion(el, rg_tmpl);
-  for (i = 0; i < REGIONS_NUM; i++) {
+  for (int i = 0; i < REGIONS_NUM; i++) {
     rg_tmpl[6] = '0';
     rg_tmpl[7] = static_cast<XMLCh>((i < 0xA ? i : i + 39) + '0');
     node->regions[i] = getNCRegion(el, rg_tmpl);
@@ -1234,7 +1237,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
   if (name == nullptr || name->isEmpty()) {
     return nullptr;
   }
-  const Region* reg;
+  const Region* reg = nullptr;
   UnicodeString* qname = qualifyForeignName(name, QualifyNameType::QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
@@ -1242,9 +1245,6 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
   auto reg_ = regionNamesHash.find(*qname);
   if (reg_ != regionNamesHash.end()) {
     reg = reg_->second;
-  }
-  else {
-    reg = nullptr;
   }
 
   delete qname;

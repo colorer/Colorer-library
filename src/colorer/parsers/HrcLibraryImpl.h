@@ -80,7 +80,7 @@ class HrcLibrary::Impl
                   SchemeNode* scheme_node, const Region* region,
                   KeywordInfo::KeywordType keyword_type);
   void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
-  void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool st);
+  void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool start_element);
 
   uUnicodeString qualifyOwnName(const UnicodeString& name);
   bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
@@ -94,6 +94,7 @@ class HrcLibrary::Impl
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
   void loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
                     const std::unique_ptr<SchemeNode>& scheme_node, const Region* region);
+  const XMLCh* getElementText(const xercesc::DOMElement* blkel) const;
 };
 
 #endif
