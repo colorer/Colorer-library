@@ -625,25 +625,18 @@ void HrcLibrary::Impl::parseSchemeBlock(SchemeImpl* scheme, const xercesc::DOMNo
 void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMElement* elem)
 {
   const XMLCh* nqSchemeName = elem->getAttribute(hrcInheritAttrScheme);
-  if (*nqSchemeName == '\0') {
-    spdlog::error("empty scheme name in inheritance operator in scheme '{0}'",
-                  *scheme->schemeName);
+  if (UStr::isEmpty(nqSchemeName)) {
+    spdlog::error(
+        "there is empty scheme name in inherit block of scheme '{0}', skip this inherit block.",
+        scheme->schemeName);
     return;
   }
   auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_INHERIT);
   scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
-  UnicodeString dnqSchemeName = UnicodeString(nqSchemeName);
   UnicodeString* schemeName =
-      qualifyForeignName(&dnqSchemeName, QualifyNameType::QNT_SCHEME, false);
-  if (schemeName == nullptr) {
-    //        if (errorHandler != null) errorHandler->warning(StringBuffer("forward inheritance of
-    //        '")+nqSchemeName+"'. possible inherit loop with
-    //        '"+scheme->schemeName+"'"); delete next; continue;
-  }
-  else {
-    scheme_node->scheme = schemeHash.find(*schemeName)->second;
-  }
+      qualifyForeignName(scheme_node->schemeName.get(), QualifyNameType::QNT_SCHEME, false);
   if (schemeName != nullptr) {
+    scheme_node->scheme = schemeHash.find(*schemeName)->second;
     scheme_node->schemeName.reset(schemeName);
   }
 
@@ -654,13 +647,16 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
       if (subelem && xercesc::XMLString::equals(subelem->getNodeName(), hrcTagVirtual)) {
         const XMLCh* x_schemeName = subelem->getAttribute(hrcVirtualAttrScheme);
         const XMLCh* x_substName = subelem->getAttribute(hrcVirtualAttrSubstScheme);
-        if (*x_schemeName == '\0' || *x_substName == '\0') {
-          spdlog::error("bad virtualize attributes in scheme '{0}'", *scheme->schemeName);
+        if (UStr::isEmpty(x_schemeName) || UStr::isEmpty(x_substName)) {
+          spdlog::error(
+              "there is bad virtualize attributes of scheme '{0}', skip this virtual block.",
+              scheme_node->schemeName);
           continue;
         }
         UnicodeString d_schemeName = UnicodeString(x_schemeName);
         UnicodeString d_substName = UnicodeString(x_substName);
-        scheme_node->virtualEntryVector->push_back(new VirtualEntry(&d_schemeName, &d_substName));
+        scheme_node->virtualEntryVector->emplace_back(
+            new VirtualEntry(&d_schemeName, &d_substName));
       }
     }
   }
