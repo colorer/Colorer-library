@@ -65,7 +65,10 @@ class TextParser::Impl
   void leaveScheme(int, const SMatches* match, const SchemeNode* schemeNode);
 
   int searchKW(const SchemeNode* node, int no, int lowLen, int hiLen);
-  int searchRE(const SchemeImpl* cscheme, int no, int lowLen, int hiLen);
+  int searchIN(SchemeNode* node, int no, int lowLen, int hiLen);
+  int searchRE(SchemeNode* node, int no, int lowLen, int hiLen);
+  int searchBL(SchemeNode* node, int no, int lowLen, int hiLen);
+  int searchMatch(const SchemeImpl* cscheme, int no, int lowLen, int hiLen);
   bool colorize(CRegExp* root_end_re, bool lowContentPriority);
 };
 

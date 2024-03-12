@@ -273,46 +273,190 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
   return MATCH_NOTHING;
 }
 
-int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, int hiLen)
+int TextParser::Impl::searchIN(SchemeNode* node, int no, int lowLen, int hiLen)
 {
-  int i, re_result;
-  SchemeImpl* ssubst = nullptr;
+  if (!node->scheme) {
+    return MATCH_NOTHING;
+  }
+
+  SchemeImpl* ssubst;
+  int re_result;
+  ssubst = vtlist->pushvirt(node->scheme);
+  if (!ssubst) {
+    bool b = vtlist->push(node);
+    re_result = searchMatch(node->scheme, no, lowLen, hiLen);
+    if (b) {
+      vtlist->pop();
+    }
+  }
+  else {
+    re_result = searchMatch(ssubst, no, lowLen, hiLen);
+    vtlist->popvirt();
+  }
+  if (re_result != MATCH_NOTHING) {
+    return re_result;
+  }
+  return MATCH_NOTHING;
+}
+
+int TextParser::Impl::searchRE(SchemeNode* node, int /*no*/ no, int lowLen, int hiLen)
+{
   SMatches match {};
+  if (!node->start->parse(str, gx, node->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
+    return MATCH_NOTHING;
+  }
+  CTRACE(spdlog::trace("[TextParserImpl] RE matched. gx={0}", gx));
+  for (int i = 0; i < match.cMatch; i++) {
+    addRegion(gy, match.s[i], match.e[i], node->regions[i]);
+  }
+  for (int i = 0; i < match.cnMatch; i++) {
+    addRegion(gy, match.ns[i], match.ne[i], node->regionsn[i]);
+  }
+
+  /* skips regexp if it has zero length */
+  if (match.e[0] == match.s[0]) {
+    return MATCH_NOTHING;
+  }
+  gx = match.e[0];
+  return MATCH_RE;
+}
+
+int TextParser::Impl::searchBL(SchemeNode* node, int no, int lowLen, int hiLen)
+{
+  if (!node->scheme) {
+    return MATCH_NOTHING;
+  }
+
+  SMatches match {};
+  if (!node->start->parse(str, gx, node->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
+    return MATCH_NOTHING;
+  }
+
+  CTRACE(spdlog::trace("[TextParserImpl] Scheme matched. gx={0}", gx));
+  SchemeImpl* ssubst = nullptr;
+  gx = match.e[0];
+  ssubst = vtlist->pushvirt(node->scheme);
+  if (!ssubst) {
+    ssubst = node->scheme;
+  }
+
   ParseCache* OldCacheF = nullptr;
   ParseCache* OldCacheP = nullptr;
   ParseCache* ResF = nullptr;
   ParseCache* ResP = nullptr;
 
-  CTRACE(spdlog::trace("[TextParserImpl] searchRE: entered scheme \"{0}\"", *cscheme->getName()));
+  auto* backLine = new UnicodeString(*str);
+  if (updateCache) {
+    ResF = forward;
+    ResP = parent;
+    if (forward) {
+      forward->next = new ParseCache;
+      forward->next->prev = forward;
+      OldCacheF = forward->next;
+      OldCacheP = parent ? parent : forward->parent;
+      parent = forward->next;
+      forward = nullptr;
+    }
+    else {
+      forward = new ParseCache;
+      parent->children = forward;
+      OldCacheF = forward;
+      OldCacheP = parent;
+      parent = forward;
+      forward = nullptr;
+    }
+    OldCacheF->parent = OldCacheP;
+    OldCacheF->sline = gy + 1;
+    OldCacheF->eline = 0x7FFFFFFF;
+    OldCacheF->scheme = ssubst;
+    OldCacheF->matchstart = match;
+    OldCacheF->clender = node;
+    OldCacheF->backLine = backLine;
+  }
+
+  int ogy = gy;
+  bool zeroLength;
+
+  SchemeImpl* o_scheme = baseScheme;
+  int o_schemeStart = schemeStart;
+  SMatches o_matchend = matchend;
+  SMatches* o_match;
+  UnicodeString* o_str;
+  auto scheme_end = node->end.get();
+  scheme_end->getBackTrace((const UnicodeString**) &o_str, &o_match);
+
+  baseScheme = ssubst;
+  schemeStart = gx;
+  scheme_end->setBackTrace(backLine, &match);
+
+  enterScheme(no, &match, node);
+
+  colorize(scheme_end, node->lowContentPriority);
+
+  if (gy < gy2) {
+    leaveScheme(gy, &matchend, node);
+  }
+  gx = matchend.e[0];
+  /* (empty-block.test) Check if the consumed scheme is zero-length */
+  zeroLength = (match.s[0] == matchend.e[0] && ogy == gy);
+
+  scheme_end->setBackTrace(o_str, o_match);
+  matchend = o_matchend;
+  schemeStart = o_schemeStart;
+  baseScheme = o_scheme;
+
+  if (updateCache) {
+    if (ogy == gy) {
+      delete OldCacheF;
+      if (ResF) {
+        ResF->next = nullptr;
+      }
+      else if (ResP) {
+        ResP->children = nullptr;
+      }
+      forward = ResF;
+      parent = ResP;
+    }
+    else {
+      OldCacheF->eline = gy;  //-V522
+      OldCacheF->vcache = vtlist->store();
+      forward = OldCacheF;
+      parent = OldCacheP;
+    }
+  }
+  else {
+    delete backLine;
+  }
+  if (ssubst != node->scheme) {
+    vtlist->popvirt();
+  }
+  /* (empty-block.test) skips block if it has zero length and spread over single line */
+  if (zeroLength) {
+    return MATCH_NOTHING;
+  }
+
+  return MATCH_SCHEME;
+}
+
+int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen, int hiLen)
+{
+  CTRACE(spdlog::trace("[TextParserImpl] searchMatch: entered scheme \"{0}\"", cscheme->getName()));
 
   if (!cscheme) {
     return MATCH_NOTHING;
   }
   int idx = 0;
   for (auto const& schemeNode : cscheme->nodes) {
-    CTRACE(spdlog::trace("[TextParserImpl] searchRE: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
+    CTRACE(spdlog::trace("[TextParserImpl] searchMatch: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
                          SchemeNode::schemeNodeTypeNames[static_cast<int>(schemeNode->type)]));
     switch (schemeNode->type) {
-      case SchemeNode::SchemeNodeType::SNT_INHERIT:
-        if (!schemeNode->scheme) {
-          break;
-        }
-        ssubst = vtlist->pushvirt(schemeNode->scheme);
-        if (!ssubst) {
-          bool b = vtlist->push(schemeNode.get());
-          re_result = searchRE(schemeNode->scheme, no, lowLen, hiLen);
-          if (b) {
-            vtlist->pop();
-          }
-        } else {
-          re_result = searchRE(ssubst, no, lowLen, hiLen);
-          vtlist->popvirt();
-        }
+      case SchemeNode::SchemeNodeType::SNT_INHERIT: {
+        int re_result = searchIN(schemeNode.get(), no, lowLen, hiLen);
         if (re_result != MATCH_NOTHING) {
           return re_result;
         }
         break;
-
+      }
       case SchemeNode::SchemeNodeType::SNT_KEYWORDS:
         if (searchKW(schemeNode.get(), no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
@@ -320,128 +464,16 @@ int TextParser::Impl::searchRE(const SchemeImpl* cscheme, int no, int lowLen, in
         break;
 
       case SchemeNode::SchemeNodeType::SNT_RE:
-        if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
-          break;
+        if (searchRE(schemeNode.get(), no, lowLen, hiLen) == MATCH_RE) {
+          return MATCH_RE;
         }
-        CTRACE(spdlog::trace("[TextParserImpl] RE matched. gx={0}", gx));
-        for (i = 0; i < match.cMatch; i++) {
-          addRegion(gy, match.s[i], match.e[i], schemeNode->regions[i]);
+        break;
+
+      case SchemeNode::SchemeNodeType::SNT_BLOCK:
+        if (searchBL(schemeNode.get(), no, lowLen, hiLen) != MATCH_NOTHING) {
+          return MATCH_SCHEME;
         }
-        for (i = 0; i < match.cnMatch; i++) {
-          addRegion(gy, match.ns[i], match.ne[i], schemeNode->regionsn[i]);
-        }
-
-        /* skips regexp if it has zero length */
-        if (match.e[0] == match.s[0]) {
-          break;
-        }
-        gx = match.e[0];
-        return MATCH_RE;
-
-      case SchemeNode::SchemeNodeType::SNT_BLOCK: {
-        if (!schemeNode->scheme) {
-          break;
-        }
-        if (!schemeNode->start->parse(str, gx, schemeNode->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
-          break;
-        }
-
-        CTRACE(spdlog::trace("[TextParserImpl] Scheme matched. gx={0}", gx));
-
-        gx = match.e[0];
-        ssubst = vtlist->pushvirt(schemeNode->scheme);
-        if (!ssubst) {
-          ssubst = schemeNode->scheme;
-        }
-
-        auto* backLine = new UnicodeString(*str);
-        if (updateCache) {
-          ResF = forward;
-          ResP = parent;
-          if (forward) {
-            forward->next = new ParseCache;
-            forward->next->prev = forward;
-            OldCacheF = forward->next;
-            OldCacheP = parent ? parent : forward->parent;
-            parent = forward->next;
-            forward = nullptr;
-          } else {
-            forward = new ParseCache;
-            parent->children = forward;
-            OldCacheF = forward;
-            OldCacheP = parent;
-            parent = forward;
-            forward = nullptr;
-          }
-          OldCacheF->parent = OldCacheP;
-          OldCacheF->sline = gy + 1;
-          OldCacheF->eline = 0x7FFFFFFF;
-          OldCacheF->scheme = ssubst;
-          OldCacheF->matchstart = match;
-          OldCacheF->clender = schemeNode.get();
-          OldCacheF->backLine = backLine;
-        }
-
-        int ogy = gy;
-        bool zeroLength;
-
-        SchemeImpl* o_scheme = baseScheme;
-        int o_schemeStart = schemeStart;
-        SMatches o_matchend = matchend;
-        SMatches* o_match;
-        UnicodeString* o_str;
-        auto scheme_end = schemeNode->end.get();
-        scheme_end->getBackTrace((const UnicodeString**) &o_str, &o_match);
-
-        baseScheme = ssubst;
-        schemeStart = gx;
-        scheme_end->setBackTrace(backLine, &match);
-
-        enterScheme(no, &match, schemeNode.get());
-
-        colorize(scheme_end, schemeNode->lowContentPriority);
-
-        if (gy < gy2) {
-          leaveScheme(gy, &matchend, schemeNode.get());
-        }
-        gx = matchend.e[0];
-        /* (empty-block.test) Check if the consumed scheme is zero-length */
-        zeroLength = (match.s[0] == matchend.e[0] && ogy == gy);
-
-        scheme_end->setBackTrace(o_str, o_match);
-        matchend = o_matchend;
-        schemeStart = o_schemeStart;
-        baseScheme = o_scheme;
-
-        if (updateCache) {
-          if (ogy == gy) {
-            delete OldCacheF;
-            if (ResF) {
-              ResF->next = nullptr;
-            } else if (ResP) {
-              ResP->children = nullptr;
-            }
-            forward = ResF;
-            parent = ResP;
-          } else {
-            OldCacheF->eline = gy;  //-V522
-            OldCacheF->vcache = vtlist->store();
-            forward = OldCacheF;
-            parent = OldCacheP;
-          }
-        } else {
-          delete backLine;
-        }
-        if (ssubst != schemeNode->scheme) {
-          vtlist->popvirt();
-        }
-        /* (empty-block.test) skips block if it has zero length and spread over single line */
-        if (zeroLength) {
-          break;
-        }
-
-        return MATCH_SCHEME;
-      }
+        break;
     }
     idx++;
   }
@@ -520,7 +552,9 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
         }
       }
       int oy = gy;
-      int re_result = searchRE(baseScheme, gy, matchend.s[0], matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
+      int re_result =
+          searchMatch(baseScheme, gy, matchend.s[0],
+                      matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
       if ((re_result == MATCH_SCHEME && (oy != gy || matchend.s[0] < gx)) || (re_result == MATCH_RE && matchend.s[0] < gx)) {
         len = -1;
         ret = LINE_REPARSE;
