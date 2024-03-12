@@ -1,17 +1,13 @@
 #include "colorer/parsers/SchemeNode.h"
 
-SchemeNode::SchemeNode(SchemeNodeType _type) : type(_type)
+SchemeInherit::SchemeInherit() : SchemeNode(SchemeNodeType::SNT_INHERIT)
 {
-  if (type == SchemeNodeType::SNT_INHERIT) {
-    virtualEntryVector = std::make_unique<VirtualEntryVector>();
-  }
+  virtualEntryVector = std::make_unique<VirtualEntryVector>();
 }
 
-SchemeNode::~SchemeNode()
+SchemeInherit::~SchemeInherit()
 {
-  if (type == SchemeNodeType::SNT_INHERIT) {
-    for (auto it : *virtualEntryVector) {
-      delete it;
-    }
+  for (auto it : *virtualEntryVector) {
+    delete it;
   }
 }

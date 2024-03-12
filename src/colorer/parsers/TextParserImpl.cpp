@@ -159,7 +159,7 @@ void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region
   }
 }
 
-void TextParser::Impl::enterScheme(int lno, const SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::enterScheme(int lno, const SMatches* match, const SchemeBlock* schemeNode)
 {
   if (schemeNode->innerRegion) {
     enterScheme(lno, match->e[0], match->e[0], schemeNode->region);
@@ -175,7 +175,8 @@ void TextParser::Impl::enterScheme(int lno, const SMatches* match, const SchemeN
   }
 }
 
-void TextParser::Impl::leaveScheme(int /*lno*/, const SMatches* match, const SchemeNode* schemeNode)
+void TextParser::Impl::leaveScheme(int /*lno*/, const SMatches* match,
+                                   const SchemeBlock* schemeNode)
 {
   if (schemeNode->innerRegion) {
     leaveScheme(gy, match->s[0], match->s[0], schemeNode->region);
@@ -201,7 +202,7 @@ void TextParser::Impl::fillInvisibleSchemes(ParseCache* ch)
   enterScheme(gy, 0, 0, ch->clender->region);
 }
 
-int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, int /*hilen*/)
+int TextParser::Impl::searchKW(const SchemeKeywords* node, int /*no*/, int lowlen, int /*hilen*/)
 {
   if (node->kwList->count == 0 || node->kwList->minKeywordLength + gx > lowlen) {
     return MATCH_NOTHING;
@@ -273,7 +274,7 @@ int TextParser::Impl::searchKW(const SchemeNode* node, int /*no*/, int lowlen, i
   return MATCH_NOTHING;
 }
 
-int TextParser::Impl::searchIN(SchemeNode* node, int no, int lowLen, int hiLen)
+int TextParser::Impl::searchIN(SchemeInherit* node, int no, int lowLen, int hiLen)
 {
   if (!node->scheme) {
     return MATCH_NOTHING;
@@ -299,7 +300,7 @@ int TextParser::Impl::searchIN(SchemeNode* node, int no, int lowLen, int hiLen)
   return MATCH_NOTHING;
 }
 
-int TextParser::Impl::searchRE(SchemeNode* node, int /*no*/ no, int lowLen, int hiLen)
+int TextParser::Impl::searchRE(SchemeRe* node, int /*no*/, int lowLen, int hiLen)
 {
   SMatches match {};
   if (!node->start->parse(str, gx, node->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
@@ -321,7 +322,7 @@ int TextParser::Impl::searchRE(SchemeNode* node, int /*no*/ no, int lowLen, int 
   return MATCH_RE;
 }
 
-int TextParser::Impl::searchBL(SchemeNode* node, int no, int lowLen, int hiLen)
+int TextParser::Impl::searchBL(SchemeBlock* node, int no, int lowLen, int hiLen)
 {
   if (!node->scheme) {
     return MATCH_NOTHING;
@@ -451,29 +452,34 @@ int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen,
                          SchemeNode::schemeNodeTypeNames[static_cast<int>(schemeNode->type)]));
     switch (schemeNode->type) {
       case SchemeNode::SchemeNodeType::SNT_INHERIT: {
-        int re_result = searchIN(schemeNode.get(), no, lowLen, hiLen);
+        auto schemeNodeInherit = static_cast<SchemeInherit*>(schemeNode.get());
+        int re_result = searchIN(schemeNodeInherit, no, lowLen, hiLen);
         if (re_result != MATCH_NOTHING) {
           return re_result;
         }
         break;
       }
-      case SchemeNode::SchemeNodeType::SNT_KEYWORDS:
-        if (searchKW(schemeNode.get(), no, lowLen, hiLen) == MATCH_RE) {
+      case SchemeNode::SchemeNodeType::SNT_KEYWORDS: {
+        auto schemeNodeKe = static_cast<SchemeKeywords*>(schemeNode.get());
+        if (searchKW(schemeNodeKe, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
-
-      case SchemeNode::SchemeNodeType::SNT_RE:
-        if (searchRE(schemeNode.get(), no, lowLen, hiLen) == MATCH_RE) {
+      }
+      case SchemeNode::SchemeNodeType::SNT_RE: {
+        auto schemeNodeRe = static_cast<SchemeRe*>(schemeNode.get());
+        if (searchRE(schemeNodeRe, no, lowLen, hiLen) == MATCH_RE) {
           return MATCH_RE;
         }
         break;
-
-      case SchemeNode::SchemeNodeType::SNT_BLOCK:
-        if (searchBL(schemeNode.get(), no, lowLen, hiLen) != MATCH_NOTHING) {
+      }
+      case SchemeNode::SchemeNodeType::SNT_BLOCK: {
+        auto schemeNodeBlock = static_cast<SchemeBlock*>(schemeNode.get());
+        if (searchBL(schemeNodeBlock, no, lowLen, hiLen) != MATCH_NOTHING) {
           return MATCH_SCHEME;
         }
         break;
+      }
     }
     idx++;
   }

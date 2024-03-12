@@ -26,26 +26,61 @@ class SchemeNode
 
   SchemeNodeType type;
 
+  explicit SchemeNode(SchemeNodeType _type) : type(_type) {};
+  virtual ~SchemeNode() = default;
+};
+
+class SchemeInherit : public SchemeNode
+{
+ public:
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;
-
   std::unique_ptr<VirtualEntryVector> virtualEntryVector;
-  std::unique_ptr<KeywordList> kwList;
-  std::unique_ptr<icu::UnicodeSet> worddiv;
+  SchemeInherit();
+  ~SchemeInherit() override;
+};
 
+class SchemeRe : public SchemeNode
+{
+ public:
+  bool lowPriority = false;
+  std::unique_ptr<CRegExp> start;
+  const Region* region = nullptr;
+  const Region* regions[REGIONS_NUM] = {};
+  const Region* regionsn[NAMED_REGIONS_NUM] = {};
+
+  SchemeRe() : SchemeNode(SchemeNodeType::SNT_RE) {};
+  ~SchemeRe() override = default;
+};
+
+class SchemeBlock : public SchemeNode
+{
+ public:
+  bool innerRegion = false;
+  bool lowPriority = false;
+  bool lowContentPriority = false;
+  uUnicodeString schemeName = nullptr;
+  SchemeImpl* scheme = nullptr;
+  std::unique_ptr<CRegExp> start;
+  std::unique_ptr<CRegExp> end;
   const Region* region = nullptr;
   const Region* regions[REGIONS_NUM] = {};
   const Region* regionsn[NAMED_REGIONS_NUM] = {};
   const Region* regione[REGIONS_NUM] = {};
   const Region* regionen[NAMED_REGIONS_NUM] = {};
-  std::unique_ptr<CRegExp> start;
-  std::unique_ptr<CRegExp> end;
-  bool innerRegion = false;
-  bool lowPriority = false;
-  bool lowContentPriority = false;
 
-  explicit SchemeNode(SchemeNodeType type);
-  ~SchemeNode();
+  SchemeBlock() : SchemeNode(SchemeNodeType::SNT_BLOCK) {};
+  ~SchemeBlock() override = default;
+};
+
+class SchemeKeywords : public SchemeNode
+{
+ public:
+  bool lowPriority = false;
+  std::unique_ptr<KeywordList> kwList;
+  std::unique_ptr<icu::UnicodeSet> worddiv;
+  SchemeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
+  ~SchemeKeywords() override = default;
 };
 
 #endif  //_COLORER_SCHEMENODE_H_
