@@ -84,7 +84,7 @@ void VTList::deltree()
 bool VTList::push(SchemeInherit* node)
 {
   VTList* newitem;
-  if (!node || node->virtualEntryVector->empty()) {
+  if (!node || node->virtualEntryVector.empty()) {
     return false;
   }
   newitem = new VTList();
@@ -95,7 +95,7 @@ bool VTList::push(SchemeInherit* node)
   newitem->prev = last;
   last->next = newitem;
   last = last->next;
-  last->vlist = node->virtualEntryVector.get();
+  last->vlist = &node->virtualEntryVector;
   nodesnum++;
   return true;
 }

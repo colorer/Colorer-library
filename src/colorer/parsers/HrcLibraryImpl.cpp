@@ -655,8 +655,7 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
         }
         UnicodeString d_schemeName = UnicodeString(x_schemeName);
         UnicodeString d_substName = UnicodeString(x_substName);
-        scheme_node->virtualEntryVector->emplace_back(
-            new VirtualEntry(&d_schemeName, &d_substName));
+        scheme_node->virtualEntryVector.emplace_back(new VirtualEntry(&d_schemeName, &d_substName));
       }
     }
   }
@@ -1075,7 +1074,7 @@ void HrcLibrary::Impl::updateLinks()
             snode_inherit->schemeName.reset();
           }
 
-          for (auto vt : *snode_inherit->virtualEntryVector) {
+          for (auto vt : snode_inherit->virtualEntryVector) {
             if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
               UnicodeString* vsn =
                   qualifyForeignName(vt->virtSchemeName.get(), QualifyNameType::QNT_SCHEME, true);

@@ -35,8 +35,8 @@ class SchemeInherit : public SchemeNode
  public:
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;
-  std::unique_ptr<VirtualEntryVector> virtualEntryVector;
-  SchemeInherit();
+  VirtualEntryVector virtualEntryVector;
+  SchemeInherit() : SchemeNode(SchemeNodeType::SNT_INHERIT){};
   ~SchemeInherit() override;
 };
 
