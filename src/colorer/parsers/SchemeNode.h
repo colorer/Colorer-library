@@ -1,5 +1,5 @@
-#ifndef _COLORER_SCHEMENODE_H_
-#define _COLORER_SCHEMENODE_H_
+#ifndef COLORER_SCHEMENODE_H
+#define COLORER_SCHEMENODE_H
 
 #include "colorer/Common.h"
 #include "colorer/Region.h"
@@ -30,17 +30,17 @@ class SchemeNode
   virtual ~SchemeNode() = default;
 };
 
-class SchemeInherit : public SchemeNode
+class SchemeNodeInherit : public SchemeNode
 {
  public:
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;
   VirtualEntryVector virtualEntryVector;
-  SchemeInherit() : SchemeNode(SchemeNodeType::SNT_INHERIT){};
-  ~SchemeInherit() override;
+  SchemeNodeInherit() : SchemeNode(SchemeNodeType::SNT_INHERIT){};
+  ~SchemeNodeInherit() override;
 };
 
-class SchemeRe : public SchemeNode
+class SchemeNodeRegexp : public SchemeNode
 {
  public:
   bool lowPriority = false;
@@ -49,11 +49,11 @@ class SchemeRe : public SchemeNode
   const Region* regions[REGIONS_NUM] = {};
   const Region* regionsn[NAMED_REGIONS_NUM] = {};
 
-  SchemeRe() : SchemeNode(SchemeNodeType::SNT_RE) {};
-  ~SchemeRe() override = default;
+  SchemeNodeRegexp() : SchemeNode(SchemeNodeType::SNT_RE) {};
+  ~SchemeNodeRegexp() override = default;
 };
 
-class SchemeBlock : public SchemeNode
+class SchemeNodeBlock : public SchemeNode
 {
  public:
   bool innerRegion = false;
@@ -69,18 +69,18 @@ class SchemeBlock : public SchemeNode
   const Region* regione[REGIONS_NUM] = {};
   const Region* regionen[NAMED_REGIONS_NUM] = {};
 
-  SchemeBlock() : SchemeNode(SchemeNodeType::SNT_BLOCK) {};
-  ~SchemeBlock() override = default;
+  SchemeNodeBlock() : SchemeNode(SchemeNodeType::SNT_BLOCK) {};
+  ~SchemeNodeBlock() override = default;
 };
 
-class SchemeKeywords : public SchemeNode
+class SchemeNodeKeywords : public SchemeNode
 {
  public:
   bool lowPriority = false;
   std::unique_ptr<KeywordList> kwList;
   std::unique_ptr<icu::UnicodeSet> worddiv;
-  SchemeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
-  ~SchemeKeywords() override = default;
+  SchemeNodeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
+  ~SchemeNodeKeywords() override = default;
 };
 
-#endif  //_COLORER_SCHEMENODE_H_
+#endif  //COLORER_SCHEMENODE_H

@@ -81,7 +81,7 @@ void VTList::deltree()
   delete this;
 }
 
-bool VTList::push(SchemeInherit* node)
+bool VTList::push(SchemeNodeInherit* node)
 {
   VTList* newitem;
   if (!node || node->virtualEntryVector.empty()) {

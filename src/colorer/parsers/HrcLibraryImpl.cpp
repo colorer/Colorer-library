@@ -631,7 +631,7 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
         scheme->schemeName);
     return;
   }
-  auto scheme_node = std::make_unique<SchemeInherit>();
+  auto scheme_node = std::make_unique<SchemeNodeInherit>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
   UnicodeString* schemeName =
       qualifyForeignName(scheme_node->schemeName.get(), QualifyNameType::QNT_SCHEME, false);
@@ -686,7 +686,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
     return;
   }
 
-  auto scheme_node = std::make_unique<SchemeRe>();
+  auto scheme_node = std::make_unique<SchemeNodeRegexp>();
   auto dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = UnicodeString(value_low).compare(dhrcRegexpAttrPriority) == 0;
   scheme_node->start = std::move(regexp);
@@ -781,7 +781,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
   UnicodeString attr_ireg = UnicodeString(elem->getAttribute(hrcBlockAttrInnerRegion));
 
-  auto scheme_node = std::make_unique<SchemeBlock>();
+  auto scheme_node = std::make_unique<SchemeNodeBlock>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   scheme_node->lowPriority = UnicodeString(value_low).compare(attr_pr) == 0;
   scheme_node->lowContentPriority = UnicodeString(value_low).compare(attr_cpr) == 0;
@@ -859,7 +859,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
   auto priority_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
   auto count = getSchemeKeywordsCount(elem);
   auto ignorecase_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
-  auto scheme_node = std::make_unique<SchemeKeywords>();
+  auto scheme_node = std::make_unique<SchemeNodeKeywords>();
   scheme_node->worddiv = std::move(us_worddiv);
   scheme_node->lowPriority = UnicodeString(value_low).compare(priority_string) == 0;
   scheme_node->kwList = std::make_unique<KeywordList>(count);
@@ -875,7 +875,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
 }
 
 void HrcLibrary::Impl::loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
-                                          const std::unique_ptr<SchemeKeywords>& scheme_node,
+                                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node,
                                           const Region* region)
 {
   for (auto keyword = elem->getFirstChild(); keyword; keyword = keyword->getNextSibling()) {
@@ -899,7 +899,7 @@ void HrcLibrary::Impl::loopSchemeKeywords(const xercesc::DOMNode* elem, const Sc
 }
 
 void HrcLibrary::Impl::addSchemeKeyword(const xercesc::DOMElement* elem, const SchemeImpl* scheme,
-                                        SchemeKeywords* scheme_node, const Region* region,
+                                        SchemeNodeKeywords* scheme_node, const Region* region,
                                         KeywordInfo::KeywordType keyword_type)
 {
   const XMLCh* keyword_value = elem->getAttribute(hrcWordAttrName);
@@ -957,7 +957,7 @@ size_t HrcLibrary::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
   return result;
 }
 
-void HrcLibrary::Impl::loadRegions(SchemeRe* node, const xercesc::DOMElement* el)
+void HrcLibrary::Impl::loadRegions(SchemeNodeRegexp* node, const xercesc::DOMElement* el)
 {
   XMLCh rg_tmpl[] = u"region\0\0";
 
@@ -977,7 +977,7 @@ void HrcLibrary::Impl::loadRegions(SchemeRe* node, const xercesc::DOMElement* el
   }
 }
 
-void HrcLibrary::Impl::loadRegions(SchemeBlock* node, const xercesc::DOMElement* el,
+void HrcLibrary::Impl::loadRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el,
                                    bool start_element)
 {
   XMLCh rg_tmpl[] = u"region\0\0";
@@ -1009,7 +1009,7 @@ void HrcLibrary::Impl::loadRegions(SchemeBlock* node, const xercesc::DOMElement*
   }
 }
 
-void HrcLibrary::Impl::loadBlockRegions(SchemeBlock* node, const xercesc::DOMElement* el)
+void HrcLibrary::Impl::loadBlockRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el)
 {
   // regions as attributes in main block element
 
@@ -1040,7 +1040,7 @@ void HrcLibrary::Impl::updateLinks()
         auto& snode = scheme->nodes[sni];
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
-          auto snode_inherit = static_cast<SchemeBlock*>(snode.get());
+          auto snode_inherit = static_cast<SchemeNodeBlock*>(snode.get());
 
           if (snode_inherit->schemeName != nullptr && snode_inherit->scheme == nullptr) {
             UnicodeString* schemeName = qualifyForeignName(snode_inherit->schemeName.get(),
@@ -1058,7 +1058,7 @@ void HrcLibrary::Impl::updateLinks()
         }
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
-          auto snode_inherit = static_cast<SchemeInherit*>(snode.get());
+          auto snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
 
           if (snode_inherit->schemeName != nullptr && snode_inherit->scheme == nullptr) {
             UnicodeString* schemeName = qualifyForeignName(snode_inherit->schemeName.get(),

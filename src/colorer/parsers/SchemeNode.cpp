@@ -1,6 +1,6 @@
 #include "colorer/parsers/SchemeNode.h"
 
-SchemeInherit::~SchemeInherit()
+SchemeNodeInherit::~SchemeNodeInherit()
 {
   for (auto it : virtualEntryVector) {
     delete it;

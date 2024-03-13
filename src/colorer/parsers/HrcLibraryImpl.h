@@ -77,11 +77,11 @@ class HrcLibrary::Impl
   void parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   size_t getSchemeKeywordsCount(const xercesc::DOMNode* elem);
   void addSchemeKeyword(const xercesc::DOMElement* elem, const SchemeImpl* scheme,
-                        SchemeKeywords* scheme_node, const Region* region,
+                        SchemeNodeKeywords* scheme_node, const Region* region,
                   KeywordInfo::KeywordType keyword_type);
-  void loadBlockRegions(SchemeBlock* node, const xercesc::DOMElement* el);
-  void loadRegions(SchemeBlock* node, const xercesc::DOMElement* el, bool start_element);
-  void loadRegions(SchemeRe* node, const xercesc::DOMElement* el);
+  void loadBlockRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el);
+  void loadRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el, bool start_element);
+  void loadRegions(SchemeNodeRegexp* node, const xercesc::DOMElement* el);
 
   uUnicodeString qualifyOwnName(const UnicodeString& name);
   bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
@@ -94,7 +94,7 @@ class HrcLibrary::Impl
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
   void loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
-                          const std::unique_ptr<SchemeKeywords>& scheme_node, const Region* region);
+                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region);
   const XMLCh* getElementText(const xercesc::DOMElement* blkel) const;
 };
 

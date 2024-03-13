@@ -27,7 +27,7 @@ class VTList
   VTList();
   ~VTList();
   void deltree();
-  bool push(SchemeInherit* node);
+  bool push(SchemeNodeInherit* node);
   bool pop();
   SchemeImpl* pushvirt(SchemeImpl* scheme);
   void popvirt();
@@ -55,7 +55,7 @@ class ParseCache
   /** Particular parent block object, caused this scheme to
    * be instantiated.
    */
-  const SchemeBlock* clender = nullptr;
+  const SchemeNodeBlock* clender = nullptr;
 
   /**
    * Scheme virtualization cache entry
