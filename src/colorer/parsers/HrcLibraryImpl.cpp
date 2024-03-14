@@ -1025,6 +1025,30 @@ void HrcLibrary::Impl::loadBlockRegions(SchemeNodeBlock* node, const xercesc::DO
   }
 }
 
+void HrcLibrary::Impl::updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl** scheme_impl,
+                                        byte scheme_type)
+{
+  static const char* message[4] = {
+      "cannot resolve scheme name '{0}' of block in scheme '{1}'",
+      "cannot resolve scheme name '{0}' of inherit in scheme '{1}'",
+      "cannot resolve scheme name '{0}' of virtual in scheme '{1}'",
+      "cannot resolve subst-scheme name '{0}' of virtual in scheme '{1}'"};
+
+  if (scheme_name != nullptr && *scheme_impl == nullptr) {
+    UnicodeString* schemeName =
+        qualifyForeignName(scheme_name.get(), QualifyNameType::QNT_SCHEME, true);
+    if (schemeName != nullptr) {
+      *scheme_impl = schemeHash.find(*schemeName)->second;
+    }
+    else {
+      spdlog::error(message[scheme_type], scheme_name, (*scheme_impl)->schemeName);
+    }
+
+    delete schemeName;
+    scheme_name.reset();
+  }
+}
+
 void HrcLibrary::Impl::updateLinks()
 {
   while (structureChanged) {
@@ -1036,71 +1060,21 @@ void HrcLibrary::Impl::updateLinks()
       }
       FileType* old_parseType = current_parse_type;
       current_parse_type = scheme->fileType;
-      for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
-        auto& snode = scheme->nodes[sni];
+      for (auto &snode :scheme->nodes) {
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
-          auto snode_inherit = static_cast<SchemeNodeBlock*>(snode.get());
+          auto snode_block = static_cast<SchemeNodeBlock*>(snode.get());
 
-          if (snode_inherit->schemeName != nullptr && snode_inherit->scheme == nullptr) {
-            UnicodeString* schemeName = qualifyForeignName(snode_inherit->schemeName.get(),
-                                                           QualifyNameType::QNT_SCHEME, true);
-            if (schemeName != nullptr) {
-              snode_inherit->scheme = schemeHash.find(*schemeName)->second;
-            }
-            else {
-              spdlog::error("cannot resolve scheme name '{0}' in scheme '{1}'",
-                            *snode_inherit->schemeName, *scheme->schemeName);
-            }
-            delete schemeName;
-            snode_inherit->schemeName.reset();
-          }
+          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1);
         }
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
           auto snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
 
-          if (snode_inherit->schemeName != nullptr && snode_inherit->scheme == nullptr) {
-            UnicodeString* schemeName = qualifyForeignName(snode_inherit->schemeName.get(),
-                                                           QualifyNameType::QNT_SCHEME, true);
-            if (schemeName != nullptr) {
-              snode_inherit->scheme = schemeHash.find(*schemeName)->second;
-            }
-            else {
-              spdlog::error("cannot resolve scheme name '{0}' in scheme '{1}'",
-                            *snode_inherit->schemeName, *scheme->schemeName);
-            }
-            delete schemeName;
-            snode_inherit->schemeName.reset();
-          }
-
+          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2);
           for (auto vt : snode_inherit->virtualEntryVector) {
-            if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
-              UnicodeString* vsn =
-                  qualifyForeignName(vt->virtSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
-              if (vsn) {
-                vt->virtScheme = schemeHash.find(*vsn)->second;
-              }
-              else {
-                spdlog::error("cannot virtualize scheme '{0}' in scheme '{1}'",
-                              *vt->virtSchemeName, *scheme->schemeName);
-              }
-              delete vsn;
-              vt->virtSchemeName.reset();
-            }
-            if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
-              UnicodeString* vsn =
-                  qualifyForeignName(vt->substSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
-              if (vsn) {
-                vt->substScheme = schemeHash.find(*vsn)->second;
-              }
-              else {
-                spdlog::error("cannot virtualize using subst-scheme scheme '{0}' in scheme '{1}'",
-                              *vt->substSchemeName, *scheme->schemeName);
-              }
-              delete vsn;
-              vt->substSchemeName.reset();
-            }
+            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3);
+            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4);
           }
         }
       }

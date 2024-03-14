@@ -90,6 +90,7 @@ class HrcLibrary::Impl
                                     bool logErrors);
 
   void updateLinks();
+  void updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl** scheme_impl, byte scheme_type);
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
