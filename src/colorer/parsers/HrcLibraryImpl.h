@@ -86,7 +86,7 @@ class HrcLibrary::Impl
   uUnicodeString qualifyOwnName(const UnicodeString& name);
   bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
                       bool logErrors);
-  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,
+  uUnicodeString qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,
                                     bool logErrors);
 
   void updateLinks();
