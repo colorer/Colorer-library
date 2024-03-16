@@ -854,12 +854,10 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
     }
   }
 
-  auto priority_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
   auto count = getSchemeKeywordsCount(elem);
   auto ignorecase_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
   auto scheme_node = std::make_unique<SchemeNodeKeywords>();
   scheme_node->worddiv = std::move(us_worddiv);
-  scheme_node->lowPriority = UnicodeString(value_low).compare(priority_string) == 0;
   scheme_node->kwList = std::make_unique<KeywordList>(count);
   scheme_node->kwList->matchCase = UnicodeString(value_yes).compare(ignorecase_string) != 0;
 

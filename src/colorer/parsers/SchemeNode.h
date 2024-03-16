@@ -76,7 +76,6 @@ class SchemeNodeBlock : public SchemeNode
 class SchemeNodeKeywords : public SchemeNode
 {
  public:
-  bool lowPriority = false;
   std::unique_ptr<KeywordList> kwList;
   std::unique_ptr<icu::UnicodeSet> worddiv;
   SchemeNodeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
