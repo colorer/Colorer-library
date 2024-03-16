@@ -42,7 +42,6 @@ class TextParser::Impl
   bool breakParsing = false;
   bool invisibleSchemesFilled = false;
   bool updateCache = false;
-  const Region* picked = nullptr;
 
   ParseCache* cache = nullptr;
   ParseCache* parent = nullptr;

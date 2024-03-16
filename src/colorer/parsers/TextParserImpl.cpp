@@ -154,9 +154,6 @@ void TextParser::Impl::enterScheme(int lno, int sx, int ex, const Region* region
 void TextParser::Impl::leaveScheme(int lno, int sx, int ex, const Region* region)
 {
   regionHandler->leaveScheme(lno, str, sx, ex, region, baseScheme);
-  if (region != nullptr) {
-    picked = region;
-  }
 }
 
 void TextParser::Impl::enterScheme(int lno, const SMatches* match,
@@ -559,19 +556,6 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       if (breakParsing) {
         current_parse_line = end_line4parse;
         break;
-      }
-      if (picked != nullptr && gx + 11 <= matchend.s[0] && (*str)[gx] == 'C') {
-        int ci;
-        static char id[] = "fnq%Qtrjhg";
-        for (ci = 0; ci < 10; ci++)
-          if ((*str)[gx + 1 + ci] != id[ci] - 5) {
-            break;
-          }
-        if (ci == 10) {
-          addRegion(current_parse_line, gx, gx + 11, picked);
-          gx += 11;
-          continue;
-        }
       }
       int oy = current_parse_line;
       int re_result =
