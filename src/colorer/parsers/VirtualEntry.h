@@ -1,5 +1,5 @@
-#ifndef _COLORER_VIRTUALENTRY_H_
-#define _COLORER_VIRTUALENTRY_H_
+#ifndef COLORER_VIRTUALENTRY_H
+#define COLORER_VIRTUALENTRY_H
 
 class SchemeImpl;
 
@@ -9,14 +9,13 @@ class SchemeImpl;
 class VirtualEntry
 {
  public:
-  SchemeImpl* virtScheme;
-  SchemeImpl* substScheme;
+  SchemeImpl* virtScheme = nullptr;
+  SchemeImpl* substScheme = nullptr;
   uUnicodeString virtSchemeName;
   uUnicodeString substSchemeName;
 
   VirtualEntry(const UnicodeString* scheme, const UnicodeString* subst)
   {
-    virtScheme = substScheme = nullptr;
     virtSchemeName = std::make_unique<UnicodeString>(*scheme);
     substSchemeName = std::make_unique<UnicodeString>(*subst);
   }
@@ -24,4 +23,4 @@ class VirtualEntry
   ~VirtualEntry() = default;
 };
 
-#endif  // _COLORER_VIRTUALENTRY_H_
+#endif  // COLORER_VIRTUALENTRY_H

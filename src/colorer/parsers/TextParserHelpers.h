@@ -19,12 +19,15 @@
 */
 class VTList
 {
-  VirtualEntryVector* vlist;
-  VTList *prev, *next, *last, *shadowlast;
-  int nodesnum;
+  VirtualEntryVector* vlist = nullptr;
+  VTList* prev = nullptr;
+  VTList* next = nullptr;
+  VTList* last = this;
+  VTList* shadowlast = nullptr;
+  int nodesnum = 0;
 
  public:
-  VTList();
+  VTList() = default;
   ~VTList();
   void deltree();
   bool push(SchemeNodeInherit* node);
@@ -63,7 +66,7 @@ class ParseCache
   VirtualEntryVector** vcache = nullptr;
 
   /**
-   * RE Match object for start RE of the enwrapped &lt;block> object
+   * RE Match object for start RE of the enwrapped <block> object
    */
   SMatches matchstart = {};
   /**

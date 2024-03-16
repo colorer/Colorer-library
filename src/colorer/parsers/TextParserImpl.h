@@ -30,9 +30,9 @@ class TextParser::Impl
  private:
   UnicodeString* str = nullptr;
   int stackLevel = 0;
-  int gy = 0;
+  int current_parse_line = 0;
   int gx = 0;
-  int gy2 = 0;
+  int end_line4parse = 0;
   int len = -1;
   int clearLine = -1;
   int endLine = 0;
