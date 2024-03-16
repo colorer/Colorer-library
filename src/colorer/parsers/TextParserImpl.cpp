@@ -4,13 +4,11 @@
 TextParser::Impl::Impl()
 {
   CTRACE(spdlog::trace("[TextParserImpl] constructor"));
-  cache = new ParseCache();
-  clearCache();
+  initCache();
 }
 
 TextParser::Impl::~Impl()
 {
-  clearCache();
   delete cache;
 }
 
@@ -20,7 +18,7 @@ void TextParser::Impl::setFileType(FileType* type)
   if (type != nullptr) {
     baseScheme = (SchemeImpl*) (type->getBaseScheme());
   }
-  clearCache();
+  initCache();
 }
 
 void TextParser::Impl::setLineSource(LineSource* lh)
@@ -116,21 +114,12 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   return endLine;
 }
 
-void TextParser::Impl::clearCache()
+void TextParser::Impl::initCache()
 {
-  ParseCache *tmp, *tmp2;
-  tmp = cache->next;
-  while (tmp) {
-    tmp2 = tmp->next;
-    delete tmp;
-    tmp = tmp2;
-  }
-  delete cache->children;
-  delete cache->backLine;
-  cache->backLine = nullptr;
-  cache->sline = 0;
+  if (cache)
+    delete cache;
+  cache = new ParseCache();
   cache->eline = 0x7FFFFFF;
-  cache->children = cache->parent = cache->next = nullptr;
 }
 
 void TextParser::Impl::breakParse()
@@ -557,16 +546,19 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
         current_parse_line = end_line4parse;
         break;
       }
-      int oy = current_parse_line;
+      int old_current_parse_line = current_parse_line;
       int re_result =
           searchMatch(baseScheme, current_parse_line, matchend.s[0],
                       matchend.s[0] + maxBlockSize > len ? len : matchend.s[0] + maxBlockSize);
-      if ((re_result == MATCH_SCHEME && (oy != current_parse_line || matchend.s[0] < gx)) || (re_result == MATCH_RE && matchend.s[0] < gx)) {
+      if ((re_result == MATCH_SCHEME &&
+           (old_current_parse_line != current_parse_line || matchend.s[0] < gx)) ||
+          (re_result == MATCH_RE && matchend.s[0] < gx))
+      {
         len = -1;
         ret = LINE_REPARSE;
         break;
       }
-      if (oy == current_parse_line) {
+      if (old_current_parse_line == current_parse_line) {
         len = parent_len;
       }
       if (re_result == MATCH_NOTHING) {
