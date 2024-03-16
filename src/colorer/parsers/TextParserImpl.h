@@ -24,15 +24,15 @@ class TextParser::Impl
   void setRegionHandler(RegionHandler* rh);
   int parse(int from, int num, TextParseMode mode);
   void breakParse();
-  void clearCache();
+  void initCache();
   void setMaxBlockSize(int max_block_size);
 
  private:
   UnicodeString* str = nullptr;
   int stackLevel = 0;
-  int gy = 0;
+  int current_parse_line = 0;
   int gx = 0;
-  int gy2 = 0;
+  int end_line4parse = 0;
   int len = -1;
   int clearLine = -1;
   int endLine = 0;
@@ -42,7 +42,6 @@ class TextParser::Impl
   bool breakParsing = false;
   bool invisibleSchemesFilled = false;
   bool updateCache = false;
-  const Region* picked = nullptr;
 
   ParseCache* cache = nullptr;
   ParseCache* parent = nullptr;
@@ -61,13 +60,13 @@ class TextParser::Impl
   void addRegion(int lno, int sx, int ex, const Region* region);
   void enterScheme(int lno, int sx, int ex, const Region* region);
   void leaveScheme(int lno, int sx, int ex, const Region* region);
-  void enterScheme(int lno, const SMatches* match, const SchemeNode* schemeNode);
-  void leaveScheme(int, const SMatches* match, const SchemeNode* schemeNode);
+  void enterScheme(int lno, const SMatches* match, const SchemeNodeBlock* schemeNode);
+  void leaveScheme(int, const SMatches* match, const SchemeNodeBlock* schemeNode);
 
-  int searchKW(const SchemeNode* node, int no, int lowLen, int hiLen);
-  int searchIN(SchemeNode* node, int no, int lowLen, int hiLen);
-  int searchRE(SchemeNode* node, int no, int lowLen, int hiLen);
-  int searchBL(SchemeNode* node, int no, int lowLen, int hiLen);
+  int searchKW(const SchemeNodeKeywords* node, int, int lowlen, int);
+  int searchIN(SchemeNodeInherit* node, int no, int lowLen, int hiLen);
+  int searchRE(SchemeNodeRegexp* node, int no, int lowLen, int hiLen);
+  int searchBL(SchemeNodeBlock* node, int no, int lowLen, int hiLen);
   int searchMatch(const SchemeImpl* cscheme, int no, int lowLen, int hiLen);
   bool colorize(CRegExp* root_end_re, bool lowContentPriority);
 };

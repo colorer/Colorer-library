@@ -513,16 +513,14 @@ void HrcLibrary::Impl::addTypeRegion(const xercesc::DOMElement* elem)
   }
 
   UnicodeString d_regionparent = UnicodeString(regionParent);
-  UnicodeString* qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr,
-                                             QualifyNameType::QNT_DEFINE, true);
+  auto qname2 = qualifyForeignName(*regionParent != '\0' ? &d_regionparent : nullptr,
+                                   QualifyNameType::QNT_DEFINE, true);
 
   UnicodeString regiondescr = UnicodeString(regionDescr);
   const Region* region =
-      new Region(*qname1, &regiondescr, getRegion(qname2), regionNamesVector.size());
+      new Region(*qname1, &regiondescr, getRegion(qname2.get()), regionNamesVector.size());
   regionNamesVector.push_back(region);
   regionNamesHash.emplace(*qname1, region);
-
-  delete qname2;
 }
 
 void HrcLibrary::Impl::addTypeEntity(const xercesc::DOMElement* elem)
@@ -631,13 +629,13 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
         scheme->schemeName);
     return;
   }
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_INHERIT);
+  auto scheme_node = std::make_unique<SchemeNodeInherit>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(nqSchemeName);
-  UnicodeString* schemeName =
+  auto schemeName =
       qualifyForeignName(scheme_node->schemeName.get(), QualifyNameType::QNT_SCHEME, false);
   if (schemeName != nullptr) {
     scheme_node->scheme = schemeHash.find(*schemeName)->second;
-    scheme_node->schemeName.reset(schemeName);
+    scheme_node->schemeName = std::move(schemeName);
   }
 
   for (xercesc::DOMNode* node = elem->getFirstChild(); node != nullptr;
@@ -655,8 +653,7 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const xercesc::DOMEl
         }
         UnicodeString d_schemeName = UnicodeString(x_schemeName);
         UnicodeString d_substName = UnicodeString(x_substName);
-        scheme_node->virtualEntryVector->emplace_back(
-            new VirtualEntry(&d_schemeName, &d_substName));
+        scheme_node->virtualEntryVector.emplace_back(new VirtualEntry(&d_schemeName, &d_substName));
       }
     }
   }
@@ -687,14 +684,13 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const xercesc::DOMEle
     return;
   }
 
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_RE);
+  auto scheme_node = std::make_unique<SchemeNodeRegexp>();
   auto dhrcRegexpAttrPriority = UnicodeString(elem->getAttribute(hrcRegexpAttrPriority));
   scheme_node->lowPriority = UnicodeString(value_low).compare(dhrcRegexpAttrPriority) == 0;
   scheme_node->start = std::move(regexp);
   scheme_node->start->setPositionMoves(false);
-  scheme_node->end = nullptr;
 
-  loadRegions(scheme_node.get(), elem, true);
+  loadRegions(scheme_node.get(), elem);
   if (scheme_node->region) {
     scheme_node->regions[0] = scheme_node->region;
   }
@@ -783,7 +779,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const xercesc::DOMElem
   UnicodeString attr_cpr = UnicodeString(elem->getAttribute(hrcBlockAttrContentPriority));
   UnicodeString attr_ireg = UnicodeString(elem->getAttribute(hrcBlockAttrInnerRegion));
 
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_BLOCK);
+  auto scheme_node = std::make_unique<SchemeNodeBlock>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
   scheme_node->lowPriority = UnicodeString(value_low).compare(attr_pr) == 0;
   scheme_node->lowContentPriority = UnicodeString(value_low).compare(attr_cpr) == 0;
@@ -858,12 +854,10 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
     }
   }
 
-  auto priority_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrPriority));
   auto count = getSchemeKeywordsCount(elem);
   auto ignorecase_string = UnicodeString(elem->getAttribute(hrcKeywordsAttrIgnorecase));
-  auto scheme_node = std::make_unique<SchemeNode>(SchemeNode::SchemeNodeType::SNT_KEYWORDS);
+  auto scheme_node = std::make_unique<SchemeNodeKeywords>();
   scheme_node->worddiv = std::move(us_worddiv);
-  scheme_node->lowPriority = UnicodeString(value_low).compare(priority_string) == 0;
   scheme_node->kwList = std::make_unique<KeywordList>(count);
   scheme_node->kwList->matchCase = UnicodeString(value_yes).compare(ignorecase_string) != 0;
 
@@ -877,7 +871,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
 }
 
 void HrcLibrary::Impl::loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
-                                          const std::unique_ptr<SchemeNode>& scheme_node,
+                                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node,
                                           const Region* region)
 {
   for (auto keyword = elem->getFirstChild(); keyword; keyword = keyword->getNextSibling()) {
@@ -901,7 +895,7 @@ void HrcLibrary::Impl::loopSchemeKeywords(const xercesc::DOMNode* elem, const Sc
 }
 
 void HrcLibrary::Impl::addSchemeKeyword(const xercesc::DOMElement* elem, const SchemeImpl* scheme,
-                                        SchemeNode* scheme_node, const Region* region,
+                                        SchemeNodeKeywords* scheme_node, const Region* region,
                                         KeywordInfo::KeywordType keyword_type)
 {
   const XMLCh* keyword_value = elem->getAttribute(hrcWordAttrName);
@@ -959,7 +953,27 @@ size_t HrcLibrary::Impl::getSchemeKeywordsCount(const xercesc::DOMNode* elem)
   return result;
 }
 
-void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* el,
+void HrcLibrary::Impl::loadRegions(SchemeNodeRegexp* node, const xercesc::DOMElement* el)
+{
+  XMLCh rg_tmpl[] = u"region\0\0";
+
+  if (el) {
+    if (node->region == nullptr) {
+      node->region = getNCRegion(el, rg_tmpl);
+    }
+
+    for (int i = 0; i < REGIONS_NUM; i++) {
+      rg_tmpl[6] = static_cast<XMLCh>((i < 0xA ? i : i + 39) + '0');
+      node->regions[i] = getNCRegion(el, rg_tmpl);
+    }
+  }
+
+  for (int i = 0; i < NAMED_REGIONS_NUM; i++) {
+    node->regionsn[i] = getNCRegion(node->start->getBracketName(i), false);
+  }
+}
+
+void HrcLibrary::Impl::loadRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el,
                                    bool start_element)
 {
   XMLCh rg_tmpl[] = u"region\0\0";
@@ -991,7 +1005,7 @@ void HrcLibrary::Impl::loadRegions(SchemeNode* node, const xercesc::DOMElement* 
   }
 }
 
-void HrcLibrary::Impl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* el)
+void HrcLibrary::Impl::loadBlockRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el)
 {
   // regions as attributes in main block element
 
@@ -1007,6 +1021,28 @@ void HrcLibrary::Impl::loadBlockRegions(SchemeNode* node, const xercesc::DOMElem
   }
 }
 
+void HrcLibrary::Impl::updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl** scheme_impl,
+                                        byte scheme_type, SchemeImpl* current_scheme)
+{
+  static const char* message[4] = {
+      "cannot resolve scheme name '{0}' of block in scheme '{1}'",
+      "cannot resolve scheme name '{0}' of inherit in scheme '{1}'",
+      "cannot resolve scheme name '{0}' of virtual in scheme '{1}'",
+      "cannot resolve subst-scheme name '{0}' of virtual in scheme '{1}'"};
+
+  if (scheme_name != nullptr && *scheme_impl == nullptr) {
+    auto schemeName = qualifyForeignName(scheme_name.get(), QualifyNameType::QNT_SCHEME, true);
+    if (schemeName != nullptr) {
+      *scheme_impl = schemeHash.find(*schemeName)->second;
+    }
+    else {
+      spdlog::error(message[scheme_type], scheme_name, current_scheme->schemeName);
+    }
+
+    scheme_name.reset();
+  }
+}
+
 void HrcLibrary::Impl::updateLinks()
 {
   while (structureChanged) {
@@ -1018,53 +1054,21 @@ void HrcLibrary::Impl::updateLinks()
       }
       FileType* old_parseType = current_parse_type;
       current_parse_type = scheme->fileType;
-      for (size_t sni = 0; sni < scheme->nodes.size(); sni++) {
-        auto& snode = scheme->nodes[sni];
-        if (snode->schemeName != nullptr &&
-            (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK ||
-             snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) &&
-            snode->scheme == nullptr)
-        {
-          UnicodeString* schemeName =
-              qualifyForeignName(snode->schemeName.get(), QualifyNameType::QNT_SCHEME, true);
-          if (schemeName != nullptr) {
-            snode->scheme = schemeHash.find(*schemeName)->second;
-          }
-          else {
-            spdlog::error("cannot resolve scheme name '{0}' in scheme '{1}'", *snode->schemeName,
-                          *scheme->schemeName);
-          }
-          delete schemeName;
-          snode->schemeName.reset();
+      for (auto &snode :scheme->nodes) {
+
+        if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
+          auto snode_block = static_cast<SchemeNodeBlock*>(snode.get());
+
+          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1, scheme);
         }
+
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
-          for (auto vt : *snode->virtualEntryVector) {
-            if (vt->virtScheme == nullptr && vt->virtSchemeName != nullptr) {
-              UnicodeString* vsn =
-                  qualifyForeignName(vt->virtSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
-              if (vsn) {
-                vt->virtScheme = schemeHash.find(*vsn)->second;
-              }
-              else {
-                spdlog::error("cannot virtualize scheme '{0}' in scheme '{1}'",
-                              *vt->virtSchemeName, *scheme->schemeName);
-              }
-              delete vsn;
-              vt->virtSchemeName.reset();
-            }
-            if (vt->substScheme == nullptr && vt->substSchemeName != nullptr) {
-              UnicodeString* vsn =
-                  qualifyForeignName(vt->substSchemeName.get(), QualifyNameType::QNT_SCHEME, true);
-              if (vsn) {
-                vt->substScheme = schemeHash.find(*vsn)->second;
-              }
-              else {
-                spdlog::error("cannot virtualize using subst-scheme scheme '{0}' in scheme '{1}'",
-                              *vt->substSchemeName, *scheme->schemeName);
-              }
-              delete vsn;
-              vt->substSchemeName.reset();
-            }
+          auto snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
+
+          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2, scheme);
+          for (auto vt : snode_inherit->virtualEntryVector) {
+            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3, scheme);
+            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4, scheme);
           }
         }
       }
@@ -1123,7 +1127,7 @@ bool HrcLibrary::Impl::checkNameExist(const UnicodeString* name, FileType* parse
   return true;
 }
 
-UnicodeString* HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name,
+uUnicodeString HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name,
                                                     QualifyNameType qntype, bool logErrors)
 {
   if (name == nullptr) {
@@ -1148,8 +1152,9 @@ UnicodeString* HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name,
       loadFileType(prefType);
     }
     if (prefType == current_parse_type || prefType->pimpl->type_loading) {
-      return checkNameExist(name, prefType, qntype, logErrors) ? (new UnicodeString(*name))
-                                                               : nullptr;
+      return checkNameExist(name, prefType, qntype, logErrors)
+          ? std::make_unique<UnicodeString>(*name)
+          : nullptr;
     }
   }
   else {  // unqualified name
@@ -1169,7 +1174,7 @@ UnicodeString* HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name,
       auto qname = std::make_unique<UnicodeString>(tname);
       qname->append(":").append(*name);
       if (checkNameExist(qname.get(), importer, qntype, false)) {
-        return qname.release();
+        return qname;
       }
     }
     if (logErrors) {
@@ -1207,11 +1212,10 @@ uUnicodeString HrcLibrary::Impl::useEntities(const UnicodeString* name)
     }
     UnicodeString enname(*name, epos + 1, elpos - epos - 1);
 
-    UnicodeString* qEnName = qualifyForeignName(&enname, QualifyNameType::QNT_ENTITY, true);
+    auto qEnName = qualifyForeignName(&enname, QualifyNameType::QNT_ENTITY, true);
     const UnicodeString* enval = nullptr;
     if (qEnName != nullptr) {
       enval = schemeEntitiesHash.find(*qEnName)->second;
-      delete qEnName;
     }
     if (enval == nullptr) {
       epos++;
@@ -1234,7 +1238,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
     return nullptr;
   }
   const Region* reg = nullptr;
-  UnicodeString* qname = qualifyForeignName(name, QualifyNameType::QNT_DEFINE, logErrors);
+  auto qname = qualifyForeignName(name, QualifyNameType::QNT_DEFINE, logErrors);
   if (qname == nullptr) {
     return nullptr;
   }
@@ -1243,7 +1247,6 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
     reg = reg_->second;
   }
 
-  delete qname;
   /** Check for 'default' region request.
       Regions with this name are always transparent
   */

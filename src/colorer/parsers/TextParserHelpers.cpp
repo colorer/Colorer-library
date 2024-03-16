@@ -10,7 +10,7 @@ ParseCache::~ParseCache()
   delete children;
   prev = nullptr;
 
-  while (next) {
+  if (next) {
     ParseCache* tmp;
     tmp = next;
     while (tmp->next) {
@@ -22,7 +22,6 @@ ParseCache::~ParseCache()
       tmp->next = nullptr;
     }
     delete next;
-    next = nullptr;
   }
 
   delete[] vcache;
@@ -55,14 +54,6 @@ ParseCache* ParseCache::searchLine(int ln, ParseCache** cache)
 
 /////////////////////////////////////////////////////////////////////////
 // Virtual tables list
-VTList::VTList()
-{
-  vlist = nullptr;
-  prev = next = nullptr;
-  last = this;
-  shadowlast = nullptr;
-  nodesnum = 0;
-}
 
 VTList::~VTList()
 {
@@ -81,13 +72,12 @@ void VTList::deltree()
   delete this;
 }
 
-bool VTList::push(SchemeNode* node)
+bool VTList::push(SchemeNodeInherit* node)
 {
-  VTList* newitem;
-  if (!node || node->virtualEntryVector->empty()) {
+  if (!node || node->virtualEntryVector.empty()) {
     return false;
   }
-  newitem = new VTList();
+  auto newitem = new VTList();
   if (last->next) {
     last->next->prev = newitem;
     newitem->next = last->next;
@@ -95,16 +85,15 @@ bool VTList::push(SchemeNode* node)
   newitem->prev = last;
   last->next = newitem;
   last = last->next;
-  last->vlist = node->virtualEntryVector.get();
+  last->vlist = &node->virtualEntryVector;
   nodesnum++;
   return true;
 }
 
 bool VTList::pop()
 {
-  VTList* ditem;
   //  FAULT(last == this);
-  ditem = last;
+  VTList* ditem = last;
   if (ditem->next) {
     ditem->next->prev = ditem->prev;
   }
@@ -121,8 +110,7 @@ SchemeImpl* VTList::pushvirt(SchemeImpl* scheme)
   VTList* curvl = nullptr;
 
   for (VTList* vl = last; vl && vl->prev; vl = vl->prev) {
-    for (size_t idx = 0; idx < vl->vlist->size(); idx++) {
-      VirtualEntry* ve = vl->vlist->at(idx);
+    for (auto ve : *vl->vlist) {
       if (ret == ve->virtScheme && ve->substScheme) {
         ret = ve->substScheme;
         curvl = vl;
@@ -157,12 +145,11 @@ void VTList::clear()
 
 VirtualEntryVector** VTList::store()
 {
-  VirtualEntryVector** store;
-  int i = 0;
   if (!nodesnum || last == this) {
     return nullptr;
   }
-  store = new VirtualEntryVector*[nodesnum + 1];
+  int i = 0;
+  auto store = new VirtualEntryVector*[nodesnum + 1];
   for (VTList* list = this->next; list; list = list->next) {
     store[i++] = list->vlist;
     if (list == this->last) {
@@ -175,12 +162,12 @@ VirtualEntryVector** VTList::store()
 
 bool VTList::restore(VirtualEntryVector** store)
 {
-  VTList* prevpos = nullptr;
-  VTList* pos = this;
   if (next || prev || !store) {
     return false;
   }
 
+  VTList* prevpos;
+  VTList* pos = this;
   for (int i = 0; store[i] != nullptr; i++) {
     pos->next = new VTList;
     prevpos = pos;

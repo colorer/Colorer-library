@@ -10,7 +10,7 @@ void TextParser::breakParse()
 
 void TextParser::clearCache()
 {
-  pimpl->clearCache();
+  pimpl->initCache();
 }
 
 int TextParser::parse(int from, int num, TextParseMode mode)

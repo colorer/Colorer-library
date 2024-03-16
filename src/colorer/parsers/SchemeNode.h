@@ -1,5 +1,5 @@
-#ifndef _COLORER_SCHEMENODE_H_
-#define _COLORER_SCHEMENODE_H_
+#ifndef COLORER_SCHEMENODE_H
+#define COLORER_SCHEMENODE_H
 
 #include "colorer/Common.h"
 #include "colorer/Region.h"
@@ -26,26 +26,60 @@ class SchemeNode
 
   SchemeNodeType type;
 
+  explicit SchemeNode(SchemeNodeType _type) : type(_type) {};
+  virtual ~SchemeNode() = default;
+};
+
+class SchemeNodeInherit : public SchemeNode
+{
+ public:
   uUnicodeString schemeName = nullptr;
   SchemeImpl* scheme = nullptr;
+  VirtualEntryVector virtualEntryVector;
+  SchemeNodeInherit() : SchemeNode(SchemeNodeType::SNT_INHERIT){};
+  ~SchemeNodeInherit() override;
+};
 
-  std::unique_ptr<VirtualEntryVector> virtualEntryVector;
-  std::unique_ptr<KeywordList> kwList;
-  std::unique_ptr<icu::UnicodeSet> worddiv;
+class SchemeNodeRegexp : public SchemeNode
+{
+ public:
+  bool lowPriority = false;
+  std::unique_ptr<CRegExp> start;
+  const Region* region = nullptr;
+  const Region* regions[REGIONS_NUM] = {};
+  const Region* regionsn[NAMED_REGIONS_NUM] = {};
 
+  SchemeNodeRegexp() : SchemeNode(SchemeNodeType::SNT_RE) {};
+  ~SchemeNodeRegexp() override = default;
+};
+
+class SchemeNodeBlock : public SchemeNode
+{
+ public:
+  bool innerRegion = false;
+  bool lowPriority = false;
+  bool lowContentPriority = false;
+  uUnicodeString schemeName = nullptr;
+  SchemeImpl* scheme = nullptr;
+  std::unique_ptr<CRegExp> start;
+  std::unique_ptr<CRegExp> end;
   const Region* region = nullptr;
   const Region* regions[REGIONS_NUM] = {};
   const Region* regionsn[NAMED_REGIONS_NUM] = {};
   const Region* regione[REGIONS_NUM] = {};
   const Region* regionen[NAMED_REGIONS_NUM] = {};
-  std::unique_ptr<CRegExp> start;
-  std::unique_ptr<CRegExp> end;
-  bool innerRegion = false;
-  bool lowPriority = false;
-  bool lowContentPriority = false;
 
-  explicit SchemeNode(SchemeNodeType type);
-  ~SchemeNode();
+  SchemeNodeBlock() : SchemeNode(SchemeNodeType::SNT_BLOCK) {};
+  ~SchemeNodeBlock() override = default;
 };
 
-#endif  //_COLORER_SCHEMENODE_H_
+class SchemeNodeKeywords : public SchemeNode
+{
+ public:
+  std::unique_ptr<KeywordList> kwList;
+  std::unique_ptr<icu::UnicodeSet> worddiv;
+  SchemeNodeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
+  ~SchemeNodeKeywords() override = default;
+};
+
+#endif  //COLORER_SCHEMENODE_H

@@ -77,23 +77,26 @@ class HrcLibrary::Impl
   void parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElement* elem);
   size_t getSchemeKeywordsCount(const xercesc::DOMNode* elem);
   void addSchemeKeyword(const xercesc::DOMElement* elem, const SchemeImpl* scheme,
-                  SchemeNode* scheme_node, const Region* region,
+                        SchemeNodeKeywords* scheme_node, const Region* region,
                   KeywordInfo::KeywordType keyword_type);
-  void loadBlockRegions(SchemeNode* node, const xercesc::DOMElement* elem);
-  void loadRegions(SchemeNode* node, const xercesc::DOMElement* elem, bool start_element);
+  void loadBlockRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el);
+  void loadRegions(SchemeNodeBlock* node, const xercesc::DOMElement* el, bool start_element);
+  void loadRegions(SchemeNodeRegexp* node, const xercesc::DOMElement* el);
 
   uUnicodeString qualifyOwnName(const UnicodeString& name);
   bool checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
                       bool logErrors);
-  UnicodeString* qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,
+  uUnicodeString qualifyForeignName(const UnicodeString* name, QualifyNameType qntype,
                                     bool logErrors);
 
   void updateLinks();
+  void updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl** scheme_impl, byte scheme_type,
+                        SchemeImpl* current_scheme);
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const xercesc::DOMElement* elem, const XMLCh* tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
   void loopSchemeKeywords(const xercesc::DOMNode* elem, const SchemeImpl* scheme,
-                    const std::unique_ptr<SchemeNode>& scheme_node, const Region* region);
+                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region);
   const XMLCh* getElementText(const xercesc::DOMElement* blkel) const;
 };
 
