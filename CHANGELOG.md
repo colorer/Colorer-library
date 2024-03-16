@@ -1,3 +1,12 @@
+## [1.3.3] - 2024-03-16
+
+### Fixed
+
+- The length of the string used to detecting the file type takes into account the length restrictions
+- Memory leak on reading xml files
+- Removed unnecessary checks for keywords, which increased the speed
+- Reduced memory consumption for storing schemes
+
 ## [1.3.2] - 2024-01-20
 
 ### Fixed

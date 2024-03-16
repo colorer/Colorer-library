@@ -3,7 +3,7 @@
 
 #define COLORER_VER_MAJOR 1
 #define COLORER_VER_MINOR 3
-#define COLORER_VER_PATCH 2
+#define COLORER_VER_PATCH 3
 
 #define COLORER_COPYRIGHT "(c) 1999-2009 Igor Russkih, (c) 2009-2021 Aleksey Dobrunov"
 
