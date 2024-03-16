@@ -116,8 +116,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
 
 void TextParser::Impl::initCache()
 {
-  if (cache)
-    delete cache;
+  delete cache;
   cache = new ParseCache();
   cache->eline = 0x7FFFFFF;
 }

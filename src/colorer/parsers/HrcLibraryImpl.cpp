@@ -1022,7 +1022,7 @@ void HrcLibrary::Impl::loadBlockRegions(SchemeNodeBlock* node, const xercesc::DO
 }
 
 void HrcLibrary::Impl::updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl** scheme_impl,
-                                        byte scheme_type)
+                                        byte scheme_type, SchemeImpl* current_scheme)
 {
   static const char* message[4] = {
       "cannot resolve scheme name '{0}' of block in scheme '{1}'",
@@ -1036,7 +1036,7 @@ void HrcLibrary::Impl::updateSchemeLink(uUnicodeString& scheme_name, SchemeImpl*
       *scheme_impl = schemeHash.find(*schemeName)->second;
     }
     else {
-      spdlog::error(message[scheme_type], scheme_name, (*scheme_impl)->schemeName);
+      spdlog::error(message[scheme_type], scheme_name, current_scheme->schemeName);
     }
 
     scheme_name.reset();
@@ -1059,16 +1059,16 @@ void HrcLibrary::Impl::updateLinks()
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
           auto snode_block = static_cast<SchemeNodeBlock*>(snode.get());
 
-          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1);
+          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1, scheme);
         }
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
           auto snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
 
-          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2);
+          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2, scheme);
           for (auto vt : snode_inherit->virtualEntryVector) {
-            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3);
-            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4);
+            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3, scheme);
+            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4, scheme);
           }
         }
       }
