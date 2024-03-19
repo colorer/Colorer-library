@@ -213,16 +213,3 @@ set_target_properties(colorer_lib PROPERTIES
     SOVERSION ${COLORER_VERSION_MAJOR}
     DEBUG_POSTFIX "d"
     )
-#====================================================
-# test
-#====================================================
-
-# static analyze
-if (COLORER_PVS_STUDIO_CHECK)
-  pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
-      ANALYZE ${PROJECT_NAME}
-      MODE GA 64 OP CS
-      CFG_TEXT "exclude-path=*/external/*"
-      OUTPUT FORMAT errorfile
-      LOG ${PROJECT_NAME}.err)
-endif ()

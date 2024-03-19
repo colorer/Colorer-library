@@ -23,7 +23,6 @@ message("Build type for Colorer: ${CMAKE_BUILD_TYPE}")
 # global settings
 #====================================================
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
-option(COLORER_PVS_STUDIO_CHECK "Check project in PVS-Studio" OFF)
 option(COLORER_WIN64_BUILD "Build for x64, else x86" ON)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 
