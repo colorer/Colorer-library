@@ -19,6 +19,7 @@ set(SRC_COLORER
     colorer/common/Colorer.h
     colorer/common/Exception.cpp
     colorer/common/Features.h
+    colorer/common/platform.h
     colorer/cregexp/cregexp.cpp
     colorer/cregexp/cregexp.h
     colorer/editor/BaseEditor.cpp
@@ -125,7 +126,7 @@ set(SRC_COLORER
     colorer/xml/XmlTagDefs.h
     colorer/xml/ZipXmlInputSource.cpp
     colorer/xml/ZipXmlInputSource.h
-    )
+)
 
 #====================================================
 # common flags

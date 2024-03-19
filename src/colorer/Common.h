@@ -6,6 +6,7 @@ typedef unsigned char byte;
 
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <colorer/common/platform.h>
 #include <colorer/common/Features.h>
 #include <colorer/unicode/String.h>
 #include <colorer/unicode/SString.h>
