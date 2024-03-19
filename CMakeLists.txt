@@ -44,11 +44,6 @@ include(cmake/utils.cmake)
 colorer_extract_version()
 message(STATUS "Build Colorer: ${COLORER_VERSION}")
 
-if (COLORER_PVS_STUDIO_CHECK)
-  set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-  include(cmake/PVS-Studio)
-endif ()
-
 #====================================================
 # xercesc
 #====================================================
