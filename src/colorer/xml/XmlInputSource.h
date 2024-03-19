@@ -46,7 +46,7 @@ public:
     return nullptr;
   }
 
-  virtual ~XmlInputSource() {};
+  virtual ~XmlInputSource() {}
 
   static UString getAbsolutePath(const String* basePath, const String* relPath);
   static XMLCh* ExpandEnvironment(const XMLCh* path);
@@ -57,7 +57,7 @@ public:
 
   static bool isUriFile(const String* path, const String* base);
 protected:
-  XmlInputSource() {};
+  XmlInputSource() {}
 
 private:
   XmlInputSource(XmlInputSource const &) = delete;
