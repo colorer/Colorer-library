@@ -115,7 +115,7 @@ void BaseEditor::remapLRS(bool recreate)
 
 void BaseEditor::setFileType(FileType* ftype)
 {
-  spdlog::debug("[BaseEditor] setFileType: {0}", ftype->getName()->getChars());
+  logger->debug("[BaseEditor] setFileType: {0}", ftype->getName()->getChars());
   currentFileType = ftype;
   textParser->setFileType(currentFileType);
   invalidLine = 0;
@@ -387,7 +387,7 @@ LineRegion* BaseEditor::getLineRegions(int lno)
 
 void BaseEditor::modifyEvent(int topLine)
 {
-  spdlog::debug("[BaseEditor] modifyEvent: {0}", topLine);
+  logger->debug("[BaseEditor] modifyEvent: {0}", topLine);
   if (invalidLine > topLine) {
     invalidLine = topLine;
     for (auto & editorListener : editorListeners) {
@@ -406,14 +406,14 @@ void BaseEditor::modifyLineEvent(int line)
 
 void BaseEditor::visibleTextEvent(int wStart, int wSize)
 {
-  spdlog::debug("[BaseEditor] visibleTextEvent: {0}-{1}", wStart, wSize);
+  logger->debug("[BaseEditor] visibleTextEvent: {0}-{1}", wStart, wSize);
   this->wStart = wStart;
   this->wSize = wSize;
 }
 
 void BaseEditor::lineCountEvent(int newLineCount)
 {
-  spdlog::debug("[BaseEditor] lineCountEvent: {0}", newLineCount);
+  logger->debug("[BaseEditor] lineCountEvent: {0}", newLineCount);
   lineCount = newLineCount;
 }
 
@@ -447,7 +447,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     lrSupport->clear();
     // Regions were dropped
     layoutChanged = true;
-    spdlog::debug("[BaseEditor] lrSize != wSize*2");
+    logger->debug("[BaseEditor] lrSize != wSize*2");
   }
 
   /* Fixes window position according to line number */
@@ -478,7 +478,7 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
     }
     firstLine = newFirstLine;
     layoutChanged = true;
-    spdlog::debug("[BaseEditor] newFirstLine={0}, parseFrom={1}, parseTo={2}", firstLine, parseFrom, parseTo);
+    logger->debug("[BaseEditor] newFirstLine={0}, parseFrom={1}, parseTo={2}", firstLine, parseFrom, parseTo);
   }
 
   if (!layoutChanged) {
@@ -502,13 +502,13 @@ void BaseEditor::validate(int lno, bool rebuildRegions)
   /* Runs parser */
   if (parseTo - parseFrom > 0) {
 
-    spdlog::debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
+    logger->debug("[BaseEditor] validate:parse:{0}-{1}, {2}", parseFrom, parseTo, tpmode == TPM_CACHE_READ ? "READ" : "UPDATE");
     int stopLine = textParser->parse(parseFrom, parseTo - parseFrom, tpmode);
 
     if (tpmode == TPM_CACHE_UPDATE) {
       invalidLine = stopLine + 1;
     }
-    spdlog::debug("[BaseEditor] validate:parsed: invalidLine={0}", invalidLine);
+    logger->debug("[BaseEditor] validate:parsed: invalidLine={0}", invalidLine);
   }
 }
 

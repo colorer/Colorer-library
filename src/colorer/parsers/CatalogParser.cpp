@@ -8,7 +8,7 @@
 
 void CatalogParser::parse(const String* path)
 {
-  spdlog::debug("begin parse catalog.xml");
+  logger->debug("begin parse catalog.xml");
   hrc_locations.clear();
   hrd_nodes.clear();
 
@@ -33,7 +33,7 @@ void CatalogParser::parse(const String* path)
 
   parseCatalogBlock(elem);
 
-  spdlog::debug("end parse catalog.xml");
+  logger->debug("end parse catalog.xml");
 }
 
 void CatalogParser::parseCatalogBlock(const xercesc::DOMElement* elem)
@@ -70,9 +70,9 @@ void CatalogParser::addHrcSetsLocation(const xercesc::DOMElement* elem)
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
           hrc_locations.emplace_back(SString(attr_value));
-          spdlog::debug("add hrc location: '{0}'" , hrc_locations.back().getChars());
+          logger->debug("add hrc location: '{0}'" , hrc_locations.back().getChars());
         } else {
-          spdlog::warn("found hrc with empty location. skip it location.");
+          logger->warn("found hrc with empty location. skip it location.");
         }
       }
       continue;
@@ -107,7 +107,7 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   const XMLCh* xhrd_desc = elem->getAttribute(catHrdAttrDescription);
 
   if (*xhrd_class == xercesc::chNull || *xhrd_name == xercesc::chNull) {
-    spdlog::warn("found HRD with empty class/name. skip this record.");
+    logger->warn("found HRD with empty class/name. skip this record.");
     return nullptr;
   }
 
@@ -123,9 +123,9 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
         auto attr_value = subelem->getAttribute(catLocationAttrLink);
         if (*attr_value != xercesc::chNull) {
           hrd_node->hrd_location.emplace_back(SString(CString(attr_value)));
-          spdlog::debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+          logger->debug("add hrd location '{0}' for {1}:{2}", hrd_node->hrd_location.back().getChars(), hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
         } else {
-          spdlog::warn("found hrd with empty location. skip it location.");
+          logger->warn("found hrd with empty location. skip it location.");
         }
       }
     }
@@ -134,7 +134,7 @@ std::unique_ptr<HRDNode> CatalogParser::parseHRDSetsChild(const xercesc::DOMElem
   if (!hrd_node->hrd_location.empty()) {
     return hrd_node;
   } else {
-    spdlog::warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
+    logger->warn("skip HRD {0}:{1} - not found valid location", hrd_node->hrd_class.getChars(), hrd_node->hrd_name.getChars());
     return nullptr;
   }
 }

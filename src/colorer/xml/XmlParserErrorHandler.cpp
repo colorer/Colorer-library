@@ -5,21 +5,21 @@
 
 void XmlParserErrorHandler::warning(const xercesc::SAXParseException &toCatch)
 {
-  spdlog::warn("Warning at file {0}, line {1}, column {2}. Message: {3}",
+  logger->warn("Warning at file {0}, line {1}, column {2}. Message: {3}",
                *XStr(toCatch.getSystemId()).get_stdstr(), toCatch.getLineNumber(), toCatch.getColumnNumber(), *XStr(toCatch.getMessage()).get_stdstr());
 }
 
 void XmlParserErrorHandler::error(const xercesc::SAXParseException &toCatch)
 {
   fSawErrors = true;
-  spdlog::error("Error at file {0}, line {1}, column {2}. Message: {3}",
+  logger->error("Error at file {0}, line {1}, column {2}. Message: {3}",
                *XStr(toCatch.getSystemId()).get_stdstr(), toCatch.getLineNumber(), toCatch.getColumnNumber(), *XStr(toCatch.getMessage()).get_stdstr());
 }
 
 void XmlParserErrorHandler::fatalError(const xercesc::SAXParseException &toCatch)
 {
   fSawErrors = true;
-  spdlog::error("Fatal error at file {0}, line {1}, column {2}. Message: {3}",
+  logger->error("Fatal error at file {0}, line {1}, column {2}. Message: {3}",
                 *XStr(toCatch.getSystemId()).get_stdstr(), toCatch.getLineNumber(), toCatch.getColumnNumber(), *XStr(toCatch.getMessage()).get_stdstr());
 }
 

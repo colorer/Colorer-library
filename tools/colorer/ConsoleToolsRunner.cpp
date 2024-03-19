@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <colorer/common/Colorer.h>
 #include <colorer/version.h>
-#include <spdlog/spdlog.h>
+#ifdef USESPDLOG
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+std::shared_ptr<spdlog::logger> logger;
+#else
+#include <colorer/Common.h>
+std::shared_ptr<DummyLogger> logger;
+#endif
+
 #include "ConsoleTools.h"
 
 /** Internal run action type */
@@ -314,7 +321,7 @@ int workIt()
         break;
     }
   } catch (Exception &e) {
-    spdlog::error("{0}", e.what());
+    logger->error("{0}", e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
   }
@@ -327,18 +334,22 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
+#ifdef USESPDLOG
   auto level = spdlog::level::from_str(settings.log_level);
-  if (level!= spdlog::level::off) {
+  if (level != spdlog::level::off) {
     try {
       std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
-      auto logger = spdlog::basic_logger_mt("main", file_name);
+      logger = spdlog::basic_logger_mt("main", file_name);
       spdlog::set_default_logger(logger);
       logger->set_level(level);
-    } catch (std::exception &e){
+    } catch (std::exception& e) {
       fprintf(stderr, "%s\n", e.what());
       return -1;
     }
   }
+#else
+  logger = std::make_shared<DummyLogger>();
+#endif
 
   auto colorer = std::unique_ptr<Colorer>(new Colorer);
 

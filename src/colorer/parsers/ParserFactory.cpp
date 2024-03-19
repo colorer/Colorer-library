@@ -35,7 +35,7 @@ ParserFactory::~ParserFactory()
 
 SString ParserFactory::searchCatalog() const
 {
-  spdlog::debug("begin search catalog.xml");
+  logger->debug("begin search catalog.xml");
 
   std::vector<SString> paths;
   getPossibleCatalogPaths(paths);
@@ -43,22 +43,22 @@ SString ParserFactory::searchCatalog() const
   SString right_path;
   for (const auto& path : paths) {
     try {
-      spdlog::debug("test path '{0}'", path.getChars());
+      logger->debug("test path '{0}'", path.getChars());
 
       uXmlInputSource catalog = XmlInputSource::newInstance(path.getWChars(), static_cast<XMLCh*>(nullptr));
 
       std::unique_ptr<xercesc::BinInputStream> stream(catalog->makeStream());
       right_path = SString(catalog->getInputSource()->getSystemId());
 
-      spdlog::debug("found valid path '{0}' = '{1}'", path.getChars(), right_path.getChars());
+      logger->debug("found valid path '{0}' = '{1}'", path.getChars(), right_path.getChars());
       break;
     } catch (const Exception& e) {
-      spdlog::error(e.what());
+      logger->error(e.what());
     }
   }
-  spdlog::debug("end search catalog.xml");
+  logger->debug("end search catalog.xml");
   if (right_path.length() == 0) {
-    spdlog::error("Can't find suitable catalog.xml file. Check your program settings.");
+    logger->error("Can't find suitable catalog.xml file. Check your program settings.");
     throw ParserFactoryException(CString("Can't find suitable catalog.xml file. Check your program settings."));
   }
   return right_path;
@@ -151,10 +151,10 @@ void ParserFactory::loadCatalog(const String* catalog_path)
   }
 
   parseCatalog(base_catalog_path);
-  spdlog::debug("begin load hrc files");
+  logger->debug("begin load hrc files");
   for (auto location : hrc_locations) {
     try {
-      spdlog::debug("try load '{0}'", location.getChars());
+      logger->debug("try load '{0}'", location.getChars());
       if (XmlInputSource::isUriFile(&base_catalog_path, &location)) {
         auto clear_path = XmlInputSource::getClearPath(&base_catalog_path, &location);
         if (XmlInputSource::isDirectory(clear_path.get())) {
@@ -170,11 +170,11 @@ void ParserFactory::loadCatalog(const String* catalog_path)
         loadHrc(&location, &base_catalog_path);
       }
     } catch (const Exception& e) {
-      spdlog::error("{0}", e.what());
+      logger->error("{0}", e.what());
     }
   }
 
-  spdlog::debug("end load hrc files");
+  logger->debug("end load hrc files");
 }
 
 void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) const
@@ -183,8 +183,8 @@ void ParserFactory::loadHrc(const String* hrc_path, const String* base_path) con
   try {
     hrc_parser->loadSource(dfis.get());
   } catch (Exception& e) {
-    spdlog::error("Can't load hrc: {0}", XStr(dfis->getInputSource()->getSystemId()).get_char());
-    spdlog::error("{0}", e.what());
+    logger->error("Can't load hrc: {0}", XStr(dfis->getInputSource()->getSystemId()).get_char());
+    logger->error("{0}", e.what());
   }
 }
 
@@ -301,8 +301,8 @@ StyledHRDMapper* ParserFactory::createStyledMapper(const String* classID, const 
         dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
-        spdlog::error("Can't load hrd:");
-        spdlog::error("{0}", e.what());
+        logger->error("Can't load hrd:");
+        logger->error("{0}", e.what());
         throw ParserFactoryException(CString("Error load hrd"));
       }
     }
@@ -332,8 +332,8 @@ TextHRDMapper* ParserFactory::createTextMapper(const String* nameID)
         dfis = XmlInputSource::newInstance(idx.getWChars(), base_catalog_path.getWChars());
         mapper->loadRegionMappings(dfis.get());
       } catch (Exception& e) {
-        spdlog::error("Can't load hrd: ");
-        spdlog::error("{0}", e.what());
+        logger->error("Can't load hrd: ");
+        logger->error("{0}", e.what());
       }
     }
   return mapper;
