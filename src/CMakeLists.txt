@@ -183,7 +183,7 @@ target_link_libraries(colorer_lib
     )
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 11
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
     )
