@@ -1,7 +1,9 @@
-Colorer library
+Colorer library for far2l
 ==========
-  Colorer is a syntax highlighting library.
-  
+The current branch is for [far2l](https://github.com/elfmz/far2l)
+
+Colorer is a syntax highlighting library.
+
 How to build from source
 ----------
 To build library and other utils from source, you will need:
