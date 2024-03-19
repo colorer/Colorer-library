@@ -175,6 +175,7 @@ target_include_directories(colorer_lib
     PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
     PUBLIC ../external/spdlog/include
+    PUBLIC ../external/zlib/contrib
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
