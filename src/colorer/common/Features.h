@@ -7,12 +7,6 @@
 #define CTRACE(info)
 #endif
 
-/**
-  If defined, HTTP InputSource is implemented.
-*/
-#ifndef COLORER_FEATURE_HTTPINPUTSOURCE
-  #define COLORER_FEATURE_HTTPINPUTSOURCE TRUE
-#endif
 
 /**
   If defined, JAR InputSource is implemented.

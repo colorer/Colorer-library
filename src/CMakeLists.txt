@@ -48,16 +48,8 @@ set(SRC_COLORER
     colorer/io/FileInputSource.h
     colorer/io/FileWriter.cpp
     colorer/io/FileWriter.h
-    colorer/io/HTTPInputSource.cpp
-    colorer/io/HTTPInputSource.h
     colorer/io/InputSource.cpp
     colorer/io/InputSource.h
-    colorer/io/JARInputSource.cpp
-    colorer/io/JARInputSource.h
-    colorer/io/MemoryFile.cpp
-    colorer/io/MemoryFile.h
-    colorer/io/SharedInputSource.cpp
-    colorer/io/SharedInputSource.h
     colorer/io/StreamWriter.cpp
     colorer/io/StreamWriter.h
     colorer/io/Writer.cpp
@@ -115,6 +107,8 @@ set(SRC_COLORER
     colorer/xml/BaseEntityResolver.h
     colorer/xml/LocalFileXmlInputSource.cpp
     colorer/xml/LocalFileXmlInputSource.h
+    colorer/xml/MemoryFile.cpp
+    colorer/xml/MemoryFile.h
     colorer/xml/SharedXmlInputSource.cpp
     colorer/xml/SharedXmlInputSource.h
     colorer/xml/XStr.cpp

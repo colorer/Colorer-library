@@ -1,15 +1,5 @@
-
-#include<colorer/io/InputSource.h>
-
-#include<colorer/io/FileInputSource.h>
-
-#if COLORER_FEATURE_JARINPUTSOURCE
-#include<colorer/io/JARInputSource.h>
-#endif
-
-#if COLORER_FEATURE_HTTPINPUTSOURCE
-#include<colorer/io/HTTPInputSource.h>
-#endif
+#include <colorer/io/InputSource.h>
+#include <colorer/io/FileInputSource.h>
 
 using namespace colorer;
 
@@ -32,16 +22,6 @@ InputSource *InputSource::newInstance(const String *path, InputSource *base){
   if (path == nullptr){
     throw InputSourceException(CString("InputSource::newInstance: path is nullptr"));
   }
-#if COLORER_FEATURE_HTTPINPUTSOURCE
-  if (path->startsWith(CString("http://"))){
-    return new HTTPInputSource(path, nullptr);
-  }
-#endif
-#if COLORER_FEATURE_JARINPUTSOURCE
-  if (path->startsWith(CString("jar:"))){
-    return new JARInputSource(path, base);
-  }
-#endif
   if (base != nullptr){
     InputSource *is = base->createRelative(path);
     if (is != nullptr) return is;

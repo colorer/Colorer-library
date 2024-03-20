@@ -1,7 +1,7 @@
 #include <colorer/xml/ZipXmlInputSource.h>
 #include <minizip/unzip.h>
 #include <xercesc/util/XMLString.hpp>
-#include <colorer/io/MemoryFile.h>
+#include <colorer/xml/MemoryFile.h>
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, const XMLCh* base)
 {
