@@ -128,6 +128,10 @@ if(COLORER_USE_JARINPUTSOURCE)
     )
 endif()
 
+if (COLORER_USE_DUMMY_LOGGER)
+    set(COLORER_FEATURE_DUMMYLOGGER 1)
+endif ()
+
 #====================================================
 # Generate headers
 #====================================================
@@ -186,13 +190,26 @@ target_include_directories(colorer_lib PUBLIC
 target_include_directories(colorer_lib
     PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
-    PUBLIC ../external/spdlog/include
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
-    PUBLIC ${THREAD_LIBS}
-    PUBLIC spdlog::spdlog
     )
+
+if (NOT COLORER_USE_DUMMY_LOGGER)
+    if (NOT COLORER_USE_DEPENDS_FROM_SYSTEM)
+        target_include_directories(colorer_lib
+            PUBLIC ../external/spdlog/include
+        )
+        target_link_libraries(colorer_lib
+            PUBLIC ${THREAD_LIBS}
+            PUBLIC spdlog::spdlog
+        )
+    else ()
+        target_link_libraries(colorer_lib
+            PUBLIC spdlog::spdlog
+        )
+    endif ()
+endif ()
 
 if(COLORER_USE_JARINPUTSOURCE)
     if(COLORER_USE_DEPENDS_FROM_SYSTEM)

@@ -30,6 +30,7 @@ option(COLORER_TOOLS_BUILD "build colorer tools" ON)
 
 # library features
 option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" ON)
 
 if (MSVC)
   # set global Visual C++ runtime
@@ -88,8 +89,14 @@ endif ()
 #====================================================
 # spdlog library
 #====================================================
-add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)
-
+if (NOT COLORER_USE_DUMMY_LOGGER)
+  if (COLORER_USE_DEPENDS_FROM_SYSTEM)
+    find_package(spdlog REQUIRED)
+    find_package(fmt REQUIRED)
+  else()
+    add_subdirectory(./external/spdlog EXCLUDE_FROM_ALL)
+  endif ()
+endif ()
 #====================================================
 # colorer library
 #====================================================

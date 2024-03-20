@@ -1,6 +1,6 @@
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
-#if COLORER_FEATURE_JARINPUTSOURCE
+#ifdef COLORER_FEATURE_JARINPUTSOURCE
 #include "colorer/xml/ZipXmlInputSource.h"
 #endif
 #include <colorer/Exception.h>
@@ -17,7 +17,7 @@
 uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, XmlInputSource* base)
 {
   if (xercesc::XMLString::startsWith(path, kJar)) {
-#if COLORER_FEATURE_JARINPUTSOURCE
+#ifdef COLORER_FEATURE_JARINPUTSOURCE
     return std::make_unique<ZipXmlInputSource>(path, base);
 #else
     throw InputSourceException(CString("ZipXmlInputSource not supported"));
@@ -35,7 +35,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
     throw InputSourceException(CString("XmlInputSource::newInstance: path is nullptr"));
   }
   if (xercesc::XMLString::startsWith(path, kJar) || (base != nullptr && xercesc::XMLString::startsWith(base, kJar))) {
-#if COLORER_FEATURE_JARINPUTSOURCE
+#ifdef COLORER_FEATURE_JARINPUTSOURCE
     return std::make_unique<ZipXmlInputSource>(path, base);
 #else
     throw InputSourceException(CString("ZipXmlInputSource not supported"));

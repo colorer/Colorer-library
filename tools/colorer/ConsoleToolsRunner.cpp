@@ -3,12 +3,12 @@
 #include <string>
 #include <colorer/common/Colorer.h>
 #include <colorer/version.h>
-#ifdef USESPDLOG
+#include <colorer/Common.h>
+#ifndef COLORER_FEATURE_DUMMYLOGGER
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 std::shared_ptr<spdlog::logger> logger;
 #else
-#include <colorer/Common.h>
 std::shared_ptr<DummyLogger> logger;
 #endif
 
@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-#ifdef USESPDLOG
+#ifndef COLORER_FEATURE_DUMMYLOGGER
   auto level = spdlog::level::from_str(settings.log_level);
   if (level != spdlog::level::off) {
     try {
