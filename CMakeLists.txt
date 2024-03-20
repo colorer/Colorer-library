@@ -22,9 +22,14 @@ message("Build type for Colorer: ${CMAKE_BUILD_TYPE}")
 #====================================================
 # global settings
 #====================================================
+# build options
 option(COLORER_INTERNAL_BUILD "This CMakeLists.txt called from other" OFF)
+option(COLORER_USE_DEPENDS_FROM_SYSTEM "Use dependencies installed in system" OFF)
 option(COLORER_WIN64_BUILD "Build for x64, else x86" ON)
 option(COLORER_TOOLS_BUILD "build colorer tools" ON)
+
+# library features
+option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
 
 if (MSVC)
   # set global Visual C++ runtime
@@ -40,6 +45,11 @@ endif ()
 #====================================================
 include(cmake/ide.cmake)
 include(cmake/utils.cmake)
+
+if(COLORER_USE_DEPENDS_FROM_SYSTEM)
+  # this line need for find_package
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+endif()
 
 colorer_extract_version()
 message(STATUS "Build Colorer: ${COLORER_VERSION}")
@@ -60,12 +70,20 @@ add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 #====================================================
 # zlib
 #====================================================
-set(ZLIB_EXAMPLES OFF CACHE BOOL "Build zlib example programs")
-set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
-set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
-set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
+if (COLORER_USE_JARINPUTSOURCE)
+  if (COLORER_USE_DEPENDS_FROM_SYSTEM)
+    find_package(ZLIB REQUIRED)
+    find_package(minizip REQUIRED)
+  else ()
+    set(ZLIB_EXAMPLES OFF CACHE BOOL "Build zlib example programs")
+    set(ZLIB_MINIZIP ON CACHE BOOL "Build contrib/minizip alongside zlib")
+    set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared (dynamic) libraries")
+    set(ZLIB_BUILD_SHARED_RUNTIME OFF CACHE BOOL "Build with shared linked runtine library (MSVC)")
 
-add_subdirectory(./external/zlib EXCLUDE_FROM_ALL)
+    add_subdirectory(./external/zlib EXCLUDE_FROM_ALL)
+  endif ()
+endif ()
+
 
 #====================================================
 # spdlog library

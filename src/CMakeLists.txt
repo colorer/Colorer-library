@@ -107,8 +107,6 @@ set(SRC_COLORER
     colorer/xml/BaseEntityResolver.h
     colorer/xml/LocalFileXmlInputSource.cpp
     colorer/xml/LocalFileXmlInputSource.h
-    colorer/xml/MemoryFile.cpp
-    colorer/xml/MemoryFile.h
     colorer/xml/SharedXmlInputSource.cpp
     colorer/xml/SharedXmlInputSource.h
     colorer/xml/XStr.cpp
@@ -118,8 +116,24 @@ set(SRC_COLORER
     colorer/xml/XmlParserErrorHandler.cpp
     colorer/xml/XmlParserErrorHandler.h
     colorer/xml/XmlTagDefs.h
-    colorer/xml/ZipXmlInputSource.cpp
-    colorer/xml/ZipXmlInputSource.h
+)
+
+if(COLORER_USE_JARINPUTSOURCE)
+    set(COLORER_FEATURE_JARINPUTSOURCE 1)
+    set(SRC_COLORER_JAR
+        colorer/xml/MemoryFile.cpp
+        colorer/xml/MemoryFile.h
+        colorer/xml/ZipXmlInputSource.cpp
+        colorer/xml/ZipXmlInputSource.h
+    )
+endif()
+
+#====================================================
+# Generate headers
+#====================================================
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorer/common/Features.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/colorer/common/Features.h
 )
 
 #====================================================
@@ -163,20 +177,34 @@ endif ()
 # build
 #====================================================
 
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC} ${SRC_COLORER_JAR})
+target_include_directories(colorer_lib PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
 target_include_directories(colorer_lib
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ../external/xercesc/src
     PUBLIC ${xerces-c_BINARY_DIR}/src
     PUBLIC ../external/spdlog/include
-    PUBLIC ../external/zlib/contrib
     )
 target_link_libraries(colorer_lib
     PUBLIC xerces-c
-    PUBLIC ZLIB::MINIZIP
     PUBLIC ${THREAD_LIBS}
     PUBLIC spdlog::spdlog
     )
+
+if(COLORER_USE_JARINPUTSOURCE)
+    if(COLORER_USE_DEPENDS_FROM_SYSTEM)
+        target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+    else()
+        target_link_libraries(colorer_lib PUBLIC ZLIB::MINIZIP)
+        target_include_directories(colorer_lib
+            PUBLIC ../external/zlib/contrib
+        )
+    endif()
+endif()
+
 target_compile_definitions(colorer_lib PUBLIC ${COLORER_DEF})
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 11
