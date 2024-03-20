@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(colorer_lib VERSION ${COLORER_VERSION} LANGUAGES CXX C)
-
 #====================================================
-# colorer
+# colorer source
 #====================================================
 set(SRC_COLORER
     colorer/Common.h
@@ -143,13 +140,13 @@ configure_file(
 #====================================================
 # common flags
 #====================================================
-set(COLORER_DEF -DNOGDI -DXERCES_STATIC_LIBRARY -DCOLORER_FEATURE_HTTPINPUTSOURCE=FALSE)
+set(COLORER_DEF -DNOGDI)
 if (MSVC)
   set(COLORER_DEF ${COLORER_DEF} -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif ()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  # defaut for gcc
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  # default for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
   # CMAKE_CXX_FLAGS_RELEASE= -O3 -DNDEBUG
@@ -158,30 +155,27 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(FLAGS_CXX_DEFAULT -fpermissive -Wall)
   set(FLAGS_CXX_RELEASE)
   set(FLAGS_CXX_DEBUG)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  # defaut for msvc
-  # CMAKE_C_FLAGS= /DWIN32 /D_WINDOWS
-  # CMAKE_C_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
-  # CMAKE_C_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
+  # default for msvc
   # CMAKE_CXX_FLAGS= /DWIN32 /D_WINDOWS /GR /EHsc
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
-  set(FLAGS_C_DEFAULT /Zi)
-  set(FLAGS_C_RELEASE /W3)
-  set(FLAGS_C_DEBUG /W4)
-  set(FLAGS_CXX_DEFAULT /Zi)
-  set(FLAGS_CXX_RELEASE /W3)
+  set(FLAGS_CXX_DEFAULT)
+  set(FLAGS_CXX_RELEASE /W3 /WX)
   set(FLAGS_CXX_DEBUG /W4)
+endif()
 
-endif ()
-
+set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
+set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
+set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
+set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
 #====================================================
 # build
 #====================================================
 
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_MALLOC} ${SRC_COLORER_JAR})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_JAR})
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
@@ -230,11 +224,6 @@ set_target_properties(colorer_lib PROPERTIES
     )
 
 # set options for target
-set(MAIN_FLAGS_CXX_DEBUG ${FLAGS_CXX_DEBUG} ${FLAGS_CXX_DEFAULT})
-set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
-set(MAIN_FLAGS_C_DEBUG ${FLAGS_C_DEBUG} ${FLAGS_C_DEFAULT})
-set(MAIN_FLAGS_C_RELEASE ${FLAGS_C_RELEASE} ${FLAGS_C_DEFAULT})
-
 if (${CMAKE_BUILD_TYPE} MATCHES Debug)
   target_compile_options(colorer_lib
       PUBLIC $<$<COMPILE_LANGUAGE:C>:${MAIN_FLAGS_C_DEBUG}>
