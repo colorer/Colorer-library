@@ -181,13 +181,19 @@ target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
-target_include_directories(colorer_lib
-    PUBLIC ../external/xercesc/src
-    PUBLIC ${xerces-c_BINARY_DIR}/src
+if (COLORER_USE_DEPENDS_FROM_SYSTEM)
+    target_link_libraries(colorer_lib
+        PUBLIC XercesC::XercesC
     )
-target_link_libraries(colorer_lib
-    PUBLIC xerces-c
+else ()
+    target_include_directories(colorer_lib
+        PUBLIC ../external/xercesc/src
+        PUBLIC ${xerces-c_BINARY_DIR}/src
     )
+    target_link_libraries(colorer_lib
+        PUBLIC xerces-c
+    )
+endif ()
 
 if (NOT COLORER_USE_DUMMY_LOGGER)
     if (NOT COLORER_USE_DEPENDS_FROM_SYSTEM)

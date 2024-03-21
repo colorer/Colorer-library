@@ -66,15 +66,19 @@ include(cmake/ide.cmake)
 #====================================================
 # xercesc
 #====================================================
-if (WIN32)
-  set(XMLCH_TYPE "wchar_t")
+if (COLORER_USE_DEPENDS_FROM_SYSTEM)
+  find_package(XercesC REQUIRED)
 else ()
-  set(XMLCH_TYPE "uint16_t")
+  if (WIN32)
+    set(XMLCH_TYPE "wchar_t")
+  else ()
+    set(XMLCH_TYPE "uint16_t")
+  endif ()
+  set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
+  set(network OFF CACHE BOOL "Network support" FORCE)
+  add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 endif ()
-set(xmlch-type ${XMLCH_TYPE} CACHE STRING "XMLCh type wchar_t" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries")
-set(network OFF CACHE BOOL "Network support" FORCE)
-add_subdirectory(./external/xercesc EXCLUDE_FROM_ALL)
 
 #====================================================
 # zlib

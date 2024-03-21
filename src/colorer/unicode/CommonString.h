@@ -4,14 +4,11 @@
 #include <wchar.h>
 
 /// default unicode char definition
-#ifndef WCHAR_MAX
-#error wchar misconfig
-#elif WCHAR_MAX == 0xFFFFFFFE/2
-typedef unsigned short wchar;
-#else
+#ifdef WIN32
 typedef wchar_t wchar;
+#else
+typedef char16_t wchar;
 #endif
-
 typedef char32_t w4char;
 typedef unsigned char byte;
 
