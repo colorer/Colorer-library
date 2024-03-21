@@ -47,7 +47,7 @@ typedef class SMatchHash
 }* PMatchHash;
 #endif
 
-enum EOps {
+enum class EOps {
   ReBlockOps,
   ReMul,        // *
   RePlus,       // +
@@ -84,7 +84,7 @@ enum EOps {
   ReBkBrackName  // \p{name}
 };
 
-enum EMetaSymbols {
+enum class EMetaSymbols {
   ReBadMeta,
   ReAnyChr,  // .
   ReSoL,     // ^

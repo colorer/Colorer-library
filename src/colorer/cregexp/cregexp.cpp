@@ -11,7 +11,7 @@ SRegInfo::SRegInfo()
 {
   next = prev = parent = nullptr;
   un.param = nullptr;
-  op = ReEmpty;
+  op = EOps::ReEmpty;
   param0 = param1 = 0;
 }
 SRegInfo::~SRegInfo()
@@ -20,21 +20,22 @@ SRegInfo::~SRegInfo()
     delete next;
   if (un.param)
     switch (op) {
-      case ReEnum:
-      case ReNEnum:
+      case EOps::ReEnum:
+      case EOps::ReNEnum:
         delete un.charclass;
         break;
-      case ReWord:
+      case EOps::ReWord:
         delete un.word;
         break;
 #ifdef NAMED_MATCHES_IN_HASH
-      case ReNamedBrackets:
-      case ReBkBrackName:
+      case EOps::ReNamedBrackets:
+      case EOps::ReBkBrackName:
         if (namedata)
           delete namedata;
 #endif
       default:
-        if (op > ReBlockOps && (op < ReSymbolOps || op == ReBrackets || op == ReNamedBrackets))
+        if (op > EOps::ReBlockOps &&
+            (op < EOps::ReSymbolOps || op == EOps::ReBrackets || op == EOps::ReNamedBrackets))
           delete un.param;
         break;
     }
@@ -132,7 +133,7 @@ EError CRegExp::setRELow(const String& expr)
 
   // making tree structure
   tree_root = new SRegInfo;
-  tree_root->op = ReBrackets;
+  tree_root->op = EOps::ReBrackets;
   tree_root->un.param = new SRegInfo;
   tree_root->un.param->parent = tree_root;
   tree_root->param0 = cMatch++;
@@ -152,28 +153,29 @@ void CRegExp::optimize()
 {
   SRegInfo* next = tree_root;
   firstChar = BAD_WCHAR;
-  firstMetaChar = ReBadMeta;
+  firstMetaChar = EMetaSymbols::ReBadMeta;
   while (next) {
-    if (next->op == ReBrackets) {
+    if (next->op == EOps::ReBrackets) {
       next = next->un.param;
       continue;
     }
-    /*    if (next->op == ReMetaSymb &&
+    /*    if (next->op == EOps::ReMetaSymb &&
             next->un.metaSymbol >= ReWBound && next->un.metaSymbol < ReChrLast){
           next = next->next;
           continue;
         };*/
-    if (next->op == ReMetaSymb) {
-      if (next->un.metaSymbol != ReSoL && next->un.metaSymbol != ReWBound)
+    if (next->op == EOps::ReMetaSymb) {
+      if (next->un.metaSymbol != EMetaSymbols::ReSoL &&
+          next->un.metaSymbol != EMetaSymbols::ReWBound)
         break;
       firstMetaChar = next->un.metaSymbol;
       break;
     }
-    if (next->op == ReSymb) {
+    if (next->op == EOps::ReSymb) {
       firstChar = next->un.symbol;
       break;
     }
-    if (next->op == ReWord) {
+    if (next->op == EOps::ReWord) {
       firstChar = (*next->un.word)[0];
     }
     break;
@@ -212,80 +214,80 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       int blen;
       switch (expr[i + 1]) {
         case 'd':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReDigit;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReDigit;
           break;
         case 'D':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReNDigit;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReNDigit;
           break;
         case 'w':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReWordSymb;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReWordSymb;
           break;
         case 'W':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReNWordSymb;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReNWordSymb;
           break;
         case 's':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReWSpace;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReWSpace;
           break;
         case 'S':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReNWSpace;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReNWSpace;
           break;
         case 'u':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReUCase;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReUCase;
           break;
         case 'l':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReNUCase;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReNUCase;
           break;
         case 't':
-          next->op = ReSymb;
+          next->op = EOps::ReSymb;
           next->un.symbol = '\t';
           break;
         case 'n':
-          next->op = ReSymb;
+          next->op = EOps::ReSymb;
           next->un.symbol = '\n';
           break;
         case 'r':
-          next->op = ReSymb;
+          next->op = EOps::ReSymb;
           next->un.symbol = '\r';
           break;
         case 'b':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReWBound;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReWBound;
           break;
         case 'B':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReNWBound;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReNWBound;
           break;
         case 'c':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = RePreNW;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::RePreNW;
           break;
 #ifdef COLORERMODE
         case 'm':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReStart;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReStart;
           break;
         case 'M':
-          next->op = ReMetaSymb;
-          next->un.metaSymbol = ReEnd;
+          next->op = EOps::ReMetaSymb;
+          next->un.metaSymbol = EMetaSymbols::ReEnd;
           break;
 #ifndef NAMED_MATCHES_IN_HASH
         case 'y':
         case 'Y':
-          next->op = (expr[i + 1] == 'y' ? ReBkTrace : ReBkTraceN);
+          next->op = (expr[i + 1] == 'y' ? EOps::ReBkTrace : EOps::ReBkTraceN);
           next->param0 = UnicodeTools::getHex(expr[i + 2]);
           if (next->param0 != -1) {
             i++;
           }
           else {
-            next->op = (expr[i + 1] == 'y' ? ReBkTraceName : ReBkTraceNName);
+            next->op = (expr[i + 1] == 'y' ? EOps::ReBkTraceName : EOps::ReBkTraceNName);
             br_name = UnicodeTools::getCurlyContent(expr, i + 2);
             if (br_name == nullptr)
               return EError::ESYNTAX;
@@ -305,7 +307,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 #endif  // NAMED_MATCHES_IN_HASH
 
         case 'p':  // \p{name}
-          next->op = ReBkBrackName;
+          next->op = EOps::ReBkBrackName;
           br_name = UnicodeTools::getCurlyContent(expr, i + 2);
           if (br_name == nullptr)
             return EError::ESYNTAX;
@@ -327,11 +329,11 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
           i += blen + 2;
           break;
         default:
-          next->op = ReBkBrack;
+          next->op = EOps::ReBkBrack;
           next->param0 = UnicodeTools::getHex(expr[i + 1]);
           if (next->param0 < 0 || next->param0 > 9) {
             int retEnd;
-            next->op = ReSymb;
+            next->op = EOps::ReSymb;
             next->un.symbol = UnicodeTools::getEscapedChar(expr, i, retEnd);
             if (next->un.symbol == BAD_WCHAR)
               return EError::ESYNTAX;
@@ -344,24 +346,24 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
 
     if (expr[i] == '.') {
-      next->op = ReMetaSymb;
-      next->un.metaSymbol = ReAnyChr;
+      next->op = EOps::ReMetaSymb;
+      next->un.metaSymbol = EMetaSymbols::ReAnyChr;
       continue;
     }
     if (expr[i] == '^') {
-      next->op = ReMetaSymb;
-      next->un.metaSymbol = ReSoL;
+      next->op = EOps::ReMetaSymb;
+      next->un.metaSymbol = EMetaSymbols::ReSoL;
       continue;
     }
     if (expr[i] == '$') {
-      next->op = ReMetaSymb;
-      next->un.metaSymbol = ReEoL;
+      next->op = EOps::ReMetaSymb;
+      next->un.metaSymbol = EMetaSymbols::ReEoL;
       continue;
     }
 #ifdef COLORERMODE
     if (expr[i] == '~') {
-      next->op = ReMetaSymb;
-      next->un.metaSymbol = ReSoScheme;
+      next->op = EOps::ReMetaSymb;
+      next->un.metaSymbol = EMetaSymbols::ReSoScheme;
       continue;
     }
 #endif
@@ -371,13 +373,13 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 
     if (expr.length() > i + 2) {
       if (expr[i] == '?' && expr[i + 1] == '#' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
-        next->op = ReBehind;
+        next->op = EOps::ReBehind;
         next->param0 = UnicodeTools::getHex(expr[i + 2]);
         i += 2;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '~' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
-        next->op = ReNBehind;
+        next->op = EOps::ReNBehind;
         next->param0 = UnicodeTools::getHex(expr[i + 2]);
         i += 2;
         continue;
@@ -385,29 +387,29 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
     if (expr.length() > i + 1) {
       if (expr[i] == '*' && expr[i + 1] == '?') {
-        next->op = ReNGRangeN;
+        next->op = EOps::ReNGRangeN;
         next->s = 0;
         i++;
         continue;
       }
       if (expr[i] == '+' && expr[i + 1] == '?') {
-        next->op = ReNGRangeN;
+        next->op = EOps::ReNGRangeN;
         next->s = 1;
         i++;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '=') {
-        next->op = ReAhead;
+        next->op = EOps::ReAhead;
         i++;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '!') {
-        next->op = ReNAhead;
+        next->op = EOps::ReNAhead;
         i++;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '?') {
-        next->op = ReNGRangeNM;
+        next->op = EOps::ReNGRangeNM;
         next->s = 0;
         next->e = 1;
         i++;
@@ -416,23 +418,23 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
 
     if (expr[i] == '*') {
-      next->op = ReRangeN;
+      next->op = EOps::ReRangeN;
       next->s = 0;
       continue;
     }
     if (expr[i] == '+') {
-      next->op = ReRangeN;
+      next->op = EOps::ReRangeN;
       next->s = 1;
       continue;
     }
     if (expr[i] == '?') {
-      next->op = ReRangeNM;
+      next->op = EOps::ReRangeNM;
       next->s = 0;
       next->e = 1;
       continue;
     }
     if (expr[i] == '|') {
-      next->op = ReOr;
+      next->op = EOps::ReOr;
       continue;
     }
 
@@ -474,9 +476,9 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       if (en - comma == 1)
         next->e = -1;
       if (next->e == -1)
-        next->op = nonGreedy ? ReNGRangeN : ReRangeN;
+        next->op = nonGreedy ? EOps::ReNGRangeN : EOps::ReRangeN;
       else
-        next->op = nonGreedy ? ReNGRangeNM : ReRangeNM;
+        next->op = nonGreedy ? EOps::ReNGRangeNM : EOps::ReRangeNM;
       i = j;
       continue;
     }
@@ -485,14 +487,14 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       bool namedBracket = false;
       // perl-like "uncaptured" brackets
       if (expr.length() >= i + 2 && expr[i + 1] == '?' && expr[i + 2] == ':') {
-        next->op = ReNamedBrackets;
+        next->op = EOps::ReNamedBrackets;
         next->param0 = -1;
         namedBracket = true;
         i += 3;
       }
       else if (expr.length() > i + 2 && expr[i + 1] == '?' && expr[i + 2] == '{') {
         // named bracket
-        next->op = ReNamedBrackets;
+        next->op = EOps::ReNamedBrackets;
         namedBracket = true;
         String* s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
         if (s_curly == nullptr)
@@ -537,7 +539,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         i += blen + 4;
       }
       else {
-        next->op = ReBrackets;
+        next->op = EOps::ReBrackets;
         if (cMatch < MATCHES_NUM) {
           next->param0 = cMatch;
           cMatch++;
@@ -563,14 +565,14 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       if (cc == nullptr)
         return EError::EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
-      next->op = ReEnum;
+      next->op = EOps::ReEnum;
       next->un.charclass = cc;
       i = endPos;
       continue;
     }
     if (expr[i] == ')' || expr[i] == ']' || expr[i] == '}')
       return EError::EBRACKETS;
-    next->op = ReSymb;
+    next->op = EOps::ReSymb;
     next->un.symbol = expr[i];
   }
 
@@ -581,9 +583,9 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     SRegInfo* reafterword = next;
     SRegInfo* resymb;
     int wsize = 0;
-    for (resymb = next; resymb && resymb->op == ReSymb; resymb = resymb->next, wsize++)
+    for (resymb = next; resymb && resymb->op == EOps::ReSymb; resymb = resymb->next, wsize++)
       ;
-    if (resymb && resymb->op > ReBlockOps && resymb->op < ReSymbolOps) {
+    if (resymb && resymb->op > EOps::ReBlockOps && resymb->op < EOps::ReSymbolOps) {
       wsize--;
       resymb = resymb->prev;
     }
@@ -599,7 +601,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         if (idx > 0)
           delete retmp;
       }
-      reword->op = ReWord;
+      reword->op = EOps::ReWord;
       reword->un.word = new SString(CString(wcword, 0, wsize));
       delete[] wcword;
       reword->next = reafterword;
@@ -610,7 +612,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
 
     // adds empty alternative
-    while (next->op == ReOr) {
+    while (next->op == EOps::ReOr) {
       temp = new SRegInfo;
       temp->parent = next->parent;
       // |foo|bar
@@ -620,7 +622,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         continue;
       }
       // foo||bar
-      if (next->next && next->next->op == ReOr) {
+      if (next->next && next->next->op == EOps::ReOr) {
         temp->prev = next;
         temp->next = next->next;
         if (next->next)
@@ -636,7 +638,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         continue;
       }
       // foo|bar|*
-      if (next->next->op > ReBlockOps && next->next->op < ReSymbolOps) {
+      if (next->next->op > EOps::ReBlockOps && next->next->op < EOps::ReSymbolOps) {
         temp->prev = next;
         temp->next = next->next;
         next->next->prev = temp;
@@ -652,13 +654,13 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
   next = re;
   SRegInfo* realFirst;
   while (next) {
-    if (next->op > ReBlockOps && next->op < ReSymbolOps) {
+    if (next->op > EOps::ReBlockOps && next->op < EOps::ReSymbolOps) {
       if (!next->prev)
         return EError::EOP;
       realFirst = next->prev;
       realFirst->next = 0;
       realFirst->parent = next;
-      while (next->op == ReOr && realFirst->prev && realFirst->prev->op != ReOr) {
+      while (next->op == EOps::ReOr && realFirst->prev && realFirst->prev->op != EOps::ReOr) {
         realFirst->parent = next;
         realFirst = realFirst->prev;
       }
@@ -709,7 +711,7 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
   const String& pattern = *global_pattern;
 
   switch (symb) {
-    case ReAnyChr:
+    case EMetaSymbols::ReAnyChr:
       if (toParse >= end)
         return false;
       if (!singleLine &&
@@ -719,7 +721,7 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
         return false;
       toParse++;
       return true;
-    case ReSoL:
+    case EMetaSymbols::ReSoL:
       if (multiLine) {
         bool ok = false;
         if (toParse &&
@@ -731,7 +733,7 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
         return (toParse == 0 || ok);
       }
       return (toParse == 0);
-    case ReEoL:
+    case EMetaSymbols::ReEoL:
       if (multiLine) {
         bool ok = false;  // ???check
         if (toParse && toParse < end &&
@@ -743,63 +745,63 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
         return (toParse == end || ok);
       }
       return (end == toParse);
-    case ReDigit:
+    case EMetaSymbols::ReDigit:
       if (toParse >= end || !Character::isDigit(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReNDigit:
+    case EMetaSymbols::ReNDigit:
       if (toParse >= end || Character::isDigit(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReWordSymb:
+    case EMetaSymbols::ReWordSymb:
       if (toParse >= end ||
           !(Character::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_'))
         return false;
       toParse++;
       return true;
-    case ReNWordSymb:
+    case EMetaSymbols::ReNWordSymb:
       if (toParse >= end || Character::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_')
         return false;
       toParse++;
       return true;
-    case ReWSpace:
+    case EMetaSymbols::ReWSpace:
       if (toParse >= end || !Character::isWhitespace(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReNWSpace:
+    case EMetaSymbols::ReNWSpace:
       if (toParse >= end || Character::isWhitespace(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReUCase:
+    case EMetaSymbols::ReUCase:
       if (toParse >= end || !Character::isUpperCase(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReNUCase:
+    case EMetaSymbols::ReNUCase:
       if (toParse >= end || !Character::isLowerCase(pattern[toParse]))
         return false;
       toParse++;
       return true;
-    case ReWBound:
+    case EMetaSymbols::ReWBound:
       return isWordBoundary(toParse);
-    case ReNWBound:
+    case EMetaSymbols::ReNWBound:
       return isNWordBoundary(toParse);
-    case RePreNW:
+    case EMetaSymbols::RePreNW:
       if (toParse >= end)
         return true;
       return toParse == 0 || !Character::isLetter(pattern[toParse - 1]);
 #ifdef COLORERMODE
-    case ReSoScheme:
+    case EMetaSymbols::ReSoScheme:
       return (schemeStart == toParse);
-    case ReStart:
+    case EMetaSymbols::ReStart:
       matches->s[0] = toParse;
       startChange = true;
       return true;
-    case ReEnd:
+    case EMetaSymbols::ReEnd:
       matches->e[0] = toParse;
       endChange = true;
       return true;
@@ -883,10 +885,10 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
     while (re || action != -1) {
       if (re && action == -1)
         switch (re->op) {
-          case ReEmpty:
+          case EOps::ReEmpty:
             break;
-          case ReBrackets:
-          case ReNamedBrackets:
+          case EOps::ReBrackets:
+          case EOps::ReNamedBrackets:
             if (leftenter) {
               re->s = toParse;
               re = re->un.param;
@@ -895,7 +897,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             }
             if (re->param0 == -1)
               break;
-            if (re->op == ReBrackets) {
+            if (re->op == EOps::ReBrackets) {
               if (re->param0 || !startChange)
                 matches->s[re->param0] = re->s;
               if (re->param0 || !endChange)
@@ -915,7 +917,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
 #endif
             }
             break;
-          case ReSymb:
+          case EOps::ReSymb:
             if (toParse >= end) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -935,13 +937,13 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             }
             toParse++;
             break;
-          case ReMetaSymb:
+          case EOps::ReMetaSymb:
             if (!checkMetaSymbol(re->un.metaSymbol, toParse)) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
             }
             break;
-          case ReWord:
+          case EOps::ReWord:
             wlen = re->un.word->length();
             if (toParse + wlen > end) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
@@ -968,7 +970,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               toParse += wlen;
             }
             break;
-          case ReEnum:
+          case EOps::ReEnum:
             if (toParse >= end) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -979,7 +981,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             }
             toParse++;
             break;
-          case ReNEnum:
+          case EOps::ReNEnum:
             if (toParse >= end) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -991,7 +993,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             toParse++;
             break;
 #ifdef COLORERMODE
-          case ReBkTrace:
+          case EOps::ReBkTrace:
             sv = re->param0;
             if (!backStr || !backTrace || sv == -1) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
@@ -1009,7 +1011,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (br)
               continue;
             break;
-          case ReBkTraceN:
+          case EOps::ReBkTraceN:
             sv = re->param0;
             if (!backStr || !backTrace || sv == -1) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
@@ -1029,7 +1031,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (br)
               continue;
             break;
-          case ReBkTraceName:
+          case EOps::ReBkTraceName:
 #ifndef NAMED_MATCHES_IN_HASH
             sv = re->param0;
             if (!backStr || !backTrace || sv == -1) {
@@ -1055,7 +1057,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
 #endif  // NAMED_MATCHES_IN_HASH
-          case ReBkTraceNName:
+          case EOps::ReBkTraceNName:
 #ifndef NAMED_MATCHES_IN_HASH
             sv = re->param0;
             if (!backStr || !backTrace || sv == -1) {
@@ -1085,7 +1087,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
 #endif  // NAMED_MATCHES_IN_HASH
 #endif  // COLORERMODE
 
-          case ReBkBrackName:
+          case EOps::ReBkBrackName:
 #ifndef NAMED_MATCHES_IN_HASH
             sv = re->param0;
             if (sv == -1 || cnMatch <= sv) {
@@ -1133,7 +1135,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           } break;
 #endif  // NAMED_MATCHES_IN_HASH
 
-          case ReBkBrack:
+          case EOps::ReBkBrack:
             sv = re->param0;
             if (sv == -1 || cMatch <= sv) {
               check_stack(false, &re, &prev, &toParse, &leftenter, &action);
@@ -1155,7 +1157,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (br)
               continue;
             break;
-          case ReAhead:
+          case EOps::ReAhead:
             if (!leftenter) {
               check_stack(true, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -1166,7 +1168,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             break;
-          case ReNAhead:
+          case EOps::ReNAhead:
             if (!leftenter) {
               check_stack(true, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -1177,7 +1179,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             break;
-          case ReBehind:
+          case EOps::ReBehind:
             if (!leftenter) {
               check_stack(true, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -1192,7 +1194,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             break;
-          case ReNBehind:
+          case EOps::ReNBehind:
             if (!leftenter) {
               check_stack(true, &re, &prev, &toParse, &leftenter, &action);
               continue;
@@ -1204,7 +1206,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             }
             break;
 
-          case ReOr:
+          case EOps::ReOr:
             if (!leftenter) {
               while (re->next) re = re->next;
               break;
@@ -1215,7 +1217,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             break;
-          case ReRangeN:
+          case EOps::ReRangeN:
             // first enter into op
             if (leftenter) {
               re->param0 = re->s;
@@ -1236,7 +1238,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             re = re->un.param;
             leftenter = true;
             continue;
-          case ReRangeNM:
+          case EOps::ReRangeNM:
             if (leftenter) {
               re->param0 = re->s;
               re->param1 = re->e - re->s;
@@ -1261,7 +1263,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             re = re->un.param;
             leftenter = true;
             continue;
-          case ReNGRangeN:
+          case EOps::ReNGRangeN:
             if (leftenter) {
               re->param0 = re->s;
               re->oldParse = -1;
@@ -1279,7 +1281,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             re = re->un.param;
             leftenter = true;
             continue;
-          case ReNGRangeNM:
+          case EOps::ReNGRangeNM:
             if (leftenter) {
               re->param0 = re->s;
               re->param1 = re->e - re->s;
@@ -1304,6 +1306,15 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             re = re->un.param;
             leftenter = true;
             continue;
+          case EOps::ReBlockOps:
+          case EOps::ReMul:
+          case EOps::RePlus:
+          case EOps::ReQuest:
+          case EOps::ReNGMul:
+          case EOps::ReNGPlus:
+          case EOps::ReNGQuest:
+          case EOps::ReSymbolOps:
+            break;
         }
 
       switch (action) {
@@ -1391,14 +1402,14 @@ inline bool CRegExp::quickCheck(int toParse)
       return false;
     return true;
   }
-  if (firstMetaChar != ReBadMeta)
+  if (firstMetaChar != EMetaSymbols::ReBadMeta)
     switch (firstMetaChar) {
-      case ReSoL:
+      case EMetaSymbols::ReSoL:
         if (toParse != 0)
           return false;
         return true;
 #ifdef COLORERMODE
-      case ReSoScheme:
+      case EMetaSymbols::ReSoScheme:
         if (toParse != schemeStart)
           return false;
         return true;
@@ -1406,6 +1417,24 @@ inline bool CRegExp::quickCheck(int toParse)
         //    case ReWBound:
         //      return relocale->cl_isword(*toParse) && (toParse == start ||
         //      !relocale->cl_isword(*(toParse-1)));
+      case EMetaSymbols::ReBadMeta:
+      case EMetaSymbols::ReAnyChr:
+      case EMetaSymbols::ReEoL:
+      case EMetaSymbols::ReDigit:
+      case EMetaSymbols::ReNDigit:
+      case EMetaSymbols::ReWordSymb:
+      case EMetaSymbols::ReNWordSymb:
+      case EMetaSymbols::ReWSpace:
+      case EMetaSymbols::ReNWSpace:
+      case EMetaSymbols::ReUCase:
+      case EMetaSymbols::ReNUCase:
+      case EMetaSymbols::ReWBound:
+      case EMetaSymbols::ReNWBound:
+      case EMetaSymbols::RePreNW:
+      case EMetaSymbols::ReStart:
+      case EMetaSymbols::ReEnd:
+      case EMetaSymbols::ReChrLast:
+        break;
     }
   return true;
 }
@@ -1417,7 +1446,7 @@ inline bool CRegExp::parseRE(int pos)
 
   int toParse = pos;
 
-  if (!positionMoves && (firstChar != BAD_WCHAR || firstMetaChar != ReBadMeta) &&
+  if (!positionMoves && (firstChar != BAD_WCHAR || firstMetaChar != EMetaSymbols::ReBadMeta) &&
       !quickCheck(toParse))
     return false;
 
