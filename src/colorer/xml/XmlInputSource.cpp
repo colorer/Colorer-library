@@ -1,11 +1,11 @@
 #include <colorer/xml/XmlInputSource.h>
 #include <colorer/xml/LocalFileXmlInputSource.h>
 #ifdef COLORER_FEATURE_JARINPUTSOURCE
-#include "colorer/xml/ZipXmlInputSource.h"
+#include <colorer/xml/ZipXmlInputSource.h>
 #endif
 #include <colorer/Exception.h>
 #include <xercesc/util/XMLString.hpp>
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
@@ -148,7 +148,7 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
 }
 #endif
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> &files)
 {
   DIR* dir = opendir(relPath->getChars());
@@ -161,6 +161,7 @@ void XmlInputSource::getFileFromDir(const String* relPath, std::vector<SString> 
         files.push_back(SString(relPath) + "/" + dire->d_name);
       }
     }
+    closedir(dir);
   }
 }
 #endif
