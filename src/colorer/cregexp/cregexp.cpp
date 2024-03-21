@@ -86,16 +86,14 @@ CRegExp::~CRegExp()
 
 EError CRegExp::setRELow(const String& expr)
 {
-  int len = expr.length();
+  auto len = expr.length();
   if (!len)
     return EError::EERROR;
 
-  if (tree_root)
-    delete tree_root;
+  delete tree_root;
   tree_root = nullptr;
 #ifndef NAMED_MATCHES_IN_HASH
   for (int bp = 0; bp < cnMatch; bp++)
-    if (brnames[bp])
       delete brnames[bp];
 #endif
 
@@ -113,9 +111,9 @@ EError CRegExp::setRELow(const String& expr)
 
   bool ok = false;
   ignoreCase = extend = singleLine = multiLine = false;
-  for (int i = len - 1; i >= start && !ok; i--)
+  for (auto i = len - 1; i >= start && !ok; i--)
     if (expr[i] == '/') {
-      for (int j = i + 1; j < len; j++) {
+      for (auto j = i + 1; j < len; j++) {
         if (expr[j] == 'i')
           ignoreCase = true;
         if (expr[j] == 'x')
@@ -192,7 +190,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
   retPos = -1;
 
   next = re;
-  for (unsigned int i = 0; i < expr.length(); i++) {
+  for (int i = 0; i < expr.length(); i++) {
     // simple character
     if (extend && Character::isWhitespace(expr[i]))
       continue;
@@ -484,24 +482,24 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
     // ( ... )
     if (expr[i] == '(') {
-      bool namedBracket = false;
+      // bool namedBracket = false;
       // perl-like "uncaptured" brackets
       if (expr.length() >= i + 2 && expr[i + 1] == '?' && expr[i + 2] == ':') {
         next->op = EOps::ReNamedBrackets;
         next->param0 = -1;
-        namedBracket = true;
+        // namedBracket = true;
         i += 3;
       }
       else if (expr.length() > i + 2 && expr[i + 1] == '?' && expr[i + 2] == '{') {
         // named bracket
         next->op = EOps::ReNamedBrackets;
-        namedBracket = true;
+        // namedBracket = true;
         String* s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
         if (s_curly == nullptr)
           return EError::EBRACKETS;
         SString* br_name = new SString(s_curly);
         delete s_curly;
-        int blen = br_name->length();
+        auto blen = br_name->length();
         if (blen == 0) {
           next->param0 = -1;
           delete br_name;
@@ -511,7 +509,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 #ifdef CHECKNAMES
           if (getBracketNo(br_name) != -1) {
             delete br_name;
-            return EBRACKETS;
+            return EError::EBRACKETS;
           }
 #endif
           if (cnMatch < NAMED_MATCHES_NUM) {
@@ -550,7 +548,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       next->un.param->parent = next;
       int endPos;
       EError err = setStructs(next->un.param, CString(&expr, i), endPos);
-      if (endPos == expr.length() - i)
+      if (expr.length() - i - endPos == 0)
         return EError::EBRACKETS;
       if (err != EError::EOK)
         return err;
