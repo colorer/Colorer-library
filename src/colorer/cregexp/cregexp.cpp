@@ -44,7 +44,7 @@ void CRegExp::init()
 {
   tree_root = 0;
   positionMoves = false;
-  error = EERROR;
+  error = EError::EERROR;
   firstChar = 0;
   cMatch = 0;
   global_pattern = 0;
@@ -81,7 +81,7 @@ CRegExp::~CRegExp()
 EError CRegExp::setRELow(const String &expr)
 {
   int len = expr.length();
-  if (!len) return EERROR;
+  if (!len) return EError::EERROR;
 
   if (tree_root) delete tree_root;
   tree_root = nullptr;
@@ -98,7 +98,7 @@ EError CRegExp::setRELow(const String &expr)
   int start = 0;
   while (Character::isWhitespace(expr[start])) start++;
   if (expr[start] == '/') start++;
-  else return ESYNTAX;
+  else return EError::ESYNTAX;
 
   bool ok = false;
   ignoreCase = extend = singleLine = multiLine = false;
@@ -113,7 +113,7 @@ EError CRegExp::setRELow(const String &expr)
     len = i-start;
     ok = true;
   }
-  if (!ok) return ESYNTAX;
+  if (!ok) return EError::ESYNTAX;
 
   // making tree structure
   tree_root = new SRegInfo;
@@ -124,11 +124,11 @@ EError CRegExp::setRELow(const String &expr)
 
   int endPos;
   EError err = setStructs(tree_root->un.param, CString(&expr, start, len), endPos);
-  if (endPos != len) err = EBRACKETS;
+  if (endPos != len) err = EError::EBRACKETS;
 
-  if (err) return err;
+  if (err != EError::EOK) return err;
   optimize();
-  return EOK;
+  return EError::EOK;
 }
 
 
@@ -168,7 +168,7 @@ EError CRegExp::setStructs(SRegInfo *&re, const String &expr, int &retPos)
 SRegInfo *next, *temp;
 
   retPos = 0;
-  if (!expr.length()) return EOK;
+  if (!expr.length()) return EError::EOK;
   retPos = -1;
 
   next = re;
@@ -267,15 +267,15 @@ SRegInfo *next, *temp;
           }else{
             next->op = (expr[i+1] =='y'?ReBkTraceName:ReBkTraceNName);
             br_name = UnicodeTools::getCurlyContent(expr, i+2);
-            if (br_name == nullptr) return ESYNTAX;
+            if (br_name == nullptr) return EError::ESYNTAX;
             if (!backRE){
               delete br_name;
-              return EERROR;
+              return EError::EERROR;
             }
             next->param0 = backRE->getBracketNo(br_name);
             blen = br_name->length();
             delete br_name;
-            if (next->param0 == -1) return ESYNTAX;
+            if (next->param0 == -1) return EError::ESYNTAX;
             i += blen+2;
           }
           break;
@@ -285,12 +285,12 @@ SRegInfo *next, *temp;
         case 'p':  // \p{name}
           next->op = ReBkBrackName;
           br_name = UnicodeTools::getCurlyContent(expr, i+2);
-          if (br_name == nullptr) return ESYNTAX;
+          if (br_name == nullptr) return EError::ESYNTAX;
           blen = br_name->length();
 #ifndef NAMED_MATCHES_IN_HASH
           next->param0 = getBracketNo(br_name);
           delete br_name;
-          if (next->param0 == -1) return ESYNTAX;
+          if (next->param0 == -1) return EError::ESYNTAX;
 #else
           if(br_name->length() && namedMatches && !namedMatches->getItem(br_name)){
             delete br_name;
@@ -309,7 +309,7 @@ SRegInfo *next, *temp;
             int retEnd;
             next->op = ReSymb;
             next->un.symbol = UnicodeTools::getEscapedChar(expr, i, retEnd);
-            if (next->un.symbol == BAD_WCHAR) return ESYNTAX;
+            if (next->un.symbol == BAD_WCHAR) return EError::ESYNTAX;
             i = retEnd-1;
           }
           break;
@@ -433,14 +433,14 @@ SRegInfo *next, *temp;
         }
         if (expr[j] == ',') comma = j;
       }
-      if (en == -1) return EBRACKETS;
+      if (en == -1) return EError::EBRACKETS;
       if (comma == -1) comma = en;
       CString ds = CString(&expr, st, comma-st);
       next->s = UnicodeTools::getNumber(&ds);
       CString de = CString(&expr, comma+1, en-comma-1);
       if (comma != en) next->e = UnicodeTools::getNumber(&de);
       else next->e = next->s;
-      if (next->e == -1) return EOP;
+      if (next->e == -1) return EError::EOP;
       next->un.param = 0;
       if (en - comma == 1) next->e = -1;
       if (next->e == -1) next->op = nonGreedy ? ReNGRangeN : ReRangeN;
@@ -462,7 +462,7 @@ SRegInfo *next, *temp;
         next->op = ReNamedBrackets;
         namedBracket = true;
         String *s_curly = UnicodeTools::getCurlyContent(expr, i+2);
-        if (s_curly == nullptr) return EBRACKETS;
+        if (s_curly == nullptr) return EError::EBRACKETS;
         SString *br_name = new SString(s_curly);
         delete s_curly;
         int blen = br_name->length();
@@ -510,8 +510,8 @@ SRegInfo *next, *temp;
       next->un.param->parent = next;
       int endPos;
       EError err = setStructs(next->un.param, CString(&expr, i), endPos);
-      if (endPos == expr.length()-i) return EBRACKETS;
-      if (err) return err;
+      if (endPos == expr.length()-i) return EError::EBRACKETS;
+      if (err != EError::EOK) return err;
       i += endPos;
       continue;
     }
@@ -520,14 +520,14 @@ SRegInfo *next, *temp;
     if (expr[i] == '['){
       int endPos;
       CharacterClass *cc = CharacterClass::createCharClass(expr, i, &endPos, ignoreCase);
-      if (cc == nullptr) return EENUM;
+      if (cc == nullptr) return EError::EENUM;
 //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
       next->op = ReEnum;
       next->un.charclass = cc;
       i = endPos;
       continue;
     }
-    if (expr[i] == ')' || expr[i] == ']' || expr[i] == '}') return EBRACKETS;
+    if (expr[i] == ')' || expr[i] == ']' || expr[i] == '}') return EError::EBRACKETS;
     next->op = ReSymb;
     next->un.symbol = expr[i];
   }
@@ -607,7 +607,7 @@ SRegInfo *next, *temp;
   SRegInfo *realFirst;
   while(next){
     if (next->op > ReBlockOps && next->op < ReSymbolOps){
-      if (!next->prev) return EOP;
+      if (!next->prev) return EError::EOP;
       realFirst = next->prev;
       realFirst->next = 0;
       realFirst->parent = next;
@@ -630,7 +630,7 @@ SRegInfo *next, *temp;
     next = next->next;
   }
   if (retPos == -1) retPos = expr.length();
-  return EOK;
+  return EError::EOK;
 }
 
 
@@ -1304,7 +1304,7 @@ inline bool CRegExp::quickCheck(int toParse)
 
 inline bool CRegExp::parseRE(int pos)
 {
-  if (error) return false;
+  if (error != EError::EOK) return false;
 
   int toParse = pos;
 
@@ -1374,7 +1374,7 @@ bool CRegExp::parse(const String *str, SMatches *mtch
 
 bool CRegExp::setRE(const String *re)
 {
-  error = EERROR;
+  error = EError::EERROR;
 #ifdef NAMED_MATCHES_IN_HASH
   PMatchHash oldnamedMatches = namedMatches;
   SMatchHash tmpMatchHash;
@@ -1384,11 +1384,11 @@ bool CRegExp::setRE(const String *re)
 #else
   error = setRELow(*re);
 #endif
-  return error == EOK;
+  return error == EError::EOK;
 }
 bool CRegExp::isOk()
 {
-  return error == EOK;
+  return error == EError::EOK;
 }
 EError CRegExp::getError()
 {

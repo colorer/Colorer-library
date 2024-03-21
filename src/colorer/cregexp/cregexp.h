@@ -112,11 +112,7 @@ enum EMetaSymbols
   ReChrLast,
 };
 
-enum EError
-{
-  EOK = 0, EERROR, ESYNTAX, EBRACKETS, EENUM, EOP
-};
-
+enum class EError { EOK = 0, EERROR, ESYNTAX, EBRACKETS, EENUM, EOP };
 
 /// @ingroup cregexp
 struct SMatches
