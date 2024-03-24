@@ -25,12 +25,12 @@ public:
 
   void loadSource(XmlInputSource* is);
   FileType* getFileType(const String* name);
-  FileType* enumerateFileTypes(int index);
+  FileType* enumerateFileTypes(unsigned int index);
   FileType* chooseFileType(const String* fileName, const String* firstLine, int typeNo = 0);
   size_t getFileTypesCount();
 
   size_t getRegionCount();
-  const Region* getRegion(int id);
+  const Region* getRegion(unsigned int id);
   const Region* getRegion(const String* name);
 
   const String* getVersion();

@@ -187,14 +187,18 @@ void ConsoleTools::RETest()
   re = new CRegExp();
   do {
     printf("\nregexp:");
-    fgets(text, sizeof(text), stdin);
+    if (fgets(text, sizeof(text), stdin) == nullptr) {
+      continue;
+    }
     strtok(text, "\r\n");
     CString dtext = CString(text);
     if (!re->setRE(&dtext)) {
       continue;
     }
     printf("exprn:");
-    fgets(text, sizeof(text), stdin);
+    if (fgets(text, sizeof(text), stdin) == nullptr) {
+      continue;
+    }
     strtok(text, "\r\n");
     dtext = CString(text);
     res = re->parse(&dtext, &match);

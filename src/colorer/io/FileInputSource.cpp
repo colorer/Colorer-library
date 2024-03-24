@@ -79,8 +79,17 @@ const byte *FileInputSource::openStream()
 
   stream = new byte[len];
   memset(stream,0, sizeof(byte)*len);
-  read(source, stream, len);
+#ifdef _MSC_VER
+  if (_read(source, stream, len) != len) {
+    throw InputSourceException(SString("Error on read file") + *baseLocation);
+  }
+  _close(source);
+#else
+  if (read(source, stream, len) != len) {
+    throw InputSourceException(SString("Error on read file") + *baseLocation);
+  }
   close(source);
+#endif
   return stream;
 }
 

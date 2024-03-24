@@ -147,7 +147,7 @@ FileType* HRCParserImpl::getFileType(const String* name)
     return nullptr;
 }
 
-FileType* HRCParserImpl::enumerateFileTypes(int index)
+FileType* HRCParserImpl::enumerateFileTypes(unsigned int index)
 {
   if (index < fileTypeVector.size()) {
     return fileTypeVector[index];
@@ -165,7 +165,7 @@ size_t HRCParserImpl::getRegionCount()
   return regionNamesVector.size();
 }
 
-const Region* HRCParserImpl::getRegion(int id)
+const Region* HRCParserImpl::getRegion(unsigned int id)
 {
   if (id < 0 || id >= regionNamesVector.size()) {
     return nullptr;
@@ -816,7 +816,6 @@ void HRCParserImpl::addSchemeKeywords(SchemeImpl* scheme, const xercesc::DOMElem
   scheme_node->kwList->num = getSchemeKeywordsCount(elem);
 
   scheme_node->kwList->kwList = new KeywordInfo[scheme_node->kwList->num];
-  memset(scheme_node->kwList->kwList , 0, sizeof(KeywordInfo)*scheme_node->kwList->num);
   scheme_node->kwList->num = 0;
   scheme_node->kwList->matchCase = isCase;
   scheme_node->type = SchemeNode::SNT_KEYWORDS;

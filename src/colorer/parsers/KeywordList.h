@@ -12,9 +12,9 @@
 */
 struct KeywordInfo {
   std::unique_ptr<const SString> keyword;
-  const Region* region;
-  bool isSymbol;
-  int  ssShorter;
+  const Region* region = nullptr;
+  bool isSymbol = false;
+  int  ssShorter = -1;
 };
 
 /** List of keywords.
@@ -25,7 +25,7 @@ class KeywordList
 public:
   int num;
   bool matchCase;
-  unsigned int minKeywordLength;
+  int minKeywordLength;
   std::unique_ptr<CharacterClass> firstChar;
   KeywordInfo* kwList;
   KeywordList();

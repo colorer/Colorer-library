@@ -32,7 +32,7 @@ public:
     return parent;
   }
   /** Quick access region id (incrementable) */
-  virtual int getID() const
+  virtual size_t getID() const
   {
     return id;
   }
@@ -57,7 +57,7 @@ public:
     Basic constructor.
     Used only by HRCParser.
   */
-  Region(const String* _name, const String* _description, const Region* _parent, int _id)
+  Region(const String* _name, const String* _description, const Region* _parent, size_t _id)
   {
     name = new SString(_name);
     description = nullptr;
@@ -78,7 +78,7 @@ protected:
   /** Internal members */
   String* name, *description;
   const Region* parent;
-  int id;
+  size_t id;
 };
 
 #endif
