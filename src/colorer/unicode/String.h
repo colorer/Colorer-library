@@ -17,9 +17,9 @@ public:
   String();
   virtual ~String();
 
-  virtual wchar operator[](size_t i) const = 0;
+  virtual wchar operator[](int32_t i) const = 0;
   /** String length in unicode characters */
-  virtual size_t length() const = 0;
+  virtual int32_t length() const = 0;
 
   /** Checks, if two strings are equals */
   bool operator==(const String &str) const;
@@ -56,22 +56,22 @@ public:
   virtual const char *getChars(int encoding = -1) const;
 
   /** Searches first index of char @c wc, starting from @c pos */
-  virtual size_t indexOf(wchar wc, size_t pos = 0) const;
+  virtual int32_t indexOf(wchar wc, int32_t pos = 0) const;
   /** Searches first index of substring @c str, starting from @c pos */
-  virtual size_t indexOf(const String &str, size_t pos = 0) const;
+  virtual int32_t indexOf(const String &str, int32_t pos = 0) const;
   /** Searches first index of substring @c str, starting from @c pos ignoring character case */
-  virtual size_t indexOfIgnoreCase(const String &str, size_t pos = 0) const;
+  virtual int32_t indexOfIgnoreCase(const String &str, int32_t pos = 0) const;
   /** Searches last index of character @c wc, ending with @c pos */
-  virtual size_t lastIndexOf(wchar wc, size_t pos = npos) const;
+  virtual int32_t lastIndexOf(wchar wc, int32_t pos = npos) const;
 
   /** Tests, if string starts with specified @c str substring at position @c pos */
-  virtual bool startsWith(const String &str, size_t pos = 0) const;
+  virtual bool startsWith(const String &str, int32_t pos = 0) const;
 
   /** Internal hashcode of string
   */
   size_t hashCode() const;
 
-  static const size_t npos = size_t(-1);
+  static const int32_t npos = -1;
 
 private:
   mutable void *ret_val = nullptr;

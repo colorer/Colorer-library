@@ -28,7 +28,7 @@ CString &CString::operator=(const CString &cstring)
   return *this;
 }
 
-CString::CString(const byte* stream, size_t size, int def_encoding)
+CString::CString(const byte* stream, int32_t size, int def_encoding)
 {
   start = 0;
   len = size;
@@ -48,8 +48,8 @@ CString::CString(const byte* stream, size_t size, int def_encoding)
   if (type == ST_CHAR && encodingIdx == -1) {
     // check encoding parameter
     if (stream[0] == 0x3C && stream[1] == 0x3F) {
-      size_t p;
-      size_t cps = 0, cpe = 0;
+      int32_t p;
+      int32_t cps = 0, cpe = 0;
       for (p = 2; p < 100 && stream[p] != 0x3F && stream[p + 1] != 0x3C; p++) {
         if (cps && stream[p] == stream[cps - 1]) {
           cpe = p;
@@ -121,7 +121,7 @@ CString::CString(const byte* stream, size_t size, int def_encoding)
   }
 }
 
-CString::CString(const char* string, size_t s, size_t l, int encoding)
+CString::CString(const char* string, int32_t s, int32_t l, int encoding)
 {
   type = ST_CHAR;
   str = string;
@@ -135,7 +135,7 @@ CString::CString(const char* string, size_t s, size_t l, int encoding)
   if (encodingIdx == -1) encodingIdx = Encodings::getDefaultEncodingIndex();
 }
 
-CString::CString(const w2char* string, size_t s, size_t l)
+CString::CString(const w2char* string, int32_t s, int32_t l)
 {
   type = ST_UTF16;
   w2str = string;
@@ -146,7 +146,7 @@ CString::CString(const w2char* string, size_t s, size_t l)
     for (len = 0; w2str[len + s]; len++);
 }
 
-CString::CString(const w4char* string, size_t s, size_t l)
+CString::CString(const w4char* string, int32_t s, int32_t l)
 {
   type = ST_UTF32;
   w4str = string;
@@ -158,7 +158,7 @@ CString::CString(const w4char* string, size_t s, size_t l)
 }
 
 #if (__WCHAR_MAX__ > 0xffff)
-CString::CString(const wchar* string, size_t s, size_t l)
+CString::CString(const wchar* string, int32_t s, int32_t l)
 {
   start = s;
   len = l;
@@ -178,7 +178,7 @@ CString::CString(const wchar* string, size_t s, size_t l)
 }
 #endif
 
-CString::CString(const String* cstring, size_t s, size_t l)
+CString::CString(const String* cstring, int32_t s, int32_t l)
 {
   type = ST_CSTRING;
   cstr = cstring;
@@ -191,7 +191,7 @@ CString::CString(const String* cstring, size_t s, size_t l)
     len = cstring->length() - start;
 }
 
-CString::CString(const String &cstring, size_t s, size_t l)
+CString::CString(const String &cstring, int32_t s, int32_t l)
 {
   type = ST_CSTRING;
   cstr = &cstring;
@@ -217,7 +217,7 @@ CString::~CString()
   if (type == ST_UTF8) delete[] stream_wstr;
 }
 
-wchar CString::operator[](size_t i) const
+wchar CString::operator[](int32_t i) const
 {
   if (i < len) switch (type) {
       case ST_CHAR:
@@ -246,7 +246,7 @@ wchar CString::operator[](size_t i) const
   throw StringIndexOutOfBoundsException(SString(i));
 }
 
-size_t CString::length() const
+int32_t CString::length() const
 {
   return len;
 }

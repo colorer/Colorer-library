@@ -17,7 +17,7 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  DString(const SString* cstring, size_t s = 0, size_t l = npos);
+  DString(const SString* cstring, int32_t s = 0, int32_t l = npos);
 
   /** String from any @c String implementing interface.
       @param cstring String class instance.
@@ -25,7 +25,7 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              cstring.length() call.
   */
-  DString(const SString &cstring, size_t s = 0, size_t l = npos);
+  DString(const SString &cstring, int32_t s = 0, int32_t l = npos);
 
   ~DString() {};
 
@@ -34,15 +34,15 @@ public:
   DString(DString &&);
   DString &operator=(DString &&);
 
-  wchar operator[](size_t i) const override;
-  size_t length() const override;
+  wchar operator[](int32_t i) const override;
+  int32_t length() const override;
 
   const SString* str;
-  size_t start;
-  size_t len;
+  int32_t start;
+  int32_t len;
 };
 
-inline DString::DString(const SString* cstring, size_t s, size_t l)
+inline DString::DString(const SString* cstring, int32_t s, int32_t l)
 {
   str = cstring;
   start = s;
@@ -53,7 +53,7 @@ inline DString::DString(const SString* cstring, size_t s, size_t l)
     len = cstring->length() - start;
 }
 
-inline DString::DString(const SString &cstring, size_t s, size_t l)
+inline DString::DString(const SString &cstring, int32_t s, int32_t l)
 {
   str = &cstring;
   start = s;
@@ -88,12 +88,12 @@ inline DString &DString::operator=(DString &&cstring)
   return *this;
 }
 
-inline wchar DString::operator[](size_t i) const
+inline wchar DString::operator[](int32_t i) const
 {
   return (*str)[start + i];
 }
 
-inline size_t DString::length() const
+inline int32_t DString::length() const
 {
   return len;
 }

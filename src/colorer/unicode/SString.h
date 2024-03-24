@@ -20,24 +20,24 @@ public:
    * String constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String* cstring, size_t s = 0, size_t l = npos);
+  SString(const String* cstring, int32_t s = 0, int32_t l = npos);
 
   /**
    * String constructor from String source
    * @param cstring source string, can't be null.
    */
-  SString(const String &cstring, size_t s = 0, size_t l = npos);
+  SString(const String &cstring, int32_t s = 0, int32_t l = npos);
   SString(const SString &cstring);
 
   /**
    * String constructor from char stream
    * @param str source string, can't be null.
    */
-  SString(const char* string, size_t s = 0, size_t l = npos);
+  SString(const char* string, int32_t s = 0, int32_t l = npos);
 #ifndef WIN32
-  SString(const w2char* string, size_t s = 0, size_t l = npos);
+  SString(const w2char* string, int32_t s = 0, int32_t l = npos);
 #endif
-  SString(const w4char* string, size_t s = 0, size_t l = npos);
+  SString(const w4char* string, int32_t s = 0, int32_t l = npos);
   SString(char* str, int enc = -1);
   SString(const wchar_t* str);
 
@@ -50,15 +50,15 @@ public:
   ~SString();
 
   /** Changes the length of this StringBuffer */
-  void setLength(size_t newLength);
+  void setLength(int32_t newLength);
 
-  wchar operator[](size_t i) const override;
-  size_t length() const override;
+  wchar operator[](int32_t i) const override;
+  int32_t length() const override;
 
   /** Appends to this string buffer @c string */
-  SString &append(const String &string, size_t maxlen = (size_t)-1);
+  SString &append(const String &string, int32_t maxlen = (int32_t)-1);
   /** Appends to this string buffer @c string */
-  SString &append(const String* string, size_t maxlen = (size_t)-1);
+  SString &append(const String* string, int32_t maxlen = (int32_t)-1);
 
   /** Appends to this string buffer @c string */
   SString &append(wchar c);
@@ -85,10 +85,10 @@ public:
   SString &operator=(SString &&cstring);
 protected:
 
-  void construct(const String* cstring, size_t s, size_t l);
+  void construct(const String* cstring, int32_t s, int32_t l);
 
   std::unique_ptr<wchar[]> wstr;
-  size_t len;
+  int32_t len;
   size_t alloc;
 };
 
@@ -114,12 +114,12 @@ inline SString &SString::operator=(SString &&cstring)
   return *this;
 }
 
-inline size_t SString::length() const
+inline int32_t SString::length() const
 {
   return len;
 }
 
-inline wchar SString::operator[](size_t i) const
+inline wchar SString::operator[](int32_t i) const
 {
   return wstr[i];
 }

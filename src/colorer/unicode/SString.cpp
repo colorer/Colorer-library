@@ -7,7 +7,7 @@ SString::SString(): wstr(nullptr), len(0), alloc(0)
 {
 }
 
-void SString::construct(const String* cstring, size_t s, size_t l)
+void SString::construct(const String* cstring, int32_t s, int32_t l)
 {
   if (s > cstring->length()) throw Exception(CString("bad string constructor parameters"));
   if (l == npos) l = cstring->length() - s;
@@ -17,7 +17,7 @@ void SString::construct(const String* cstring, size_t s, size_t l)
   alloc = len;
 }
 
-SString::SString(const String* cstring, size_t s, size_t l)
+SString::SString(const String* cstring, int32_t s, int32_t l)
 {
   construct(cstring, s, l);
 }
@@ -27,27 +27,27 @@ SString::SString(const SString &cstring)
   construct(&cstring, 0, npos);
 }
 
-SString::SString(const char* string, size_t s, size_t l)
+SString::SString(const char* string, int32_t s, int32_t l)
 {
   CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
 #ifndef WIN32
-SString::SString(const w2char* string, size_t s, size_t l)
+SString::SString(const w2char* string, int32_t s, int32_t l)
 {
   CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 #endif
 
-SString::SString(const w4char* string, size_t s, size_t l)
+SString::SString(const w4char* string, int32_t s, int32_t l)
 {
   CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
 
-SString::SString(const String &cstring, size_t s, size_t l)
+SString::SString(const String &cstring, int32_t s, int32_t l)
 {
   construct(&cstring, s, l);
 }
@@ -88,7 +88,7 @@ SString::~SString()
 {
 }
 
-void SString::setLength(size_t newLength)
+void SString::setLength(int32_t newLength)
 {
   if (newLength > alloc) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[newLength * 2]);
@@ -102,16 +102,16 @@ void SString::setLength(size_t newLength)
   len = newLength;
 }
 
-SString &SString::append(const String* string, size_t maxlen)
+SString &SString::append(const String* string, int32_t maxlen)
 {
   if (string == nullptr)
     return append(CString("null"));
   return append(*string, maxlen);
 }
 
-SString &SString::append(const String &string, size_t maxlen)
+SString &SString::append(const String &string, int32_t maxlen)
 {
-  const size_t len_new = len + std::min(maxlen, string.length());
+  const int32_t len_new = len + (maxlen <= string.length() ? maxlen: string.length());
 
   if (alloc < len_new) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
@@ -122,7 +122,7 @@ SString &SString::append(const String &string, size_t maxlen)
     wstr = std::move(wstr_new);
   }
 
-  for (size_t i = len; i < len_new; i++) {
+  for (auto i = len; i < len_new; i++) {
     wstr[i] = string[i - len];
   }
 
@@ -170,8 +170,8 @@ SString &SString::operator=(SString const &cstring)
 
 SString* SString::replace(const String &pattern, const String &newstring) const
 {
-  size_t copypos = 0;
-  size_t epos = 0;
+  int32_t copypos = 0;
+  int32_t epos = 0;
 
   SString* newname = new SString();
   const SString &name = *this;
@@ -193,9 +193,9 @@ SString* SString::replace(const String &pattern, const String &newstring) const
 
 int SString::compareTo(const SString &str) const
 {
-  size_t i;
-  size_t sl = str.length();
-  size_t l = length();
+  int32_t i;
+  auto sl = str.length();
+  auto l = length();
   for (i = 0; i < sl && i < l; i++) {
     int cmp = str[i] - this->wstr[i];
     if (cmp > 0) return -1;
