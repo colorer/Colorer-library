@@ -130,7 +130,7 @@ const char* String::getChars(int encoding) const
   byte buf[8];
   int32_t cpos = 0;
   for (auto i = 0; i < length(); i++) {
-    size_t retLen = Encodings::toBytes(encoding, (*this)[i], buf);
+    auto retLen = Encodings::toBytes(encoding, (*this)[i], buf);
     // extend byte buffer
     if (cpos + retLen > len) {
       if (i == 0) len = 8;
@@ -139,7 +139,7 @@ const char* String::getChars(int encoding) const
       if (!ret_char_val) { return "[NO MEMORY]"; }
       ret_val = ret_char_val;
     }
-    for (size_t cpidx = 0; cpidx < retLen; cpidx++)
+    for (int32_t cpidx = 0; cpidx < retLen; cpidx++)
       ret_char_val[cpos++] = buf[cpidx];
   }
   ret_char_val[cpos] = 0;

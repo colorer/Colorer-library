@@ -93,7 +93,7 @@ void SString::setLength(int32_t newLength)
   if (newLength > alloc) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[newLength * 2]);
     alloc = newLength * 2;
-    for (size_t i = 0; i < newLength; i++) {
+    for (int32_t i = 0; i < newLength; i++) {
       if (i < len) wstr_new[i] = wstr[i];
       else wstr_new[i] = 0;
     }
@@ -116,7 +116,7 @@ SString &SString::append(const String &string, int32_t maxlen)
   if (alloc < len_new) {
     std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
     alloc = len_new * 2;
-    for (size_t i = 0; i < len; i++) {
+    for (int32_t i = 0; i < len; i++) {
       wstr_new[i] = wstr[i];
     }
     wstr = std::move(wstr_new);
@@ -208,9 +208,9 @@ int SString::compareTo(const SString &str) const
 
 int SString::compareTo(const DString &str) const
 {
-  size_t i;
-  size_t sl = str.length();
-  size_t l = length();
+  int32_t i;
+  auto sl = str.length();
+  auto l = length();
   for (i = 0; i < sl && i < l; i++) {
     int cmp = str.str->wstr[str.start + i] - this->wstr[i];
     if (cmp > 0) return -1;

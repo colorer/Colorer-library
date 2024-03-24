@@ -1002,7 +1002,7 @@ String* HRCParserImpl::qualifyOwnName(const String* name)
   if (name == nullptr) {
     return nullptr;
   }
-  size_t colon = name->indexOf(':');
+  auto colon = name->indexOf(':');
   if (colon != String::npos) {
     if (parseType && CString(name, 0, colon) != *parseType->name) {
       logger->error("type name qualifer in '{0}' doesn't match type '{1}'", name->getChars(), parseType->name->getChars());
@@ -1043,7 +1043,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
   if (name == nullptr) {
     return nullptr;
   }
-  size_t colon = name->indexOf(':');
+  auto colon = name->indexOf(':');
   if (colon != String::npos) { // qualified name
     CString prefix(name, 0, colon);
     auto ft = fileTypeHash.find(&prefix);
@@ -1091,7 +1091,7 @@ String* HRCParserImpl::qualifyForeignName(const String* name, QualifyNameType qn
 String* HRCParserImpl::useEntities(const String* name)
 {
   int copypos = 0;
-  size_t epos = 0;
+  int32_t epos = 0;
 
   if (!name) {
     return nullptr;
@@ -1108,7 +1108,7 @@ String* HRCParserImpl::useEntities(const String* name)
       epos++;
       continue;
     }
-    size_t elpos = name->indexOf(';', epos);
+    auto elpos = name->indexOf(';', epos);
     if (elpos == String::npos) {
       epos = name->length();
       break;
@@ -1159,7 +1159,7 @@ const Region* HRCParserImpl::getNCRegion(const String* name, bool logErrors)
   */
   if (reg != nullptr) {
     const String* s_name = reg->getName();
-    size_t idx = s_name->indexOf(CString(":default"));
+    auto idx = s_name->indexOf(CString(":default"));
     if (idx != String::npos && idx + 8 == s_name->length()) {
       return nullptr;
     }

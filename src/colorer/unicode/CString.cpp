@@ -22,7 +22,7 @@ CString &CString::operator=(const CString &cstring)
   len = cstring.len;
   if (type == ST_UTF8) {
     stream_wstr = new wchar[len];
-    for (size_t wi = 0; wi < len; wi++)
+    for (int32_t wi = 0; wi < len; wi++)
       stream_wstr[wi] = cstring.stream_wstr[wi];
   }
   return *this;
@@ -99,7 +99,7 @@ CString::CString(const byte* stream, int32_t size, int def_encoding)
     len = size / 4;
   } else if (type == ST_UTF8) {
     stream_wstr = new wchar[size];
-    size_t pos;
+    int32_t pos;
     for (pos = 0, len = 0; pos < size; pos++, len++) {
       wchar wc = 0;
       if (!(stream[pos] >> 7)) {

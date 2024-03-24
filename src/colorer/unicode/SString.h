@@ -89,7 +89,7 @@ protected:
 
   std::unique_ptr<wchar[]> wstr;
   int32_t len;
-  size_t alloc;
+  int32_t alloc;
 };
 
 inline SString::SString(SString &&cstring): wstr(std::move(cstring.wstr)),

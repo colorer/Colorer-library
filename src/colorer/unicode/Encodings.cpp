@@ -85,7 +85,7 @@ const char* Encodings::getDefaultEncodingName()
   return defEncoding;
 }
 
-size_t Encodings::toBytes(int encoding, wchar wc, byte* dest)
+int Encodings::toBytes(int encoding, wchar wc, byte* dest)
 {
   if (encoding < -6 || encoding == -1 || encoding >= encNamesNum)
     throw UnsupportedEncodingException(SString(encoding));
@@ -94,7 +94,7 @@ size_t Encodings::toBytes(int encoding, wchar wc, byte* dest)
     return 1;
   }
   if (encoding == ENC_UTF8) {
-    size_t dpos = 0;
+    int dpos = 0;
     if (wc <= 0x7F) {
       dest[dpos] = wc & 0x7F;
     }

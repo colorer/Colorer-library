@@ -442,7 +442,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       int en = -1;
       int comma = -1;
       bool nonGreedy = false;
-      unsigned int j;
+      int j;
       for (j = i; j < expr.length(); j++) {
         if (expr.length() > j + 1 && expr[j] == '}' && expr[j + 1] == '?') {
           en = j;

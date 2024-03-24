@@ -31,7 +31,7 @@ public:
   /** returns Byte Order Mark bytes <b>Length</b> for specified Unicode encoding */
   static int getEncodingBOMSize(int encoding);
   static int isMultibyteEncoding(int encoding);
-  static size_t toBytes(int encoding, wchar, byte*);
+  static int toBytes(int encoding, wchar, byte*);
 
   static char toChar(int, wchar);
   static wchar toWChar(int, char);
