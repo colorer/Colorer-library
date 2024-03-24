@@ -56,9 +56,9 @@ public:
   int32_t length() const override;
 
   /** Appends to this string buffer @c string */
-  SString &append(const String &string, int32_t maxlen = (int32_t)-1);
+  SString &append(const String &string, int32_t maxlen = INT32_MAX);
   /** Appends to this string buffer @c string */
-  SString &append(const String* string, int32_t maxlen = (int32_t)-1);
+  SString &append(const String* string, int32_t maxlen = INT32_MAX);
 
   /** Appends to this string buffer @c string */
   SString &append(wchar c);

@@ -144,7 +144,7 @@ FileType* BaseEditor::chooseFileTypeCh(const String* fileName, int chooseStr, in
       appendLength = chooseLen - totalLength;
     }
 
-    textStart.append(iLine, (size_t)appendLength);
+    textStart.append(iLine, appendLength);
     textStart.append(CString("\n"));
 
     totalLength+= appendLength;
