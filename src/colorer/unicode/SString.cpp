@@ -33,11 +33,13 @@ SString::SString(const char* string, size_t s, size_t l)
   construct(&ds, 0, ds.length());
 }
 
+#ifndef WIN32
 SString::SString(const w2char* string, size_t s, size_t l)
 {
   CString ds(string, s, l);
   construct(&ds, 0, ds.length());
 }
+#endif
 
 SString::SString(const w4char* string, size_t s, size_t l)
 {
@@ -56,7 +58,7 @@ SString::SString(char* str, int enc)
   construct(&ds, 0, ds.length());
 }
 
-/*SString::SString(const wchar_t* str)
+SString::SString(const wchar_t* str)
 {
 #if (__WCHAR_MAX__ > 0xffff)
   CString ds((const w4char *)str, 0, npos);
@@ -64,7 +66,7 @@ SString::SString(char* str, int enc)
   CString ds((const w2char *)str, 0, npos);
 #endif
   construct(&ds, 0, ds.length());
-}*/
+}
 
 SString::SString(int no)
 {

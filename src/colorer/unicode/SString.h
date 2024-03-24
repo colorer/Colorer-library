@@ -34,10 +34,13 @@ public:
    * @param str source string, can't be null.
    */
   SString(const char* string, size_t s = 0, size_t l = npos);
+#ifndef WIN32
   SString(const w2char* string, size_t s = 0, size_t l = npos);
+#endif
   SString(const w4char* string, size_t s = 0, size_t l = npos);
   SString(char* str, int enc = -1);
- // SString(const wchar_t* str);
+  SString(const wchar_t* str);
+
   /**
    * String constructor from integer number
    */
