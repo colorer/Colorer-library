@@ -58,7 +58,7 @@ public:
       @param l Length of created string. If npos, autodetects string length with
              last zero char.
   */
-  CString(const wchar* string, size_t s = 0, size_t l = npos);
+  CString(const w2char* string, size_t s = 0, size_t l = npos);
   /** String from UCS4 four-byte character buffer.
       @param string UCS4 unicode character buffer, can't be null.
       @param s Starting string position. Zero - create from start of buffer.
@@ -66,6 +66,10 @@ public:
              last zero char.
   */
   CString(const w4char* string, size_t s = 0, size_t l = npos);
+
+#if (__WCHAR_MAX__ > 0xffff)
+  CString(const wchar* string, size_t s = 0, size_t l = npos);
+#endif
 
   /** String from any @c String implementing interface.
       @param cstring String class instance, can't be null.
@@ -109,7 +113,7 @@ protected:
   int encodingIdx;
   union {
     const char* str;
-    const wchar* wstr;
+    const w2char* w2str;
     const w4char* w4str;
     const String* cstr;
     wchar* stream_wstr;

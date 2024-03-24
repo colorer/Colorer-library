@@ -135,7 +135,7 @@ CharacterClass* CharacterClass::createCharClass(const String& ccs, int pos, int*
     }
     // substract -[class]
     if (pos + 1 < ccs.length() && ccs[pos] == '-' && ccs[pos + 1] == '[') {
-      int retEnd;
+      int retEnd = 0;
       CharacterClass* scc = createCharClass(ccs, pos + 1, &retEnd, false);
       if (retEnd == ccs.length()) {
         delete cc;
@@ -254,7 +254,7 @@ void CharacterClass::addCategory(ECharCategory cat)
 void CharacterClass::addCategory(const String &cat)
 {
   for (size_t pos = 0; pos < ARRAY_SIZE(char_category_names); pos++) {
-    int ci;
+    size_t ci;
     for (ci = 0; ci < cat.length() && cat[ci] == char_category_names[pos][ci]; ci++);
     if (ci == cat.length()) addCategory(ECharCategory(pos));
   }
@@ -283,7 +283,7 @@ void CharacterClass::clearCategory(ECharCategory cat)
 void CharacterClass::clearCategory(const String &cat)
 {
   for (size_t pos = 0; pos < ARRAY_SIZE(char_category_names); pos++) {
-    int ci;
+    size_t ci;
     for (ci = 0; ci < cat.length() && cat[ci] == char_category_names[pos][ci]; ci++);
     if (ci == cat.length()) clearCategory(ECharCategory(pos));
   }
