@@ -23,14 +23,14 @@
 
 ParserFactory::ParserFactory() : hrc_parser(new HRCParserImpl())
 {
-  RegExpStack = nullptr;
-  RegExpStack_Size = 0;
+  xercesc::XMLPlatformUtils::Initialize();
 }
 
 ParserFactory::~ParserFactory()
 {
   delete hrc_parser;
-  delete[] RegExpStack;
+  CRegExp::clearRegExpStack();
+  xercesc::XMLPlatformUtils::Terminate();
 }
 
 SString ParserFactory::searchCatalog() const

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <colorer/common/Colorer.h>
 #include <colorer/version.h>
 #include <colorer/Common.h>
 #ifndef COLORER_FEATURE_DUMMYLOGGER
@@ -350,8 +349,6 @@ int main(int argc, char* argv[])
 #else
   logger = std::make_shared<DummyLogger>();
 #endif
-
-  auto colorer = std::unique_ptr<Colorer>(new Colorer);
 
   return workIt();
 }

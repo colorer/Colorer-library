@@ -12,8 +12,6 @@ set(SRC_COLORER
     colorer/Scheme.h
     colorer/TextParser.h
     colorer/version.h
-    colorer/common/Colorer.cpp
-    colorer/common/Colorer.h
     colorer/common/Exception.cpp
     colorer/common/Features.h
     colorer/common/platform.h

@@ -3,21 +3,17 @@
 #include <colorer/unicode/UnicodeTools.h>
 #include <string.h>
 
-StackElem* RegExpStack;
-int RegExpStack_Size;
+StackElem* CRegExp::RegExpStack {nullptr};
+int CRegExp::RegExpStack_Size {0};
 /////////////////////////////////////////////////////////////////////////////
 //
 SRegInfo::SRegInfo()
 {
-  next = prev = parent = nullptr;
   un.param = nullptr;
-  op = EOps::ReEmpty;
-  param0 = param1 = 0;
 }
 SRegInfo::~SRegInfo()
 {
-  if (next)
-    delete next;
+  delete next;
   if (un.param)
     switch (op) {
       case EOps::ReEnum:
@@ -45,14 +41,14 @@ SRegInfo::~SRegInfo()
 // CRegExp class
 void CRegExp::init()
 {
-  tree_root = 0;
+  tree_root = nullptr;
   positionMoves = false;
   error = EError::EERROR;
   firstChar = 0;
   cMatch = 0;
-  global_pattern = 0;
+  global_pattern = nullptr;
 #ifdef COLORERMODE
-  backRE = 0;
+  backRE = nullptr;
   backStr = nullptr;
   backTrace = nullptr;
 #endif
@@ -75,12 +71,9 @@ CRegExp::CRegExp(const String* text)
 }
 CRegExp::~CRegExp()
 {
-  if (tree_root)
-    delete tree_root;
+  delete tree_root;
 #ifndef NAMED_MATCHES_IN_HASH
-  for (int bp = 0; bp < cnMatch; bp++)
-    if (brnames[bp])
-      delete brnames[bp];
+  for (int bp = 0; bp < cnMatch; bp++) delete brnames[bp];
 #endif
 }
 
@@ -93,8 +86,7 @@ EError CRegExp::setRELow(const String& expr)
   delete tree_root;
   tree_root = nullptr;
 #ifndef NAMED_MATCHES_IN_HASH
-  for (int bp = 0; bp < cnMatch; bp++)
-      delete brnames[bp];
+  for (int bp = 0; bp < cnMatch; bp++) delete brnames[bp];
 #endif
 
   cMatch = 0;
@@ -208,7 +200,6 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
     // Escape symbol
     if (expr[i] == '\\') {
-      String* br_name;
       int blen;
       switch (expr[i + 1]) {
         case 'd':
@@ -286,7 +277,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
           }
           else {
             next->op = (expr[i + 1] == 'y' ? EOps::ReBkTraceName : EOps::ReBkTraceNName);
-            br_name = UnicodeTools::getCurlyContent(expr, i + 2);
+            auto br_name = UnicodeTools::getCurlyContent(expr, i + 2);
             if (br_name == nullptr)
               return EError::ESYNTAX;
             if (!backRE) {
@@ -305,8 +296,9 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 #endif  // NAMED_MATCHES_IN_HASH
 
         case 'p':  // \p{name}
+        {
           next->op = EOps::ReBkBrackName;
-          br_name = UnicodeTools::getCurlyContent(expr, i + 2);
+          auto br_name = UnicodeTools::getCurlyContent(expr, i + 2);
           if (br_name == nullptr)
             return EError::ESYNTAX;
           blen = br_name->length();
@@ -325,7 +317,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
           delete br_name;
 #endif
           i += blen + 2;
-          break;
+        } break;
         default:
           next->op = EOps::ReBkBrack;
           next->param0 = UnicodeTools::getHex(expr[i + 1]);
@@ -366,7 +358,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     }
 #endif
 
-    next->un.param = 0;
+    next->un.param = nullptr;
     next->param0 = 0;
 
     if (expr.length() > i + 2) {
@@ -470,7 +462,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         next->e = next->s;
       if (next->e == -1)
         return EError::EOP;
-      next->un.param = 0;
+      next->un.param = nullptr;
       if (en - comma == 1)
         next->e = -1;
       if (next->e == -1)
@@ -494,10 +486,10 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
         // named bracket
         next->op = EOps::ReNamedBrackets;
         // namedBracket = true;
-        String* s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
+        auto s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
         if (s_curly == nullptr)
           return EError::EBRACKETS;
-        SString* br_name = new SString(s_curly);
+        auto br_name = new SString(s_curly);
         delete s_curly;
         auto blen = br_name->length();
         if (blen == 0) {
@@ -523,7 +515,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 #ifdef CHECKNAMES
           if (br_name->length() && namedMatches && namedMatches->getItem(br_name)) {
             delete br_name;
-            return EBRACKETS;
+            return EError::EBRACKETS;
           }
 #endif
           next->param0 = 0;
@@ -559,7 +551,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     // [] [^]
     if (expr[i] == '[') {
       int endPos;
-      CharacterClass* cc = CharacterClass::createCharClass(expr, i, &endPos, ignoreCase);
+      auto cc = CharacterClass::createCharClass(expr, i, &endPos, ignoreCase);
       if (cc == nullptr)
         return EError::EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
@@ -581,8 +573,8 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
     SRegInfo* reafterword = next;
     SRegInfo* resymb;
     int wsize = 0;
-    for (resymb = next; resymb && resymb->op == EOps::ReSymb; resymb = resymb->next, wsize++)
-      ;
+    for (resymb = next; resymb && resymb->op == EOps::ReSymb; resymb = resymb->next, wsize++) {
+    }
     if (resymb && resymb->op > EOps::ReBlockOps && resymb->op < EOps::ReSymbolOps) {
       wsize--;
       resymb = resymb->prev;
@@ -605,7 +597,6 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       reword->next = reafterword;
       if (reafterword)
         reafterword->prev = reword;
-      next = reword;
       continue;
     }
 
@@ -631,7 +622,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       // foo|bar|
       if (!next->next) {
         temp->prev = next;
-        temp->next = 0;
+        temp->next = nullptr;
         next->next = temp;
         continue;
       }
@@ -656,7 +647,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       if (!next->prev)
         return EError::EOP;
       realFirst = next->prev;
-      realFirst->next = 0;
+      realFirst->next = nullptr;
       realFirst->parent = next;
       while (next->op == EOps::ReOr && realFirst->prev && realFirst->prev->op != EOps::ReOr) {
         realFirst->parent = next;
@@ -666,14 +657,14 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
       if (!realFirst->prev) {
         re = next;
         next->un.param = realFirst;
-        next->prev = 0;
+        next->prev = nullptr;
       }
       else {
         next->un.param = realFirst;
         next->prev = realFirst->prev;
         realFirst->prev->next = next;
       }
-      realFirst->prev = 0;
+      realFirst->prev = nullptr;
     }
     next = next->next;
   }
@@ -686,7 +677,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const String& expr, int& retPos)
 // parsing
 ////////////////////////////////////////////////////////////////////////////
 
-bool CRegExp::isWordBoundary(int& toParse)
+bool CRegExp::isWordBoundary(int toParse)
 {
   int before = 0;
   int after = 0;
@@ -699,7 +690,7 @@ bool CRegExp::isWordBoundary(int& toParse)
     before = 1;
   return before + after == 1;
 }
-bool CRegExp::isNWordBoundary(int& toParse)
+bool CRegExp::isNWordBoundary(int toParse)
 {
   return !isWordBoundary(toParse);
 }
@@ -817,7 +808,7 @@ void CRegExp::check_stack(bool res, SRegInfo** re, SRegInfo** prev, int* toParse
     return;
   }
 
-  StackElem& ne = RegExpStack[--count_elem];
+  StackElem& ne = CRegExp::RegExpStack[--count_elem];
   if (res) {
     *action = ne.ifTrueReturn;
   }
@@ -835,17 +826,17 @@ void CRegExp::insert_stack(SRegInfo** re, SRegInfo** prev, int* toParse, bool* l
                            int toParse2)
 {
   if (RegExpStack_Size == 0) {
-    RegExpStack = new StackElem[INIT_MEM_SIZE];
+    CRegExp::RegExpStack = new StackElem[INIT_MEM_SIZE];
     RegExpStack_Size = INIT_MEM_SIZE;
   }
   if (RegExpStack_Size == count_elem) {
     RegExpStack_Size += MEM_INC;
     StackElem* s = new StackElem[RegExpStack_Size];
-    memcpy(s, RegExpStack, count_elem * sizeof(StackElem));
-    delete[] RegExpStack;
-    RegExpStack = s;
+    memcpy(s, CRegExp::RegExpStack, count_elem * sizeof(StackElem));
+    delete[] CRegExp::RegExpStack;
+    CRegExp::RegExpStack = s;
   }
-  StackElem& ne = RegExpStack[count_elem++];
+  StackElem& ne = CRegExp::RegExpStack[count_elem++];
   ne.re = *re;
   ne.prev = *prev;
   ne.toParse = *toParse;
@@ -890,7 +881,6 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             if (leftenter) {
               re->s = toParse;
               re = re->un.param;
-              leftenter = true;
               continue;
             }
             if (re->param0 == -1)
@@ -1161,8 +1151,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             {
-              insert_stack(&re, &prev, &toParse, &leftenter, rea_Break, rea_False, &re->un.param, 0,
-                           toParse);
+              insert_stack(&re, &prev, &toParse, &leftenter, rea_Break, rea_False, &re->un.param,
+                           nullptr, toParse);
               continue;
             }
             break;
@@ -1172,8 +1162,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             {
-              insert_stack(&re, &prev, &toParse, &leftenter, rea_False, rea_Break, &re->un.param, 0,
-                           toParse);
+              insert_stack(&re, &prev, &toParse, &leftenter, rea_False, rea_Break, &re->un.param,
+                           nullptr, toParse);
               continue;
             }
             break;
@@ -1187,8 +1177,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             else {
-              insert_stack(&re, &prev, &toParse, &leftenter, rea_Break, rea_False, &re->un.param, 0,
-                           toParse - re->param0);
+              insert_stack(&re, &prev, &toParse, &leftenter, rea_Break, rea_False, &re->un.param,
+                           nullptr, toParse - re->param0);
               continue;
             }
             break;
@@ -1198,8 +1188,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (toParse - re->param0 >= 0) {
-              insert_stack(&re, &prev, &toParse, &leftenter, rea_False, rea_Break, &re->un.param, 0,
-                           toParse - re->param0);
+              insert_stack(&re, &prev, &toParse, &leftenter, rea_False, rea_Break, &re->un.param,
+                           nullptr, toParse - re->param0);
               continue;
             }
             break;
@@ -1210,8 +1200,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               break;
             }
             {
-              insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_Break, &re->un.param, 0,
-                           toParse);
+              insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_Break, &re->un.param,
+                           nullptr, toParse);
               continue;
             }
             break;
@@ -1227,12 +1217,13 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             // making branch
             if (!re->param0) {
               insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_RangeN_step2,
-                           &re->un.param, 0, toParse);
+                           &re->un.param, nullptr, toParse);
               continue;
             }
-            // go into
-            if (re->param0)
+            else {
+              // go into
               re->param0--;
+            }
             re = re->un.param;
             leftenter = true;
             continue;
@@ -1252,11 +1243,11 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               }
               {
                 insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_RangeNM_step2,
-                             &re->un.param, 0, toParse);
+                             &re->un.param, nullptr, toParse);
                 continue;
               }
             }
-            if (re->param0)
+            else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1274,7 +1265,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
                            &re->next, &re, toParse);
               continue;
             }
-            if (re->param0)
+            else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1299,7 +1290,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
                 continue;
               }
             }
-            if (re->param0)
+            else
               re->param0--;
             re = re->un.param;
             leftenter = true;
@@ -1337,7 +1328,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           break;
         case rea_RangeN_step2:
           action = -1;
-          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re,
+          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, //-V522
                        toParse);
           continue;
           break;
@@ -1348,7 +1339,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           continue;
           break;
         case rea_RangeNM_step3:
-          action = -1;
+          action = -1;  //-V1037
           re->param1++;
           check_stack(false, &re, &prev, &toParse, &leftenter, &action);
           continue;
@@ -1364,7 +1355,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
         case rea_NGRangeNM_step2:
           action = -1;
           insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_NGRangeNM_step3,
-                       &re->un.param, 0, toParse);
+                       &re->un.param, nullptr, toParse);
           continue;
           break;
         case rea_NGRangeNM_step3:
@@ -1457,7 +1448,7 @@ inline bool CRegExp::parseRE(int pos)
 #endif
   do {
     // stack=null;
-    if (lowParse(tree_root, 0, toParse))
+    if (lowParse(tree_root, nullptr, toParse))
       return true;
     if (!positionMoves)
       return false;
@@ -1542,6 +1533,13 @@ bool CRegExp::setPositionMoves(bool moves)
   return true;
 }
 
+void CRegExp::clearRegExpStack()
+{
+  CRegExp::RegExpStack_Size = 0;
+  delete[] CRegExp::RegExpStack;
+  CRegExp::RegExpStack = nullptr;
+}
+
 #ifndef NAMED_MATCHES_IN_HASH
 int CRegExp::getBracketNo(const String* brname)
 {
@@ -1553,7 +1551,7 @@ int CRegExp::getBracketNo(const String* brname)
 String* CRegExp::getBracketName(int no)
 {
   if (no >= cnMatch)
-    return 0;
+    return nullptr;
   return brnames[no];
 }
 #endif

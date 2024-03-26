@@ -1,5 +1,5 @@
-#ifndef __CREGEXP__
-#define __CREGEXP__
+#ifndef COLORER_CREGEXP_H
+#define COLORER_CREGEXP_H
 
 #include <colorer/unicode/CharacterClass.h>
 #include <colorer/unicode/String.h>
@@ -16,10 +16,10 @@
 #define COLORERMODE
 
 /// use hashes for saving named brackets
-// #define NAMED_MATCHES_IN_HASH
+//#define NAMED_MATCHES_IN_HASH
 
 /// check duplicate brackets
-// #define CHECKNAMES
+//#define CHECKNAMES
 
 #if defined COLORERMODE && defined NAMED_MATCHES_IN_HASH
 #error COLORERMODE && NAMED_MATCHES_IN_HASH not realyzed yet
@@ -145,14 +145,16 @@ class SRegInfo
 #if defined NAMED_MATCHES_IN_HASH
   String* namedata;
 #endif
-  SRegInfo* parent;
-  SRegInfo* next;
-  SRegInfo* prev;
-  int oldParse;
-  int param0, param1;
-  int s, e;
+  SRegInfo* parent = nullptr;
+  SRegInfo* next = nullptr;
+  SRegInfo* prev = nullptr;
+  int oldParse = 0;
+  int param0 = 0;
+  int param1 = 0;
+  int s = 0;
+  int e = 0;
 
-  EOps op;
+  EOps op = EOps::ReEmpty;
 };
 
 struct StackElem
@@ -167,9 +169,6 @@ struct StackElem
   // step if function return false
   int ifFalseReturn;
 };
-
-extern StackElem* RegExpStack;
-extern int RegExpStack_Size;
 
 #define INIT_MEM_SIZE 512
 #define MEM_INC 128
@@ -311,28 +310,33 @@ class CRegExp
 #endif
 
  private:
-  bool ignoreCase, extend, positionMoves, singleLine, multiLine;
-  SRegInfo* tree_root;
-  EError error;
-  wchar firstChar;
-  EMetaSymbols firstMetaChar;
+  bool ignoreCase = false;
+  bool extend = false;
+  bool positionMoves = false;
+  bool singleLine = false;
+  bool multiLine = false;
+  SRegInfo* tree_root = nullptr;
+  EError error = EError::EOK;
+  wchar firstChar = 0;
+  EMetaSymbols firstMetaChar = EMetaSymbols::ReBadMeta;
 #ifdef COLORERMODE
-  CRegExp* backRE;
-  const String* backStr;
-  SMatches* backTrace;
-  int schemeStart;
+  CRegExp* backRE = nullptr;
+  const String* backStr = nullptr;
+  SMatches* backTrace = nullptr;
+  int schemeStart = 0;
 #endif
-  bool startChange, endChange;
-  const String* global_pattern;
-  int end;
+  bool startChange = false;
+  bool endChange = false;
+  const String* global_pattern = nullptr;
+  int end = 0;
 
-  SMatches* matches;
-  int cMatch;
+  SMatches* matches = nullptr;
+  int cMatch = 0;
 #if !defined NAMED_MATCHES_IN_HASH
-  String* brnames[NAMED_MATCHES_NUM];
-  int cnMatch;
+  String* brnames[NAMED_MATCHES_NUM] = {};
+  int cnMatch = 0;
 #else
-  SMatchHash* namedMatches;
+  SMatchHash* namedMatches = nullptr;
 #endif
 
   void init();
@@ -341,8 +345,8 @@ class CRegExp
 
   void optimize();
   bool quickCheck(int toParse);
-  bool isWordBoundary(int& toParse);
-  bool isNWordBoundary(int& toParse);
+  bool isWordBoundary(int toParse);
+  bool isNWordBoundary(int toParse);
   bool checkMetaSymbol(EMetaSymbols metaSymbol, int& toParse);
   bool lowParse(SRegInfo* re, SRegInfo* prev, int toParse);
   bool parseRE(int toParse);
@@ -352,6 +356,12 @@ class CRegExp
                    int* action);
   void insert_stack(SRegInfo** re, SRegInfo** prev, int* toParse, bool* leftenter, int ifTrueReturn,
                     int ifFalseReturn, SRegInfo** re2, SRegInfo** prev2, int toParse2);
+
+  static StackElem* RegExpStack;
+  static int RegExpStack_Size;
+
+ public:
+  static void clearRegExpStack();
 };
 
-#endif
+#endif  // COLORER_CREGEXP_H
