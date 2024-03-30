@@ -14,12 +14,16 @@ set(SRC_COLORER
     colorer/TextParser.h
     colorer/base/BaseNames.h
     colorer/base/XmlTagDefs.h
+    colorer/common/Character.cpp
+    colorer/common/Character.h
     colorer/common/Encodings.cpp
     colorer/common/Encodings.h
     colorer/common/Exception.cpp
     colorer/common/UStr.cpp
     colorer/common/UStr.h
     colorer/common/UnicodeLogger.h
+    colorer/common/UnicodeTools.cpp
+    colorer/common/UnicodeTools.h
     colorer/common/UnicodeStringContainer.h
     colorer/cregexp/cregexp.cpp
     colorer/cregexp/cregexp.h
@@ -101,7 +105,7 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
     colorer/xml/XmlParserErrorHandler.h
-    )
+)
 
 if(COLORER_USE_JARINPUTSOURCE)
   set(COLORER_FEATURE_JARINPUTSOURCE 1)

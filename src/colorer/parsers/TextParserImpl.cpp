@@ -1,5 +1,6 @@
-#include "colorer/common/UStr.h"
 #include "colorer/parsers/TextParserImpl.h"
+#include "colorer/common/Character.h"
+#include "colorer/common/UStr.h"
 
 TextParser::Impl::Impl()
 {
@@ -220,9 +221,9 @@ int TextParser::Impl::searchKW(const SchemeNodeKeywords* node, int /*no*/, int l
       if (!node->kwList->kwList[pos].isSymbol) {
         if (!node->worddiv) {
           // default word bound
-          if ((gx > 0 && (UStr::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == L'_')) ||
+          if ((gx > 0 && (Character::isLetterOrDigit((*str)[gx - 1]) || (*str)[gx - 1] == L'_')) ||
               (gx + kwlen < lowlen &&
-               (UStr::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == L'_')))
+               (Character::isLetterOrDigit((*str)[gx + kwlen]) || (*str)[gx + kwlen] == L'_')))
           {
             badbound = true;
           }
