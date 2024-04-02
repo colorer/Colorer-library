@@ -191,9 +191,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         writer->write(type->getName() + "\n");
       }
       else {
-        if (type->getGroup() != nullptr) {
-          writer->write(type->getGroup() + ": ");
-        }
+        writer->write(type->getGroup() + ": ");
         writer->write(type->getDescription());
         writer->write("\n");
       }
