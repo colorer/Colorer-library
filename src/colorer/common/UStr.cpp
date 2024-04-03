@@ -257,7 +257,7 @@ bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
     *result = std::stoul(UStr::to_stdstr(&s), nullptr, 16);
     return true;
   } catch (std::exception& e) {
-    spdlog::error("Can`t convert {0} to int. {1}", str_hex, e.what());
+    logger->error("Can`t convert {0} to int. {1}", str_hex, e.what());
     return false;
   }
 }

@@ -1,6 +1,7 @@
 #ifndef _COLORER_PARSEDLINEWRITER_H_
 #define _COLORER_PARSEDLINEWRITER_H_
 
+#include <unordered_map>
 #include "colorer/handlers/LineRegion.h"
 #include "colorer/io/Writer.h"
 /**

@@ -47,7 +47,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
         UnicodeString name(xname);
         auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
+          logger->warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
                        is.getPath());
           regionDefines.erase(tp);
         }

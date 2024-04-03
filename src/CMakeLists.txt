@@ -114,8 +114,13 @@ if(COLORER_USE_JARINPUTSOURCE)
       colorer/xml/MemoryFile.h
       colorer/xml/ZipXmlInputSource.cpp
       colorer/xml/ZipXmlInputSource.h
-      )
+  )
 endif()
+
+if(COLORER_USE_DUMMY_LOGGER)
+  set(COLORER_FEATURE_DUMMYLOGGER 1)
+endif()
+
 
 #====================================================
 # Generate headers
@@ -162,24 +167,30 @@ target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    )
+)
 
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
-    )
+)
 
 target_link_libraries(colorer_lib
-    PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
-    )
+    PUBLIC ICU::uc ICU::data XercesC::XercesC
+)
+
+if(NOT COLORER_USE_DUMMY_LOGGER)
+  target_link_libraries(colorer_lib
+      PUBLIC spdlog::spdlog
+  )
+endif()
 
 if(COLORER_FEATURE_JARINPUTSOURCE)
-    if(COLORER_USE_VCPKG)
-        target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
-    else()
-        target_link_libraries(colorer_lib PUBLIC minizip::minizip)
-    endif()
+  if(COLORER_USE_VCPKG)
+    target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
+  else()
+    target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
@@ -197,4 +208,4 @@ set_target_properties(colorer_lib PROPERTIES
     VERSION ${COLORER_VERSION}
     SOVERSION ${COLORER_VERSION_MAJOR}
     DEBUG_POSTFIX "d"
-    )
+)

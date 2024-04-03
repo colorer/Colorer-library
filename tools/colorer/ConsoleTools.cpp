@@ -262,7 +262,7 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
       }
     }
     if (type == nullptr) {
-      spdlog::warn("Don`t found type by name '{0}'", *typeDescription);
+      logger->warn("Don`t found type by name '{0}'", *typeDescription);
     }
   }
   if (typeDescription == nullptr || type == nullptr) {

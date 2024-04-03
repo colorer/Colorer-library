@@ -8,4 +8,9 @@
 */
 #cmakedefine01 COLORER_FEATURE_JARINPUTSOURCE
 
+/**
+  If defined, dummy logger is used.
+*/
+#cmakedefine COLORER_FEATURE_DUMMYLOGGER
+
 #endif // COLORER_FEATURES_H

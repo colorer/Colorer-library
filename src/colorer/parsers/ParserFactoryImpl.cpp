@@ -26,7 +26,7 @@ ParserFactory::Impl::~Impl()
 void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 {
   if (!catalog_path || catalog_path->isEmpty()) {
-    spdlog::debug("loadCatalog for empty path");
+    logger->debug("loadCatalog for empty path");
 
     auto env = Environment::getOSVariable("COLORER_CATALOG");
     if (env->isEmpty()) {
@@ -35,23 +35,23 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
     base_catalog_path = Environment::normalizePath(env.get());
   }
   else {
-    spdlog::debug("loadCatalog for {0}", *catalog_path);
+    logger->debug("loadCatalog for {0}", *catalog_path);
     base_catalog_path = Environment::normalizePath(catalog_path);
   }
 
   parseCatalog(*base_catalog_path);
-  spdlog::debug("start load hrc files");
+  logger->debug("start load hrc files");
   for (const auto& location : hrc_locations) {
     loadHrcPath(location);
   }
 
-  spdlog::debug("end load hrc files");
+  logger->debug("end load hrc files");
 }
 
 void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 {
   try {
-    spdlog::debug("try load '{0}'", location);
+    logger->debug("try load '{0}'", location);
     if (XmlInputSource::isUriFile(*base_catalog_path, &location)) {
       auto clear_path = XmlInputSource::getClearFilePath(base_catalog_path.get(), &location);
       if (fs::is_directory(clear_path)) {
@@ -69,7 +69,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
       loadHrc(location, base_catalog_path.get());
     }
   } catch (const Exception& e) {
-    spdlog::error("{0}", e.what());
+    logger->error("{0}", e.what());
   }
 }
 

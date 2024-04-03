@@ -40,6 +40,7 @@ set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
 # library features
 option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 
 #====================================================
@@ -69,8 +70,10 @@ include(cmake/ide.cmake)
 # core library
 find_package(ICU COMPONENTS uc data REQUIRED)
 find_package(XercesC REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
+if(NOT COLORER_USE_DUMMY_LOGGER)
+  find_package(spdlog REQUIRED)
+  find_package(fmt REQUIRED)
+endif()
 if(COLORER_USE_JARINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   if(COLORER_USE_VCPKG)
@@ -111,12 +114,12 @@ if(COLORER_BUILD_INSTALL)
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      )
+  )
 
   install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/colorer
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
       FILES_MATCHING PATTERN "*.h"
-      )
+  )
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/src/colorer/common/Features.h"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/colorer/common")
 
@@ -124,7 +127,7 @@ if(COLORER_BUILD_INSTALL)
       FILE colorerTargets.cmake
       DESTINATION lib/cmake/colorer
       NAMESPACE colorer::
-      )
+  )
 
   configure_file("${CMAKE_CURRENT_LIST_DIR}/cmake/colorerConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake" @ONLY)
 

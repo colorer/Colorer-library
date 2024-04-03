@@ -1,6 +1,7 @@
 #ifndef _COLORER_SHAREDXMLINPUTSOURCE_H_
 #define _COLORER_SHAREDXMLINPUTSOURCE_H_
 
+#include <unordered_map>
 #include "colorer/Common.h"
 #include "colorer/xml/XmlInputSource.h"
 #include <xercesc/sax/InputSource.hpp>

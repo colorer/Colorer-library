@@ -11,7 +11,7 @@ uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
   int32_t signatureLength;
   encoding = ucnv_detectUnicodeSignature(data, len, &signatureLength, &status);
   if (U_FAILURE(status)) {
-    spdlog::error("Encodings: Error \"{0}\" from ucnv_detectUnicodeSignature()\n",
+    logger->error("Encodings: Error \"{0}\" from ucnv_detectUnicodeSignature()\n",
                   u_errorName(status));
     throw Exception("Error from ucnv_detectUnicodeSignature");
   }
