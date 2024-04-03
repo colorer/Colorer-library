@@ -262,7 +262,7 @@ bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
   }
 }
 
-int UStr::caseCompare(const UnicodeString& str1, const UnicodeString& str2)
+int8_t UStr::caseCompare(const UnicodeString& str1, const UnicodeString& str2)
 {
   return str1.caseCompare(str2,U_FOLD_CASE_DEFAULT);
 }

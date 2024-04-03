@@ -9,6 +9,7 @@ class Encodings
 {
  public:
   static uUnicodeString toUnicodeString(char* data, int32_t len);
+  static int toUTF8Bytes( UChar, byte*);
 };
 
 #endif  // COLORER_COMMON_ENCODINGS_H

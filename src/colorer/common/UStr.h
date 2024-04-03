@@ -27,7 +27,7 @@ class UStr
 
   static bool HexToUInt(const UnicodeString& str_hex, unsigned int* result);
 
-  static int caseCompare(const UnicodeString& str1, const UnicodeString& str2);
+  static int8_t caseCompare(const UnicodeString& str1, const UnicodeString& str2);
 };
 
 #endif  // COLORER_USTR_H

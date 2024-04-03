@@ -1,6 +1,7 @@
 #include "colorer/common/Encodings.h"
 #include <unicode/ucnv.h>
 #include "colorer/Exception.h"
+#include <unicode/ustring.h>
 
 uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
 {
@@ -20,4 +21,12 @@ uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
   }
 
   return std::make_unique<UnicodeString>(data + signatureLength, len - signatureLength, encoding);
+}
+
+int Encodings::toUTF8Bytes( UChar wc, byte* dest)
+{
+  int32_t len = 0;
+  UErrorCode err = U_ZERO_ERROR;
+  u_strToUTF8((char*)dest, 8, &len, &wc, 1, &err);
+  return len;
 }
