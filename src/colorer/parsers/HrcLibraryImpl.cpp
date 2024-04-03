@@ -3,6 +3,7 @@
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>
 #include "colorer/base/XmlTagDefs.h"
+#include "colorer/common/Character.h"
 #include "colorer/common/UStr.h"
 #include "colorer/parsers/FileTypeImpl.h"
 #include "colorer/xml/BaseEntityResolver.h"
@@ -841,7 +842,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const xercesc::DO
   }
 
   const XMLCh* worddiv = elem->getAttribute(hrcKeywordsAttrWorddiv);
-  std::unique_ptr<icu::UnicodeSet> us_worddiv;
+  std::unique_ptr<CharacterClass> us_worddiv;
   if (!UStr::isEmpty(worddiv)) {
     auto dworddiv = UnicodeString(worddiv);
     uUnicodeString entWordDiv = useEntities(&dworddiv);
@@ -919,9 +920,9 @@ void HrcLibrary::Impl::addSchemeKeyword(const xercesc::DOMElement* elem, const S
   auto first_char = scheme_node->kwList->firstChar.get();
   first_char->add(keyword_value[0]);
   if (!scheme_node->kwList->matchCase) {
-    first_char->add(u_toupper(keyword_value[0]));
-    first_char->add(u_tolower(keyword_value[0]));
-    first_char->add(u_totitle(keyword_value[0]));
+    first_char->add(Character::toLowerCase(keyword_value[0]));
+    first_char->add(Character::toUpperCase(keyword_value[0]));
+    first_char->add(Character::toTitleCase(keyword_value[0]));
   }
   scheme_node->kwList->count++;
   if (scheme_node->kwList->minKeywordLength > list.keyword->length()) {

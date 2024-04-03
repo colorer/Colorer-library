@@ -39,3 +39,8 @@ UChar Character::toUpperCase(UChar c)
 {
   return (UChar) u_toupper(c);
 }
+
+UChar Character::toTitleCase(UChar c)
+{
+  return (UChar) u_totitle(c);
+}

@@ -78,7 +78,7 @@ std::string UStr::to_stdstr(const XMLCh* str)
   return _string;
 }
 
-std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs, int pos,
+std::unique_ptr<CharacterClass> UStr::createCharClass(const UnicodeString& ccs, int pos,
                                                        int* retPos, bool ignore_case)
 {
   if (ccs[pos] != '[') {
@@ -260,4 +260,9 @@ bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
     logger->error("Can`t convert {0} to int. {1}", str_hex, e.what());
     return false;
   }
+}
+
+int UStr::caseCompare(const UnicodeString& str1, const UnicodeString& str2)
+{
+  return str1.caseCompare(str2,U_FOLD_CASE_DEFAULT);
 }

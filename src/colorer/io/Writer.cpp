@@ -1,4 +1,3 @@
-#include "colorer/common/UnicodeLogger.h"
 #include "colorer/io/Writer.h"
 
 void Writer::write(const UnicodeString& string)

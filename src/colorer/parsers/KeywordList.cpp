@@ -1,8 +1,9 @@
 #include "colorer/parsers/KeywordList.h"
+#include "colorer/common/UStr.h"
 
 KeywordList::KeywordList(size_t list_size)
 {
-  firstChar = std::make_unique<icu::UnicodeSet>();
+  firstChar = std::make_unique<CharacterClass>();
   kwList = new KeywordInfo[list_size];
 }
 
@@ -18,7 +19,7 @@ int kwCompare(const void* e1, const void* e2)
 
 int kwCompareI(const void* e1, const void* e2)
 {
-  return ((KeywordInfo*) e1)->keyword->caseCompare(*((KeywordInfo*) e2)->keyword, U_FOLD_CASE_DEFAULT);
+  return UStr::caseCompare(*((KeywordInfo*) e1)->keyword, *((KeywordInfo*) e2)->keyword);
 }
 
 void KeywordList::sortList()

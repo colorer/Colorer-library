@@ -77,7 +77,7 @@ class SchemeNodeKeywords : public SchemeNode
 {
  public:
   std::unique_ptr<KeywordList> kwList;
-  std::unique_ptr<icu::UnicodeSet> worddiv;
+  std::unique_ptr<CharacterClass> worddiv;
   SchemeNodeKeywords() : SchemeNode(SchemeNodeType::SNT_KEYWORDS) {};
   ~SchemeNodeKeywords() override = default;
 };

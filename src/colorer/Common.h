@@ -3,12 +3,14 @@
 
 #include "colorer/common/Features.h"
 #include "colorer/common/UnicodeStringContainer.h"
+#include <unicode/uniset.h>
 
 /// system dependent byte
 // TODO std::byte
 using byte = unsigned char;
 using UnicodeString = icu::UnicodeString;
 using uUnicodeString = std::unique_ptr<UnicodeString>;
+using CharacterClass = icu::UnicodeSet;
 
 constexpr UChar BAD_WCHAR = 0xFFFF;
 

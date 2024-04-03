@@ -16,6 +16,7 @@ class Character
 
   static UChar toLowerCase(UChar c);
   static UChar toUpperCase(UChar c);
+  static UChar toTitleCase(UChar c);
 };
 
 #endif  // COLORER_CHARACTER_H

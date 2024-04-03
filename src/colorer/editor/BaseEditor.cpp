@@ -140,7 +140,7 @@ FileType* BaseEditor::chooseFileTypeCh(const UnicodeString* fileName, int choose
     if (len > iLine->length()) {
       len = iLine->length();
     }
-    textStart.append(*iLine, 0,len);
+    textStart.append(*iLine, 0, len);
     textStart.append("\n");
     totalLength += len;
     if (totalLength >= chooseLen) {

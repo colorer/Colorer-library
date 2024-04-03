@@ -932,7 +932,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (ignoreCase) {
-              if (!UnicodeString(pattern, toParse, wlen).caseCompare(*re->un.word, 0) == 0) {
+              if (!UStr::caseCompare(UnicodeString(pattern, toParse, wlen),*re->un.word)==0) {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 continue;
               }
@@ -1539,7 +1539,7 @@ void CRegExp::clearRegExpStack()
 int CRegExp::getBracketNo(const UnicodeString* brname)
 {
   for (int brn = 0; brn < cnMatch; brn++)
-    if (brname->caseCompare(*brnames[brn], 0) == 0)
+    if (UStr::caseCompare(*brname,*brnames[brn])==0)
       return brn;
   return -1;
 }

@@ -1,7 +1,6 @@
 #ifndef COLORER_USTR_H
 #define COLORER_USTR_H
 
-#include <unicode/uniset.h>
 #include <filesystem>
 #include <xercesc/util/XMLString.hpp>
 #include "colorer/Common.h"
@@ -23,10 +22,12 @@ class UStr
 
   inline static bool isEmpty(const XMLCh* string) { return *string == '\0'; }
 
-  static std::unique_ptr<icu::UnicodeSet> createCharClass(const UnicodeString& ccs, int pos,
+  static std::unique_ptr<CharacterClass> createCharClass(const UnicodeString& ccs, int pos,
                                                           int* retPos, bool ignore_case);
 
   static bool HexToUInt(const UnicodeString& str_hex, unsigned int* result);
+
+  static int caseCompare(const UnicodeString& str1, const UnicodeString& str2);
 };
 
 #endif  // COLORER_USTR_H

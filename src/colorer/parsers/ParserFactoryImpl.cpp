@@ -29,7 +29,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
     logger->debug("loadCatalog for empty path");
 
     auto env = Environment::getOSVariable("COLORER_CATALOG");
-    if (env->isEmpty()) {
+    if (!env || env->isEmpty()) {
       throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
     base_catalog_path = Environment::normalizePath(env.get());
@@ -80,8 +80,8 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path,
   try {
     hrc_library->loadSource(dfis.get());
   } catch (Exception& e) {
-    spdlog::error("Can't load hrc: {0}", dfis->getPath());
-    spdlog::error("{0}", e.what());
+    logger->error("Can't load hrc: {0}", dfis->getPath());
+    logger->error("{0}", e.what());
   }
 }
 
@@ -200,8 +200,8 @@ void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const Unicode
         auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
         mapper.loadRegionMappings(*dfis);
       } catch (Exception& e) {
-        spdlog::error("Can't load hrd: ");
-        spdlog::error("{0}", e.what());
+        logger->error("Can't load hrd: ");
+        logger->error("{0}", e.what());
         throw ParserFactoryException("Error load hrd");
       }
     }
