@@ -6,7 +6,7 @@
 /**
   If defined, JAR InputSource is implemented.
 */
-#cmakedefine01 COLORER_FEATURE_JARINPUTSOURCE
+#cmakedefine COLORER_FEATURE_JARINPUTSOURCE
 
 /**
   If defined, dummy logger is used.
