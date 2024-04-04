@@ -1,13 +1,14 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 
 #====================================================
 # Policy
 #====================================================
-# enable CMAKE_MSVC_RUNTIME_LIBRARY
-cmake_policy(SET CMP0091 NEW)
-# enable <LIB>_ROOT
-cmake_policy(SET CMP0074 NEW)
-
+if(CMAKE_VERSION VERSION_GREATER 3.15)
+  # enable CMAKE_MSVC_RUNTIME_LIBRARY
+  cmake_policy(SET CMP0091 NEW)
+  # enable <LIB>_ROOT
+  cmake_policy(SET CMP0074 NEW)
+endif()
 #====================================================
 # Extract version
 #====================================================
@@ -39,7 +40,7 @@ option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
 # library features
-option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
 option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 
@@ -74,7 +75,7 @@ if(NOT COLORER_USE_DUMMY_LOGGER)
   find_package(spdlog REQUIRED)
   find_package(fmt REQUIRED)
 endif()
-if(COLORER_USE_JARINPUTSOURCE)
+if(COLORER_USE_ZIPINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   if(COLORER_USE_VCPKG)
     find_package(unofficial-minizip REQUIRED)

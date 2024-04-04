@@ -107,8 +107,8 @@ set(SRC_COLORER
     colorer/xml/XmlParserErrorHandler.h
 )
 
-if(COLORER_USE_JARINPUTSOURCE)
-  set(COLORER_FEATURE_JARINPUTSOURCE 1)
+if(COLORER_USE_ZIPINPUTSOURCE)
+  set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
   set(SRC_COLORER_JAR
       colorer/xml/MemoryFile.cpp
       colorer/xml/MemoryFile.h
@@ -185,7 +185,7 @@ if(NOT COLORER_USE_DUMMY_LOGGER)
   )
 endif()
 
-if(COLORER_FEATURE_JARINPUTSOURCE)
+if(COLORER_FEATURE_ZIPINPUTSOURCE)
   if(COLORER_USE_VCPKG)
     target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
   else()
