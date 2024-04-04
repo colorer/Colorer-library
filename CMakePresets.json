@@ -57,7 +57,7 @@
     },
     {
       "name": "x64-vc-debug",
-      "description": "enable deep trace",
+      "description": "debug build",
       "inherits": [
         "x64-vc"
       ],
@@ -67,7 +67,7 @@
     },
     {
       "name": "x86-vc-debug",
-      "description": "enable deep trace",
+      "description": "debug build",
       "inherits": [
         "x86-vc"
       ],
@@ -94,12 +94,28 @@
       "cacheVariables": {
         "COLORER_USE_DEEPTRACE": "ON"
       }
+    },
+    {
+      "name": "x64-vc-debug-nodep",
+      "description": "dummy logger and without zip",
+      "inherits": [
+        "x64-vc-debug"
+      ],
+      "cacheVariables": {
+        "COLORER_USE_ZIPINPUTSOURCE": "OFF",
+        "COLORER_USE_DUMMY_LOGGER": "ON"
+      }
     }
   ],
   "buildPresets": [
     {
       "name": "x64-vc-debug",
       "configurePreset": "x64-vc-debug",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "x64-vc-debug-nodep",
+      "configurePreset": "x64-vc-debug-nodep",
       "inheritConfigureEnvironment": true
     },
     {
