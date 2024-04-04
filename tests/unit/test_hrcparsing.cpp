@@ -1,4 +1,3 @@
-#include <spdlog/sinks/null_sink.h>
 #include <catch2/catch.hpp>
 #include <fstream>
 #include <filesystem>
@@ -31,11 +30,6 @@ TEST_CASE("Create files")
 
 TEST_CASE("Load hrc")
 {
-  // disable logging
-  spdlog::drop_all();
-  auto log = spdlog::null_logger_mt("main");
-  spdlog::set_default_logger(log);
-
   auto path = std::filesystem::current_path();
   xercesc::XMLPlatformUtils::Initialize();
   auto temp_path = fs::current_path();
