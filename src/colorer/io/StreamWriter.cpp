@@ -1,7 +1,5 @@
 #include "colorer/io/StreamWriter.h"
-#include <unicode/ustring.h>
 #include "colorer/Exception.h"
-#include "colorer/common/Encodings.h"
 
 void StreamWriter::init(FILE* fstream, bool _useBOM)
 {

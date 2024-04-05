@@ -1,6 +1,5 @@
 #include "colorer/xml/XmlInputSource.h"
 #include "colorer/Exception.h"
-#include "colorer/common/UStr.h"
 #include "colorer/xml/LocalFileXmlInputSource.h"
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 #include "colorer/xml/ZipXmlInputSource.h"

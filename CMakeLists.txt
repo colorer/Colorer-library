@@ -43,6 +43,7 @@ set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
 option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
+option(COLORER_USE_ICU_STRINGS "Use ICU library for strings" ON)
 
 #====================================================
 # global compilation settings

@@ -1,5 +1,7 @@
-#include "colorer/common/UStr.h"
-#include "colorer/common/UnicodeTools.h"
+#include "colorer/strings/icu/UStr.h"
+#include "colorer/common/Logger.h"
+#include "colorer/strings/icu/UnicodeTools.h"
+#include "colorer/strings/icu/UnicodeLogger.h"
 
 UnicodeString UStr::to_unistr(const int number)
 {
@@ -79,7 +81,7 @@ std::string UStr::to_stdstr(const XMLCh* str)
 }
 
 std::unique_ptr<CharacterClass> UStr::createCharClass(const UnicodeString& ccs, int pos,
-                                                       int* retPos, bool ignore_case)
+                                                      int* retPos, bool ignore_case)
 {
   if (ccs[pos] != '[') {
     return nullptr;
@@ -264,5 +266,5 @@ bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
 
 int8_t UStr::caseCompare(const UnicodeString& str1, const UnicodeString& str2)
 {
-  return str1.caseCompare(str2,U_FOLD_CASE_DEFAULT);
+  return str1.caseCompare(str2, U_FOLD_CASE_DEFAULT);
 }

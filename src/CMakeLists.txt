@@ -14,17 +14,8 @@ set(SRC_COLORER
     colorer/TextParser.h
     colorer/base/BaseNames.h
     colorer/base/XmlTagDefs.h
-    colorer/common/Character.cpp
-    colorer/common/Character.h
-    colorer/common/Encodings.cpp
-    colorer/common/Encodings.h
     colorer/common/Exception.cpp
-    colorer/common/UStr.cpp
-    colorer/common/UStr.h
-    colorer/common/UnicodeLogger.h
-    colorer/common/UnicodeTools.cpp
-    colorer/common/UnicodeTools.h
-    colorer/common/UnicodeStringContainer.h
+    colorer/common/Logger.h
     colorer/cregexp/cregexp.cpp
     colorer/cregexp/cregexp.h
     colorer/editor/BaseEditor.cpp
@@ -121,7 +112,23 @@ if(COLORER_USE_DUMMY_LOGGER)
   set(COLORER_FEATURE_DUMMYLOGGER 1)
 endif()
 
-
+if(COLORER_USE_ICU_STRINGS)
+  set(SRC_COLORER_STRINGS
+      colorer/strings/icu/common_icu.h
+      colorer/strings/icu/strings.h
+      colorer/strings/icu/Character.cpp
+      colorer/strings/icu/Character.h
+      colorer/strings/icu/Encodings.cpp
+      colorer/strings/icu/Encodings.h
+      colorer/strings/icu/UnicodeStringContainer.h
+      colorer/strings/icu/UnicodeLogger.h
+      colorer/strings/icu/UnicodeTools.cpp
+      colorer/strings/icu/UnicodeTools.h
+      colorer/strings/icu/UStr.cpp
+      colorer/strings/icu/UStr.h
+  )
+  set(COLORER_FEATURE_ICU 1)
+endif()
 #====================================================
 # Generate headers
 #====================================================
@@ -162,7 +169,7 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_HTTP} ${SRC_COLORER_JAR})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_JAR})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"

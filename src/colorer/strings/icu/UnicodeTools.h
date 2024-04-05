@@ -1,8 +1,7 @@
 #ifndef COLORER_UNICODETOOLS_H
 #define COLORER_UNICODETOOLS_H
 
-#include <unicode/uniset.h>
-#include "colorer/Common.h"
+#include "colorer/strings/icu/common_icu.h"
 
 class UnicodeTools
 {

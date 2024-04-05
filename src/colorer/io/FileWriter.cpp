@@ -1,4 +1,3 @@
-#include "colorer/common/UStr.h"
 #include "colorer/io/FileWriter.h"
 
 FileWriter::FileWriter(const UnicodeString* fileName, bool useBOM)

@@ -1,6 +1,4 @@
 #include "colorer/parsers/TextParserImpl.h"
-#include "colorer/common/Character.h"
-#include "colorer/common/UStr.h"
 
 TextParser::Impl::Impl()
 {

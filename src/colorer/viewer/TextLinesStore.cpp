@@ -1,8 +1,6 @@
-#include "colorer/Exception.h"
-#include "colorer/common/Encodings.h"
-#include "colorer/io/InputSource.h"
 #include "colorer/viewer/TextLinesStore.h"
-#include <unicode/ustdio.h>
+#include "colorer/Exception.h"
+#include "colorer/io/InputSource.h"
 
 TextLinesStore::~TextLinesStore()
 {

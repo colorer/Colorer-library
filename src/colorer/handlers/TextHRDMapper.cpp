@@ -3,7 +3,6 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/Exception.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/common/UStr.h"
 #include "colorer/xml/XmlParserErrorHandler.h"
 
 TextHRDMapper::~TextHRDMapper()

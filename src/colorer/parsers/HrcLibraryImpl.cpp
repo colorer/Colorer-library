@@ -3,8 +3,6 @@
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/common/Character.h"
-#include "colorer/common/UStr.h"
 #include "colorer/parsers/FileTypeImpl.h"
 #include "colorer/xml/BaseEntityResolver.h"
 #include "colorer/xml/XmlParserErrorHandler.h"

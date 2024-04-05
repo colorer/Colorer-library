@@ -2,8 +2,8 @@
 #define COLORER_USTR_H
 
 #include <filesystem>
-#include <xercesc/util/XMLString.hpp>
-#include "colorer/Common.h"
+#include "colorer/strings/icu/common_icu.h"
+#include "xercesc/util/XMLString.hpp"
 
 class UStr
 {
@@ -23,7 +23,7 @@ class UStr
   inline static bool isEmpty(const XMLCh* string) { return *string == '\0'; }
 
   static std::unique_ptr<CharacterClass> createCharClass(const UnicodeString& ccs, int pos,
-                                                          int* retPos, bool ignore_case);
+                                                         int* retPos, bool ignore_case);
 
   static bool HexToUInt(const UnicodeString& str_hex, unsigned int* result);
 

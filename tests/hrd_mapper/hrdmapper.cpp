@@ -1,4 +1,3 @@
-#include <colorer/common/UStr.h>
 #include <colorer/handlers/StyledHRDMapper.h>
 #include <colorer/handlers/TextHRDMapper.h>
 #include <colorer/io/StreamWriter.h>

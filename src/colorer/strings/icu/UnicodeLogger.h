@@ -1,8 +1,8 @@
 #ifndef COLORER_UNICODELOGGER_H
 #define COLORER_UNICODELOGGER_H
 
-#include <fmt/format.h>
-#include <unicode/unistr.h>
+#include "fmt/format.h"
+#include "unicode/unistr.h"
 
 namespace fmt {
 template <>

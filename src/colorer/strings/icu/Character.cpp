@@ -1,4 +1,4 @@
-#include "colorer/common/Character.h"
+#include "colorer/strings/icu/Character.h"
 
 bool Character::isWhitespace(UChar c)
 {

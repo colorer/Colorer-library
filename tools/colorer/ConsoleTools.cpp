@@ -1,7 +1,5 @@
 #include "ConsoleTools.h"
 #include <colorer/base/BaseNames.h>
-#include <colorer/common/Encodings.h>
-#include <colorer/common/UStr.h>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/io/FileWriter.h>

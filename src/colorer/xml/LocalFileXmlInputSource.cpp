@@ -3,7 +3,6 @@
 #include <memory>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include "colorer/Exception.h"
-#include "colorer/common/UStr.h"
 
 LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh* base)
 {

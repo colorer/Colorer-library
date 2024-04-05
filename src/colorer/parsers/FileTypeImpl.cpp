@@ -1,5 +1,4 @@
 #include "colorer/parsers/FileTypeImpl.h"
-#include "colorer/common/UStr.h"
 
 FileType::Impl::Impl(UnicodeString name, UnicodeString group, UnicodeString description)
     : name(std::move(name)), group(std::move(group)), description(std::move(description))

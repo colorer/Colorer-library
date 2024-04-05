@@ -1,5 +1,4 @@
 #include "colorer/parsers/KeywordList.h"
-#include "colorer/common/UStr.h"
 
 KeywordList::KeywordList(size_t list_size)
 {

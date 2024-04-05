@@ -1,7 +1,6 @@
 #include "colorer/parsers/CatalogParser.h"
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/common/UStr.h"
 #include "colorer/xml/BaseEntityResolver.h"
 #include "colorer/xml/XmlInputSource.h"
 #include "colorer/xml/XmlParserErrorHandler.h"

@@ -1,5 +1,5 @@
-#include "colorer/common/UnicodeTools.h"
-#include "colorer/common/Character.h"
+#include "colorer/strings/icu/UnicodeTools.h"
+#include "colorer/strings/icu/Character.h"
 
 int UnicodeTools::getHex(UChar c)
 {
