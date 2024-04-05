@@ -105,6 +105,16 @@
         "COLORER_USE_ZIPINPUTSOURCE": "OFF",
         "COLORER_USE_DUMMY_LOGGER": "ON"
       }
+    },
+    {
+      "name": "x64-vc-debug-noicu",
+      "description": "use legacy string",
+      "inherits": [
+        "x64-vc-debug"
+      ],
+      "cacheVariables": {
+        "COLORER_USE_ICU_STRINGS": "OFF"
+      }
     }
   ],
   "buildPresets": [
@@ -116,6 +126,11 @@
     {
       "name": "x64-vc-debug-nodep",
       "configurePreset": "x64-vc-debug-nodep",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "x64-vc-debug-noicu",
+      "configurePreset": "x64-vc-debug-noicu",
       "inheritConfigureEnvironment": true
     },
     {

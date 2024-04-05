@@ -2,6 +2,7 @@
 #define _COLORER_TEXTREGION_H_
 
 #include "colorer/handlers/RegionDefine.h"
+#include <memory>
 
 /**
  * Contains information about region mapping into textual prefix/suffix.

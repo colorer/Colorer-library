@@ -2,6 +2,7 @@
 #define COLORER_EXCEPTION_H
 
 #include <exception>
+#include <string>
 #include "colorer/Common.h"
 
 /** Exception class.

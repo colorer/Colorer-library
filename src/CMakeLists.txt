@@ -128,6 +128,42 @@ if(COLORER_USE_ICU_STRINGS)
       colorer/strings/icu/UStr.h
   )
   set(COLORER_FEATURE_ICU 1)
+
+else()
+  set(SRC_COLORER_STRINGS
+      colorer/strings/legacy/common_legacy.h
+      colorer/strings/legacy/strings.h
+      colorer/strings/legacy/BitArray.cpp
+      colorer/strings/legacy/BitArray.h
+      colorer/strings/legacy/Character.cpp
+      colorer/strings/legacy/Character.h
+      colorer/strings/legacy/CharacterClass.cpp
+      colorer/strings/legacy/CharacterClass.h
+      colorer/strings/legacy/CommonString.h
+      colorer/strings/legacy/CString.cpp
+      colorer/strings/legacy/CString.h
+      colorer/strings/legacy/DString.h
+      colorer/strings/legacy/Encodings.cpp
+      colorer/strings/legacy/Encodings.h
+      colorer/strings/legacy/String.cpp
+      colorer/strings/legacy/String.h
+      colorer/strings/legacy/SString.cpp
+      colorer/strings/legacy/SString.h
+      colorer/strings/legacy/UnicodeLogger.h
+      colorer/strings/legacy/UnicodeString.cpp
+      colorer/strings/legacy/UnicodeString.h
+      colorer/strings/legacy/UnicodeTools.cpp
+      colorer/strings/legacy/UnicodeTools.h
+      colorer/strings/legacy/UStr.cpp
+      colorer/strings/legacy/UStr.h
+      colorer/strings/legacy/x_charcategory.h
+      colorer/strings/legacy/x_charcategory2.h
+      colorer/strings/legacy/x_charcategory_names.h
+      colorer/strings/legacy/x_defines.h
+      colorer/strings/legacy/x_encodings.h
+      colorer/strings/legacy/x_tables.h
+      colorer/strings/legacy/StringExceptions.h
+  )
 endif()
 #====================================================
 # Generate headers

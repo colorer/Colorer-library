@@ -246,14 +246,14 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
           break;
         }
         if (type->getDescription().length() >= typeDescription->length() &&
-            UnicodeString(type->getDescription(), 0, typeDescription->length())
-                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+            UStr::caseCompare(UnicodeString(type->getDescription(), 0, typeDescription->length()),
+                              *typeDescription))
         {
           break;
         }
         if (type->getName().length() >= typeDescription->length() &&
-            UnicodeString(type->getName(), 0, typeDescription->length())
-                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+            UStr::caseCompare(UnicodeString(type->getName(), 0, typeDescription->length()),
+                              *typeDescription))
         {
           break;
         }

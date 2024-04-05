@@ -6,6 +6,7 @@
 #ifdef COLORER_FEATURE_ICU
 #include "colorer/strings/icu/strings.h"
 #else
+#include "colorer/strings/legacy/strings.h"
 #endif
 
 /*
