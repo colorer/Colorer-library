@@ -15,6 +15,7 @@ class UnicodeString
    * Empty string constructor
    */
   UnicodeString() = default;
+  UnicodeString(const std::nullptr_t /*text*/){};
   UnicodeString(const char* str);
   UnicodeString(const wchar* str);
   UnicodeString(const w2char* str);
