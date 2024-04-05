@@ -22,6 +22,8 @@ class UnicodeString
   UnicodeString(const wchar* string, int32_t l);
   UnicodeString(const w2char* string, int32_t l);
 
+  UnicodeString(const char* string, int32_t l, int enc);
+
   /* move constructor */
   UnicodeString(UnicodeString&& cstring) noexcept;
   UnicodeString& operator=(UnicodeString&& cstring) noexcept;

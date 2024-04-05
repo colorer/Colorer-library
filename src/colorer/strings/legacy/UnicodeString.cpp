@@ -495,3 +495,11 @@ UnicodeString::UnicodeString(const UnicodeString& cstring, int32_t s)
     : UnicodeString(cstring, s, npos)
 {
 }
+
+UnicodeString::UnicodeString(const char* string, int32_t l, int enc)
+{
+  if (!string)
+    return;
+  CString ds((byte*)string, l, enc);
+  construct(&ds, 0, ds.length());
+}
