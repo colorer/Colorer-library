@@ -1,4 +1,4 @@
-#include "colorer/strings/legacy/Character.h">"
+#include "colorer/strings/legacy/Character.h"
 #include "colorer/strings/legacy/UnicodeTools.h"
 #include <float.h>
 #include <math.h>
