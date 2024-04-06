@@ -86,22 +86,6 @@ UnicodeString::UnicodeString(const UnicodeString& cstring, int32_t s, int32_t l)
   construct(&cstring, s, l);
 }
 
-void UnicodeString::construct(const String* cstring, int32_t s, int32_t l)
-{
-  if (s > cstring->length())
-    throw Exception("bad string constructor parameters");
-  if (l == npos)
-    l = cstring->length() - s;
-  wstr.reset(new wchar[l]);
-  for (len = 0; len < l; len++) wstr[len] = (*cstring)[s + len];
-  alloc = len;
-}
-
-UnicodeString::UnicodeString(const String* cstring, int32_t s, int32_t l)
-{
-  construct(cstring, s, l);
-}
-
 UnicodeString::UnicodeString(int no)
 {
   char text[40];
@@ -144,7 +128,7 @@ UnicodeString& UnicodeString::operator=(UnicodeString&& cstring) noexcept
 void UnicodeString::setLength(int32_t newLength)
 {
   if (newLength > alloc) {
-    std::unique_ptr<wchar[]> wstr_new(new wchar[newLength * 2]);
+    auto wstr_new = std::make_unique<wchar[]>(newLength * 2);
     alloc = newLength * 2;
     for (int32_t i = 0; i < newLength; i++) {
       if (i < len)
@@ -167,7 +151,7 @@ UnicodeString& UnicodeString::append(const UnicodeString& string, int32_t start,
   const int32_t len_new = len + (maxlen <= string.length() ? maxlen : string.length());
 
   if (alloc < len_new) {
-    std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
+    auto wstr_new = std::make_unique<wchar[]>(len_new * 2);
     alloc = len_new * 2;
     for (int32_t i = 0; i < len; i++) {
       wstr_new[i] = wstr[i];
@@ -202,7 +186,7 @@ UnicodeString& UnicodeString::append(const String& string, int32_t maxlen)
   const int32_t len_new = len + (maxlen <= string.length() ? maxlen : string.length());
 
   if (alloc < len_new) {
-    std::unique_ptr<wchar[]> wstr_new(new wchar[len_new * 2]);
+    auto wstr_new = std::make_unique<wchar[]>(len_new * 2);
     alloc = len_new * 2;
     for (int32_t i = 0; i < len; i++) {
       wstr_new[i] = wstr[i];
@@ -380,7 +364,6 @@ bool UnicodeString::startsWith(const UnicodeString& str, int32_t pos) const
 size_t UnicodeString::hashCode() const
 {
   size_t hc = 0;
-  auto len = length();
   for (auto i = 0; i < len; i++) hc = 31 * hc + (*this)[i];
   return hc;
 }
@@ -421,12 +404,12 @@ const char* UnicodeString::getChars(int encoding) const
 {
   if (encoding == -1)
     encoding = Encodings::getDefaultEncodingIndex();
-  auto len = length();
+  auto local_len = length();
   if (encoding == Encodings::ENC_UTF16 || encoding == Encodings::ENC_UTF16BE)
-    len = len * 2;
+    local_len = local_len * 2;
   if (encoding == Encodings::ENC_UTF32 || encoding == Encodings::ENC_UTF32BE)
-    len = len * 4;
-  char* ret_char_val = (char*) realloc(ret_val, len + 1);
+    local_len = local_len * 4;
+  char* ret_char_val = (char*) realloc(ret_val, local_len + 1);
   if (!ret_char_val) {
     return "[NO MEMORY]";
   }
@@ -436,12 +419,12 @@ const char* UnicodeString::getChars(int encoding) const
   for (auto i = 0; i < length(); i++) {
     auto retLen = Encodings::toBytes(encoding, (*this)[i], buf);
     // extend byte buffer
-    if (cpos + retLen > len) {
+    if (cpos + retLen > local_len) {
       if (i == 0)
-        len = 8;
+        local_len = 8;
       else
-        len = (len * length()) / i + 8;
-      ret_char_val = (char*) realloc(ret_char_val, len + 1);
+        local_len = (local_len * length()) / i + 8;
+      ret_char_val = (char*) realloc(ret_char_val, local_len + 1);
       if (!ret_char_val) {
         return "[NO MEMORY]";
       }

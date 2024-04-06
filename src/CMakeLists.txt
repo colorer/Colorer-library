@@ -149,6 +149,7 @@ else()
       colorer/strings/legacy/UnicodeLogger.h
       colorer/strings/legacy/UnicodeString.cpp
       colorer/strings/legacy/UnicodeString.h
+      colorer/strings/legacy/UnicodeStringContainer.h
       colorer/strings/legacy/UnicodeTools.cpp
       colorer/strings/legacy/UnicodeTools.h
       colorer/strings/legacy/UStr.cpp

@@ -1,11 +1,11 @@
 #include <memory.h>
 #include <colorer/strings/legacy/BitArray.h>
 
-BitArray::BitArray(int size)
+BitArray::BitArray(int _size)
 {
   array = nullptr;
-  this->size = size / 8 / 4 + 1;
-  if (size % 8 == 0 && size / 8 % 4 == 0) this->size--;
+  this->size = _size / 8 / 4 + 1;
+  if (_size % 8 == 0 && _size / 8 % 4 == 0) this->size--;
 }
 
 BitArray::~BitArray()
@@ -99,8 +99,8 @@ void BitArray::clearBitArray(BitArray* ba)
   if (ba == nullptr || ba->array == nullptr) return;
   if (size_t(array) == 1) createArray(true);
   if (size_t(ba->array) == 1) {
-    if (array != nullptr) delete[] array;
-    array = 0;
+    delete[] array;
+    array = nullptr;
     return;
   }
   for (int i = 0; i < size; i++)
@@ -112,7 +112,7 @@ void BitArray::intersectBitArray(BitArray* ba)
   if (array == nullptr) return;
   if (ba == nullptr || ba->array == nullptr) {
     delete[] array;
-    array = 0;
+    array = nullptr;
     return;
   }
   if (size_t(ba->array) == 1) return;
@@ -121,19 +121,19 @@ void BitArray::intersectBitArray(BitArray* ba)
     array[i] &= ba->array[i];
 }
 
-void BitArray::addBitArray(char* bits, int size)
+void BitArray::addBitArray(char* bits, int _size)
 {
   if (size_t(array) == 1) return;
   if (!array) createArray();
-  for (int i = 0; i < size && i < this->size * 4; i++)
+  for (int i = 0; i < _size && i < this->size * 4; i++)
     ((char*)array)[i] |= bits[i];
 }
 
-void BitArray::clearBitArray(char* bits, int size)
+void BitArray::clearBitArray(char* bits, int _size)
 {
   if (!array) return;
   if (size_t(array) == 1) createArray(true);
-  for (int i = 0; i < size && i < this->size * 4; i++)
+  for (int i = 0; i < _size && i < this->size * 4; i++)
     ((char*)array)[i] &= ~bits[i];
 }
 

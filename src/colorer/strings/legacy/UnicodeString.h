@@ -46,7 +46,7 @@ class UnicodeString
   */
   int8_t compare(const UnicodeString& str) const;
 
-  virtual ~UnicodeString();
+  ~UnicodeString();
 
   /**
    * String constructor from integer number
@@ -58,7 +58,6 @@ class UnicodeString
 
   UnicodeString(const w4char* str);
   UnicodeString(const w4char* string, int32_t s, int32_t l);
-  UnicodeString(const String* cstring, int32_t s = 0, int32_t l = npos);
 
   UnicodeString& append(wchar c);
   UnicodeString& append(const String& string, int32_t maxlen = INT32_MAX);
@@ -107,8 +106,8 @@ class UnicodeString
   void setLength(int32_t newLength);
 
   /** Returns string content in internally supported unicode character array */
-  virtual const w4char* getW4Chars() const;
-  virtual const w2char* getW2Chars() const;
+  const w4char* getW4Chars() const;
+  const w2char* getW2Chars() const;
 #if (__WCHAR_MAX__ > 0xffff)
   inline const wchar* getWChars() const { return (const wchar*) getW4Chars(); }
 #else
@@ -133,28 +132,9 @@ class UnicodeString
 
   void construct(const UnicodeString* cstring, int32_t s, int32_t l);
   void construct(const CString* cstring, int32_t s, int32_t l);
-  void construct(const String* cstring, int32_t s, int32_t l);
+
 };
 
 UnicodeString operator+(const UnicodeString& s1, const UnicodeString& s2);
 
-#include <unordered_map>
-namespace std {
-// Specializations for unordered containers
-
-template <>
-struct hash<UnicodeString>
-{
-  size_t operator()(const UnicodeString& value) const { return value.hashCode(); }
-};
-template <>
-struct equal_to<UnicodeString>
-{
-  bool operator()(const UnicodeString& u1, const UnicodeString& u2) const
-  {
-    return u1.compare(u2) == 0;
-  }
-};
-
-}  // namespace std
 #endif  // COLORER_UNICODESTRING_H
