@@ -4,7 +4,6 @@
 #include <colorer/strings/legacy/CommonString.h>
 #include <memory>
 
-class DString;
 class CString;
 class String;
 

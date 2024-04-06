@@ -100,7 +100,7 @@ set(SRC_COLORER
 
 if(COLORER_USE_ZIPINPUTSOURCE)
   set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
-  set(SRC_COLORER_JAR
+  set(SRC_COLORER_ZIP
       colorer/xml/MemoryFile.cpp
       colorer/xml/MemoryFile.h
       colorer/xml/ZipXmlInputSource.cpp
@@ -142,13 +142,10 @@ else()
       colorer/strings/legacy/CommonString.h
       colorer/strings/legacy/CString.cpp
       colorer/strings/legacy/CString.h
-      colorer/strings/legacy/DString.h
       colorer/strings/legacy/Encodings.cpp
       colorer/strings/legacy/Encodings.h
       colorer/strings/legacy/String.cpp
       colorer/strings/legacy/String.h
-      colorer/strings/legacy/SString.cpp
-      colorer/strings/legacy/SString.h
       colorer/strings/legacy/UnicodeLogger.h
       colorer/strings/legacy/UnicodeString.cpp
       colorer/strings/legacy/UnicodeString.h
@@ -193,7 +190,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
+  # remove /W3 flag from CMAKE_CXX_FLAGS
   string(REGEX REPLACE "/W[3|4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
   set(FLAGS_CXX_DEFAULT)
   set(FLAGS_CXX_RELEASE /W3 /WX)
   set(FLAGS_CXX_DEBUG /W4)
@@ -205,7 +204,7 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_JAR})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_ZIP})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -220,7 +219,7 @@ set_target_properties(colorer_lib PROPERTIES
 )
 
 target_link_libraries(colorer_lib
-    PUBLIC ICU::uc ICU::data XercesC::XercesC
+    PUBLIC XercesC::XercesC
 )
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
@@ -229,7 +228,13 @@ if(NOT COLORER_USE_DUMMY_LOGGER)
   )
 endif()
 
-if(COLORER_FEATURE_ZIPINPUTSOURCE)
+if(COLORER_USE_ICU_STRINGS)
+  target_link_libraries(colorer_lib
+      PUBLIC ICU::uc ICU::data
+  )
+endif()
+
+if(COLORER_USE_ZIPINPUTSOURCE)
   if(COLORER_USE_VCPKG)
     target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
   else()
