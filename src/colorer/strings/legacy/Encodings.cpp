@@ -4,6 +4,12 @@
 #include <colorer/strings/legacy/x_encodings.h>
 #include <cstring>
 
+#ifdef __unix__
+#define STRCMP strcasecmp
+#else
+#define STRCMP _stricmp
+#endif
+
 const int Encodings::ENC_UTF8_BOM    = 0xBFBBEF;
 const int Encodings::ENC_UTF16_BOM   = 0xFEFF;
 const int Encodings::ENC_UTF16BE_BOM = 0xFFFE;
@@ -46,7 +52,7 @@ int Encodings::getEncodingIndex(const char* enc)
 {
   if (!enc) return -1;
   for (auto & arr_idxEncoding : arr_idxEncodings)
-    if (!stricmp(arr_idxEncoding.name, enc)) {
+    if (!STRCMP(arr_idxEncoding.name, enc)) {
       return arr_idxEncoding.pos;
     }
   return -1;
