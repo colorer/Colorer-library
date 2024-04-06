@@ -3,9 +3,7 @@
 
 #include "colorer/strings/legacy/UnicodeString.h"
 
-typedef std::unique_ptr<String> UString;
 typedef std::unique_ptr<UnicodeString> uUnicodeString;
-
 
 // system dependent byte
 typedef unsigned char byte;

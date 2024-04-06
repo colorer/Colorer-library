@@ -144,8 +144,6 @@ else()
       colorer/strings/legacy/CString.h
       colorer/strings/legacy/Encodings.cpp
       colorer/strings/legacy/Encodings.h
-      colorer/strings/legacy/String.cpp
-      colorer/strings/legacy/String.h
       colorer/strings/legacy/UnicodeLogger.h
       colorer/strings/legacy/UnicodeString.cpp
       colorer/strings/legacy/UnicodeString.h

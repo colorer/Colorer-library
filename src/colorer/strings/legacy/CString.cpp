@@ -169,32 +169,6 @@ CString::CString(const wchar* string, int32_t s, int32_t l)
 }
 #endif
 
-CString::CString(const String* cstring, int32_t s, int32_t l)
-{
-  type = ST_CSTRING;
-  cstr = cstring;
-  start = s;
-  len = l;
-  encodingIdx = -1;
-  if (s > cstring->length() || (len != npos && len > cstring->length() - start))
-    throw Exception("bad string constructor parameters");
-  if (len == npos)
-    len = cstring->length() - start;
-}
-
-CString::CString(const String &cstring, int32_t s, int32_t l)
-{
-  type = ST_CSTRING;
-  cstr = &cstring;
-  start = s;
-  len = l;
-  encodingIdx = -1;
-  if (s > cstring.length() || (len != npos && len > cstring.length() - start))
-    throw Exception("bad string constructor parameters");
-  if (len == npos)
-    len = cstring.length() - start;
-}
-
 CString::CString()
 {
   type = ST_CHAR;

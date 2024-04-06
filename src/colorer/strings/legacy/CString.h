@@ -1,16 +1,17 @@
-#ifndef _COLORER_CSTRING_H_
-#define _COLORER_CSTRING_H_
+#ifndef COLORER_CSTRING_H
+#define COLORER_CSTRING_H
 
-#include <colorer/strings/legacy/String.h>
 #include <colorer/strings/legacy/UnicodeString.h>
 
 /** Dynamic string class.
     Simple unicode wrapper over any other source.
     @ingroup unicode
 */
-class CString : public String
+class CString
 {
 public:
+  static const int32_t npos = -1;
+
   /** String clone operator */
   CString &operator=(const CString &cstring);
 
@@ -51,32 +52,16 @@ public:
   CString(const wchar* string, int32_t s = 0, int32_t l = npos);
 #endif
 
-  /** String from any @c String implementing interface.
-      @param cstring String class instance, can't be null.
-      @param s Starting string position.
-      @param l Length of created string. If npos, autodetects string length with
-             cstring.length() call.
-  */
-  CString(const String* cstring, int32_t s = 0, int32_t l = npos);
-
-  /** String from any @c String implementing interface.
-      @param cstring String class instance.
-      @param s Starting string position.
-      @param l Length of created string. If npos, autodetects string length with
-             cstring.length() call.
-  */
-  CString(const String &cstring, int32_t s = 0, int32_t l = npos);
-
   /** Empty String */
   CString();
   ~CString();
 
   CString(CString const &) = delete;
-  CString(CString &&cstring);
-  CString &operator=(CString &&cstring);
+  CString(CString &&cstring) noexcept ;
+  CString &operator=(CString &&cstring) noexcept ;
 
-  wchar operator[](int32_t i) const override;
-  int32_t length() const override;
+  wchar operator[](int32_t i) const;
+  int32_t length() const;
 
 protected:
   enum EStreamType {
@@ -95,7 +80,7 @@ protected:
     const char* str;
     const w2char* w2str;
     const w4char* w4str;
-    const String* cstr;
+    const CString* cstr;
     wchar* stream_wstr;
   };
   int32_t start;
@@ -103,7 +88,7 @@ protected:
 
 };
 
-inline CString::CString(CString &&cstring):
+inline CString::CString(CString &&cstring) noexcept:
   type(cstring.type),
   encodingIdx(cstring.encodingIdx),
   cstr(cstring.cstr),
@@ -118,7 +103,7 @@ inline CString::CString(CString &&cstring):
   cstring.encodingIdx = -1;
 }
 
-inline CString &CString::operator=(CString &&cstring)
+inline CString &CString::operator=(CString &&cstring) noexcept
 {
   if (this != &cstring) {
     type = cstring.type;

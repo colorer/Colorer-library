@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <colorer/strings/legacy/UnicodeString.h>
-#include <colorer/strings/legacy/String.h>
 #include <colorer/strings/legacy/BitArray.h>
 #include <colorer/strings/legacy/Character.h>
 

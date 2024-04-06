@@ -1,7 +1,6 @@
 #ifndef _COLORER_ENCODINGS_H_
 #define _COLORER_ENCODINGS_H_
 
-#include <colorer/strings/legacy/String.h>
 #include "colorer/Common.h"
 
 /** Encodings information.

@@ -174,34 +174,6 @@ UnicodeString& UnicodeString::append(wchar c)
   return *this;
 }
 
-UnicodeString& UnicodeString::append(const String* string, int32_t maxlen)
-{
-  if (string == nullptr)
-    return append(CString("null"));
-  return append(*string, maxlen);
-}
-
-UnicodeString& UnicodeString::append(const String& string, int32_t maxlen)
-{
-  const int32_t len_new = len + (maxlen <= string.length() ? maxlen : string.length());
-
-  if (alloc < len_new) {
-    auto wstr_new = std::make_unique<wchar[]>(len_new * 2);
-    alloc = len_new * 2;
-    for (int32_t i = 0; i < len; i++) {
-      wstr_new[i] = wstr[i];
-    }
-    wstr = std::move(wstr_new);
-  }
-
-  for (auto i = len; i < len_new; i++) {
-    wstr[i] = string[i - len];
-  }
-
-  len = len_new;
-  return *this;
-}
-
 UnicodeString& UnicodeString::operator+=(const UnicodeString& string)
 {
   return append(string);

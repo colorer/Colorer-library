@@ -5,7 +5,6 @@
 #include <memory>
 
 class CString;
-class String;
 
 class UnicodeString
 {
@@ -60,8 +59,6 @@ class UnicodeString
   UnicodeString(const w4char* string, int32_t s, int32_t l);
 
   UnicodeString& append(wchar c);
-  UnicodeString& append(const String& string, int32_t maxlen = INT32_MAX);
-  UnicodeString& append(const String* string, int32_t maxlen = INT32_MAX);
 
   /** Checks, if two strings are equals */
   bool operator==(const UnicodeString& str) const;
