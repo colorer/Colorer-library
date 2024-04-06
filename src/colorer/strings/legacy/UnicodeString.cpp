@@ -443,7 +443,7 @@ UnicodeString& UnicodeString::findAndReplace(const UnicodeString& pattern,
   int32_t copypos = 0;
   int32_t epos = 0;
 
-  auto newname = new UnicodeString();
+  auto newname = std::make_unique<UnicodeString>();
   const UnicodeString& name = *this;
 
   while (true) {

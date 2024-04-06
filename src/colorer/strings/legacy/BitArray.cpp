@@ -77,7 +77,7 @@ void BitArray::clearRange(int s, int e)
     array[idx] = 0x0;
   if (cs == 0 && ce == size - 1) {
     delete[] array;
-    array = (int*)nullptr;
+    array = nullptr;
   }
 }
 void BitArray::addBitArray(BitArray* ba)
@@ -85,6 +85,7 @@ void BitArray::addBitArray(BitArray* ba)
   if (size_t(array) == 1) return;
   if (!ba || !ba->array) return;
   if (size_t(ba->array) == 1) {
+    delete[] array;
     array = (int*)1;
     return;
   }
