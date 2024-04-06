@@ -1,5 +1,5 @@
-#ifndef _COLORER_CHARACTER_H_
-#define _COLORER_CHARACTER_H_
+#ifndef COLORER_CHARACTER_H
+#define COLORER_CHARACTER_H
 
 #include <colorer/strings/legacy/CommonString.h>
 #include <colorer/strings/legacy/x_charcategory.h>

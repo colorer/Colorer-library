@@ -1,5 +1,5 @@
-#ifndef _COLORER_CHARACTERCLASS_H_
-#define _COLORER_CHARACTERCLASS_H_
+#ifndef COLORER_CHARACTERCLASS_H
+#define COLORER_CHARACTERCLASS_H
 
 #include <memory>
 #include <colorer/strings/legacy/UnicodeString.h>
@@ -19,7 +19,6 @@ private:
   BitArray** infoIndex;
 public:
   CharacterClass();
-  CharacterClass(const CharacterClass &);
   ~CharacterClass();
 
   static std::unique_ptr<CharacterClass> createCharClass(const UnicodeString& ccs, int pos, int* retPos, bool ignore_case);
@@ -51,5 +50,3 @@ public:
 };
 
 #endif
-
-

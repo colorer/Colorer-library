@@ -1,5 +1,5 @@
-#ifndef _COLORER_ENCODINGS_H_
-#define _COLORER_ENCODINGS_H_
+#ifndef COLORER_ENCODINGS_H
+#define COLORER_ENCODINGS_H
 
 #include "colorer/Common.h"
 
@@ -48,5 +48,3 @@ public:
 };
 
 #endif
-
-

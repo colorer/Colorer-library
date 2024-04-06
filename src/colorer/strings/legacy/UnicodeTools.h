@@ -1,5 +1,5 @@
-#ifndef _COLORER_UNICODETOOLS_H_
-#define _COLORER_UNICODETOOLS_H_
+#ifndef COLORER_UNICODETOOLS_H
+#define COLORER_UNICODETOOLS_H
 
 #include "colorer/strings/legacy/UnicodeString.h"
 #include "colorer/strings/legacy/CString.h"

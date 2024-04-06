@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 #include <colorer/strings/legacy/CharacterClass.h>
 #include <colorer/strings/legacy/UnicodeTools.h>
 #include <colorer/strings/legacy/x_charcategory_names.h>
@@ -315,7 +314,7 @@ void CharacterClass::clear()
   for (int i = 0; i < 256; i++)
     if (infoIndex[i]) {
       delete infoIndex[i];
-      infoIndex[i] = 0;
+      infoIndex[i] = nullptr;
     }
 }
 

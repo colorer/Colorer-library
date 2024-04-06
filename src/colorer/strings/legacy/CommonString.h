@@ -1,7 +1,7 @@
-#ifndef _COLORER_COMMONSTRING_H_
-#define _COLORER_COMMONSTRING_H_
+#ifndef COLORER_COMMONSTRING_H
+#define COLORER_COMMONSTRING_H
 
-#include <wchar.h>
+#include <cwchar>
 #include <xercesc/util/XMLChar.hpp>
 
 /// default unicode char definition
@@ -14,6 +14,6 @@ typedef unsigned char byte;
 
 #define BAD_WCHAR ((wchar)0xFFFF)
 
-#endif // _COLORER_COMMONSTRING_H_
+#endif // COLORER_COMMONSTRING_H
 
 

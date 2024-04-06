@@ -1,5 +1,5 @@
-#ifndef _COLORER_BITARRAY_H_
-#define _COLORER_BITARRAY_H_
+#ifndef COLORER_BITARRAY_H
+#define COLORER_BITARRAY_H
 
 
 /** Bit Array field.
@@ -47,6 +47,3 @@ private:
 };
 
 #endif
-
-
-

@@ -1,10 +1,13 @@
-#include <string.h>
+#include <cstring>
 #include <colorer/strings/legacy/CString.h>
 #include <colorer/strings/legacy/Encodings.h>
 #include <colorer/strings/legacy/StringExceptions.h>
 
 CString &CString::operator=(const CString &cstring)
 {
+  if (this == &cstring) {
+    return *this;
+  }
   if (type == ST_UTF8) delete[] stream_wstr;
   type = cstring.type;
   encodingIdx = cstring.encodingIdx;

@@ -8,7 +8,7 @@ std::string UStr::to_stdstr(const XMLCh* str)
 
 std::string UStr::to_stdstr(const UnicodeString* str)
 {
-  std::string out_str(str->getChars());;
+  std::string out_str(str->getChars());
   return out_str;
 }
 

@@ -45,9 +45,9 @@ int Encodings::isMultibyteEncoding(int encoding)
 int Encodings::getEncodingIndex(const char* enc)
 {
   if (!enc) return -1;
-  for (int i = 0; i < encAliasesNum; i++)
-    if (!stricmp(arr_idxEncodings[i].name, enc)) {
-      return arr_idxEncodings[i].pos;
+  for (auto & arr_idxEncoding : arr_idxEncodings)
+    if (!stricmp(arr_idxEncoding.name, enc)) {
+      return arr_idxEncoding.pos;
     }
   return -1;
 }
@@ -55,9 +55,9 @@ int Encodings::getEncodingIndex(const char* enc)
 const char* Encodings::getEncodingName(int enc)
 {
   if (enc >= encNamesNum || enc < -6 || enc == -1) return nullptr;
-  for (int i = 0; i < encAliasesNum; i++)
-    if (arr_idxEncodings[i].pos == enc)
-      return arr_idxEncodings[i].name;
+  for (auto & arr_idxEncoding : arr_idxEncodings)
+    if (arr_idxEncoding.pos == enc)
+      return arr_idxEncoding.name;
   return nullptr;
 }
 
