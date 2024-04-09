@@ -108,10 +108,6 @@ if(COLORER_USE_ZIPINPUTSOURCE)
   )
 endif()
 
-if(COLORER_USE_DUMMY_LOGGER)
-  set(COLORER_FEATURE_DUMMYLOGGER 1)
-endif()
-
 if(COLORER_USE_ICU_STRINGS)
   set(SRC_COLORER_STRINGS
       colorer/strings/icu/common_icu.h
@@ -121,13 +117,16 @@ if(COLORER_USE_ICU_STRINGS)
       colorer/strings/icu/Encodings.cpp
       colorer/strings/icu/Encodings.h
       colorer/strings/icu/UnicodeStringContainer.h
-      colorer/strings/icu/UnicodeLogger.h
       colorer/strings/icu/UnicodeTools.cpp
       colorer/strings/icu/UnicodeTools.h
       colorer/strings/icu/UStr.cpp
       colorer/strings/icu/UStr.h
   )
+  set(SRC_COLORER_SPDLOG
+      colorer/strings/icu/UnicodeLogger.h
+  )
   set(COLORER_FEATURE_ICU 1)
+
 
 else()
   set(SRC_COLORER_STRINGS
@@ -144,7 +143,6 @@ else()
       colorer/strings/legacy/CString.h
       colorer/strings/legacy/Encodings.cpp
       colorer/strings/legacy/Encodings.h
-      colorer/strings/legacy/UnicodeLogger.h
       colorer/strings/legacy/UnicodeString.cpp
       colorer/strings/legacy/UnicodeString.h
       colorer/strings/legacy/UnicodeStringContainer.h
@@ -160,6 +158,14 @@ else()
       colorer/strings/legacy/x_tables.h
       colorer/strings/legacy/StringExceptions.h
   )
+  set(SRC_COLORER_SPDLOG
+      colorer/strings/legacy/UnicodeLogger.h
+  )
+endif()
+
+if(COLORER_USE_DUMMY_LOGGER)
+  set(SRC_COLORER_SPDLOG  )
+  set(COLORER_FEATURE_DUMMYLOGGER 1)
 endif()
 #====================================================
 # Generate headers
@@ -203,7 +209,7 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_ZIP})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_ZIP} ${SRC_COLORER_SPDLOG})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
