@@ -9,9 +9,9 @@ Colorer is a syntax highlighting library.
 
 To build library and other utils from source, you will need:
 
-* Visual Studio 2019 or higher / gcc 9 or higher
+* Visual Studio 2019 or higher / gcc 8 or higher
 * git
-* cmake 3.15 or higher
+* cmake 3.10 or higher
 
 ### Windows
 
@@ -41,7 +41,7 @@ For x86 platform use `--triplet=x86-windows-static`. Once builded, the dependenc
 
 ### Linux
 
-You may build library on linux using standart package, without vcpkg.
+You may build library on linux using standard package, without vcpkg.
 
 #### Ubuntu example
 
@@ -75,8 +75,11 @@ This options available for build
 * `COLORER_BUILD_ARCH` - Build architecture. Default 'x64'.
 * `COLORER_BUILD_TOOLS` - Build colorer tools. Default 'ON'.
 * `COLORER_BUILD_TEST` - Build tests. Default 'OFF'.
-* `COLORER_USE_JARINPUTSOURCE` - Use jar inputsource for schemes. Default 'ON'.
+* `COLORER_BUILD_INSTALL` - Make targets for install. Default 'ON'.
+* `COLORER_USE_ZIPINPUTSOURCE` - Use zip inputsource for schemes. Default 'ON'.
+* `COLORER_USE_DUMMY_LOGGER` - Use dummy logging. Default 'OFF'.
 * `COLORER_USE_DEEPTRACE` - Use trace logging. Default 'OFF'.
+* `COLORER_USE_ICU_STRINGS` - Use ICU library for strings. Default 'ON'.
 
 Links
 ========================
