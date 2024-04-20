@@ -1,4 +1,5 @@
 #include "colorer/strings/legacy/UStr.h"
+#include <string>
 
 std::string UStr::to_stdstr(const XMLCh* str)
 {
