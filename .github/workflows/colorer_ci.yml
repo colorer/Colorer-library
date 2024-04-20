@@ -20,6 +20,7 @@ env:
 
 jobs:
   ubuntu-gcc:
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -28,7 +29,7 @@ jobs:
         icu: [ON, OFF]
         zip: [ON, OFF]
 
-    runs-on: ubuntu-22.04
+    name: build-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
 
     steps:
       - name: Checkout source
@@ -40,10 +41,13 @@ jobs:
       - name: Create Build folder
         run: mkdir -p _build
 
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
+
       - name: Configure CMake
-        working-directory: _build
         run: >
-          cmake $GITHUB_WORKSPACE -G "Ninja"
+          cmake -S . -B _build -G "Ninja"
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           -DCOLORER_BUILD_TEST=ON
           -DCOLORER_USE_VCPKG=OFF
@@ -53,12 +57,10 @@ jobs:
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
 
       - name: Build
-        working-directory: _build
-        run: cmake --build . --config $BUILD_TYPE -j 2
+        run: cmake --build _build --config $BUILD_TYPE -j ${{ steps.cpu-cores.outputs.count }}
 
       - name: Test
-        working-directory: _build
-        run: ./tests/unit/unit_tests
+        run: ./_build/tests/unit/unit_tests
 
   windows-vc:
     strategy:
