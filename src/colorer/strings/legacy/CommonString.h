@@ -12,7 +12,7 @@ typedef char16_t w2char;
 typedef char32_t w4char;
 typedef unsigned char byte;
 
-#define BAD_WCHAR ((wchar)0xFFFF)
+constexpr UChar BAD_WCHAR = 0xFFFF;
 
 #endif // COLORER_COMMONSTRING_H
 

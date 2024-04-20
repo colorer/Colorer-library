@@ -101,7 +101,7 @@ int Encodings::toBytes(int encoding, wchar wc, byte* dest)
       dest[dpos] = wc & 0x7F;
     }
     if (wc > 0x7F && wc <= 0x7FF) {
-      dest[dpos] = 0xC0 + (wc >> 6);
+      dest[dpos] =(byte)(0xC0 + (wc >> 6));
       dpos++;
       dest[dpos] = 0x80 + (wc & 0x3F);
     }

@@ -88,9 +88,7 @@ UnicodeString::UnicodeString(const UnicodeString& cstring, int32_t s, int32_t l)
 
 UnicodeString::UnicodeString(int no)
 {
-  char text[40];
-  sprintf(text, "%d", no);
-  CString dtext = CString(text);
+  CString dtext = CString(std::to_string(no).c_str());
   construct(&dtext, 0, npos);
 }
 

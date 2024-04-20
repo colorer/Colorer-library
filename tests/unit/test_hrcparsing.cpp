@@ -30,7 +30,6 @@ TEST_CASE("Create files")
 
 TEST_CASE("Load hrc")
 {
-  auto path = std::filesystem::current_path();
   xercesc::XMLPlatformUtils::Initialize();
   auto temp_path = fs::current_path();
   auto work_dir = temp_path / "test1.hrc";

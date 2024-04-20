@@ -12,8 +12,7 @@ class UnicodeTools
 {
  public:
   /// sometimes need it...
-  static bool getNumber(const UnicodeString* pstr, double* res);
-  static bool getNumber(const UnicodeString* pstr, int* res);
+
   static int getNumber(const UnicodeString* pstr);
   static int getHex(wchar c);
   static int getHexNumber(const UnicodeString* pstr);
