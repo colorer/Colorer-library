@@ -1,10 +1,11 @@
 #include "colorer/Exception.h"
+#include "colorer/Common.h"
 
 Exception::Exception(const char* msg) noexcept : what_str {msg} {}
 
 Exception::Exception(const UnicodeString& msg) noexcept
 {
-  msg.toUTF8String(what_str);
+  what_str = UStr::to_stdstr(&msg);
 }
 
 const char* Exception::what() const noexcept

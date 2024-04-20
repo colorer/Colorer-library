@@ -1,4 +1,3 @@
-#include "colorer/common/UStr.h"
 #include "colorer/utils/Environment.h"
 #include <filesystem>
 #ifdef WIN32
@@ -11,32 +10,32 @@
 uUnicodeString Environment::getOSVariable(const UnicodeString& name)
 {
 #ifdef _MSC_VER
-  spdlog::debug("get system environment {0}", name);
+  logger->debug("get system environment {0}", name);
   auto str_name = UStr::to_stdwstr(&name);
   size_t sz = 0;
   auto result_error = _wgetenv_s(&sz, nullptr, 0, str_name.c_str());
   if (result_error != 0 || sz == 0) {
-    spdlog::debug("{0} not set", name);
+    logger->debug("{0} not set", name);
     return nullptr;
   }
   std::vector<wchar_t> value(sz);
   result_error = _wgetenv_s(&sz, &value[0], sz, str_name.c_str());
   if (result_error != 0) {
-    spdlog::debug("{0} not set", name);
+    logger->debug("{0} not set", name);
     return nullptr;
   }
   auto result = std::make_unique<UnicodeString>(&value[0], int32_t(sz - 1));
-  spdlog::debug("{0} = '{1}'", name, *result);
+  logger->debug("{0} = '{1}'", name, *result);
   return result;
 #else
-  spdlog::debug("get system environment {0}", name);
+  logger->debug("get system environment {0}", name);
   auto str_name = UStr::to_stdstr(&name);
   const char* const value = std::getenv(str_name.c_str());
   if (!value) {
-    spdlog::debug("{0} not set", name);
+    logger->debug("{0} not set", name);
     return nullptr;
   } else {
-    spdlog::debug("{0} = '{1}'", name, value);
+    logger->debug("{0} = '{1}'", name, value);
     return std::make_unique<UnicodeString>(value);
   }
 #endif

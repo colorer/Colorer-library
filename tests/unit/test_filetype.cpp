@@ -1,14 +1,8 @@
 #include <colorer/FileType.h>
-#include <spdlog/sinks/null_sink.h>
 #include <catch2/catch.hpp>
 
 TEST_CASE("Create FileType and set base properties")
 {
-  // disable logging
-  spdlog::drop_all();
-  auto log = spdlog::null_logger_mt("main");
-  spdlog::set_default_logger(log);
-
   UnicodeString name("TestType");
   UnicodeString group("TestGroup");
   UnicodeString description("TestDescription");
@@ -114,11 +108,6 @@ SCENARIO("Set param value for FileType")
 
 TEST_CASE("Work with integer type of param value")
 {
-  // disable logging
-  spdlog::drop_all();
-  auto log = spdlog::null_logger_mt("main");
-  spdlog::set_default_logger(log);
-
   UnicodeString param1("param1");
   UnicodeString param2("param2");
   UnicodeString param3("param3");

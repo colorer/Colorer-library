@@ -14,13 +14,8 @@ set(SRC_COLORER
     colorer/TextParser.h
     colorer/base/BaseNames.h
     colorer/base/XmlTagDefs.h
-    colorer/common/Encodings.cpp
-    colorer/common/Encodings.h
     colorer/common/Exception.cpp
-    colorer/common/UStr.cpp
-    colorer/common/UStr.h
-    colorer/common/UnicodeLogger.h
-    colorer/common/UnicodeStringContainer.h
+    colorer/common/Logger.h
     colorer/cregexp/cregexp.cpp
     colorer/cregexp/cregexp.h
     colorer/editor/BaseEditor.cpp
@@ -101,18 +96,76 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
     colorer/xml/XmlParserErrorHandler.h
-    )
+)
 
-if(COLORER_USE_JARINPUTSOURCE)
-  set(COLORER_FEATURE_JARINPUTSOURCE 1)
-  set(SRC_COLORER_JAR
+if(COLORER_USE_ZIPINPUTSOURCE)
+  set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
+  set(SRC_COLORER_ZIP
       colorer/xml/MemoryFile.cpp
       colorer/xml/MemoryFile.h
       colorer/xml/ZipXmlInputSource.cpp
       colorer/xml/ZipXmlInputSource.h
-      )
+  )
 endif()
 
+if(COLORER_USE_ICU_STRINGS)
+  set(SRC_COLORER_STRINGS
+      colorer/strings/icu/common_icu.h
+      colorer/strings/icu/strings.h
+      colorer/strings/icu/Character.cpp
+      colorer/strings/icu/Character.h
+      colorer/strings/icu/Encodings.cpp
+      colorer/strings/icu/Encodings.h
+      colorer/strings/icu/UnicodeStringContainer.h
+      colorer/strings/icu/UnicodeTools.cpp
+      colorer/strings/icu/UnicodeTools.h
+      colorer/strings/icu/UStr.cpp
+      colorer/strings/icu/UStr.h
+  )
+  set(SRC_COLORER_SPDLOG
+      colorer/strings/icu/UnicodeLogger.h
+  )
+  set(COLORER_FEATURE_ICU 1)
+
+else()
+  set(SRC_COLORER_STRINGS
+      colorer/strings/legacy/common_legacy.h
+      colorer/strings/legacy/strings.h
+      colorer/strings/legacy/BitArray.cpp
+      colorer/strings/legacy/BitArray.h
+      colorer/strings/legacy/Character.cpp
+      colorer/strings/legacy/Character.h
+      colorer/strings/legacy/CharacterClass.cpp
+      colorer/strings/legacy/CharacterClass.h
+      colorer/strings/legacy/CommonString.h
+      colorer/strings/legacy/CString.cpp
+      colorer/strings/legacy/CString.h
+      colorer/strings/legacy/Encodings.cpp
+      colorer/strings/legacy/Encodings.h
+      colorer/strings/legacy/UnicodeString.cpp
+      colorer/strings/legacy/UnicodeString.h
+      colorer/strings/legacy/UnicodeStringContainer.h
+      colorer/strings/legacy/UnicodeTools.cpp
+      colorer/strings/legacy/UnicodeTools.h
+      colorer/strings/legacy/UStr.cpp
+      colorer/strings/legacy/UStr.h
+      colorer/strings/legacy/x_charcategory.h
+      colorer/strings/legacy/x_charcategory2.h
+      colorer/strings/legacy/x_charcategory_names.h
+      colorer/strings/legacy/x_defines.h
+      colorer/strings/legacy/x_encodings.h
+      colorer/strings/legacy/x_tables.h
+      colorer/strings/legacy/StringExceptions.h
+  )
+  set(SRC_COLORER_SPDLOG
+      colorer/strings/legacy/UnicodeLogger.h
+  )
+endif()
+
+if(COLORER_USE_DUMMY_LOGGER)
+  set(SRC_COLORER_SPDLOG  )
+  set(COLORER_FEATURE_DUMMYLOGGER 1)
+endif()
 #====================================================
 # Generate headers
 #====================================================
@@ -141,6 +194,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # CMAKE_CXX_FLAGS_DEBUG= /MDd /Zi /Ob0 /Od /RTC1
   # CMAKE_CXX_FLAGS_RELEASE= /MD /O2 /Ob2 /DNDEBUG
 
+  # remove /W3 flag from CMAKE_CXX_FLAGS
+  string(REGEX REPLACE "/W[3|4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
   set(FLAGS_CXX_DEFAULT)
   set(FLAGS_CXX_RELEASE /W3 /WX)
   set(FLAGS_CXX_DEBUG /W4)
@@ -152,30 +208,42 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_HTTP} ${SRC_COLORER_JAR})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_ZIP} ${SRC_COLORER_SPDLOG})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    )
+)
 
 set_target_properties(colorer_lib PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
-    )
+)
 
 target_link_libraries(colorer_lib
-    PUBLIC ICU::uc ICU::data XercesC::XercesC spdlog::spdlog
-    )
+    PUBLIC XercesC::XercesC
+)
 
-if(COLORER_FEATURE_JARINPUTSOURCE)
-    if(COLORER_USE_VCPKG)
-        target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
-    else()
-        target_link_libraries(colorer_lib PUBLIC minizip::minizip)
-    endif()
+if(NOT COLORER_USE_DUMMY_LOGGER)
+  target_link_libraries(colorer_lib
+      PUBLIC spdlog::spdlog
+  )
+endif()
+
+if(COLORER_USE_ICU_STRINGS)
+  target_link_libraries(colorer_lib
+      PUBLIC ICU::uc ICU::data
+  )
+endif()
+
+if(COLORER_USE_ZIPINPUTSOURCE)
+  if(COLORER_USE_VCPKG)
+    target_link_libraries(colorer_lib PUBLIC unofficial::minizip::minizip)
+  else()
+    target_link_libraries(colorer_lib PUBLIC minizip::minizip)
+  endif()
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
@@ -193,4 +261,4 @@ set_target_properties(colorer_lib PROPERTIES
     VERSION ${COLORER_VERSION}
     SOVERSION ${COLORER_VERSION_MAJOR}
     DEBUG_POSTFIX "d"
-    )
+)

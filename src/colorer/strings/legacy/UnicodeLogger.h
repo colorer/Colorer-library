@@ -1,12 +1,13 @@
 #ifndef COLORER_UNICODELOGGER_H
 #define COLORER_UNICODELOGGER_H
 
-#include <fmt/format.h>
-#include <unicode/unistr.h>
+#include "fmt/format.h"
+#include <string>
+#include "colorer/strings/legacy/UnicodeString.h"
 
 namespace fmt {
 template <>
-struct formatter<icu::UnicodeString>
+struct formatter<UnicodeString>
 {
   template <typename ParseContext>
   constexpr auto parse(ParseContext& ctx)
@@ -15,16 +16,15 @@ struct formatter<icu::UnicodeString>
   }
 
   template <typename FormatContext>
-  auto format(const icu::UnicodeString& p, FormatContext& ctx)
+  auto format(const UnicodeString& p, FormatContext& ctx)
   {
-    std::string result8;
-    p.toUTF8String(result8);
+    std::string result8=p.getChars();
     return format_to(ctx.out(), "{0}", result8);
   }
 };
 
 template <>
-struct formatter<std::unique_ptr<icu::UnicodeString>>
+struct formatter<std::unique_ptr<UnicodeString>>
 {
   template <typename ParseContext>
   constexpr auto parse(ParseContext& ctx)
@@ -33,10 +33,9 @@ struct formatter<std::unique_ptr<icu::UnicodeString>>
   }
 
   template <typename FormatContext>
-  auto format(const std::unique_ptr<icu::UnicodeString>& p, FormatContext& ctx)
+  auto format(const std::unique_ptr<UnicodeString>& p, FormatContext& ctx)
   {
-    std::string result8;
-    p->toUTF8String(result8);
+    std::string result8=p->getChars();
     return format_to(ctx.out(), "{0}", result8);
   }
 };

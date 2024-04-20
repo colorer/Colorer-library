@@ -1,8 +1,8 @@
-#ifndef COLORER_UNICODESTRING_H
-#define COLORER_UNICODESTRING_H
+#ifndef COLORER_UNICODESTRING_CONTAINER_H
+#define COLORER_UNICODESTRING_CONTAINER_H
 
-#include <unicode/unistr.h>
 #include <memory>
+#include "unicode/unistr.h"
 
 namespace std {
 // Specializations for unordered containers
@@ -27,4 +27,4 @@ struct equal_to<icu::UnicodeString>
 
 }  // namespace std
 
-#endif  // COLORER_UNICODESTRING_H
+#endif  // COLORER_UNICODESTRING_CONTAINER_H

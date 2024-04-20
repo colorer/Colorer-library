@@ -1,7 +1,6 @@
-#include "colorer/Exception.h"
-#include "colorer/common/UStr.h"
-#include "colorer/xml/MemoryFile.h"
 #include "colorer/xml/ZipXmlInputSource.h"
+#include "colorer/Exception.h"
+#include "colorer/xml/MemoryFile.h"
 
 ZipXmlInputSource::ZipXmlInputSource(const XMLCh* path, const XMLCh* base)
 {

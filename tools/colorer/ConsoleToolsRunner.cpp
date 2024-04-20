@@ -1,10 +1,16 @@
 #include <colorer/version.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ConsoleTools.h"
+
+#ifndef COLORER_FEATURE_DUMMYLOGGER
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/null_sink.h>
+#include <spdlog/spdlog.h>
+std::shared_ptr<spdlog::logger> logger;
+#else
+std::shared_ptr<DummyLogger> logger;
+#endif
 
 /** Internal run action type */
 enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_LOAD_TYPE, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
@@ -284,7 +290,7 @@ int workIt()
         break;
     }
   } catch (Exception& e) {
-    spdlog::error("{0}", e.what());
+    logger->error("{0}", e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
   }
@@ -297,16 +303,17 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
+#ifndef COLORER_FEATURE_DUMMYLOGGER
   auto level = spdlog::level::from_str(settings.log_level);
   if (level == spdlog::level::off) {
     spdlog::drop_all();
-    auto logger = spdlog::null_logger_mt("main");
+    logger = spdlog::null_logger_mt("main");
     spdlog::set_default_logger(logger);
     logger->set_level(level);
   } else {
     try {
       std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
-      auto logger = spdlog::basic_logger_mt("main", file_name);
+      logger = spdlog::basic_logger_mt("main", file_name);
       spdlog::set_default_logger(logger);
       logger->set_level(level);
       logger->flush_on(spdlog::level::err);
@@ -315,6 +322,9 @@ int main(int argc, char* argv[])
       return -1;
     }
   }
+#else
+  logger = std::make_shared<DummyLogger>();
+#endif
 
   return workIt();
 }

@@ -1,7 +1,5 @@
 #include "ConsoleTools.h"
 #include <colorer/base/BaseNames.h>
-#include <colorer/common/Encodings.h>
-#include <colorer/common/UStr.h>
 #include <colorer/cregexp/cregexp.h>
 #include <colorer/editor/BaseEditor.h>
 #include <colorer/io/FileWriter.h>
@@ -191,9 +189,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
         writer->write(type->getName() + "\n");
       }
       else {
-        if (type->getGroup() != nullptr) {
-          writer->write(type->getGroup() + ": ");
-        }
+        writer->write(type->getGroup() + ": ");
         writer->write(type->getDescription());
         writer->write("\n");
       }
@@ -250,21 +246,21 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
           break;
         }
         if (type->getDescription().length() >= typeDescription->length() &&
-            UnicodeString(type->getDescription(), 0, typeDescription->length())
-                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+            UStr::caseCompare(UnicodeString(type->getDescription(), 0, typeDescription->length()),
+                              *typeDescription))
         {
           break;
         }
         if (type->getName().length() >= typeDescription->length() &&
-            UnicodeString(type->getName(), 0, typeDescription->length())
-                .caseCompare(*typeDescription, U_FOLD_CASE_DEFAULT))
+            UStr::caseCompare(UnicodeString(type->getName(), 0, typeDescription->length()),
+                              *typeDescription))
         {
           break;
         }
       }
     }
     if (type == nullptr) {
-      spdlog::warn("Don`t found type by name '{0}'", *typeDescription);
+      logger->warn("Don`t found type by name '{0}'", *typeDescription);
     }
   }
   if (typeDescription == nullptr || type == nullptr) {

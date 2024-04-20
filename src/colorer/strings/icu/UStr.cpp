@@ -1,4 +1,7 @@
-#include "colorer/common/UStr.h"
+#include "colorer/strings/icu/UStr.h"
+#include "colorer/common/Logger.h"
+#include "colorer/strings/icu/UnicodeTools.h"
+#include "colorer/strings/icu/UnicodeLogger.h"
 
 UnicodeString UStr::to_unistr(const int number)
 {
@@ -77,48 +80,8 @@ std::string UStr::to_stdstr(const XMLCh* str)
   return _string;
 }
 
-bool UStr::isLowerCase(UChar c)
-{
-  return u_islower(c);
-}
-
-bool UStr::isUpperCase(UChar c)
-{
-  return u_isupper(c);
-}
-
-bool UStr::isLetter(UChar c)
-{
-  return u_isalpha(c);
-}
-
-bool UStr::isLetterOrDigit(UChar c)
-{
-  return u_isdigit(c) || u_isalpha(c);
-}
-
-bool UStr::isDigit(UChar c)
-{
-  return u_isdigit(c);
-}
-
-bool UStr::isWhitespace(UChar c)
-{
-  return u_isspace(c);
-}
-
-UChar UStr::toLowerCase(UChar c)
-{
-  return (UChar) u_tolower(c);
-}
-
-UChar UStr::toUpperCase(UChar c)
-{
-  return (UChar) u_toupper(c);
-}
-
-std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs, int pos,
-                                                       int* retPos, bool ignore_case)
+std::unique_ptr<CharacterClass> UStr::createCharClass(const UnicodeString& ccs, int pos,
+                                                      int* retPos, bool ignore_case)
 {
   if (ccs[pos] != '[') {
     return nullptr;
@@ -147,7 +110,7 @@ std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs,
       return cc;
     }
     if (ccs[pos] == '{') {
-      auto categ = getCurlyContent(ccs, pos);
+      auto categ = UnicodeTools::getCurlyContent(ccs, pos);
       if (categ == nullptr) {
         return nullptr;
       }
@@ -207,7 +170,7 @@ std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs,
           }
           break;
         default:
-          prev_char = getEscapedChar(ccs, pos, retEnd);
+          prev_char = UnicodeTools::getEscapedChar(ccs, pos, retEnd);
           if (prev_char == BAD_WCHAR) {
             break;
           }
@@ -262,7 +225,7 @@ std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs,
     if (ccs[pos] == '-' && prev_char != BAD_WCHAR && pos + 1 < ccs.length() && ccs[pos + 1] != ']')
     {
       int retEnd;
-      UChar nextc = getEscapedChar(ccs, pos + 1, retEnd);
+      UChar nextc = UnicodeTools::getEscapedChar(ccs, pos + 1, retEnd);
       if (nextc == BAD_WCHAR) {
         break;
       }
@@ -282,106 +245,6 @@ std::unique_ptr<icu::UnicodeSet> UStr::createCharClass(const UnicodeString& ccs,
   return nullptr;
 }
 
-UChar UStr::getEscapedChar(const UnicodeString& str, int pos, int& retPos)
-{
-  retPos = pos;
-  if (str[pos] == '\\') {
-    retPos++;
-    if (str[pos + 1] == 'x') {
-      if (str[pos + 2] == '{') {
-        auto val = getCurlyContent(str, pos + 2);
-        if (val == nullptr) {
-          return BAD_WCHAR;
-        }
-        int tmp = getHexNumber(val.get());
-        int val_len = val->length();
-        if (tmp < 0 || tmp > 0xFFFF) {
-          return BAD_WCHAR;
-        }
-        retPos += val_len + 2;
-        return static_cast<UChar>(tmp);
-      }
-      else {
-        UnicodeString dtmp = UnicodeString(str, pos + 2, 2);
-        int tmp = getHexNumber(&dtmp);
-        if (str.length() <= pos + 2 || tmp == -1) {
-          return BAD_WCHAR;
-        }
-        retPos += 2;
-        return static_cast<UChar>(tmp);
-      }
-    }
-    return str[pos + 1];
-  }
-  return str[pos];
-}
-
-int UStr::getHex(UChar c)
-{
-  c = toLowerCase(c);
-  c -= '0';
-  if (c >= 'a' - '0' && c <= 'f' - '0') {
-    c -= 0x27;
-  }
-  else if (c > 9) {
-    return -1;
-  }
-  return c;
-}
-
-int UStr::getHexNumber(const UnicodeString* pstr)
-{
-  int r = 0, num = 0;
-  if (pstr == nullptr) {
-    return -1;
-  }
-  for (int i = (*pstr).length() - 1; i >= 0; i--) {
-    int d = getHex((*pstr)[i]);
-    if (d == -1) {
-      return -1;
-    }
-    num += d << r;
-    r += 4;
-  }
-  return num;
-}
-
-uUnicodeString UStr::getCurlyContent(const UnicodeString& str, int pos)
-{
-  if (str[pos] != '{') {
-    return nullptr;
-  }
-  int lpos;
-  for (lpos = pos + 1; lpos < str.length(); lpos++) {
-    if (str[lpos] == '}') {
-      break;
-    }
-    if (!u_isgraph(str[lpos])) {
-      return nullptr;
-    }
-  }
-  if (lpos == str.length()) {
-    return nullptr;
-  }
-  return std::make_unique<UnicodeString>(str, pos + 1, lpos - pos - 1);
-}
-
-int UStr::getNumber(const UnicodeString* pstr)
-{
-  int r = 1, num = 0;
-  if (pstr == nullptr) {
-    return -1;
-  }
-  for (int i = pstr->length() - 1; i >= 0; i--) {
-    if ((*pstr)[i] > '9' || (*pstr)[i] < '0') {
-      return -1;
-    }
-    num += ((*pstr)[i] - 0x30) * r;
-    r *= 10;
-  }
-  return num;
-}
-
 bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
 {
   UnicodeString s;
@@ -396,7 +259,12 @@ bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
     *result = std::stoul(UStr::to_stdstr(&s), nullptr, 16);
     return true;
   } catch (std::exception& e) {
-    spdlog::error("Can`t convert {0} to int. {1}", str_hex, e.what());
+    logger->error("Can`t convert {0} to int. {1}", str_hex, e.what());
     return false;
   }
+}
+
+int8_t UStr::caseCompare(const UnicodeString& str1, const UnicodeString& str2)
+{
+  return str1.caseCompare(str2, U_FOLD_CASE_DEFAULT);
 }

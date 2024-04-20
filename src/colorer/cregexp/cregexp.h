@@ -1,7 +1,6 @@
 #ifndef COLORER_CREGEXP_H
 #define COLORER_CREGEXP_H
 
-#include <unicode/uniset.h>
 #include "colorer/Common.h"
 
 /**
@@ -145,7 +144,7 @@ class SRegInfo
     EMetaSymbols metaSymbol;
     UChar symbol;
     UnicodeString* word;
-    icu::UnicodeSet* charclass;
+    CharacterClass* charclass;
     SRegInfo* param;
   } un;
 #if defined NAMED_MATCHES_IN_HASH

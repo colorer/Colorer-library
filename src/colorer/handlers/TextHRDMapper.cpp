@@ -3,7 +3,6 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/Exception.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/common/UStr.h"
 #include "colorer/xml/XmlParserErrorHandler.h"
 
 TextHRDMapper::~TextHRDMapper()
@@ -47,7 +46,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
         UnicodeString name(xname);
         auto tp = regionDefines.find(name);
         if (tp != regionDefines.end()) {
-          spdlog::warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
+          logger->warn("Duplicate region name '{0}' in file '{1}'. Previous value replaced.", name,
                        is.getPath());
           regionDefines.erase(tp);
         }

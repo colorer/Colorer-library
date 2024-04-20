@@ -1,13 +1,14 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 
 #====================================================
 # Policy
 #====================================================
-# enable CMAKE_MSVC_RUNTIME_LIBRARY
-cmake_policy(SET CMP0091 NEW)
-# enable <LIB>_ROOT
-cmake_policy(SET CMP0074 NEW)
-
+if(CMAKE_VERSION VERSION_GREATER 3.15)
+  # enable CMAKE_MSVC_RUNTIME_LIBRARY
+  cmake_policy(SET CMP0091 NEW)
+  # enable <LIB>_ROOT
+  cmake_policy(SET CMP0074 NEW)
+endif()
 #====================================================
 # Extract version
 #====================================================
@@ -26,7 +27,8 @@ message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
 endif()
-message("Build type: ${CMAKE_BUILD_TYPE}")
+set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #====================================================
 # global library settings
@@ -39,8 +41,10 @@ option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 
 # library features
-option(COLORER_USE_JARINPUTSOURCE "Use jar inputsource for schemes" ON)
+option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
+option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
+option(COLORER_USE_ICU_STRINGS "Use ICU library for strings" ON)
 
 #====================================================
 # global compilation settings
@@ -61,17 +65,23 @@ if(NOT COLORER_USE_VCPKG)
   # this line need for find_package
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
-include(cmake/ide.cmake)
 
 #====================================================
-# find dependences
+# find dependencies
 #====================================================
 # core library
-find_package(ICU COMPONENTS uc data REQUIRED)
+if(COLORER_USE_ICU_STRINGS)
+  find_package(ICU COMPONENTS uc data REQUIRED)
+endif()
+
 find_package(XercesC REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
-if(COLORER_USE_JARINPUTSOURCE)
+
+if(NOT COLORER_USE_DUMMY_LOGGER)
+  find_package(spdlog REQUIRED)
+  find_package(fmt REQUIRED)
+endif()
+
+if(COLORER_USE_ZIPINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   if(COLORER_USE_VCPKG)
     find_package(unofficial-minizip REQUIRED)
@@ -111,12 +121,12 @@ if(COLORER_BUILD_INSTALL)
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      )
+  )
 
   install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/colorer
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
       FILES_MATCHING PATTERN "*.h"
-      )
+  )
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/src/colorer/common/Features.h"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/colorer/common")
 
@@ -124,7 +134,7 @@ if(COLORER_BUILD_INSTALL)
       FILE colorerTargets.cmake
       DESTINATION lib/cmake/colorer
       NAMESPACE colorer::
-      )
+  )
 
   configure_file("${CMAKE_CURRENT_LIST_DIR}/cmake/colorerConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake/colorerConfig.cmake" @ONLY)
 

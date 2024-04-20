@@ -1,5 +1,5 @@
 #include "colorer/cregexp/cregexp.h"
-#include "colorer/common/UStr.h"
+
 
 StackElem* CRegExp::RegExpStack {nullptr};
 int CRegExp::RegExpStack_Size {0};
@@ -77,7 +77,7 @@ CRegExp::~CRegExp()
 
 EError CRegExp::setRELow(const UnicodeString& expr)
 {
-  int len = expr.length();
+  auto len = expr.length();
   if (!len)
     return EError::EERROR;
 
@@ -93,7 +93,7 @@ EError CRegExp::setRELow(const UnicodeString& expr)
 #endif
   endChange = startChange = false;
   int start = 0;
-  while (UStr::isWhitespace(expr[start])) start++;
+  while (Character::isWhitespace(expr[start])) start++;
   if (expr[start] == '/')
     start++;
   else
@@ -101,9 +101,9 @@ EError CRegExp::setRELow(const UnicodeString& expr)
 
   bool ok = false;
   ignoreCase = extend = singleLine = multiLine = false;
-  for (int i = len - 1; i >= start && !ok; i--)
+  for (auto i = len - 1; i >= start && !ok; i--)
     if (expr[i] == '/') {
-      for (int j = i + 1; j < len; j++) {
+      for (auto j = i + 1; j < len; j++) {
         if (expr[j] == 'i')
           ignoreCase = true;
         if (expr[j] == 'x')
@@ -182,7 +182,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
   next = re;
   for (int i = 0; i < expr.length(); i++) {
     // simple character
-    if (extend && UStr::isWhitespace(expr[i]))
+    if (extend && Character::isWhitespace(expr[i]))
       continue;
     // context return
     if (expr[i] == ')') {
@@ -269,13 +269,13 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
         case 'y':
         case 'Y':
           next->op = (expr[i + 1] == 'y' ? EOps::ReBkTrace : EOps::ReBkTraceN);
-          next->param0 = UStr::getHex(expr[i + 2]);
+          next->param0 = UnicodeTools::getHex(expr[i + 2]);
           if (next->param0 != -1) {
             i++;
           }
           else {
             next->op = (expr[i + 1] == 'y' ? EOps::ReBkTraceName : EOps::ReBkTraceNName);
-            auto br_name = UStr::getCurlyContent(expr, i + 2);
+            auto br_name = UnicodeTools::getCurlyContent(expr, i + 2);
             if (br_name == nullptr)
               return EError::ESYNTAX;
             if (!backRE) {
@@ -294,7 +294,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
         case 'p':  // \p{name}
         {
           next->op = EOps::ReBkBrackName;
-          auto br_name = UStr::getCurlyContent(expr, i + 2);
+          auto br_name = UnicodeTools::getCurlyContent(expr, i + 2);
           if (br_name == nullptr)
             return EError::ESYNTAX;
           blen = br_name->length();
@@ -313,11 +313,11 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
         } break;
         default:
           next->op = EOps::ReBkBrack;
-          next->param0 = UStr::getHex(expr[i + 1]);
+          next->param0 = UnicodeTools::getHex(expr[i + 1]);
           if (next->param0 < 0 || next->param0 > 9) {
             int retEnd;
             next->op = EOps::ReSymb;
-            next->un.symbol = UStr::getEscapedChar(expr, i, retEnd);
+            next->un.symbol = UnicodeTools::getEscapedChar(expr, i, retEnd);
             if (next->un.symbol == BAD_WCHAR)
               return EError::ESYNTAX;
             i = retEnd - 1;
@@ -357,13 +357,13 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
     if (expr.length() > i + 2) {
       if (expr[i] == '?' && expr[i + 1] == '#' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
         next->op = EOps::ReBehind;
-        next->param0 = UStr::getHex(expr[i + 2]);
+        next->param0 = UnicodeTools::getHex(expr[i + 2]);
         i += 2;
         continue;
       }
       if (expr[i] == '?' && expr[i + 1] == '~' && expr[i + 2] >= '0' && expr[i + 2] <= '9') {
         next->op = EOps::ReNBehind;
-        next->param0 = UStr::getHex(expr[i + 2]);
+        next->param0 = UnicodeTools::getHex(expr[i + 2]);
         i += 2;
         continue;
       }
@@ -447,10 +447,10 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
       if (comma == -1)
         comma = en;
       UnicodeString ds = UnicodeString(expr, st, comma - st);
-      next->s = UStr::getNumber(&ds);
+      next->s = UnicodeTools::getNumber(&ds);
       UnicodeString de = UnicodeString(expr, comma + 1, en - comma - 1);
       if (comma != en)
-        next->e = UStr::getNumber(&de);
+        next->e = UnicodeTools::getNumber(&de);
       else
         next->e = next->s;
       if (next->e == -1)
@@ -479,11 +479,11 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
         // named bracket
         next->op = EOps::ReNamedBrackets;
         // namedBracket = true;
-        auto s_curly = UStr::getCurlyContent(expr, i + 2);
+        auto s_curly = UnicodeTools::getCurlyContent(expr, i + 2);
         if (s_curly == nullptr)
           return EError::EBRACKETS;
-        UnicodeString* br_name = new UnicodeString(*s_curly);
-        int blen = br_name->length();
+        auto br_name = new UnicodeString(*s_curly);
+        auto blen = br_name->length();
         if (blen == 0) {
           next->param0 = -1;
           delete br_name;
@@ -543,7 +543,7 @@ EError CRegExp::setStructs(SRegInfo*& re, const UnicodeString& expr, int& retPos
     // [] [^]
     if (expr[i] == '[') {
       int endPos;
-      auto cc = UStr::createCharClass(expr, i, &endPos, false);
+      auto cc = UStr::createCharClass(expr, i, &endPos, ignoreCase);
       if (cc == nullptr)
         return EError::EENUM;
       //      next->op = (exprn[i] == ReEnumS) ? ReEnum : ReNEnum;
@@ -674,10 +674,10 @@ bool CRegExp::isWordBoundary(int toParse)
   int before = 0;
   int after = 0;
   if (toParse < end &&
-      (UStr::isLetterOrDigit((*global_pattern)[toParse]) || (*global_pattern)[toParse] == '_'))
+      (Character::isLetterOrDigit((*global_pattern)[toParse]) || (*global_pattern)[toParse] == '_'))
     after = 1;
   if (toParse > 0 &&
-      (UStr::isLetterOrDigit((*global_pattern)[toParse - 1]) ||
+      (Character::isLetterOrDigit((*global_pattern)[toParse - 1]) ||
        (*global_pattern)[toParse - 1] == '_'))
     before = 1;
   return before + after == 1;
@@ -727,42 +727,43 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
       }
       return (end == toParse);
     case EMetaSymbols::ReDigit:
-      if (toParse >= end || !UStr::isDigit(pattern[toParse]))
+      if (toParse >= end || !Character::isDigit(pattern[toParse]))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReNDigit:
-      if (toParse >= end || UStr::isDigit(pattern[toParse]))
+      if (toParse >= end || Character::isDigit(pattern[toParse]))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReWordSymb:
-      if (toParse >= end || !(UStr::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_'))
+      if (toParse >= end ||
+          !(Character::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_'))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReNWordSymb:
-      if (toParse >= end || UStr::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_')
+      if (toParse >= end || Character::isLetterOrDigit(pattern[toParse]) || pattern[toParse] == '_')
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReWSpace:
-      if (toParse >= end || !UStr::isWhitespace(pattern[toParse]))
+      if (toParse >= end || !Character::isWhitespace(pattern[toParse]))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReNWSpace:
-      if (toParse >= end || UStr::isWhitespace(pattern[toParse]))
+      if (toParse >= end || Character::isWhitespace(pattern[toParse]))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReUCase:
-      if (toParse >= end || !UStr::isUpperCase(pattern[toParse]))
+      if (toParse >= end || !Character::isUpperCase(pattern[toParse]))
         return false;
       toParse++;
       return true;
     case EMetaSymbols::ReNUCase:
-      if (toParse >= end || !UStr::isLowerCase(pattern[toParse]))
+      if (toParse >= end || !Character::isLowerCase(pattern[toParse]))
         return false;
       toParse++;
       return true;
@@ -773,7 +774,7 @@ bool CRegExp::checkMetaSymbol(EMetaSymbols symb, int& toParse)
     case EMetaSymbols::RePreNW:
       if (toParse >= end)
         return true;
-      return toParse == 0 || !UStr::isLetter(pattern[toParse - 1]);
+      return toParse == 0 || !Character::isLetter(pattern[toParse - 1]);
 #ifdef COLORERMODE
     case EMetaSymbols::ReSoScheme:
       return (schemeStart == toParse);
@@ -902,8 +903,9 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (ignoreCase) {
-              if (UStr::toLowerCase(pattern[toParse]) != UStr::toLowerCase(re->un.symbol) &&
-                  UStr::toUpperCase(pattern[toParse]) != UStr::toUpperCase(re->un.symbol))
+              if (Character::toLowerCase(pattern[toParse]) !=
+                      Character::toLowerCase(re->un.symbol) &&
+                  Character::toUpperCase(pattern[toParse]) != Character::toUpperCase(re->un.symbol))
               {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 continue;
@@ -928,7 +930,7 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
               continue;
             }
             if (ignoreCase) {
-              if (!UnicodeString(pattern, toParse, wlen).caseCompare(*re->un.word, 0) == 0) {
+              if (!UStr::caseCompare(UnicodeString(pattern, toParse, wlen),*re->un.word)==0) {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 continue;
               }
@@ -998,7 +1000,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             br = false;
             for (i = backTrace->s[sv]; i < backTrace->e[sv]; i++) {
               if (toParse >= end ||
-                  UStr::toLowerCase(pattern[toParse]) != UStr::toLowerCase((*backStr)[i])) {
+                  Character::toLowerCase(pattern[toParse]) != Character::toLowerCase((*backStr)[i]))
+              {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 br = true;
                 break;
@@ -1044,7 +1047,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
             br = false;
             for (i = backTrace->s[sv]; i < backTrace->e[sv]; i++) {
               if (toParse >= end ||
-                  UStr::toLowerCase(pattern[toParse]) != UStr::toLowerCase((*backStr)[i])) {
+                  Character::toLowerCase(pattern[toParse]) != Character::toLowerCase((*backStr)[i]))
+              {
                 check_stack(false, &re, &prev, &toParse, &leftenter, &action);
                 br = true;
                 break;
@@ -1316,7 +1320,8 @@ bool CRegExp::lowParse(SRegInfo* re, SRegInfo* prev, int toParse)
           break;
         case rea_RangeN_step2:
           action = -1;
-          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next, &re, //-V522
+          insert_stack(&re, &prev, &toParse, &leftenter, rea_True, rea_False, &re->next,
+                       &re,  //-V522
                        toParse);
           continue;
           break;
@@ -1372,7 +1377,7 @@ inline bool CRegExp::quickCheck(int toParse)
     if (toParse >= end)
       return false;
     if (ignoreCase) {
-      if (UStr::toLowerCase((*global_pattern)[toParse]) != UStr::toLowerCase(firstChar))
+      if (Character::toLowerCase((*global_pattern)[toParse]) != Character::toLowerCase(firstChar))
         return false;
     }
     else if ((*global_pattern)[toParse] != firstChar)
@@ -1532,7 +1537,7 @@ void CRegExp::clearRegExpStack()
 int CRegExp::getBracketNo(const UnicodeString* brname)
 {
   for (int brn = 0; brn < cnMatch; brn++)
-    if (brname->caseCompare(*brnames[brn], 0) == 0)
+    if (UStr::caseCompare(*brname,*brnames[brn])==0)
       return brn;
   return -1;
 }

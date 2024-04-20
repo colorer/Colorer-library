@@ -83,7 +83,7 @@ void LineRegionsSupport::setRegionMapper(const RegionMapper* rs)
 bool LineRegionsSupport::checkLine(size_t lno) const
 {
   if (lno < firstLineNo || lno >= firstLineNo + lineCount) {
-    spdlog::trace("[LineRegionsSupport] checkLine: line {0} out of range", lno);
+    logger->trace("[LineRegionsSupport] checkLine: line {0} out of range", lno);
     return false;
   }
   return true;

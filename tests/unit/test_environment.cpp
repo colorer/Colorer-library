@@ -1,5 +1,4 @@
 #include <colorer/Common.h>
-#include <colorer/common/UStr.h>
 #include <colorer/utils/Environment.h>
 #include <catch2/catch.hpp>
 #include <cstdlib>

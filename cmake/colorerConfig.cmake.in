@@ -1,12 +1,16 @@
 
-set(COLORER_USE_JARINPUTSOURCE @COLORER_USE_JARINPUTSOURCE@)
+set(COLORER_USE_ZIPINPUTSOURCE @COLORER_USE_ZIPINPUTSOURCE@)
 
-find_package(ICU COMPONENTS uc data REQUIRED)
+if(COLORER_USE_ICU_STRINGS)
+  find_package(ICU COMPONENTS uc data REQUIRED)
+endif()
 find_package(XercesC REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
+if(NOT COLORER_USE_DUMMY_LOGGER)
+  find_package(spdlog REQUIRED)
+  find_package(fmt REQUIRED)
+endif()
 
-if(COLORER_USE_JARINPUTSOURCE)
+if(COLORER_USE_ZIPINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   find_package(minizip REQUIRED)
 endif()

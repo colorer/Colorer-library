@@ -1,7 +1,4 @@
 #include "colorer/viewer/TextConsoleViewer.h"
-#ifdef __unix__
-#include "colorer/common/UStr.h"
-#endif
 
 TextConsoleViewer::TextConsoleViewer(BaseEditor* be, TextLinesStore* ts, unsigned short background)
 {

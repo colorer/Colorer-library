@@ -1,18 +1,18 @@
 #ifndef COLORER_COMMON_H
 #define COLORER_COMMON_H
 
-#include <spdlog/spdlog.h>
 #include "colorer/common/Features.h"
-#include "colorer/common/UnicodeLogger.h"
-#include "colorer/common/UnicodeStringContainer.h"
 
-/// system dependent byte
-// TODO std::byte
-using byte = unsigned char;
-using UnicodeString = icu::UnicodeString;
-using uUnicodeString = std::unique_ptr<UnicodeString>;
+#ifdef COLORER_FEATURE_ICU
+#include "colorer/strings/icu/strings.h"
+#else
+#include "colorer/strings/legacy/strings.h"
+#endif
 
-constexpr UChar BAD_WCHAR = 0xFFFF;
+/*
+ Logging
+*/
+#include "colorer/common/Logger.h"
 
 #ifdef COLORER_USE_DEEPTRACE
 #define CTRACE(info) info

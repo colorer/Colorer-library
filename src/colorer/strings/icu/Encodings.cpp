@@ -1,6 +1,7 @@
-#include "colorer/common/Encodings.h"
-#include <unicode/ucnv.h>
+#include "colorer/strings/icu/Encodings.h"
 #include "colorer/Exception.h"
+#include "unicode/ucnv.h"
+#include "unicode/ustring.h"
 
 uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
 {
@@ -11,7 +12,7 @@ uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
   int32_t signatureLength;
   encoding = ucnv_detectUnicodeSignature(data, len, &signatureLength, &status);
   if (U_FAILURE(status)) {
-    spdlog::error("Encodings: Error \"{0}\" from ucnv_detectUnicodeSignature()\n",
+    logger->error("Encodings: Error \"{0}\" from ucnv_detectUnicodeSignature()\n",
                   u_errorName(status));
     throw Exception("Error from ucnv_detectUnicodeSignature");
   }
@@ -20,4 +21,12 @@ uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
   }
 
   return std::make_unique<UnicodeString>(data + signatureLength, len - signatureLength, encoding);
+}
+
+int Encodings::toUTF8Bytes(UChar wc, byte* dest)
+{
+  int32_t len = 0;
+  UErrorCode err = U_ZERO_ERROR;
+  u_strToUTF8((char*) dest, 8, &len, &wc, 1, &err);
+  return len;
 }

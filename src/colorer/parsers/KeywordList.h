@@ -1,7 +1,6 @@
 #ifndef COLORER_KEYWORDLIST_H
 #define COLORER_KEYWORDLIST_H
 
-#include <unicode/uniset.h>
 #include <climits>
 #include "colorer/Common.h"
 #include "colorer/Region.h"
@@ -29,7 +28,7 @@ class KeywordList
   bool matchCase = false;
   int count = 0;
   int minKeywordLength = INT_MAX;
-  std::unique_ptr<icu::UnicodeSet> firstChar;
+  std::unique_ptr<CharacterClass> firstChar;
   KeywordInfo* kwList = nullptr;
   explicit KeywordList(size_t list_size);
   ~KeywordList();
