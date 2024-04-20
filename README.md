@@ -37,7 +37,7 @@ cmake -S .. -G "Visual Studio 16 2019" -DCMAKE_TOOLCHAIN_FILE=../external/vcpkg/
 colorer.sln
 ```
 
-For x86 platform use `--triplet=x86-windows-static`. Once builded, the dependencies will be cached in the local cache.
+For x86 platform use `--triplet=x86-windows-static`. Once built, the dependencies will be cached in the local cache.
 
 ### Linux
 
@@ -76,7 +76,7 @@ This options available for build
 * `COLORER_BUILD_TOOLS` - Build colorer tools. Default 'ON'.
 * `COLORER_BUILD_TEST` - Build tests. Default 'OFF'.
 * `COLORER_BUILD_INSTALL` - Make targets for install. Default 'ON'.
-* `COLORER_USE_ZIPINPUTSOURCE` - Use zip inputsource for schemes. Default 'ON'.
+* `COLORER_USE_ZIPINPUTSOURCE` - Enable the ability to work with schemes in zip archives. Default 'ON'.
 * `COLORER_USE_DUMMY_LOGGER` - Use dummy logging. Default 'OFF'.
 * `COLORER_USE_DEEPTRACE` - Use trace logging. Default 'OFF'.
 * `COLORER_USE_ICU_STRINGS` - Use ICU library for strings. Default 'ON'.
