@@ -27,7 +27,8 @@ message(STATUS "Build Colorer library: ${COLORER_VERSION}")
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type, one of: Release, Debug" FORCE)
 endif()
-message("Build type: ${CMAKE_BUILD_TYPE}")
+set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE STRING "" FORCE)
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #====================================================
 # global library settings
@@ -64,18 +65,22 @@ if(NOT COLORER_USE_VCPKG)
   # this line need for find_package
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
-include(cmake/ide.cmake)
 
 #====================================================
-# find dependences
+# find dependencies
 #====================================================
 # core library
-find_package(ICU COMPONENTS uc data REQUIRED)
+if(COLORER_USE_ICU_STRINGS)
+  find_package(ICU COMPONENTS uc data REQUIRED)
+endif()
+
 find_package(XercesC REQUIRED)
+
 if(NOT COLORER_USE_DUMMY_LOGGER)
   find_package(spdlog REQUIRED)
   find_package(fmt REQUIRED)
 endif()
+
 if(COLORER_USE_ZIPINPUTSOURCE)
   find_package(ZLIB REQUIRED)
   if(COLORER_USE_VCPKG)

@@ -127,7 +127,6 @@ if(COLORER_USE_ICU_STRINGS)
   )
   set(COLORER_FEATURE_ICU 1)
 
-
 else()
   set(SRC_COLORER_STRINGS
       colorer/strings/legacy/common_legacy.h
