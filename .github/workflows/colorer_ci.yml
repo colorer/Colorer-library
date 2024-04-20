@@ -20,6 +20,14 @@ env:
 
 jobs:
   ubuntu-gcc:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x64 ]
+        logger: [ON, OFF]
+        icu: [ON, OFF]
+        zip: [ON, OFF]
+
     runs-on: ubuntu-22.04
 
     steps:
@@ -30,23 +38,26 @@ jobs:
         run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
 
       - name: Create Build folder
-        run: cmake -E make_directory ${{runner.workspace}}/build
+        run: mkdir -p _build
 
       - name: Configure CMake
-        working-directory: ${{runner.workspace}}/build
+        working-directory: _build
         run: >
           cmake $GITHUB_WORKSPACE -G "Ninja"
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           -DCOLORER_BUILD_TEST=ON
           -DCOLORER_USE_VCPKG=OFF
-          -DCOLORER_BUILD_ARCH=x64
+          -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
+          -DCOLORER_USE_DUMMY_LOGGER=${{ matrix.logger }}
+          -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
 
       - name: Build
-        working-directory: ${{runner.workspace}}/build
+        working-directory: _build
         run: cmake --build . --config $BUILD_TYPE -j 2
 
       - name: Test
-        working-directory: ${{runner.workspace}}/build
+        working-directory: _build
         run: ./tests/unit/unit_tests
 
   windows-vc:
