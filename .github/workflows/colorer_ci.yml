@@ -31,6 +31,11 @@ jobs:
         logger: [ON, OFF]
         icu: [ON, OFF]
         zip: [ON, OFF]
+        exclude:
+          - logger: OFF
+            zip: OFF
+          - zip: OFF
+            logger: OFF
 
     name: linux-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
 
@@ -80,6 +85,15 @@ jobs:
             triplet: x64-windows-static-rel
           - arch: x86
             triplet: x86-windows-static-rel
+        exclude:
+          - arch: x86
+            logger: OFF
+          - arch: x86
+            zip: OFF
+          - logger: OFF
+            zip: OFF
+          - zip: OFF
+            logger: OFF
 
     name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
 
@@ -153,6 +167,11 @@ jobs:
         logger: [ON, OFF]
         icu: [ON, OFF]
         zip: [ON, OFF]
+        exclude:
+          - logger: OFF
+            zip: OFF
+          - zip: OFF
+            logger: OFF
 
     name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
 
