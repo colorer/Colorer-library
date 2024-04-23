@@ -49,10 +49,9 @@ You may build library on linux using standard package, without vcpkg.
 sudo apt install libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev
 git clone https://github.com/colorer/Colorer-library.git
 cd Colorer-library
-mkdir build
-cd build
-cmake .. -DCOLORER_USE_VCPKG=OFF
-cmake --build .
+mkdir _build
+cmake -S . -B _build -G "Ninja" -DCOLORER_USE_VCPKG=OFF
+cmake --build _build -j$(nproc --all)
 ```
 
 #### CentOS Example
@@ -61,10 +60,20 @@ cmake --build .
 sudo yum install libicu-devel xerces-c-devel spdlog-devel fmt-devel zlib-devel minizip1.2-devel
 git clone https://github.com/colorer/Colorer-library.git
 cd Colorer-library
-mkdir build
-cd build
+mkdir _build
+cmake -S . -B _build -G "Ninja" -DCOLORER_USE_VCPKG=OFF
+cmake --build _build -j$(nproc --all)
+```
+### MacOS
+
+```bash
+brew install xerces-c spdlog icu4c minizip ninja
+git clone https://github.com/colorer/Colorer-library.git
+cd Colorer-library
+mkdir _build
 cmake .. -DCOLORER_USE_VCPKG=OFF
-cmake --build .
+cmake -S . -B _build -G "Ninja" -DCOLORER_USE_VCPKG=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/icu4c
+cmake --build _build -j$(getconf _NPROCESSORS_ONLN)
 ```
 
 ### Options for build
