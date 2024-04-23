@@ -32,9 +32,9 @@ jobs:
         icu: [ON, OFF]
         zip: [ON, OFF]
         exclude:
-          - logger: OFF
+          - logger: ON
             zip: OFF
-          - zip: OFF
+          - zip: ON
             logger: OFF
 
     name: linux-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
@@ -90,9 +90,9 @@ jobs:
             logger: OFF
           - arch: x86
             zip: OFF
-          - logger: OFF
+          - logger: ON
             zip: OFF
-          - zip: OFF
+          - zip: ON
             logger: OFF
 
     name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
@@ -168,9 +168,9 @@ jobs:
         icu: [ON, OFF]
         zip: [ON, OFF]
         exclude:
-          - logger: OFF
+          - logger: ON
             zip: OFF
-          - zip: OFF
+          - zip: ON
             logger: OFF
 
     name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
