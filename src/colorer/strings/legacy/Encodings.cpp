@@ -4,7 +4,7 @@
 #include <colorer/strings/legacy/x_encodings.h>
 #include <cstring>
 
-#ifdef __unix__
+#ifndef WIN32
 #define STRCMP strcasecmp
 #else
 #define STRCMP _stricmp
