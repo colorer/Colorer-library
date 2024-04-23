@@ -143,3 +143,43 @@ jobs:
       - name: Test
         shell: bash
         run: ./_build/tests/unit/unit_tests.exe
+
+  macos-gcc:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x64 ]
+        logger: [ON, OFF]
+        icu: [ON, OFF]
+        zip: [ON, OFF]
+
+    name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-log_${{ matrix.logger }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install dependency
+        run: brew install xerces-c spdlog icu4c minizip ninja
+
+      - name: Create Build folder
+        run: mkdir -p _build
+
+      - name: Configure CMake
+        run: >
+          cmake -S . -B _build -G "Ninja"
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_USE_VCPKG=OFF
+          -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
+          -DCOLORER_USE_DUMMY_LOGGER=${{ matrix.logger }}
+          -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
+          -DCMAKE_PREFIX_PATH=/usr/local/opt/icu4c
+
+      - name: Build
+        run: cmake --build _build --config $BUILD_TYPE -j$(getconf _NPROCESSORS_ONLN)
+
+      - name: Test
+        run: ./_build/tests/unit/unit_tests
