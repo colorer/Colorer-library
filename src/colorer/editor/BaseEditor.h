@@ -274,7 +274,6 @@ class BaseEditor : public RegionHandler
  private:
   bool internalRM;
   bool regionCompact;
-  bool validationProcess;
 
   inline int getLastVisibleLine();
   void remapLRS(bool recreate);
