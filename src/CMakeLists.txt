@@ -163,7 +163,7 @@ else()
 endif()
 
 if(COLORER_USE_DUMMY_LOGGER)
-  set(SRC_COLORER_SPDLOG  )
+  set(SRC_COLORER_SPDLOG)
   set(COLORER_FEATURE_DUMMYLOGGER 1)
 endif()
 #====================================================
@@ -177,7 +177,7 @@ configure_file(
 #====================================================
 # common flags
 #====================================================
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # default for gcc
   # CMAKE_CXX_FLAGS=
   # CMAKE_CXX_FLAGS_DEBUG= -g
@@ -225,6 +225,13 @@ set_target_properties(colorer_lib PROPERTIES
 target_link_libraries(colorer_lib
     PUBLIC XercesC::XercesC
 )
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_link_libraries(colorer_lib
+      PUBLIC stdc++
+      PUBLIC m
+  )
+endif()
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
   target_link_libraries(colorer_lib

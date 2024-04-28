@@ -445,7 +445,9 @@ int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen,
   if (!cscheme) {
     return MATCH_NOTHING;
   }
+#if COLORER_USE_DEEPTRACE
   int idx = 0;
+#endif
   for (auto const& schemeNode : cscheme->nodes) {
     CTRACE(logger->trace("[TextParserImpl] searchMatch: processing node:{0}/{1}, type:{2}", idx + 1, cscheme->nodes.size(),
                          SchemeNode::schemeNodeTypeNames[static_cast<int>(schemeNode->type)]));
@@ -480,7 +482,9 @@ int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen,
         break;
       }
     }
+#if COLORER_USE_DEEPTRACE
     idx++;
+#endif
   }
   return MATCH_NOTHING;
 }
