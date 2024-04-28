@@ -182,6 +182,9 @@ jobs:
       - name: Install dependency
         run: brew install xerces-c spdlog icu4c minizip ninja
 
+      - name: Relink icu, because he is 'keg-only'
+        run: brew link icu4c --force
+
       - name: Create Build folder
         run: mkdir -p _build
 
@@ -195,7 +198,6 @@ jobs:
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_DUMMY_LOGGER=${{ matrix.logger }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
-          -DCMAKE_PREFIX_PATH=/usr/local/opt/icu4c
 
       - name: Build
         run: cmake --build _build --config $BUILD_TYPE -j$(getconf _NPROCESSORS_ONLN)
