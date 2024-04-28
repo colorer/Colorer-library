@@ -71,8 +71,7 @@ brew install xerces-c spdlog icu4c minizip ninja
 git clone https://github.com/colorer/Colorer-library.git
 cd Colorer-library
 mkdir _build
-cmake .. -DCOLORER_USE_VCPKG=OFF
-cmake -S . -B _build -G "Ninja" -DCOLORER_USE_VCPKG=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/icu4c
+cmake -S . -B _build -G "Ninja" -DCOLORER_USE_VCPKG=OFF
 cmake --build _build -j$(getconf _NPROCESSORS_ONLN)
 ```
 
