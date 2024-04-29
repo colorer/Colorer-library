@@ -7,11 +7,14 @@ on:
     branches:
       - master
     paths-ignore:
-      - 'README.md'
+      - 'docs/**'
+      - '.clang-format'
+      - '.gitignore'
       - 'CHANGELOG.md'
+      - 'CMakePresets.json'
       - 'CONTRIBUTORS'
       - 'LICENSE'
-      - docs/**
+      - 'README.md'
   pull_request:
     branches:
       - master
