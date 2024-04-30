@@ -247,6 +247,7 @@ class BaseEditor : public RegionHandler
 
  private:
   FileType* chooseFileTypeCh(const UnicodeString* fileName, int chooseStr, int chooseLen);
+  PairMatch* searchPair(int lineNo, int pos, int start_line, int end_line);
 
   std::unique_ptr<TextParser> textParser;
   ParserFactory* parserFactory;
