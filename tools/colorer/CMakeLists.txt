@@ -28,6 +28,8 @@ set_target_properties(consoletools PROPERTIES
 
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
-if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
-  set(CMAKE_RC_FLAGS -D_WIN64)
-endif()
+if(WIN32)
+  if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
+    set(CMAKE_RC_FLAGS -D_WIN64)
+  endif()
+endif(WIN32)

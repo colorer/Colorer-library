@@ -185,7 +185,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
   # set only new flags
   set(FLAGS_CXX_DEFAULT -fpermissive -Wall -Wextra -Wpedantic -Wsign-promo -Wnon-virtual-dtor)
-  set(FLAGS_CXX_RELEASE -Werror)
+
+  if (COLORER_BUILD_HARD_WARNINGS)
+    set(FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} -Werror)
+  endif()
+
   set(FLAGS_CXX_DEBUG)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
@@ -198,7 +202,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   string(REGEX REPLACE "/W[3|4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
   set(FLAGS_CXX_DEFAULT)
-  set(FLAGS_CXX_RELEASE /W3 /WX)
+  set(FLAGS_CXX_RELEASE /W3)
+
+  if (COLORER_BUILD_HARD_WARNINGS)
+    set(FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} /WX)
+  endif()
+
   set(FLAGS_CXX_DEBUG /W4)
 endif()
 
