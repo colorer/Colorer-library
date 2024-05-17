@@ -9,6 +9,7 @@ namespace fs = ghc::filesystem;
 #include <filesystem>
 namespace fs = std::filesystem;
 #endif
+#include <vector>
 
 class Environment
 {
