@@ -40,6 +40,7 @@ option(COLORER_BUILD_TEST "Build tests" OFF)
 option(COLORER_BUILD_INSTALL "Make targets for install" ON)
 set(COLORER_BUILD_ARCH x64 CACHE STRING "Build architecture")
 option(COLORER_BUILD_HARD_WARNINGS "Compiler warnings as error on Release build" ON)
+option(COLORER_BUILD_OLD_COMPILERS "Use own implementation for standard library" OFF)
 
 # library features
 option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
