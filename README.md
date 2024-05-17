@@ -9,7 +9,7 @@ Colorer is a syntax highlighting library.
 
 To build library and other utils from source, you will need:
 
-* Visual Studio 2019 or higher / gcc 8 or higher
+* Visual Studio 2019 or higher / gcc 7 or higher
 * git
 * cmake 3.10 or higher
 
@@ -84,6 +84,8 @@ This options available for build
 * `COLORER_BUILD_TOOLS` - Build colorer tools. Default 'ON'.
 * `COLORER_BUILD_TEST` - Build tests. Default 'OFF'.
 * `COLORER_BUILD_INSTALL` - Make targets for install. Default 'ON'.
+* `COLORER_BUILD_HARD_WARNINGS` - Compiler warnings as error on Release build. Default 'ON'.
+* `COLORER_BUILD_OLD_COMPILERS` - Use own implementation for standard library. Default 'OFF'.
 * `COLORER_USE_ZIPINPUTSOURCE` - Enable the ability to work with schemes in zip archives. Default 'ON'.
 * `COLORER_USE_DUMMY_LOGGER` - Use dummy logging. Default 'OFF'.
 * `COLORER_USE_DEEPTRACE` - Use trace logging. Default 'OFF'.
