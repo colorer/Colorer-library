@@ -35,17 +35,6 @@ std::string UStr::to_stdstr(const uUnicodeString& str)
   return to_stdstr(str.get());
 }
 
-std::filesystem::path UStr::to_filepath(const uUnicodeString& str)
-{
-  std::filesystem::path result;
-#ifdef _WINDOWS
-  result = to_stdwstr(str);
-#else
-  result = to_stdstr(str);
-#endif
-  return result;
-}
-
 #ifdef _WINDOWS
 // wchar_t and UChar are the same size
 
