@@ -143,17 +143,17 @@
         "CMAKE_CXX_COMPILER": "g++"
       }
     },
-    { "name": "x64-Debug", "description": "MSVC for x64 (Debug, ICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg" ] },
+    { "name": "x64-Debug", "description": "MSVC for x64 (Debug, ICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg", "Tests"] },
     { "name": "x64-Release", "description": "MSVC for x64 (Release, ICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg" ] },
-    { "name": "x64-Debug-noICU", "description": "MSVC for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg", "NoICU" ] },
+    { "name": "x64-Debug-noICU", "description": "MSVC for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
     { "name": "x64-Release-noICU", "description": "MSVC for x64 (Release, noICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg", "NoICU" ] },
-    { "name": "x86-Debug", "description": "MSVC for x86 (Debug, ICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg" ] },
+    { "name": "x86-Debug", "description": "MSVC for x86 (Debug, ICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg", "Tests" ] },
     { "name": "x86-Release", "description": "MSVC for x86 (Release, ICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg" ] },
-    { "name": "x86-Debug-noICU", "description": "MSVC for x86 (Debug, noICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg", "NoICU" ] },
+    { "name": "x86-Debug-noICU", "description": "MSVC for x86 (Debug, noICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
     { "name": "x86-Release-noICU", "description": "MSVC for x86 (Release, noICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg", "NoICU" ] },
-    { "name": "arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg" ] },
+    { "name": "arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg", "Tests" ] },
     { "name": "arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg" ] },
-    { "name": "arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg", "NoICU" ] },
+    { "name": "arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
     { "name": "arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg", "NoICU" ] }
 
   ]
