@@ -139,5 +139,5 @@ bool Environment::isRegularFile(const UnicodeString* basePath, const UnicodeStri
 {
   auto clear_path = Environment::getClearFilePath(basePath, relPath);
   fullPath = clear_path.u16string().c_str();
-  return std::filesystem::is_regular_file(clear_path);
+  return fs::is_regular_file(clear_path);
 }

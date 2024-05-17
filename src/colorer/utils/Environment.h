@@ -1,6 +1,7 @@
 #ifndef COLORER_ENVIRONMENT_H
 #define COLORER_ENVIRONMENT_H
 
+#include "colorer/Common.h"
 #ifdef COLORER_FEATURE_OLD_COMPILERS
 #include "colorer/platform/filesystem.hpp"
 namespace fs = ghc::filesystem;
@@ -8,7 +9,6 @@ namespace fs = ghc::filesystem;
 #include <filesystem>
 namespace fs = std::filesystem;
 #endif
-#include "colorer/Common.h"
 
 class Environment
 {

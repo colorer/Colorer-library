@@ -26,7 +26,7 @@ set_target_properties(consoletools PROPERTIES
     CXX_EXTENSIONS NO
     )
 
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+target_compile_definitions(consoletools PUBLIC _CRT_SECURE_NO_WARNINGS)
 
 if(WIN32)
   if("${COLORER_BUILD_ARCH}" STREQUAL "x64")
