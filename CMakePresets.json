@@ -16,7 +16,6 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-windows-static",
         "COLORER_BUILD_ARCH": "x64"
       },
       "hidden": true
@@ -28,7 +27,6 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x86-windows-static",
         "COLORER_BUILD_ARCH": "x86"
       },
       "hidden": true
@@ -40,7 +38,6 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "arm64-windows-static-rel",
         "COLORER_BUILD_ARCH": "ARM64"
       },
       "hidden": true
@@ -67,7 +64,7 @@
       "hidden": true
     },
     {
-      "name": "deep trace",
+      "name": "DeepTrace",
       "description": "enable deep trace",
       "cacheVariables": {
         "COLORER_USE_DEEPTRACE": "ON"
@@ -77,12 +74,44 @@
     {
       "name": "vcpkg",
       "cacheVariables": {
+        "COLORER_USE_VCPKG": "ON",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/external/vcpkg-triplets"
       },
       "environment": {
         "VCPKG_FEATURE_FLAGS": "manifests,versions"
+      },
+      "hidden": true
+    },
+    {
+      "name": "NoVcpkg",
+      "cacheVariables": {
+        "COLORER_USE_VCPKG": "OFF"
+      },
+      "hidden": true
+    },
+    {
+      "name": "vcpkg_win_x64",
+      "inherits": "vcpkg",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+      },
+      "hidden": true
+    },
+    {
+      "name": "vcpkg_win_x86",
+      "inherits": "vcpkg",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static"
+      },
+      "hidden": true
+    },
+    {
+      "name": "vcpkg_win_arm64",
+      "inherits": "vcpkg",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-windows-static-rel"
       },
       "hidden": true
     },
@@ -143,18 +172,19 @@
         "CMAKE_CXX_COMPILER": "g++"
       }
     },
-    { "name": "x64-Debug", "description": "MSVC for x64 (Debug, ICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg", "Tests"] },
-    { "name": "x64-Release", "description": "MSVC for x64 (Release, ICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg" ] },
-    { "name": "x64-Debug-noICU", "description": "MSVC for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
-    { "name": "x64-Release-noICU", "description": "MSVC for x64 (Release, noICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg", "NoICU" ] },
-    { "name": "x86-Debug", "description": "MSVC for x86 (Debug, ICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg", "Tests" ] },
-    { "name": "x86-Release", "description": "MSVC for x86 (Release, ICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg" ] },
-    { "name": "x86-Debug-noICU", "description": "MSVC for x86 (Debug, noICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
-    { "name": "x86-Release-noICU", "description": "MSVC for x86 (Release, noICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg", "NoICU" ] },
-    { "name": "arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg", "Tests" ] },
-    { "name": "arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg" ] },
-    { "name": "arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg", "NoICU", "Tests" ] },
-    { "name": "arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg", "NoICU" ] }
-
+    { "name": "msvc-x64-Debug", "description": "MSVC for x64 (Debug, ICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg_win_x64", "Tests"] },
+    { "name": "msvc-x64-Release", "description": "MSVC for x64 (Release, ICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg_win_x64" ] },
+    { "name": "msvc-x64-Debug-noICU", "description": "MSVC for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "MSVC", "vcpkg_win_x64", "NoICU", "Tests" ] },
+    { "name": "msvc-x64-Release-noICU", "description": "MSVC for x64 (Release, noICU)", "inherits": [ "base", "x64", "Release", "MSVC", "vcpkg_win_x64", "NoICU" ] },
+    { "name": "msvc-x86-Debug", "description": "MSVC for x86 (Debug, ICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg_win_x86", "Tests" ] },
+    { "name": "msvc-x86-Release", "description": "MSVC for x86 (Release, ICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg_win_x86" ] },
+    { "name": "msvc-x86-Debug-noICU", "description": "MSVC for x86 (Debug, noICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg_win_x86", "NoICU", "Tests" ] },
+    { "name": "msvc-x86-Release-noICU", "description": "MSVC for x86 (Release, noICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg_win_x86", "NoICU" ] },
+    { "name": "msvc-arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg_win_arm64", "Tests" ] },
+    { "name": "msvc-arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64" ] },
+    { "name": "msvc-arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg_win_arm64", "NoICU", "Tests" ] },
+    { "name": "msvc-arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64", "NoICU" ] },
+    { "name": "linux-x64-Debug-noICU", "description": "Linux for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU" ] },
+    { "name": "linux-x64-Release-noICU", "description": "Linux for x64 (Release, noICU)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU" ] }
   ]
 }
