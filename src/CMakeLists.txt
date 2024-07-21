@@ -241,13 +241,6 @@ target_link_libraries(colorer_lib
     PUBLIC XercesC::XercesC
 )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  target_link_libraries(colorer_lib
-      PUBLIC stdc++
-      PUBLIC m
-  )
-endif()
-
 if(NOT COLORER_USE_DUMMY_LOGGER)
   target_link_libraries(colorer_lib
       PUBLIC spdlog::spdlog
