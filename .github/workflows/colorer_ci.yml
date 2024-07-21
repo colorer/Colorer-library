@@ -161,7 +161,7 @@ jobs:
         shell: bash
         run: ./_build/tests/unit/unit_tests.exe
 
-  macos-gcc:
+  macos-clang:
     runs-on: macos-latest
     strategy:
       fail-fast: false
