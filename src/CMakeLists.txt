@@ -77,6 +77,7 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.cpp
     colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
+    colorer/strings/XMLChLiteral.h
     colorer/utils/Environment.cpp
     colorer/utils/Environment.h
     colorer/version.h

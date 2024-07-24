@@ -34,6 +34,8 @@ UnicodeString::UnicodeString(const w2char* str) : UnicodeString(str, npos) {}
 
 UnicodeString::UnicodeString(const w4char* str) : UnicodeString(str, 0, npos) {}
 
+UnicodeString::UnicodeString(const uint16_t* str) : UnicodeString((const w2char*)str, npos) {}
+
 UnicodeString::UnicodeString(const char* string, int32_t l)
 {
   if (!string)

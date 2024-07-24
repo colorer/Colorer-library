@@ -64,15 +64,6 @@ void ConsoleTools::setHRDName(const UnicodeString& str)
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
-  const char16_t kTagDoclinks[] = u"doclinks\0";
-  const char16_t kTagLinks[] = u"links\0";
-  const char16_t kTagLink[] = u"link\0";
-  const char16_t kLinksAttrUrl[] = u"url\0";
-  const char16_t kLinkAttrUrl[] = u"url\0";
-  const char16_t kLinksAttrScheme[] = u"scheme\0";
-  const char16_t kLinkAttrScheme[] = u"scheme\0";
-  const char16_t kLinkAttrToken[] = u"tokrn\0";
-
   uXmlInputSource linkSource = XmlInputSource::newInstance(&str);
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;
