@@ -7,6 +7,7 @@ on:
     branches:
       - master
     paths-ignore:
+      - 'ci/**'
       - 'docs/**'
       - '.clang-format'
       - '.gitignore'
@@ -207,3 +208,22 @@ jobs:
 
       - name: Test
         run: ./_build/tests/unit/unit_tests
+
+  test-xercesc:
+    runs-on: ubuntu-22.04
+    name: linux-xercesc-uint16t
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.PACKAGES_GITHUB_USER }}
+          password: ${{ secrets.PACKAGES_GITHUB_TOKEN }}
+
+      - name: 'Build in docker'
+        run: |
+          docker build -f ci/Dockerfile-test-xercesc -t tempx:latest .
