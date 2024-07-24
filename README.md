@@ -9,7 +9,7 @@ Colorer is a syntax highlighting library.
 
 To build library and other utils from source, you will need:
 
-* Visual Studio 2019 or higher / gcc 7 or higher
+* Visual Studio 2019 / gcc 7 / clang 7 or higher
 * git
 * cmake 3.10 or higher
 
