@@ -1,0 +1,34 @@
+name: docker dev images
+
+on:
+  # workflow_dispatch - manual start build from action menu
+  workflow_dispatch:
+
+jobs:
+  dev-images:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.PACKAGES_GITHUB_USER }}
+          password: ${{ secrets.PACKAGES_GITHUB_TOKEN }}
+
+      - name: Build and push base image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./ci/Dockerfile-base
+          push: true
+          tags: ghcr.io/colorer/devenv22_base:latest
+
+      - name: Build and push xercesc image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./ci/Dockerfile-xercesc
+          push: true
+          tags: ghcr.io/colorer/devenv22_xercesc:latest
