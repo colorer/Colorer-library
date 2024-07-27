@@ -7,6 +7,9 @@ on:
     branches:
       - master
     paths-ignore:
+      - '.github/workflows/docker_build.yml'
+      - '.github/workflows/release.yml'
+      - '.github/workflows/codeql-analysis.yml'
       - 'ci/**'
       - 'docs/**'
       - '.clang-format'

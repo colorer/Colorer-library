@@ -10,7 +10,8 @@ WORKDIR /code
 RUN --mount=type=bind,source=.,target=/code/colorer \
 <<EOT 
     mkdir build 
-    cmake -S colorer -B build -DCOLORER_USE_VCPKG=OFF -DCOLORER_USE_ICU_STRINGS=OFF \
+    cmake -S colorer -B build -DCOLORER_USE_VCPKG=OFF -DCOLORER_USE_ICU_STRINGS=OFF -DCOLORER_BUILD_TEST=ON \
        -DCOLORER_USE_DUMMY_LOGGER=ON -DCOLORER_USE_ZIPINPUTSOURCE=OFF -DCMAKE_PREFIX_PATH=/code/xercesc
     cmake --build build
+    ./build/tests/unit/unit_tests
 EOT
