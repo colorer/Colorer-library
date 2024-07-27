@@ -363,7 +363,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const xercesc::DOMElement* elem,
   auto weight = elem->getAttribute(hrcFilenameAttrWeight);
   if (!UStr::isEmpty(weight)) {
     try {
-      auto w = xercesc::XMLDouble(weight);
+      xercesc::XMLDouble w(weight);
       if (w.getValue() < 0) {
         logger->warn(
             "Weight must be greater than 0. Current value {0}. Default value will be used. Current "
