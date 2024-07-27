@@ -11,10 +11,12 @@ TEST_CASE("Test create instance")
   xercesc::XMLPlatformUtils::Initialize();
   SECTION("creat instances with not exists file")
   {
+    XMLCH_LITERAL_LOCAL(empty_string, u"")
+    XMLCH_LITERAL_LOCAL(path_string, u"c:\\windows")
     REQUIRE_THROWS_WITH(XmlInputSource::newInstance((UnicodeString*) nullptr, nullptr), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(u"", nullptr), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(u"", u""), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(u"", u"c:\\windows"), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, nullptr), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, empty_string), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, path_string), Catch::Contains("path is empty"));
 
     auto s1 = UnicodeString(u"../");
     auto s2 = UnicodeString(u"c:\\windows");

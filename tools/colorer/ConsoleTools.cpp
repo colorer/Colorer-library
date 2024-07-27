@@ -64,6 +64,15 @@ void ConsoleTools::setHRDName(const UnicodeString& str)
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
+  XMLCH_LITERAL_LOCAL(kTagDoclinks, u"doclinks\0")
+  XMLCH_LITERAL_LOCAL(kTagLinks, u"links\0")
+  XMLCH_LITERAL_LOCAL(kTagLink, u"link\0")
+  XMLCH_LITERAL_LOCAL(kLinksAttrUrl, u"url\0")
+  XMLCH_LITERAL_LOCAL(kLinkAttrUrl, u"url\0")
+  XMLCH_LITERAL_LOCAL(kLinksAttrScheme, u"scheme\0")
+  XMLCH_LITERAL_LOCAL(kLinkAttrScheme, u"scheme\0")
+  XMLCH_LITERAL_LOCAL(kLinkAttrToken, u"token\0")
+
   uXmlInputSource linkSource = XmlInputSource::newInstance(&str);
   xercesc::XercesDOMParser xml_parser;
   XmlParserErrorHandler error_handler;

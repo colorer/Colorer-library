@@ -3,15 +3,6 @@
 
 #include <colorer/ParserFactory.h>
 
-XMLCH_LITERAL(kTagDoclinks, u"doclinks\0");
-XMLCH_LITERAL(kTagLinks, u"links\0");
-XMLCH_LITERAL(kTagLink, u"link\0");
-XMLCH_LITERAL(kLinksAttrUrl, u"url\0");
-XMLCH_LITERAL(kLinkAttrUrl, u"url\0");
-XMLCH_LITERAL(kLinksAttrScheme, u"scheme\0");
-XMLCH_LITERAL(kLinkAttrScheme, u"scheme\0");
-XMLCH_LITERAL(kLinkAttrToken, u"token\0");
-
 /** Writer interface wrapper, which
     allows escaping of XML markup characters (& and <)
     @ingroup colorer_exe
