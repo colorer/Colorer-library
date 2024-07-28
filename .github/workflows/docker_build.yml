@@ -1,4 +1,4 @@
-name: docker dev images
+name: Build docker dev images
 
 on:
   # workflow_dispatch - manual start build from action menu
