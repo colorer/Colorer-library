@@ -1,4 +1,5 @@
 #include "colorer/parsers/HrcLibraryImpl.h"
+#include <memory>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/NumberFormatException.hpp>
 #include <xercesc/util/XMLDouble.hpp>
@@ -401,7 +402,7 @@ void HrcLibrary::Impl::addPrototypeParameters(const xercesc::DOMNode* elem,
         auto& tp =
             current_parse_prototype->pimpl->addParam(UnicodeString(name), UnicodeString(value));
         if (!UStr::isEmpty(descr)) {
-          tp.description.emplace(descr);
+          tp.description = std::make_unique<UnicodeString>(descr);
         }
       }
       else {
