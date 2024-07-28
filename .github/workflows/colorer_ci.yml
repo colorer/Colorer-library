@@ -10,6 +10,7 @@ on:
       - '.github/workflows/docker_build.yml'
       - '.github/workflows/release.yml'
       - '.github/workflows/codeql-analysis.yml'
+      - '.github/workflows/prebuild.yml'
       - 'ci/**'
       - 'docs/**'
       - '.clang-format'
@@ -187,7 +188,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependency
-        run: brew install xerces-c spdlog icu4c minizip ninja
+        # icu4c is already installed
+        run: brew install xerces-c spdlog minizip ninja
 
       - name: Relink icu, because he is 'keg-only'
         run: brew link icu4c --force
@@ -213,6 +215,7 @@ jobs:
         run: ./_build/tests/unit/unit_tests
 
   test-xercesc:
+    # check build with xerces-c (unit16_t)
     runs-on: ubuntu-22.04
     name: linux-xercesc-uint16t
 
