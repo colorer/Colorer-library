@@ -1,4 +1,4 @@
-name: check build
+name: Build checking
 
 on:
   # workflow_dispatch - manual start build from action menu
