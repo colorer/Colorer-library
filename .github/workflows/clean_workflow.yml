@@ -1,4 +1,4 @@
-name: Delete old workflow runs
+name: Delete old artifacts
 on:
   workflow_dispatch:
   schedule:
@@ -6,7 +6,7 @@ on:
 # Run monthly, at 00:00 on the 1st day of month.
 
 jobs:
-  del_runs:
+  clean_runs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -20,3 +20,25 @@ jobs:
           retain_days: 30
           keep_minimum_runs: 6
           check_pullrequest_exist: true
+
+  clean_packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v4
+
+      - name: setup python
+        uses: actions/setup-python@v5
+
+      - name: install python packages
+        working-directory: ./ci/clean_packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: execute clean script
+        env:
+          ORG_NAME: colorer
+          PACKAGE_MASK: ^colorer_vcpkg.*
+          PACKAGE_TYPE: nuget
+        run: python main.py
