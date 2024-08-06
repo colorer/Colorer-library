@@ -6,7 +6,7 @@ on:
 # Run monthly, at 00:00 on the 1st day of month.
 
 jobs:
-  clean_runs:
+  clean_wf_runs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -37,6 +37,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: execute clean script
+        working-directory: ./ci/clean_packages
         env:
           ORG_NAME: colorer
           PACKAGE_MASK: ^colorer_vcpkg.*
