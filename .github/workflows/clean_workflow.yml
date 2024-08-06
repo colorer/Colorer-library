@@ -40,7 +40,7 @@ jobs:
         working-directory: ./ci/clean_packages
         env:
           ORG_NAME: colorer
-          PACKAGE_MASK: ^colorer_vcpkg.*
+          PACKAGE_MASK: ^colorer_.*
           PACKAGE_TYPE: nuget
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.PACKAGES_GITHUB_TOKEN }}
         run: python main.py
