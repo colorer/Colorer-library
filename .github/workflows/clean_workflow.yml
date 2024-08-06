@@ -42,4 +42,5 @@ jobs:
           ORG_NAME: colorer
           PACKAGE_MASK: ^colorer_vcpkg.*
           PACKAGE_TYPE: nuget
+          GITHUB_TOKEN: ${{ github.token }}
         run: python main.py
