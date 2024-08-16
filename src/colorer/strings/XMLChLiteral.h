@@ -12,4 +12,6 @@ static_assert(sizeof(char16_t) == sizeof(XMLCh), "XMLCh must be 16-bit type");
 #define XMLCH_LITERAL_LOCAL(name, value) const auto name = (const XMLCh *) value;
 #define XMLCH_ARRAY(name, value) XMLCh name[sizeof(value) / sizeof(char16_t)]; memcpy(name, value, sizeof(name));
 
+#define UNICODE_LITERAL(name, value) inline const auto name = UnicodeString(value);
+
 #endif  // COLORER_XMLCHLITERAL_H

@@ -97,6 +97,7 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlParserErrorHandler.cpp
     colorer/xml/XmlParserErrorHandler.h
+    colorer/xml/XercesXml.h
 )
 
 if(COLORER_USE_ZIPINPUTSOURCE)
