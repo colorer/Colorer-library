@@ -31,7 +31,7 @@ class XmlInputSource : public xercesc::InputSource
    * relatively to the current.
    * @param relPath Relative URI part.
    */
-  virtual uXmlInputSource createRelative(const XMLCh* relPath);
+  virtual uXmlInputSource createRelative(const UnicodeString& relPath);
 
   [[nodiscard]] virtual xercesc::InputSource* getInputSource() const = 0;
 

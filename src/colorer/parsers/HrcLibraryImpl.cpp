@@ -289,8 +289,7 @@ void HrcLibrary::Impl::addPrototypeLocation(const XMLNode& elem, FileType* curre
     logger->error("Bad 'location' link attribute in prototype '{0}'", current_parse_prototype->pimpl->name);
     return;
   }
-  current_parse_prototype->pimpl->inputSource =
-      current_input_source->createRelative(UStr::to_xmlch(&locationLink).get());
+  current_parse_prototype->pimpl->inputSource = current_input_source->createRelative(locationLink);
 }
 
 void HrcLibrary::Impl::addPrototypeDetectParam(const XMLNode& elem, FileType* current_parse_prototype)

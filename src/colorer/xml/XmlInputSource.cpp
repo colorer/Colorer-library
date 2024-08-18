@@ -33,9 +33,9 @@ bool XmlInputSource::isUriFile(const UnicodeString& path, const UnicodeString* b
   return true;
 }
 
-uXmlInputSource XmlInputSource::createRelative(const XMLCh* relPath)
+uXmlInputSource XmlInputSource::createRelative(const UnicodeString& relPath)
 {
-  return newInstance(relPath, this->getInputSource()->getSystemId());
+  return newInstance(UStr::to_xmlch(&relPath).get(), this->getInputSource()->getSystemId());
 }
 
 UnicodeString& XmlInputSource::getPath() const

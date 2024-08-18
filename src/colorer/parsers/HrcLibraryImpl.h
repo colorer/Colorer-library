@@ -2,7 +2,6 @@
 #define _COLORER_HRCLIBRARYIMPL_H_
 
 #include <unordered_map>
-#include <xercesc/dom/DOM.hpp>
 #include "colorer/HrcLibrary.h"
 #include "colorer/cregexp/cregexp.h"
 #include "colorer/parsers/SchemeImpl.h"
