@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 #include "colorer/Common.h"
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 #include <xercesc/sax/InputSource.hpp>
 
 class SharedXmlInputSource

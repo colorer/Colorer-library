@@ -1,4 +1,4 @@
-#include "colorer/xml/LocalFileXmlInputSource.h"
+#include "colorer/xml/xercesc/LocalFileXmlInputSource.h"
 #include <memory>
 #include <xercesc/util/BinFileInputStream.hpp>
 #include "colorer/Exception.h"

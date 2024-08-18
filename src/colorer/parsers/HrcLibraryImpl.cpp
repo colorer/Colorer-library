@@ -2,7 +2,7 @@
 #include <memory>
 #include "colorer/base/XmlTagDefs.h"
 #include "colorer/parsers/FileTypeImpl.h"
-#include "colorer/xml/XercesXml.h"
+#include "colorer/xml/xercesc/XercesXml.h"
 
 HrcLibrary::Impl::Impl()
 {

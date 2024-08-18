@@ -1,7 +1,7 @@
 #include "colorer/handlers/TextHRDMapper.h"
 #include "colorer/Exception.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/xml/XercesXml.h"
+#include "colorer/xml/xercesc/XercesXml.h"
 
 TextHRDMapper::~TextHRDMapper()
 {

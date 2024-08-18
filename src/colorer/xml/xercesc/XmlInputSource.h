@@ -4,6 +4,7 @@
 #include <xercesc/sax/InputSource.hpp>
 #include "colorer/Common.h"
 
+#define XMLCH_LITERAL(name, value) inline const auto name = (const XMLCh *) value;
 XMLCH_LITERAL(kJar, u"jar:\0");
 XMLCH_LITERAL(kPercent, u"%\0");
 

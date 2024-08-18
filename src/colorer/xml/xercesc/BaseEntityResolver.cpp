@@ -1,7 +1,7 @@
-#include "colorer/xml/BaseEntityResolver.h"
+#include "colorer/xml/xercesc/BaseEntityResolver.h"
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include "colorer/Exception.h"
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 
 xercesc::InputSource* BaseEntityResolver::resolveEntity(xercesc::XMLResourceIdentifier* resourceIdentifier)
 {

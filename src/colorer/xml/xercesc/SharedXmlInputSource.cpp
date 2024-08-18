@@ -1,4 +1,4 @@
-#include "colorer/xml/SharedXmlInputSource.h"
+#include "colorer/xml/xercesc/SharedXmlInputSource.h"
 #include <xercesc/util/BinFileInputStream.hpp>
 #include "colorer/Exception.h"
 

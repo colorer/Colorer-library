@@ -5,8 +5,8 @@
 #include "colorer/HrcLibrary.h"
 #include "colorer/cregexp/cregexp.h"
 #include "colorer/parsers/SchemeImpl.h"
-#include "colorer/xml/XercesXml.h"
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XercesXml.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 
 class FileType;
 

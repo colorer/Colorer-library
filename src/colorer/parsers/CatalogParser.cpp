@@ -1,6 +1,6 @@
 #include "colorer/parsers/CatalogParser.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 
 void CatalogParser::parse(const UnicodeString* path)
 {

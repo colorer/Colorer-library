@@ -1,8 +1,8 @@
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 #include "colorer/Exception.h"
-#include "colorer/xml/LocalFileXmlInputSource.h"
+#include "colorer/xml/xercesc/LocalFileXmlInputSource.h"
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
-#include "colorer/xml/ZipXmlInputSource.h"
+#include "colorer/xml/xercesc/ZipXmlInputSource.h"
 #endif
 
 uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)

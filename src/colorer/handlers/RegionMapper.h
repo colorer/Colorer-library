@@ -6,7 +6,7 @@
 #include "colorer/Region.h"
 #include "colorer/handlers/RegionDefine.h"
 #include "colorer/io/Writer.h"
-#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/xercesc/XmlInputSource.h"
 
 /** Abstract RegionMapper.
     Stores all region mappings in hashtable and sequental vector for Region -> RegionDefine

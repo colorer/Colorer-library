@@ -6,7 +6,7 @@
 #include <colorer/io/InputSource.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
+#include <colorer/xml/xercesc/XmlParserErrorHandler.h>
 #include <ctime>
 #include <memory>
 #include <xercesc/dom/DOM.hpp>
@@ -64,6 +64,7 @@ void ConsoleTools::setHRDName(const UnicodeString& str)
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
+#define XMLCH_LITERAL_LOCAL(name, value) const auto name = (const XMLCh *) value;
   XMLCH_LITERAL_LOCAL(kTagDoclinks, u"doclinks\0")
   XMLCH_LITERAL_LOCAL(kTagLinks, u"links\0")
   XMLCH_LITERAL_LOCAL(kTagLink, u"link\0")

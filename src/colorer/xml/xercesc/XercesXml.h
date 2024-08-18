@@ -6,8 +6,8 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
-#include "colorer/xml/BaseEntityResolver.h"
-#include "colorer/xml/XmlParserErrorHandler.h"
+#include "colorer/xml/xercesc/BaseEntityResolver.h"
+#include "colorer/xml/xercesc/XmlParserErrorHandler.h"
 #include "colorer/Common.h"
 
 static const UnicodeString empty_string("");
