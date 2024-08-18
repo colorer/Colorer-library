@@ -135,21 +135,21 @@ UNICODE_LITERAL(hrcVirtualAttrSubstScheme, u"subst-scheme")
   <assign name="" stext="" etext="" sback="" eback=""/>
 </hrc>
 */
-XMLCH_LITERAL(hrdTagHrd, u"hrd\0")
-XMLCH_LITERAL(hrdTagAssign, u"assign\0")
-XMLCH_LITERAL(hrdAssignAttrName, u"name\0")
-XMLCH_LITERAL(hrdAssignAttrFore, u"fore\0")
-XMLCH_LITERAL(hrdAssignAttrBack, u"back\0")
-XMLCH_LITERAL(hrdAssignAttrStyle, u"style\0")
-XMLCH_LITERAL(hrdAssignAttrSBack, u"sback\0")
-XMLCH_LITERAL(hrdAssignAttrEBack, u"eback\0")
-XMLCH_LITERAL(hrdAssignAttrSText, u"stext\0")
-XMLCH_LITERAL(hrdAssignAttrEText, u"etext\0")
+UNICODE_LITERAL(hrdTagHrd, u"hrd")
+UNICODE_LITERAL(hrdTagAssign, u"assign")
+UNICODE_LITERAL(hrdAssignAttrName, u"name")
+UNICODE_LITERAL(hrdAssignAttrFore, u"fore")
+UNICODE_LITERAL(hrdAssignAttrBack, u"back")
+UNICODE_LITERAL(hrdAssignAttrStyle, u"style")
+UNICODE_LITERAL(hrdAssignAttrSBack, u"sback")
+UNICODE_LITERAL(hrdAssignAttrEBack, u"eback")
+UNICODE_LITERAL(hrdAssignAttrSText, u"stext")
+UNICODE_LITERAL(hrdAssignAttrEText, u"etext")
 
 /*
  * attributes value
  */
-UNICODE_LITERAL(value_low, u"low\0")
-UNICODE_LITERAL(value_yes, u"yes\0")
+UNICODE_LITERAL(value_low, u"low")
+UNICODE_LITERAL(value_yes, u"yes")
 
 #endif  // COLORER_XMLTAGDEFS_H
