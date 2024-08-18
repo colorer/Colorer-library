@@ -77,6 +77,7 @@ class XercesXml
     if (node->getNodeType() != xercesc::DOMNode::ELEMENT_NODE)
       return false;
 
+    // don`t use dynamic_cast, see https://github.com/colorer/Colorer-library/issues/32
     auto elem = static_cast<const xercesc::DOMElement*>(node);
     result.name = UnicodeString(elem->getNodeName());
     auto t = getElementText(elem);

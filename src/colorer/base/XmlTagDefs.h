@@ -15,15 +15,15 @@
 </catalog>
 */
 
-XMLCH_LITERAL(catTagCatalog, u"catalog\0")
-XMLCH_LITERAL(catTagHrcSets, u"hrc-sets\0")
-XMLCH_LITERAL(catTagLocation, u"location\0")
-XMLCH_LITERAL(catLocationAttrLink, u"link\0")
-XMLCH_LITERAL(catTagHrdSets, u"hrd-sets\0")
-XMLCH_LITERAL(catTagHrd, u"hrd\0")
-XMLCH_LITERAL(catHrdAttrClass, u"class\0")
-XMLCH_LITERAL(catHrdAttrName, u"name\0")
-XMLCH_LITERAL(catHrdAttrDescription, u"description\0")
+UNICODE_LITERAL(catTagCatalog, u"catalog")
+UNICODE_LITERAL(catTagHrcSets, u"hrc-sets")
+UNICODE_LITERAL(catTagLocation, u"location")
+UNICODE_LITERAL(catLocationAttrLink, u"link")
+UNICODE_LITERAL(catTagHrdSets, u"hrd-sets")
+UNICODE_LITERAL(catTagHrd, u"hrd")
+UNICODE_LITERAL(catHrdAttrClass, u"class")
+UNICODE_LITERAL(catHrdAttrName, u"name")
+UNICODE_LITERAL(catHrdAttrDescription, u"description")
 
 /* hrc file
 
@@ -63,8 +63,8 @@ XMLCH_LITERAL(catHrdAttrDescription, u"description\0")
 </hrc>
 */
 
-UNICODE_LITERAL(hrcTagHrc, u"hrc\0")
-UNICODE_LITERAL(hrcHrcAttrVersion, u"version\0")
+UNICODE_LITERAL(hrcTagHrc, u"hrc")
+UNICODE_LITERAL(hrcHrcAttrVersion, u"version")
 UNICODE_LITERAL(hrcTagAnnotation, u"annotation")
 UNICODE_LITERAL(hrcTagPrototype, u"prototype")
 UNICODE_LITERAL(hrcPrototypeAttrName, u"name")
