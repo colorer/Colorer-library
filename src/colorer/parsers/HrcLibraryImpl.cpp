@@ -312,7 +312,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const XMLNode& elem, FileType* cu
   auto weight = elem.getAttrValue(hrcFilenameAttrWeight);
   if (!weight.isEmpty()) {
     try {
-      double d = std::stod(weight.getChars());
+      double d = std::stod(UStr::to_stdstr(&weight));
       if (d < 0) {
         logger->warn(
             "Weight must be greater than 0. Current value {0}. Default value will be used. Current "
