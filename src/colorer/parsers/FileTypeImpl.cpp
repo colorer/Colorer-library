@@ -65,7 +65,7 @@ const UnicodeString* FileType::Impl::getParamValue(const UnicodeString& param_na
 {
   auto tp = paramsHash.find(param_name);
   if (tp != paramsHash.end()) {
-    if (tp->second.user_value && tp->second.user_value) {
+    if (tp->second.user_value) {
       return tp->second.user_value.get();
     }
     return &tp->second.value;

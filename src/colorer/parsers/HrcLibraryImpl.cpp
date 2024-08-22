@@ -1,4 +1,5 @@
 #include "colorer/parsers/HrcLibraryImpl.h"
+#include <algorithm>
 #include <memory>
 #include "colorer/base/XmlTagDefs.h"
 #include "colorer/parsers/FileTypeImpl.h"
@@ -23,7 +24,7 @@ HrcLibrary::Impl::~Impl()
     delete it.second;
   }
 
-  for (auto it : regionNamesVector) {
+  for (const auto *it : regionNamesVector) {
     delete it;
   }
 
@@ -49,7 +50,7 @@ void HrcLibrary::Impl::loadSource(XmlInputSource* is)
   current_input_source = istemp;
 }
 
-void HrcLibrary::Impl::unloadFileType(FileType* filetype)
+void HrcLibrary::Impl::unloadFileType(const FileType* filetype)
 {
   bool loop = true;
   while (loop) {
@@ -108,8 +109,8 @@ FileType* HrcLibrary::Impl::chooseFileType(const UnicodeString* fileName, const 
   FileType* best = nullptr;
   double max_prior = 0;
   const double DELTA = 1e-6;
-  for (auto ret : fileTypeVector) {
-    double prior = ret->pimpl->getPriority(fileName, firstLine);
+  for (auto *ret : fileTypeVector) {
+    double const prior = ret->pimpl->getPriority(fileName, firstLine);
 
     if (typeNo > 0 && (prior - max_prior < DELTA)) {
       best = ret;
@@ -132,10 +133,10 @@ FileType* HrcLibrary::Impl::getFileType(const UnicodeString* name)
     return nullptr;
   }
   auto filetype = fileTypeHash.find(*name);
-  if (filetype != fileTypeHash.end())
+  if (filetype != fileTypeHash.end()) {
     return filetype->second;
-  else
-    return nullptr;
+  }
+  return nullptr;
 }
 
 FileType* HrcLibrary::Impl::enumerateFileTypes(unsigned int index)
@@ -343,7 +344,7 @@ void HrcLibrary::Impl::addPrototypeParameters(const XMLNode& elem, FileType* cur
         continue;
       }
       auto& tp = current_parse_prototype->pimpl->addParam(name, value);
-      auto& descr = node.getAttrValue(hrcParamAttrDescription);
+      const auto& descr = node.getAttrValue(hrcParamAttrDescription);
       if (!descr.isEmpty()) {
         tp.description = std::make_unique<UnicodeString>(descr);
       }
@@ -357,7 +358,7 @@ void HrcLibrary::Impl::addPrototypeParameters(const XMLNode& elem, FileType* cur
 
 void HrcLibrary::Impl::addType(const XMLNode& elem)
 {
-  auto& typeName = elem.getAttrValue(hrcTypeAttrName);
+  const auto& typeName = elem.getAttrValue(hrcTypeAttrName);
 
   if (typeName.isEmpty()) {
     logger->error("Unnamed type found");
@@ -369,7 +370,7 @@ void HrcLibrary::Impl::addType(const XMLNode& elem)
     logger->error("Type '%s' without prototype", typeName);
     return;
   }
-  const auto type = type_ref->second;
+  auto *const type = type_ref->second;
   if (type->pimpl->type_loading) {
     logger->warn("Type '{0}' is loading already. Current file {1}", typeName, current_input_source->getPath());
     return;
@@ -417,7 +418,7 @@ void HrcLibrary::Impl::parseTypeBlock(const XMLNode& elem)
 
 void HrcLibrary::Impl::addTypeRegion(const XMLNode& elem)
 {
-  auto& regionName = elem.getAttrValue(hrcRegionAttrName);
+  const auto& regionName = elem.getAttrValue(hrcRegionAttrName);
 
   if (regionName.isEmpty()) {
     logger->error("No 'name' attribute in <region> element");
@@ -432,8 +433,8 @@ void HrcLibrary::Impl::addTypeRegion(const XMLNode& elem)
     return;
   }
 
-  auto& regionParent = elem.getAttrValue(hrcRegionAttrParent);
-  auto& regionDescr = elem.getAttrValue(hrcRegionAttrDescription);
+  const auto& regionParent = elem.getAttrValue(hrcRegionAttrParent);
+  const auto& regionDescr = elem.getAttrValue(hrcRegionAttrDescription);
   const auto qname2 = qualifyForeignName(regionParent.isEmpty() ? nullptr : &regionParent, QualifyNameType::QNT_DEFINE, true);
 
   const Region* region = new Region(*qname1, &regionDescr, getRegion(qname2.get()), regionNamesVector.size());
@@ -443,12 +444,12 @@ void HrcLibrary::Impl::addTypeRegion(const XMLNode& elem)
 
 void HrcLibrary::Impl::addTypeEntity(const XMLNode& elem)
 {
-  auto& entityName = elem.getAttrValue(hrcEntityAttrName);
+  const auto& entityName = elem.getAttrValue(hrcEntityAttrName);
   if (entityName.isEmpty() || !elem.isExist(hrcEntityAttrValue)) {
     logger->error("Bad entity attributes");
     return;
   }
-  auto& entityValue = elem.getAttrValue(hrcEntityAttrValue);
+  const auto& entityValue = elem.getAttrValue(hrcEntityAttrValue);
 
   const auto qname1 = qualifyOwnName(entityName);
   uUnicodeString qname2 = useEntities(&entityValue);
@@ -459,7 +460,7 @@ void HrcLibrary::Impl::addTypeEntity(const XMLNode& elem)
 
 void HrcLibrary::Impl::addTypeImport(const XMLNode& elem)
 {
-  auto& typeParam = elem.getAttrValue(hrcImportAttrType);
+  const auto& typeParam = elem.getAttrValue(hrcImportAttrType);
   if (typeParam.isEmpty() || fileTypeHash.find(typeParam) == fileTypeHash.end()) {
     logger->error("Import with bad '{0}' attribute in type '{1}'", typeParam, current_parse_type->pimpl->name);
     return;
@@ -469,7 +470,7 @@ void HrcLibrary::Impl::addTypeImport(const XMLNode& elem)
 
 void HrcLibrary::Impl::addScheme(const XMLNode& elem)
 {
-  auto& schemeName = elem.getAttrValue(hrcSchemeAttrName);
+  const auto& schemeName = elem.getAttrValue(hrcSchemeAttrName);
   // todo check schemeName
   const auto qSchemeName = qualifyOwnName(schemeName);
   if (qSchemeName == nullptr) {
@@ -486,8 +487,8 @@ void HrcLibrary::Impl::addScheme(const XMLNode& elem)
   scheme->fileType = current_parse_type;
 
   schemeHash.emplace(*scheme->getName(), scheme);
-  auto& condIf = elem.getAttrValue(hrcSchemeAttrIf);
-  auto& condUnless = elem.getAttrValue(hrcSchemeAttrUnless);
+  const auto& condIf = elem.getAttrValue(hrcSchemeAttrIf);
+  const auto& condUnless = elem.getAttrValue(hrcSchemeAttrUnless);
   const UnicodeString* p1 = current_parse_type->getParamValue(condIf);
   const UnicodeString* p2 = current_parse_type->getParamValue(condUnless);
   if ((!condIf.isEmpty() && p1 && p1->compare("true") != 0) ||
@@ -543,8 +544,8 @@ void HrcLibrary::Impl::addSchemeInherit(SchemeImpl* scheme, const XMLNode& elem)
 
   for (const auto& node : elem.children) {
     if (node.name == hrcTagVirtual) {
-      auto x_schemeName = node.getAttrValue(hrcVirtualAttrScheme);
-      auto x_substName = node.getAttrValue(hrcVirtualAttrSubstScheme);
+      const auto& x_schemeName = node.getAttrValue(hrcVirtualAttrScheme);
+      const auto& x_substName = node.getAttrValue(hrcVirtualAttrSubstScheme);
       if (x_schemeName.isEmpty() || x_substName.isEmpty()) {
         logger->error("there is bad virtualize attributes of scheme '{0}', skip this virtual block.",
                       *scheme_node->schemeName);
@@ -579,7 +580,7 @@ void HrcLibrary::Impl::addSchemeRegexp(SchemeImpl* scheme, const XMLNode& elem)
   }
 
   auto scheme_node = std::make_unique<SchemeNodeRegexp>();
-  auto& dhrcRegexpAttrPriority = elem.getAttrValue(hrcRegexpAttrPriority);
+  const auto& dhrcRegexpAttrPriority = elem.getAttrValue(hrcRegexpAttrPriority);
   scheme_node->lowPriority = UnicodeString(value_low).compare(dhrcRegexpAttrPriority) == 0;
   scheme_node->start = std::move(regexp);
   scheme_node->start->setPositionMoves(false);
@@ -631,7 +632,7 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const XMLNode& elem)
     logger->error("there is no 'end' attribute in block of scheme '{0}', skip this block.", *scheme->schemeName);
     return;
   }
-  auto& schemeName = elem.getAttrValue(hrcBlockAttrScheme);
+  const auto& schemeName = elem.getAttrValue(hrcBlockAttrScheme);
   if (schemeName.isEmpty()) {
     logger->error("there is no 'scheme' attribute in block of scheme '{0}', skip this block.", *scheme->schemeName);
     return;
@@ -657,9 +658,9 @@ void HrcLibrary::Impl::addSchemeBlock(SchemeImpl* scheme, const XMLNode& elem)
     return;
   }
 
-  auto& attr_pr = elem.getAttrValue(hrcBlockAttrPriority);
-  auto& attr_cpr = elem.getAttrValue(hrcBlockAttrContentPriority);
-  auto& attr_ireg = elem.getAttrValue(hrcBlockAttrInnerRegion);
+  const auto& attr_pr = elem.getAttrValue(hrcBlockAttrPriority);
+  const auto& attr_cpr = elem.getAttrValue(hrcBlockAttrContentPriority);
+  const auto& attr_ireg = elem.getAttrValue(hrcBlockAttrInnerRegion);
 
   auto scheme_node = std::make_unique<SchemeNodeBlock>();
   scheme_node->schemeName = std::make_unique<UnicodeString>(schemeName);
@@ -687,7 +688,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const XMLNode& el
     return;
   }
 
-  auto& worddiv = elem.getAttrValue(hrcKeywordsAttrWorddiv);
+  const auto& worddiv = elem.getAttrValue(hrcKeywordsAttrWorddiv);
   std::unique_ptr<CharacterClass> us_worddiv;
   if (!worddiv.isEmpty()) {
     const uUnicodeString entWordDiv = useEntities(&worddiv);
@@ -701,7 +702,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const XMLNode& el
   }
 
   auto count = getSchemeKeywordsCount(elem);
-  auto& ignorecase_string = elem.getAttrValue(hrcKeywordsAttrIgnorecase);
+  const auto& ignorecase_string = elem.getAttrValue(hrcKeywordsAttrIgnorecase);
   auto scheme_node = std::make_unique<SchemeNodeKeywords>();
   scheme_node->worddiv = std::move(us_worddiv);
   scheme_node->kwList = std::make_unique<KeywordList>(count);
@@ -732,7 +733,7 @@ void HrcLibrary::Impl::loopSchemeKeywords(const XMLNode& elem, const SchemeImpl*
 void HrcLibrary::Impl::addSchemeKeyword(const XMLNode& elem, const SchemeImpl* scheme, const SchemeNodeKeywords* scheme_node,
                                         const Region* region, KeywordInfo::KeywordType keyword_type)
 {
-  auto& keyword_value = elem.getAttrValue(hrcWordAttrName);
+  const auto& keyword_value = elem.getAttrValue(hrcWordAttrName);
   if (keyword_value.isEmpty()) {
     logger->warn("the 'name' attribute in the '{1}' element of scheme '{0}' is empty or missing, skip it.",
                  *scheme->schemeName, keyword_type == KeywordInfo::KeywordType::KT_WORD ? "word" : "symb");
@@ -740,7 +741,7 @@ void HrcLibrary::Impl::addSchemeKeyword(const XMLNode& elem, const SchemeImpl* s
   }
 
   const Region* rgn = region;
-  auto& reg = elem.getAttrValue(hrcWordAttrRegion);
+  const auto& reg = elem.getAttrValue(hrcWordAttrRegion);
   if (!reg.isEmpty()) {
     rgn = getNCRegion(&elem, hrcWordAttrRegion);
   }
@@ -749,7 +750,7 @@ void HrcLibrary::Impl::addSchemeKeyword(const XMLNode& elem, const SchemeImpl* s
   list.keyword = std::make_unique<UnicodeString>(keyword_value);
   list.region = rgn;
   list.isSymbol = (keyword_type == KeywordInfo::KeywordType::KT_SYMB);
-  auto first_char = scheme_node->kwList->firstChar.get();
+  auto *first_char = scheme_node->kwList->firstChar.get();
   first_char->add(keyword_value[0]);
   if (!scheme_node->kwList->matchCase) {
     first_char->add(Character::toLowerCase(keyword_value[0]));
@@ -757,9 +758,7 @@ void HrcLibrary::Impl::addSchemeKeyword(const XMLNode& elem, const SchemeImpl* s
     first_char->add(Character::toTitleCase(keyword_value[0]));
   }
   scheme_node->kwList->count++;
-  if (scheme_node->kwList->minKeywordLength > list.keyword->length()) {
-    scheme_node->kwList->minKeywordLength = list.keyword->length();
-  }
+  scheme_node->kwList->minKeywordLength = std::min(scheme_node->kwList->minKeywordLength, list.keyword->length());
 }
 
 size_t HrcLibrary::Impl::getSchemeKeywordsCount(const XMLNode& elem)
@@ -805,7 +804,7 @@ void HrcLibrary::Impl::loadRegions(SchemeNodeBlock* node, const XMLNode* el, boo
     for (int i = 0; i < REGIONS_NUM; i++) {
       rg_tmpl[6] = static_cast<char16_t>((i < 0xA ? i : i + 39) + '0');
 
-      const auto reg = getNCRegion(el, UnicodeString(rg_tmpl));
+      const auto *reg = getNCRegion(el, UnicodeString(rg_tmpl));
       if (start_element) {
         node->regions[i] = reg;
       }
@@ -875,16 +874,16 @@ void HrcLibrary::Impl::updateLinks()
       current_parse_type = scheme->fileType;
       for (auto& snode : scheme->nodes) {
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
-          auto snode_block = static_cast<SchemeNodeBlock*>(snode.get());
+          auto *snode_block = static_cast<SchemeNodeBlock*>(snode.get());
 
           updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1, scheme);
         }
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
-          auto snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
+          auto *snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
 
           updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2, scheme);
-          for (auto vt : snode_inherit->virtualEntryVector) {
+          for (auto *vt : snode_inherit->virtualEntryVector) {
             updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3, scheme);
             updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4, scheme);
           }
@@ -907,33 +906,33 @@ uUnicodeString HrcLibrary::Impl::qualifyOwnName(const UnicodeString& name)
                     current_parse_type->pimpl->name);
       return nullptr;
     }
-    else {
-      return std::make_unique<UnicodeString>(name);
-    }
+    return std::make_unique<UnicodeString>(name);
   }
-  else {
-    auto sbuf = std::make_unique<UnicodeString>(current_parse_type->getName());
-    sbuf->append(":").append(name);
-    return sbuf;
-  }
+
+  auto sbuf = std::make_unique<UnicodeString>(current_parse_type->getName());
+  sbuf->append(":").append(name);
+  return sbuf;
 }
 
 bool HrcLibrary::Impl::checkNameExist(const UnicodeString* name, FileType* parseType, QualifyNameType qntype,
                                       bool logErrors)
 {
   if (qntype == QualifyNameType::QNT_DEFINE && regionNamesHash.find(*name) == regionNamesHash.end()) {
-    if (logErrors)
+    if (logErrors) {
       logger->error("region '{0}', referenced in type '{1}', is not defined", *name, parseType->pimpl->name);
+    }
     return false;
   }
-  else if (qntype == QualifyNameType::QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
-    if (logErrors)
+  if (qntype == QualifyNameType::QNT_ENTITY && schemeEntitiesHash.find(*name) == schemeEntitiesHash.end()) {
+    if (logErrors) {
       logger->error("entity '{0}', referenced in type '{1}', is not defined", *name, parseType->pimpl->name);
+    }
     return false;
   }
-  else if (qntype == QualifyNameType::QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
-    if (logErrors)
+  if (qntype == QualifyNameType::QNT_SCHEME && schemeHash.find(*name) == schemeHash.end()) {
+    if (logErrors) {
       logger->error("scheme '{0}', referenced in type '{1}', is not defined", *name, parseType->pimpl->name);
+    }
     return false;
   }
   return true;
@@ -959,7 +958,7 @@ uUnicodeString HrcLibrary::Impl::qualifyForeignName(const UnicodeString* name, Q
       }
       return nullptr;
     }
-    else if (!prefType->pimpl->type_loading) {
+    if (!prefType->pimpl->type_loading) {
       loadFileType(prefType);
     }
     if (prefType == current_parse_type || prefType->pimpl->type_loading) {
@@ -1071,7 +1070,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, bool logE
 const Region* HrcLibrary::Impl::getNCRegion(const XMLNode* elem, const UnicodeString& tag)
 {
   if (elem->isExist(tag)) {
-    auto& par = elem->getAttrValue(tag);
+    const auto& par = elem->getAttrValue(tag);
     return getNCRegion(&par, true);
   }
   return nullptr;

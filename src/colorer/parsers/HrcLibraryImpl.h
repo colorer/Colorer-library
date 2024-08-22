@@ -53,7 +53,7 @@ class HrcLibrary::Impl
   bool structureChanged = false;
   bool updateStarted = false;
 
-  void unloadFileType(FileType* filetype);
+  void unloadFileType(const FileType* filetype);
 
   void parseHRC(const XmlInputSource& is);
   void parseHrcBlock(const XMLNode& elem);
