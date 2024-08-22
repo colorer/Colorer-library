@@ -1,6 +1,7 @@
 #include "colorer/parsers/CatalogParser.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/xml/xercesc/XmlInputSource.h"
+#include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/XmlReader.h"
 
 void CatalogParser::parse(const UnicodeString* path)
 {
@@ -8,13 +9,13 @@ void CatalogParser::parse(const UnicodeString* path)
   hrc_locations.clear();
   hrd_nodes.clear();
 
-  uXmlInputSource catalogXIS = XmlInputSource::newInstance(path);
-  XercesXml xml(catalogXIS->getInputSource());
-  if (xml.saw_error) {
+  XmlInputSource catalogXIS(*path);
+  XmlReader xml(catalogXIS);
+  if (!xml.parse()) {
     throw CatalogParserException(*path + UnicodeString(" parse error"));
   }
   std::list<XMLNode> nodes;
-  xml.parse(nodes);
+  xml.getNodes(nodes);
 
   if (nodes.begin()->name != catTagCatalog) {
     throw CatalogParserException("Incorrect file structure catalog.xml. Main '<catalog>' block not found at file " +

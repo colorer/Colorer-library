@@ -7,6 +7,7 @@
 #include "colorer/HrcLibrary.h"
 #include "colorer/parsers/FileTypeChooser.h"
 #include "colorer/parsers/SchemeImpl.h"
+#include "colorer/xml/XmlInputSource.h"
 
 /* structure for storing data of scheme parameter*/
 class TypeParameter

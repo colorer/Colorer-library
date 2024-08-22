@@ -86,17 +86,23 @@ set(SRC_COLORER
     colorer/viewer/TextConsoleViewer.h
     colorer/viewer/TextLinesStore.cpp
     colorer/viewer/TextLinesStore.h
+    colorer/xml/XMLNode.h
+    colorer/xml/XmlInputSource.cpp
+    colorer/xml/XmlInputSource.h
+    colorer/xml/XmlReader.cpp
+    colorer/xml/XmlReader.h
     colorer/xml/xercesc/BaseEntityResolver.cpp
     colorer/xml/xercesc/BaseEntityResolver.h
     colorer/xml/xercesc/LocalFileXmlInputSource.cpp
     colorer/xml/xercesc/LocalFileXmlInputSource.h
     colorer/xml/xercesc/SharedXmlInputSource.cpp
     colorer/xml/xercesc/SharedXmlInputSource.h
-    colorer/xml/xercesc/XmlInputSource.cpp
-    colorer/xml/xercesc/XmlInputSource.h
+    colorer/xml/xercesc/XercesXmlInputSource.cpp
+    colorer/xml/xercesc/XercesXmlInputSource.h
     colorer/xml/xercesc/XmlParserErrorHandler.cpp
     colorer/xml/xercesc/XmlParserErrorHandler.h
-    colorer/xml/xercesc/XercesXml.h
+    colorer/xml/xercesc/XercesXmlReader.h
+    colorer/xml/xercesc/XercesXmlReader.cpp
 )
 
 if(COLORER_USE_ZIPINPUTSOURCE)

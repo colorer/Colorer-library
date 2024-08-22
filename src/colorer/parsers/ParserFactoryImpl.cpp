@@ -6,17 +6,13 @@
 
 ParserFactory::Impl::Impl()
 {
-  // init xercesc, need to work with xml string
-  xercesc::XMLPlatformUtils::Initialize();
   hrc_library = new HrcLibrary();
 }
 
 ParserFactory::Impl::~Impl()
 {
-  // hrc library has link to xercesc classes (SharedXmlInputSource) and need to free before xercesc
   delete hrc_library;
   CRegExp::clearRegExpStack();
-  xercesc::XMLPlatformUtils::Terminate();
 }
 
 void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
@@ -48,7 +44,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 {
   try {
     logger->debug("try load '{0}'", location);
-    if (XmlInputSource::isUriFile(*base_catalog_path, &location)) {
+    if (XmlInputSource::isFileURI(*base_catalog_path, &location)) {
       auto files = Environment::getFilesFromPath(base_catalog_path.get(), &location, ".hrc");
       for (auto& file : files) {
         loadHrc(file, nullptr);
@@ -64,11 +60,11 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 
 void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
 {
-  uXmlInputSource dfis = XmlInputSource::newInstance(&hrc_path, base_path);
+  XmlInputSource dfis(hrc_path, base_path);
   try {
-    hrc_library->loadSource(dfis.get());
+    hrc_library->loadSource(&dfis);
   } catch (Exception& e) {
-    logger->error("Can't load hrc: {0}", dfis->getPath());
+    logger->error("Can't load hrc: {0}", dfis.getPath());
     logger->error("{0}", e.what());
   }
 }
@@ -183,8 +179,8 @@ void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const Unicode
   for (const auto& idx : hrd_node.hrd_location) {
     if (idx.length() != 0) {
       try {
-        auto dfis = XmlInputSource::newInstance(&idx, base_catalog_path.get());
-        mapper.loadRegionMappings(*dfis);
+        XmlInputSource dfis(idx, base_catalog_path.get());
+        mapper.loadRegionMappings(dfis);
       } catch (Exception& e) {
         logger->error("Can't load hrd: ");
         logger->error("{0}", e.what());

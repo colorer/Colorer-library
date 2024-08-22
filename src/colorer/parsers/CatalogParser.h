@@ -5,7 +5,7 @@
 #include "colorer/Common.h"
 #include "colorer/Exception.h"
 #include "colorer/parsers/HrdNode.h"
-#include "colorer/xml/xercesc/XercesXml.h"
+#include "colorer/xml/XMLNode.h"
 
 class CatalogParser
 {

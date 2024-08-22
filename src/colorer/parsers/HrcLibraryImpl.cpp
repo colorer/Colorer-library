@@ -2,7 +2,7 @@
 #include <memory>
 #include "colorer/base/XmlTagDefs.h"
 #include "colorer/parsers/FileTypeImpl.h"
-#include "colorer/xml/xercesc/XercesXml.h"
+#include "colorer/xml/XmlReader.h"
 
 HrcLibrary::Impl::Impl()
 {
@@ -178,12 +178,12 @@ void HrcLibrary::Impl::parseHRC(const XmlInputSource& is)
 {
   logger->debug("begin parse '{0}'", is.getPath());
 
-  XercesXml xml(is.getInputSource());
-  if (xml.saw_error) {
+  XmlReader xml(is);
+  if (!xml.parse()) {
     throw HrcLibraryException("Error reading hrc file '" + is.getPath() + "'");
   }
   std::list<XMLNode> nodes;
-  xml.parse(nodes);
+  xml.getNodes(nodes);
 
   if (nodes.begin()->name != hrcTagHrc) {
     throw HrcLibraryException("Incorrect hrc-file structure. Main '<hrc>' block not found. Current file " +

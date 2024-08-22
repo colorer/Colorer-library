@@ -1,7 +1,7 @@
 #include "colorer/handlers/StyledHRDMapper.h"
 #include "colorer/Exception.h"
 #include "colorer/base/XmlTagDefs.h"
-#include "colorer/xml/xercesc/XercesXml.h"
+#include "colorer/xml/XmlReader.h"
 
 StyledHRDMapper::~StyledHRDMapper()
 {
@@ -10,12 +10,12 @@ StyledHRDMapper::~StyledHRDMapper()
 
 void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
 {
-  XercesXml xml(is.getInputSource());
-  if (xml.saw_error) {
+  XmlReader xml(is);
+  if (!xml.parse()) {
     throw Exception("Error loading HRD file '" + is.getPath() + "'");
   }
   std::list<XMLNode> nodes;
-  xml.parse(nodes);
+  xml.getNodes(nodes);
 
   if (nodes.begin()->name != hrdTagHrd) {
     throw Exception("Incorrect hrd-file structure. Main '<hrd>' block not found. Current file " + is.getPath());

@@ -1,16 +1,16 @@
-#include "colorer/xml/xercesc/XmlInputSource.h"
+#include "colorer/xml/xercesc/XercesXmlInputSource.h"
 #include "colorer/Exception.h"
 #include "colorer/xml/xercesc/LocalFileXmlInputSource.h"
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 #include "colorer/xml/xercesc/ZipXmlInputSource.h"
 #endif
 
-uXmlInputSource XmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)
+uXercesXmlInputSource XercesXmlInputSource::newInstance(const UnicodeString* path, const UnicodeString* base)
 {
   return newInstance(UStr::to_xmlch(path).get(), UStr::to_xmlch(base).get());
 }
 
-uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
+uXercesXmlInputSource XercesXmlInputSource::newInstance(const XMLCh* path, const XMLCh* base)
 {
   if (!path || (*path == '\0')) {
     throw InputSourceException("XmlInputSource::newInstance: path is empty");
@@ -25,7 +25,7 @@ uXmlInputSource XmlInputSource::newInstance(const XMLCh* path, const XMLCh* base
   return std::make_unique<LocalFileXmlInputSource>(path, base);
 }
 
-bool XmlInputSource::isUriFile(const UnicodeString& path, const UnicodeString* base)
+bool XercesXmlInputSource::isUriFile(const UnicodeString& path, const UnicodeString* base)
 {
   if ((path.startsWith(kJar)) || (base && base->startsWith(kJar))) {
     return false;
@@ -33,12 +33,12 @@ bool XmlInputSource::isUriFile(const UnicodeString& path, const UnicodeString* b
   return true;
 }
 
-uXmlInputSource XmlInputSource::createRelative(const UnicodeString& relPath)
+uXercesXmlInputSource XercesXmlInputSource::createRelative(const UnicodeString& relPath)
 {
   return newInstance(UStr::to_xmlch(&relPath).get(), this->getInputSource()->getSystemId());
 }
 
-UnicodeString& XmlInputSource::getPath() const
+UnicodeString& XercesXmlInputSource::getPath() const
 {
   return *source_path;
 }
