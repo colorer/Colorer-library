@@ -18,10 +18,10 @@ void testTextHrd()
 
   UnicodeString file = R"(./data/tags.hrd)";
 
-  auto dfis = XmlInputSource::newInstance(&file);
+  XmlInputSource dfis(file);
 
   TextHRDMapper thrd;
-  thrd.loadRegionMappings(*dfis);
+  thrd.loadRegionMappings(dfis);
 
   auto region = thrd.getRegionDefine("def:Date");
   auto t_region = TextRegion::cast(region);
@@ -37,10 +37,10 @@ void testStyledHrd()
 
   UnicodeString file = R"(./data/blue.hrd)";
 
-  auto dfis = XmlInputSource::newInstance(&file);
+  XmlInputSource dfis(file);
 
   StyledHRDMapper shrd;
-  shrd.loadRegionMappings(*dfis);
+  shrd.loadRegionMappings(dfis);
 
   auto region = shrd.getRegionDefine("def:PairEnd");
   auto s_region = StyledRegion::cast(region);
@@ -61,11 +61,8 @@ int main(int /*argc*/, char** /*argv[]*/)
   logger = std::make_shared<DummyLogger>();
 #endif
 
-  xercesc::XMLPlatformUtils::Initialize();
-
   testTextHrd();
   testStyledHrd();
 
-  xercesc::XMLPlatformUtils::Terminate();
   return 0;
 }
