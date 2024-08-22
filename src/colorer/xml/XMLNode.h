@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "colorer/Common.h"
 
-static const UnicodeString empty_string("");
+inline const UnicodeString empty_string("");
 
 class XMLNode
 {
