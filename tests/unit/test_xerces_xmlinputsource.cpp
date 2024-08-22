@@ -1,5 +1,5 @@
 #include <colorer/Common.h>
-#include <colorer/xml/XmlInputSource.h>
+#include <colorer/xml/xercesc/XercesXmlInputSource.h>
 #include <catch2/catch.hpp>
 #include <filesystem>
 #include <fstream>
@@ -11,17 +11,18 @@ TEST_CASE("Test create instance")
   xercesc::XMLPlatformUtils::Initialize();
   SECTION("creat instances with not exists file")
   {
-    XMLCH_LITERAL_LOCAL(empty_string, u"")
-    XMLCH_LITERAL_LOCAL(path_string, u"c:\\windows")
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance((UnicodeString*) nullptr, nullptr), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, nullptr), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, empty_string), Catch::Contains("path is empty"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(empty_string, path_string), Catch::Contains("path is empty"));
+    const auto empty_string = (const XMLCh *) u"";
+    const auto path_string = (const XMLCh *) u"c:\\windows";
+
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance((UnicodeString*) nullptr, nullptr), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance(empty_string, nullptr), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance(empty_string, empty_string), Catch::Contains("path is empty"));
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance(empty_string, path_string), Catch::Contains("path is empty"));
 
     auto s1 = UnicodeString(u"../");
     auto s2 = UnicodeString(u"c:\\windows");
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&s1, nullptr), Catch::Contains("isn't regular file"));
-    REQUIRE_THROWS_WITH(XmlInputSource::newInstance(&s1, &s2), Catch::Contains("isn't regular file"));
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance(&s1, nullptr), Catch::Contains("isn't regular file"));
+    REQUIRE_THROWS_WITH(XercesXmlInputSource::newInstance(&s1, &s2), Catch::Contains("isn't regular file"));
   }
   xercesc::XMLPlatformUtils::Terminate();
 }
@@ -39,9 +40,9 @@ TEST_CASE("Test open instance")
     auto test_file = test_dir / "test1.xml";
     std::ofstream(test_file.c_str()).close();
 
-    uXmlInputSource a;
+    uXercesXmlInputSource a;
     auto s1 = UnicodeString(test_file.c_str());
-    REQUIRE_NOTHROW(a = XmlInputSource::newInstance(&s1, nullptr));
+    REQUIRE_NOTHROW(a = XercesXmlInputSource::newInstance(&s1, nullptr));
     REQUIRE_NOTHROW(a->makeStream());
   }
   std::error_code ec;

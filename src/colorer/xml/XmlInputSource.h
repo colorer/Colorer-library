@@ -1,54 +1,33 @@
 #ifndef COLORER_XMLINPUTSOURCE_H
 #define COLORER_XMLINPUTSOURCE_H
 
-#include <xercesc/sax/InputSource.hpp>
 #include "colorer/Common.h"
-
-XMLCH_LITERAL(kJar, u"jar:\0");
-XMLCH_LITERAL(kPercent, u"%\0");
+#include "colorer/xml/xercesc/XercesXmlInputSource.h"
 
 class XmlInputSource;
+using uXmlInputSource = std::unique_ptr<XmlInputSource>;
 
-typedef std::unique_ptr<XmlInputSource> uXmlInputSource;
-
-/**
- * @brief Class to creat xercesc::InputSource
- */
-class XmlInputSource : public xercesc::InputSource
+class XmlInputSource
 {
  public:
-  /**
-   * @brief Tries statically create instance of InputSource object,
-   * according to passed path string.
-   * @param path Could be relative file location, absolute file
-   */
-  static uXmlInputSource newInstance(const XMLCh* path, const XMLCh* base);
-  static uXmlInputSource newInstance(const UnicodeString* path,
-                                     const UnicodeString* base = nullptr);
+  explicit XmlInputSource(const UnicodeString& source_path);
+  ~XmlInputSource();
 
-  /**
-   * @brief Creates inherited InputSource with the same type
-   * relatively to the current.
-   * @param relPath Relative URI part.
-   */
-  virtual uXmlInputSource createRelative(const XMLCh* relPath);
+  XmlInputSource(const UnicodeString& source_path, const UnicodeString* source_base);
 
-  [[nodiscard]] virtual xercesc::InputSource* getInputSource() const = 0;
+  [[nodiscard]]
+  uXmlInputSource createRelative(const UnicodeString& relPath) const;
 
-  ~XmlInputSource() override = default;
+  [[nodiscard]]
+  UnicodeString& getPath() const;
 
-  static bool isUriFile(const UnicodeString& path, const UnicodeString* base = nullptr);
+  [[nodiscard]]
+  XercesXmlInputSource* getInputSource() const;
 
-  [[nodiscard]] UnicodeString& getPath() const;
+  static bool isFileURI(const UnicodeString& path, const UnicodeString* base);
 
-  XmlInputSource(XmlInputSource const&) = delete;
-  XmlInputSource& operator=(XmlInputSource const&) = delete;
-  XmlInputSource(XmlInputSource&&) = delete;
-  XmlInputSource& operator=(XmlInputSource&&) = delete;
-
- protected:
-  XmlInputSource() = default;
-  uUnicodeString source_path;
+ private:
+  uXercesXmlInputSource xml_input_source;
 };
 
 #endif  // COLORER_XMLINPUTSOURCE_H

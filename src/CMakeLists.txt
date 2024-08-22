@@ -77,7 +77,6 @@ set(SRC_COLORER
     colorer/parsers/TextParserImpl.cpp
     colorer/parsers/TextParserImpl.h
     colorer/parsers/VirtualEntry.h
-    colorer/strings/XMLChLiteral.h
     colorer/utils/Environment.cpp
     colorer/utils/Environment.h
     colorer/version.h
@@ -87,25 +86,32 @@ set(SRC_COLORER
     colorer/viewer/TextConsoleViewer.h
     colorer/viewer/TextLinesStore.cpp
     colorer/viewer/TextLinesStore.h
-    colorer/xml/BaseEntityResolver.cpp
-    colorer/xml/BaseEntityResolver.h
-    colorer/xml/LocalFileXmlInputSource.cpp
-    colorer/xml/LocalFileXmlInputSource.h
-    colorer/xml/SharedXmlInputSource.cpp
-    colorer/xml/SharedXmlInputSource.h
+    colorer/xml/XMLNode.h
     colorer/xml/XmlInputSource.cpp
     colorer/xml/XmlInputSource.h
-    colorer/xml/XmlParserErrorHandler.cpp
-    colorer/xml/XmlParserErrorHandler.h
+    colorer/xml/XmlReader.cpp
+    colorer/xml/XmlReader.h
+    colorer/xml/xercesc/BaseEntityResolver.cpp
+    colorer/xml/xercesc/BaseEntityResolver.h
+    colorer/xml/xercesc/LocalFileXmlInputSource.cpp
+    colorer/xml/xercesc/LocalFileXmlInputSource.h
+    colorer/xml/xercesc/SharedXmlInputSource.cpp
+    colorer/xml/xercesc/SharedXmlInputSource.h
+    colorer/xml/xercesc/XercesXmlInputSource.cpp
+    colorer/xml/xercesc/XercesXmlInputSource.h
+    colorer/xml/xercesc/XmlParserErrorHandler.cpp
+    colorer/xml/xercesc/XmlParserErrorHandler.h
+    colorer/xml/xercesc/XercesXmlReader.h
+    colorer/xml/xercesc/XercesXmlReader.cpp
 )
 
 if(COLORER_USE_ZIPINPUTSOURCE)
   set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
   set(SRC_COLORER_ZIP
-      colorer/xml/MemoryFile.cpp
-      colorer/xml/MemoryFile.h
-      colorer/xml/ZipXmlInputSource.cpp
-      colorer/xml/ZipXmlInputSource.h
+          colorer/xml/xercesc/MemoryFile.cpp
+          colorer/xml/xercesc/MemoryFile.h
+          colorer/xml/xercesc/ZipXmlInputSource.cpp
+          colorer/xml/xercesc/ZipXmlInputSource.h
   )
 endif()
 

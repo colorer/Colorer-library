@@ -6,11 +6,9 @@
 #include <colorer/io/InputSource.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
-#include <colorer/xml/XmlParserErrorHandler.h>
 #include <ctime>
 #include <memory>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
+#include "colorer/xml/XmlReader.h"
 
 void ConsoleTools::setCopyrightHeader(bool use)
 {
@@ -64,76 +62,60 @@ void ConsoleTools::setHRDName(const UnicodeString& str)
 
 void ConsoleTools::setLinkSource(const UnicodeString& str)
 {
-  XMLCH_LITERAL_LOCAL(kTagDoclinks, u"doclinks\0")
-  XMLCH_LITERAL_LOCAL(kTagLinks, u"links\0")
-  XMLCH_LITERAL_LOCAL(kTagLink, u"link\0")
-  XMLCH_LITERAL_LOCAL(kLinksAttrUrl, u"url\0")
-  XMLCH_LITERAL_LOCAL(kLinkAttrUrl, u"url\0")
-  XMLCH_LITERAL_LOCAL(kLinksAttrScheme, u"scheme\0")
-  XMLCH_LITERAL_LOCAL(kLinkAttrScheme, u"scheme\0")
-  XMLCH_LITERAL_LOCAL(kLinkAttrToken, u"token\0")
+  const auto kTagDoclinks = UnicodeString(u"doclinks");
+  const auto kTagLinks = UnicodeString(u"links");
+  const auto kTagLink = UnicodeString(u"link");
+  const auto kLinksAttrUrl = UnicodeString(u"url");
+  const auto kLinkAttrUrl = UnicodeString(u"url");
+  const auto kLinksAttrScheme = UnicodeString(u"scheme");
+  const auto kLinkAttrScheme = UnicodeString(u"scheme");
+  const auto kLinkAttrToken = UnicodeString(u"token");
 
-  uXmlInputSource linkSource = XmlInputSource::newInstance(&str);
-  xercesc::XercesDOMParser xml_parser;
-  XmlParserErrorHandler error_handler;
-  xml_parser.setErrorHandler(&error_handler);
-  xml_parser.setLoadExternalDTD(false);
-  xml_parser.setSkipDTDValidation(true);
-  xml_parser.setDisableDefaultEntityResolution(true);
-  xml_parser.parse(*linkSource->getInputSource());
-  if (error_handler.getSawErrors()) {
+  XmlInputSource linkSource(str);
+  XmlReader reader(linkSource);
+  if (!reader.parse()) {
     throw Exception("Error loading HRD file");
   }
-  xercesc::DOMDocument* linkSourceTree = xml_parser.getDocument();
-  xercesc::DOMElement* elem = linkSourceTree->getDocumentElement();
+  std::list<XMLNode> nodes;
+  reader.getNodes(nodes);
 
-  if (elem == nullptr || !xercesc::XMLString::equals(elem->getNodeName(), kTagDoclinks)) {
+  if (nodes.begin()->name != kTagDoclinks) {
     throw Exception("Error loading HRD file");
   }
 
-  for (xercesc::DOMNode* curel = elem->getFirstChild(); curel; curel = curel->getNextSibling()) {
-    if (curel->getNodeType() == xercesc::DOMNode::ELEMENT_NODE &&
-        xercesc::XMLString::equals(curel->getNodeName(), kTagLinks))
-    {
-      auto* subelem = dynamic_cast<xercesc::DOMElement*>(curel);
-      if (subelem) {
-        const XMLCh* url = subelem->getAttribute(kLinksAttrUrl);
-        const XMLCh* scheme = subelem->getAttribute(kLinksAttrScheme);
+  for (const auto& node : nodes.begin()->children) {
+    if (node.name == kTagLinks) {
+      const auto& url = node.getAttrValue(kLinksAttrUrl);
+      const auto& scheme = node.getAttrValue(kLinksAttrScheme);
 
-        for (xercesc::DOMNode* eachLink = curel->getFirstChild(); eachLink;
-             eachLink = eachLink->getNextSibling())
-        {
-          if (eachLink->getNodeType() == xercesc::DOMNode::ELEMENT_NODE &&
-              xercesc::XMLString::equals(eachLink->getNodeName(), kTagLink))
-          {
-            auto* subelem2 = dynamic_cast<xercesc::DOMElement*>(eachLink);
-            if (subelem2) {
-              const XMLCh* l_url = subelem2->getAttribute(kLinkAttrUrl);
-              const XMLCh* l_scheme = subelem2->getAttribute(kLinkAttrScheme);
-              const XMLCh* token = subelem2->getAttribute(kLinkAttrToken);
-              UnicodeString fullURL;
-              if (*url != '\0') {
-                fullURL.append(UnicodeString(url));
-              }
-              if (*l_url != '\0') {
-                fullURL.append(UnicodeString(l_url));
-              }
-              if (*l_scheme == '\0') {
-                l_scheme = scheme;
-              }
-              if (*token == '\0') {
-                continue;
-              }
-              auto* tok = new UnicodeString(token);
-              UnicodeString hkey(*tok);
-              if (*l_scheme != '\0') {
-                hkey.append("--").append(UnicodeString(l_scheme));
-              }
-              std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
-              docLinkHash.emplace(pair_url);
-              delete tok;
-            }
+      for (const auto& child : node.children) {
+        if (child.name == kTagLink) {
+          const auto& token = child.getAttrValue(kLinkAttrToken);
+          if (token.isEmpty()) {
+            continue;
           }
+
+          const auto& l_url = child.getAttrValue(kLinkAttrUrl);
+          const auto& l_scheme = child.getAttrValue(kLinkAttrScheme);
+
+          UnicodeString fullURL;
+          if (!url.isEmpty()) {
+            fullURL.append(UnicodeString(url));
+          }
+          if (!l_url.isEmpty()) {
+            fullURL.append(UnicodeString(l_url));
+          }
+          const UnicodeString* ref =&l_scheme;
+          if (l_scheme.isEmpty()) {
+            ref = &scheme;
+          }
+
+          UnicodeString hkey(token);
+          if (!ref->isEmpty()) {
+            hkey.append("--").append(*ref);
+          }
+          std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
+          docLinkHash.emplace(pair_url);
         }
       }
     }
