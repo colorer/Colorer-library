@@ -4,6 +4,7 @@
 #include "colorer/xml/XMLNode.h"
 #include "colorer/xml/XmlInputSource.h"
 #include "colorer/xml/xercesc/XercesXmlReader.h"
+#include "libxml2/LibXmlReader.h"
 
 class XmlReader
 {
@@ -16,6 +17,7 @@ class XmlReader
  private:
   const XmlInputSource* input_source;
   XercesXmlReader* xerces_reader = nullptr;
+  LibXmlReader* xml_reader= nullptr;
 };
 
 #endif  // COLORER_XMLREADER_H

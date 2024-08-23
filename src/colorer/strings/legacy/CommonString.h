@@ -6,7 +6,7 @@
 
 /// default unicode char definition
 
-typedef wchar_t UChar;
+typedef char16_t UChar; //TODO while ?
 typedef wchar_t wchar;
 typedef char16_t w2char;
 typedef char32_t w4char;

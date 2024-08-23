@@ -77,6 +77,7 @@ if(COLORER_USE_ICU_STRINGS)
 endif()
 
 find_package(XercesC REQUIRED)
+find_package(LibXml2 REQUIRED)
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
   find_package(spdlog REQUIRED)

@@ -3,6 +3,7 @@
 
 #include "colorer/Common.h"
 #include "colorer/xml/xercesc/XercesXmlInputSource.h"
+#include "colorer/xml/libxml2/LibXmlInputSource.h"
 
 class XmlInputSource;
 using uXmlInputSource = std::unique_ptr<XmlInputSource>;
@@ -28,6 +29,7 @@ class XmlInputSource
 
  private:
   uXercesXmlInputSource xml_input_source;
+  std::unique_ptr<LibXmlInputSource> libxml_input_source;
 };
 
 #endif  // COLORER_XMLINPUTSOURCE_H

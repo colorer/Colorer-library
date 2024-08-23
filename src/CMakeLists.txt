@@ -103,6 +103,9 @@ set(SRC_COLORER
     colorer/xml/xercesc/XmlParserErrorHandler.h
     colorer/xml/xercesc/XercesXmlReader.h
     colorer/xml/xercesc/XercesXmlReader.cpp
+    colorer/xml/libxml2/LibXmlReader.cpp
+    colorer/xml/libxml2/LibXmlReader.h
+    colorer/xml/libxml2/LibXmlInputSource.h
 )
 
 if(COLORER_USE_ZIPINPUTSOURCE)
@@ -246,6 +249,7 @@ set_target_properties(colorer_lib PROPERTIES
 
 target_link_libraries(colorer_lib
     PUBLIC XercesC::XercesC
+    PUBLIC LibXml2::LibXml2
 )
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
