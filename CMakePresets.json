@@ -202,10 +202,10 @@
     { "name": "linux-x64-Release-noICU", "description": "Linux for x64 (Release, noICU, LibXml)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU", "LibXml2"  ] },
     { "name": "linux-x64-Debug", "description": "Linux for x64 (Debug, ICU, LibXml)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests", "LibXml2"  ] },
     { "name": "linux-x64-Release", "description": "Linux for x64 (Release, ICU, LibXml)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "LibXml2" ] },
-    { "name": "linux-x64-Debug-noICU-X", "description": "Linux for x64 (Debug, noICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests", "XercesXml"] },
-    { "name": "linux-x64-Release-noICU-X", "description": "Linux for x64 (Release, noICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU", "XercesXml" ] },
-    { "name": "linux-x64-Debug-X", "description": "Linux for x64 (Debug, ICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests", "XercesXml" ] },
-    { "name": "linux-x64-Release-X", "description": "Linux for x64 (Release, ICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "XercesXml" ] }
+    { "name": "linux-x64-Debug-noICU-Xerces", "description": "Linux for x64 (Debug, noICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests", "XercesXml"] },
+    { "name": "linux-x64-Release-noICU-Xerces", "description": "Linux for x64 (Release, noICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU", "XercesXml" ] },
+    { "name": "linux-x64-Debug-Xerces", "description": "Linux for x64 (Debug, ICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests", "XercesXml" ] },
+    { "name": "linux-x64-Release-Xerces", "description": "Linux for x64 (Release, ICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "XercesXml" ] }
 
   ]
 }
