@@ -84,7 +84,7 @@ void LibXmlReader::getChildren(xmlNode* node, XMLNode& result)
 void LibXmlReader::getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data)
 {
   for (xmlAttrPtr attr = node->properties; attr != nullptr; attr = attr->next) {
-    data.insert(std::pair((const char*) attr->name, (const char*) xmlNodeGetContent(attr->children)));
+    data.emplace(std::pair((const char*) attr->name, (const char*) xmlNodeGetContent(attr->children)));
   }
 }
 

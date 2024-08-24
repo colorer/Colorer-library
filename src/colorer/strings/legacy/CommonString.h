@@ -1,14 +1,9 @@
 #ifndef COLORER_COMMONSTRING_H
 #define COLORER_COMMONSTRING_H
 
-#include <cwchar>
-#ifndef COLORER_FEATURE_LIBXML
-#include <xercesc/util/XMLChar.hpp>
-#endif
-
 /// default unicode char definition
 
-typedef char16_t UChar; //TODO while ?
+typedef char16_t UChar;
 typedef wchar_t wchar;
 typedef char16_t w2char;
 typedef char32_t w4char;
