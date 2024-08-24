@@ -47,6 +47,7 @@ option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
 option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 option(COLORER_USE_ICU_STRINGS "Use ICU library for strings" ON)
+option(COLORER_USE_LIBXML "Use LibXml2 library for parse xml, instead XercesC" ON)
 
 #====================================================
 # global compilation settings
@@ -76,8 +77,11 @@ if(COLORER_USE_ICU_STRINGS)
   find_package(ICU COMPONENTS uc data REQUIRED)
 endif()
 
-find_package(XercesC REQUIRED)
-find_package(LibXml2 REQUIRED)
+if(COLORER_USE_LIBXML)
+  find_package(LibXml2 REQUIRED)
+else()
+  find_package(XercesC REQUIRED)
+endif()
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
   find_package(spdlog REQUIRED)

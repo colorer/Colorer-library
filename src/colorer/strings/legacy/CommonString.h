@@ -2,7 +2,9 @@
 #define COLORER_COMMONSTRING_H
 
 #include <cwchar>
+#ifndef COLORER_FEATURE_LIBXML
 #include <xercesc/util/XMLChar.hpp>
+#endif
 
 /// default unicode char definition
 

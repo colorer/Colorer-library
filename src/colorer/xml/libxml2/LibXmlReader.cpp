@@ -1,12 +1,11 @@
-#include "LibXmlReader.h"
+#include "colorer/xml/libxml2/LibXmlReader.h"
+#include <libxml/parserInternals.h>
 
-xmlExternalEntityLoader defaultLoader = NULL;
-
-LibXmlReader::LibXmlReader(const UnicodeString& o) : doc_(nullptr)
+LibXmlReader::LibXmlReader(const UnicodeString& source_file) : doc_(nullptr)
 {
-  defaultLoader = xmlGetExternalEntityLoader();
- // xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
-  doc_ = parse(o);
+  xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
+  xmlSetGenericErrorFunc(nullptr, xml_error_func);
+  doc_ = xmlReadFile(UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
 }
 
 LibXmlReader::~LibXmlReader()
@@ -14,11 +13,6 @@ LibXmlReader::~LibXmlReader()
   if (doc_ != nullptr) {
     xmlFreeDoc(doc_);
   }
-}
-
-xmlDocPtr LibXmlReader::parse(const UnicodeString& file)
-{
-  return xmlReadFile(UStr::to_stdstr(&file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
 }
 
 void LibXmlReader::parse(std::list<XMLNode>& nodes)
@@ -32,22 +26,11 @@ void LibXmlReader::parse(std::list<XMLNode>& nodes)
   }
 }
 
-/**
- * Utility methods
- * */
 bool LibXmlReader::populateNode(xmlNode* node, XMLNode& result)
 {
   if (node->type == XML_ELEMENT_NODE) {
     result.name = UnicodeString((const char*) node->name);
 
-    // if (node->children != nullptr && node->children->next == nullptr &&
-    //     (node->children->type == XML_CDATA_SECTION_NODE || node->children->type == XML_TEXT_NODE))
-    // {
-    //   result.text = UnicodeString((char*) xmlNodeGetContent(node->children));
-    // }
-    // else {
-    //   getChildren(node, result);
-    // }
     const auto t = getElementText(node);
     if (!t.isEmpty()) {
       result.text = t;
@@ -59,8 +42,6 @@ bool LibXmlReader::populateNode(xmlNode* node, XMLNode& result)
   }
   if (node->type == XML_ENTITY_REF_NODE) {
     auto* p = xmlGetDocEntity(doc_, node->name);
-    // xmlCtxtSetResourceLoader
-    // xmlNewInputFromUrl
     result.name = UnicodeString((const char*) p->URI);
     return true;
   }
@@ -75,8 +56,10 @@ UnicodeString LibXmlReader::getElementText(xmlNode* node)
     }
     if (child->type == XML_TEXT_NODE) {
       auto t = UnicodeString((const char*) child->content);
-      t=t.trim();
-      if (t.isEmpty()) continue;
+      t = t.trim();
+      if (t.isEmpty()) {
+        continue;
+      }
       return UnicodeString((const char*) child->content);
     }
   }
@@ -85,15 +68,17 @@ UnicodeString LibXmlReader::getElementText(xmlNode* node)
 
 void LibXmlReader::getChildren(xmlNode* node, XMLNode& result)
 {
-  if (node->children == nullptr)
+  if (node->children == nullptr) {
     return;
+  }
   node = node->children;
 
   while (node != nullptr) {
     if (!xmlIsBlankNode(node)) {
       XMLNode child;
-      if (populateNode(node, child))
+      if (populateNode(node, child)) {
         result.children.push_back(child);
+}
     }
     node = node->next;
   }
@@ -106,19 +91,61 @@ void LibXmlReader::getAttributes(const xmlNode* node, std::unordered_map<Unicode
   }
 }
 
-xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* ID, xmlParserCtxtPtr ctxt)
+xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/, xmlParserCtxtPtr ctxt)
 {
   xmlParserInputPtr ret = nullptr;
-  //const char* fileID = NULL;
-  /* lookup for the fileID
-   * The documentation suggests using the ID, but for me this was
-   * always NULL so I had to lookup by URL instead.
-   */
-
-  // ret = xmlNewInputFromFile(ctxt, fileID);
-  // if (ret != NULL)
-  //     return (ret);
-  if (defaultLoader != NULL)
+  // тут обработка имени файла для внешнего entity
+  // при этом если в entity указан нормальный путь файловой системы, без всяких переменных окружения, архивов,
+  // но можно с комбинацией ./ ../
+  //  то в url будет указан полный путь, относительно текущего файла. libxml сама склеит путь.
+  //  Иначе в url будет указан путь из самого entity, и дальше с ним над самому разбираться.
+  //
+  // в ctxt нет информации об обрабатываемом файле.
+  ret = xmlNewInputFromFile(ctxt, URL);
+  /*if (ret != nullptr) {
+    return ret;
+  }
+  if (defaultLoader != nullptr) {
     ret = defaultLoader(URL, ID, ctxt);
-  return (ret);
+  }*/
+  return ret;
+}
+
+void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
+{
+  static char buf[PATH_MAX];
+  static int slen = 0;
+  va_list args;
+
+  /* libxml2 prints IO errors from bad includes paths by
+   * calling the error function once per word. So we get to
+   * re-assemble the message here and print it when we get
+   * the line break. My enthusiasm about this is indescribable.
+   */
+  va_start(args, msg);
+  int rc = vsnprintf(&buf[slen], sizeof(buf) - slen, msg, args);
+  va_end(args);
+
+  /* This shouldn't really happen */
+  if (rc < 0) {
+    logger->error("+++ out of cheese error. redo from start +++\n");
+    slen = 0;
+    memset(buf, 0, sizeof(buf));
+    return;
+  }
+
+  slen += rc;
+  if (slen >= (int) sizeof(buf)) {
+    /* truncated, let's flush this */
+    buf[sizeof(buf) - 1] = '\n';
+    slen = sizeof(buf);
+  }
+
+  /* We're assuming here that the last character is \n. */
+  if (buf[slen - 1] == '\n') {
+    buf[slen - 1] = '\0';
+    logger->error("{0}", buf);
+    memset(buf, 0, sizeof(buf));
+    slen = 0;
+  }
 }

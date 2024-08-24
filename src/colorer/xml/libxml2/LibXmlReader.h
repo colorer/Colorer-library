@@ -6,23 +6,17 @@
 #include <list>
 #include "colorer/xml/XMLNode.h"
 
-extern xmlExternalEntityLoader defaultLoader;
-
 class LibXmlReader
 {
  public:
-  LibXmlReader(const UnicodeString& o) ;
+  explicit LibXmlReader(const UnicodeString& source_file);
 
   ~LibXmlReader();
 
   void parse(std::list<XMLNode>& nodes);
 
-
-
  private:
   xmlDocPtr doc_;
-
-  xmlDocPtr parse(const UnicodeString& file);
 
   void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);
@@ -30,7 +24,7 @@ class LibXmlReader
   UnicodeString getElementText(xmlNode* node);
 
   static xmlParserInputPtr xmlMyExternalEntityLoader(const char* URL, const char* ID, xmlParserCtxtPtr ctxt);
+  static void xml_error_func(void* ctx, const char* msg, ...);
 };
-
 
 #endif  // COLORER_LIBXMLREADER_H

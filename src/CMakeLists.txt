@@ -91,6 +91,17 @@ set(SRC_COLORER
     colorer/xml/XmlInputSource.h
     colorer/xml/XmlReader.cpp
     colorer/xml/XmlReader.h
+)
+
+if(COLORER_USE_LIBXML)
+  set(COLORER_FEATURE_LIBXML 1)
+  set(SRC_COLORER_XML
+    colorer/xml/libxml2/LibXmlReader.cpp
+    colorer/xml/libxml2/LibXmlReader.h
+    colorer/xml/libxml2/LibXmlInputSource.h
+  )
+else()
+  set(SRC_COLORER_XML
     colorer/xml/xercesc/BaseEntityResolver.cpp
     colorer/xml/xercesc/BaseEntityResolver.h
     colorer/xml/xercesc/LocalFileXmlInputSource.cpp
@@ -103,12 +114,10 @@ set(SRC_COLORER
     colorer/xml/xercesc/XmlParserErrorHandler.h
     colorer/xml/xercesc/XercesXmlReader.h
     colorer/xml/xercesc/XercesXmlReader.cpp
-    colorer/xml/libxml2/LibXmlReader.cpp
-    colorer/xml/libxml2/LibXmlReader.h
-    colorer/xml/libxml2/LibXmlInputSource.h
-)
+  )
+endif()
 
-if(COLORER_USE_ZIPINPUTSOURCE)
+if(COLORER_USE_ZIPINPUTSOURCE AND NOT(COLORER_USE_LIBXML))
   set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
   set(SRC_COLORER_ZIP
           colorer/xml/xercesc/MemoryFile.cpp
@@ -233,7 +242,7 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_ZIP} ${SRC_COLORER_SPDLOG} ${SRC_COLORER_PLATFORM})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_XML} ${SRC_COLORER_ZIP} ${SRC_COLORER_SPDLOG} ${SRC_COLORER_PLATFORM})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -247,10 +256,16 @@ set_target_properties(colorer_lib PROPERTIES
     CXX_EXTENSIONS NO
 )
 
-target_link_libraries(colorer_lib
-    PUBLIC XercesC::XercesC
-    PUBLIC LibXml2::LibXml2
-)
+if(COLORER_USE_LIBXML)
+  target_link_libraries(colorer_lib
+          PUBLIC LibXml2::LibXml2
+  )
+else()
+  target_link_libraries(colorer_lib
+          PUBLIC XercesC::XercesC
+  )
+endif()
+
 
 if(NOT COLORER_USE_DUMMY_LOGGER)
   target_link_libraries(colorer_lib
