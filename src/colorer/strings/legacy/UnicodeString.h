@@ -85,6 +85,8 @@ class UnicodeString
   /** String length in unicode characters */
   int32_t length() const;
 
+  UnicodeString& trim();
+
   /** Searches first index of substring @c str, starting from @c pos */
   int32_t indexOf(const UnicodeString& str, int32_t pos = 0) const;
   /** Searches first index of char @c wc, starting from @c pos */

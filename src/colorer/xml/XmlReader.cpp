@@ -1,5 +1,4 @@
 #include "colorer/xml/XmlReader.h"
-#include "colorer/xml/xercesc/XercesXmlReader.h"
 
 XmlReader::XmlReader(const XmlInputSource& xml_input_source)
 {
@@ -8,16 +7,20 @@ XmlReader::XmlReader(const XmlInputSource& xml_input_source)
 
 XmlReader::~XmlReader()
 {
-  delete xerces_reader;
+  delete xml_reader;
 }
 
 bool XmlReader::parse()
 {
-  xerces_reader = new XercesXmlReader(input_source->getInputSource());
-  return !xerces_reader->saw_error;
+#ifdef COLORER_FEATURE_LIBXML
+  xml_reader = new LibXmlReader(*input_source);
+#else
+  xml_reader = new XercesXmlReader(*input_source);
+#endif
+  return xml_reader->isParsed();
 }
 
 void XmlReader::getNodes(std::list<XMLNode>& nodes) const
 {
-  xerces_reader->parse(nodes);
+  xml_reader->parse(nodes);
 }

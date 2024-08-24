@@ -2,6 +2,8 @@
 #include "colorer/xml/xercesc/BaseEntityResolver.h"
 #include "colorer/xml/xercesc/XmlParserErrorHandler.h"
 
+XercesXmlReader::XercesXmlReader(const XmlInputSource& source) : XercesXmlReader(source.getInputSource()) {}
+
 XercesXmlReader::XercesXmlReader(const xercesc::InputSource* in)
 {
   xercesc::XMLPlatformUtils::Initialize();
