@@ -10,7 +10,7 @@ LocalFileXmlInputSource::LocalFileXmlInputSource(const XMLCh* path, const XMLCh*
   auto ubase = UnicodeString(base);
 
   UnicodeString full_path;
-  if (Environment::isRegularFile(&ubase, &upath, full_path)) {
+  if (colorer::Environment::isRegularFile(&ubase, &upath, full_path)) {
     source_path = std::make_unique<UnicodeString>(full_path);
     setSystemId(UStr::to_xmlch(&full_path).get());
     // file is not open yet, only after makeStream
