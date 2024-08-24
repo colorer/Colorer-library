@@ -11,7 +11,7 @@ class LibXmlInputSource
   explicit LibXmlInputSource(const UnicodeString* path, const UnicodeString* base = nullptr)
   {
     UnicodeString full_path;
-    if (Environment::isRegularFile(base, path, full_path)) {
+    if (colorer::Environment::isRegularFile(base, path, full_path)) {
       sourcePath = full_path;
       // file is not open yet, only after makeStream
     }
@@ -25,12 +25,13 @@ class LibXmlInputSource
     return LibXmlInputSource(&relPath, &sourcePath);
   }
 
-  [[nodiscard]] UnicodeString& getPath()
+  [[nodiscard]]
+  UnicodeString& getPath()
   {
     return sourcePath;
   }
 
-private:
+ private:
   UnicodeString sourcePath;
 };
 

@@ -20,15 +20,15 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
   if (!catalog_path || catalog_path->isEmpty()) {
     logger->debug("loadCatalog for empty path");
 
-    auto env = Environment::getOSVariable("COLORER_CATALOG");
+    auto env = colorer::Environment::getOSVariable("COLORER_CATALOG");
     if (!env || env->isEmpty()) {
       throw ParserFactoryException("Can't find suitable catalog.xml for parse.");
     }
-    base_catalog_path = Environment::normalizePath(env.get());
+    base_catalog_path = colorer::Environment::normalizePath(env.get());
   }
   else {
     logger->debug("loadCatalog for {0}", *catalog_path);
-    base_catalog_path = Environment::normalizePath(catalog_path);
+    base_catalog_path = colorer::Environment::normalizePath(catalog_path);
   }
 
   parseCatalog(*base_catalog_path);
@@ -45,7 +45,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
   try {
     logger->debug("try load '{0}'", location);
     if (XmlInputSource::isFileURI(*base_catalog_path, &location)) {
-      auto files = Environment::getFilesFromPath(base_catalog_path.get(), &location, ".hrc");
+      auto files = colorer::Environment::getFilesFromPath(base_catalog_path.get(), &location, ".hrc");
       for (auto& file : files) {
         loadHrc(file, nullptr);
       }
@@ -84,7 +84,8 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
   }
 }
 
-[[maybe_unused]] std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses()
+[[maybe_unused]]
+std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses()
 {
   std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
@@ -162,7 +163,7 @@ void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const Unicode
   const UnicodeString* name_id;
   const UnicodeString name_default(HrdNameDefault);
   if (nameID == nullptr) {
-    auto hrd = Environment::getOSVariable("COLORER_HRD");
+    auto hrd = colorer::Environment::getOSVariable("COLORER_HRD");
     if (hrd) {
       name_id = hrd.get();
     }
