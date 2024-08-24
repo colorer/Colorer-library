@@ -7,19 +7,26 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "colorer/Common.h"
 #include "colorer/xml/XMLNode.h"
+#include "colorer/xml/XmlInputSource.h"
 
 class XercesXmlReader
 {
  public:
-  bool saw_error = false;
 
   explicit XercesXmlReader(const xercesc::InputSource* in);
+  explicit XercesXmlReader(const XmlInputSource& source);
 
   void parse(std::list<XMLNode>& nodes);
 
   ~XercesXmlReader();
 
+  [[nodiscard]] bool isParsed() const
+  {
+    return !saw_error;
+  }
+
  private:
+  bool saw_error = false;
   bool populateNode(const xercesc::DOMNode* node, XMLNode& result);
   void getAttributes(const xercesc::DOMElement* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(const xercesc::DOMNode* node, XMLNode& result);

@@ -8,7 +8,7 @@
 class LibXmlInputSource
 {
  public:
-  LibXmlInputSource(const UnicodeString* path, const UnicodeString* base = nullptr)
+  explicit LibXmlInputSource(const UnicodeString* path, const UnicodeString* base = nullptr)
   {
     UnicodeString full_path;
     if (Environment::isRegularFile(base, path, full_path)) {
@@ -20,7 +20,7 @@ class LibXmlInputSource
     }
   }
 
-  LibXmlInputSource createRelative(const UnicodeString& relPath)
+  LibXmlInputSource createRelative(const UnicodeString& relPath) const
   {
     return LibXmlInputSource(&relPath, &sourcePath);
   }

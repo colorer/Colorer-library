@@ -137,6 +137,20 @@
       "hidden": true
     },
     {
+      "name": "XercesXml",
+      "cacheVariables": {
+        "COLORER_USE_LIBXML": "OFF"
+      },
+      "hidden": true
+    },
+    {
+      "name": "LibXml2",
+      "cacheVariables": {
+        "COLORER_USE_LIBXML": "ON"
+      },
+      "hidden": true
+    },
+    {
       "name": "Tests",
       "cacheVariables": {
         "COLORER_BUILD_TEST": "ON"
@@ -184,10 +198,14 @@
     { "name": "msvc-arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64" ] },
     { "name": "msvc-arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg_win_arm64", "NoICU", "Tests" ] },
     { "name": "msvc-arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64", "NoICU" ] },
-    { "name": "linux-x64-Debug-noICU", "description": "Linux for x64 (Debug, noICU)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests" ] },
-    { "name": "linux-x64-Release-noICU", "description": "Linux for x64 (Release, noICU)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU" ] },
-    { "name": "linux-x64-Debug", "description": "Linux for x64 (Debug, ICU)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests" ] },
-    { "name": "linux-x64-Release", "description": "Linux for x64 (Release, ICU)", "inherits": [ "base", "x64", "Release", "NoVcpkg" ] }
+    { "name": "linux-x64-Debug-noICU", "description": "Linux for x64 (Debug, noICU, LibXml)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests", "LibXml2" ] },
+    { "name": "linux-x64-Release-noICU", "description": "Linux for x64 (Release, noICU, LibXml)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU", "LibXml2"  ] },
+    { "name": "linux-x64-Debug", "description": "Linux for x64 (Debug, ICU, LibXml)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests", "LibXml2"  ] },
+    { "name": "linux-x64-Release", "description": "Linux for x64 (Release, ICU, LibXml)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "LibXml2" ] },
+    { "name": "linux-x64-Debug-noICU-X", "description": "Linux for x64 (Debug, noICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests", "XercesXml"] },
+    { "name": "linux-x64-Release-noICU-X", "description": "Linux for x64 (Release, noICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU", "XercesXml" ] },
+    { "name": "linux-x64-Debug-X", "description": "Linux for x64 (Debug, ICU, Xerces)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests", "XercesXml" ] },
+    { "name": "linux-x64-Release-X", "description": "Linux for x64 (Release, ICU, Xerces)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "XercesXml" ] }
 
   ]
 }

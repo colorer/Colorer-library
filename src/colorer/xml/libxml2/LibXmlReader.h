@@ -5,18 +5,25 @@
 #include <libxml/tree.h>
 #include <list>
 #include "colorer/xml/XMLNode.h"
+#include "colorer/xml/XmlInputSource.h"
 
 class LibXmlReader
 {
  public:
   explicit LibXmlReader(const UnicodeString& source_file);
+  LibXmlReader(const XmlInputSource& source);
 
   ~LibXmlReader();
 
   void parse(std::list<XMLNode>& nodes);
 
+  [[nodiscard]] bool isParsed() const
+  {
+    return xmldoc != nullptr;
+  }
+
  private:
-  xmlDocPtr doc_;
+  xmlDocPtr xmldoc;
 
   void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);

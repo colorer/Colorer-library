@@ -1,23 +1,25 @@
 #include "colorer/xml/libxml2/LibXmlReader.h"
 #include <libxml/parserInternals.h>
 
-LibXmlReader::LibXmlReader(const UnicodeString& source_file) : doc_(nullptr)
+LibXmlReader::LibXmlReader(const UnicodeString& source_file) : xmldoc(nullptr)
 {
   xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
   xmlSetGenericErrorFunc(nullptr, xml_error_func);
-  doc_ = xmlReadFile(UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
+  xmldoc = xmlReadFile(UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
 }
+
+LibXmlReader::LibXmlReader(const XmlInputSource& source) : LibXmlReader(source.getPath()) {}
 
 LibXmlReader::~LibXmlReader()
 {
-  if (doc_ != nullptr) {
-    xmlFreeDoc(doc_);
+  if (xmldoc != nullptr) {
+    xmlFreeDoc(xmldoc);
   }
 }
 
 void LibXmlReader::parse(std::list<XMLNode>& nodes)
 {
-  xmlNode* current = xmlDocGetRootElement(doc_);
+  xmlNode* current = xmlDocGetRootElement(xmldoc);
   while (current != nullptr) {
     XMLNode result;
     populateNode(current, result);
@@ -31,18 +33,13 @@ bool LibXmlReader::populateNode(xmlNode* node, XMLNode& result)
   if (node->type == XML_ELEMENT_NODE) {
     result.name = UnicodeString((const char*) node->name);
 
-    const auto t = getElementText(node);
-    if (!t.isEmpty()) {
-      result.text = t;
+    const auto text_string = getElementText(node);
+    if (!text_string.isEmpty()) {
+      result.text = text_string;
     }
     getChildren(node, result);
     getAttributes(node, result.attributes);
 
-    return true;
-  }
-  if (node->type == XML_ENTITY_REF_NODE) {
-    auto* p = xmlGetDocEntity(doc_, node->name);
-    result.name = UnicodeString((const char*) p->URI);
     return true;
   }
   return false;
@@ -50,17 +47,17 @@ bool LibXmlReader::populateNode(xmlNode* node, XMLNode& result)
 
 UnicodeString LibXmlReader::getElementText(xmlNode* node)
 {
-  for (xmlNode* child = node->children; child != nullptr; child = child->next) {
+  for (const xmlNode* child = node->children; child != nullptr; child = child->next) {
     if (child->type == XML_CDATA_SECTION_NODE) {
       return UnicodeString((const char*) child->content);
     }
     if (child->type == XML_TEXT_NODE) {
-      auto t = UnicodeString((const char*) child->content);
-      t = t.trim();
-      if (t.isEmpty()) {
+      auto temp_string = UnicodeString((const char*) child->content);
+      temp_string.trim();
+      if (temp_string.isEmpty()) {
         continue;
       }
-      return UnicodeString((const char*) child->content);
+      return temp_string;
     }
   }
   return UnicodeString("");
@@ -78,7 +75,7 @@ void LibXmlReader::getChildren(xmlNode* node, XMLNode& result)
       XMLNode child;
       if (populateNode(node, child)) {
         result.children.push_back(child);
-}
+      }
     }
     node = node->next;
   }
