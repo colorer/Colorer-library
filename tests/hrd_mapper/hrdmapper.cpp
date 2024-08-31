@@ -3,15 +3,6 @@
 #include <colorer/io/StreamWriter.h>
 #include <iostream>
 
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
-std::shared_ptr<spdlog::logger> logger;
-#else
-std::shared_ptr<DummyLogger> logger;
-#endif
-
 void testTextHrd()
 {
   StreamWriter writer(stdout, false);
@@ -52,15 +43,6 @@ void testStyledHrd()
 
 int main(int /*argc*/, char** /*argv[]*/)
 {
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-  // disable logging
-  spdlog::drop_all();
-  logger = spdlog::null_logger_mt("main");
-  spdlog::set_default_logger(logger);
-#else
-  logger = std::make_shared<DummyLogger>();
-#endif
-
   testTextHrd();
   testStyledHrd();
 
