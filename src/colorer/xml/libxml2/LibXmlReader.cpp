@@ -1,5 +1,6 @@
 #include "colorer/xml/libxml2/LibXmlReader.h"
 #include <libxml/parserInternals.h>
+#include <cstring>
 
 LibXmlReader::LibXmlReader(const UnicodeString& source_file) : xmldoc(nullptr)
 {
