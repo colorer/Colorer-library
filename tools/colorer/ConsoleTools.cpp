@@ -6,6 +6,7 @@
 #include <colorer/io/InputSource.h>
 #include <colorer/viewer/ParsedLineWriter.h>
 #include <colorer/viewer/TextConsoleViewer.h>
+#include <cstring>
 #include <ctime>
 #include <memory>
 #include "colorer/xml/XmlReader.h"
@@ -105,7 +106,7 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
           if (!l_url.isEmpty()) {
             fullURL.append(UnicodeString(l_url));
           }
-          const UnicodeString* ref =&l_scheme;
+          const UnicodeString* ref = &l_scheme;
           if (l_scheme.isEmpty()) {
             ref = &scheme;
           }
@@ -228,21 +229,19 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
           break;
         }
         if (type->getDescription().length() >= typeDescription->length() &&
-            UStr::caseCompare(UnicodeString(type->getDescription(), 0, typeDescription->length()),
-                              *typeDescription))
+            UStr::caseCompare(UnicodeString(type->getDescription(), 0, typeDescription->length()), *typeDescription))
         {
           break;
         }
         if (type->getName().length() >= typeDescription->length() &&
-            UStr::caseCompare(UnicodeString(type->getName(), 0, typeDescription->length()),
-                              *typeDescription))
+            UStr::caseCompare(UnicodeString(type->getName(), 0, typeDescription->length()), *typeDescription))
         {
           break;
         }
       }
     }
     if (type == nullptr) {
-      logger->warn("Don`t found type by name '{0}'", *typeDescription);
+      COLORER_LOG_WARN("Don`t found type by name '%'", *typeDescription);
     }
   }
   if (typeDescription == nullptr || type == nullptr) {
@@ -358,8 +357,7 @@ void ConsoleTools::forward()
       outputFile = new StreamWriter(stdout, bomOutput);
     }
   } catch (Exception& e) {
-    fprintf(stderr,
-            "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
+    fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
     fprintf(stderr, "%s", e.what());
     return;
   }
@@ -425,8 +423,7 @@ void ConsoleTools::genOutput(bool useTokens)
         escapedWriter = commonWriter;
       }
     } catch (Exception& e) {
-      fprintf(stderr, "can't open file '%s' for writing:\n",
-              UStr::to_stdstr(outputFileName.get()).c_str());
+      fprintf(stderr, "can't open file '%s' for writing:\n", UStr::to_stdstr(outputFileName.get()).c_str());
       fprintf(stderr, "%s", e.what());
       return;
     }
@@ -470,16 +467,16 @@ void ConsoleTools::genOutput(bool useTokens)
         commonWriter->write(": ");
       }
       if (useTokens) {
-        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash,
-                                     textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::tokenWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i),
+                                     baseEditor.getLineRegions(i));
       }
       else if (useMarkup) {
-        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, &docLinkHash,
-                                      textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::markupWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i),
+                                      baseEditor.getLineRegions(i));
       }
       else {
-        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash,
-                                       textLinesStore.getLine(i), baseEditor.getLineRegions(i));
+        ParsedLineWriter::htmlRGBWrite(commonWriter, escapedWriter, &docLinkHash, textLinesStore.getLine(i),
+                                       baseEditor.getLineRegions(i));
       }
       commonWriter->write("\n");
     }

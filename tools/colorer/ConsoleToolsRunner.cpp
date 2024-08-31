@@ -1,16 +1,13 @@
 #include <colorer/version.h>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include "ConsoleTools.h"
 
-#ifndef COLORER_FEATURE_DUMMYLOGGER
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/spdlog.h>
 std::shared_ptr<spdlog::logger> logger;
-#else
-std::shared_ptr<DummyLogger> logger;
-#endif
 
 /** Internal run action type */
 enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_LOAD_TYPE, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
@@ -34,6 +31,25 @@ struct setting
   bool html_esc = true;
   bool html_wrap = true;
 } settings;
+
+// simple wrapper for spdlog
+class colorer_log: public Logger
+{
+public:
+
+  void log(Logger::LogLevel level, const char* filename_in, int line_in, const char* funcname_in, const char* message)
+  {
+    spdlog::level::level_enum slevel = spdlog::level::info;
+    switch (level) {
+      case Logger::LogLevel::LOG_ERROR: slevel = spdlog::level::err; break;
+      case Logger::LogLevel::LOG_WARN: slevel = spdlog::level::warn; break;
+      case Logger::LogLevel::LOG_INFO: slevel = spdlog::level::info; break;
+      case Logger::LogLevel::LOG_DEBUG: slevel = spdlog::level::debug; break;
+      case Logger::LogLevel::LOG_TRACE: slevel = spdlog::level::trace; break;
+    }
+    logger->log(slevel,message);
+  }
+};
 
 /** Reads and parse command line */
 void readArgs(int argc, char* argv[])
@@ -303,7 +319,8 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-#ifndef COLORER_FEATURE_DUMMYLOGGER
+  colorer_log log;
+
   auto level = spdlog::level::from_str(settings.log_level);
   if (level == spdlog::level::off) {
     spdlog::drop_all();
@@ -317,14 +334,14 @@ int main(int argc, char* argv[])
       spdlog::set_default_logger(logger);
       logger->set_level(level);
       logger->flush_on(spdlog::level::err);
+
+      Log::registerLogger(log);
+
     } catch (std::exception& e) {
       fprintf(stderr, "%s\n", e.what());
       return -1;
     }
   }
-#else
-  logger = std::make_shared<DummyLogger>();
-#endif
 
   return workIt();
 }
