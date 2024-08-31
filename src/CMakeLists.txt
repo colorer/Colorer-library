@@ -142,9 +142,6 @@ if(COLORER_USE_ICU_STRINGS)
       colorer/strings/icu/UStr.cpp
       colorer/strings/icu/UStr.h
   )
-  set(SRC_COLORER_SPDLOG
-      colorer/strings/icu/UnicodeLogger.h
-  )
   set(COLORER_FEATURE_ICU 1)
 
 else()
@@ -177,14 +174,6 @@ else()
       colorer/strings/legacy/x_tables.h
       colorer/strings/legacy/StringExceptions.h
   )
-  set(SRC_COLORER_SPDLOG
-      colorer/strings/legacy/UnicodeLogger.h
-  )
-endif()
-
-if(COLORER_USE_DUMMY_LOGGER)
-  set(SRC_COLORER_SPDLOG)
-  set(COLORER_FEATURE_DUMMYLOGGER 1)
 endif()
 
 if(COLORER_BUILD_OLD_COMPILERS)
@@ -243,7 +232,7 @@ set(MAIN_FLAGS_CXX_RELEASE ${FLAGS_CXX_RELEASE} ${FLAGS_CXX_DEFAULT})
 #====================================================
 # build
 #====================================================
-add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_XML} ${SRC_COLORER_ZIP} ${SRC_COLORER_SPDLOG} ${SRC_COLORER_PLATFORM})
+add_library(colorer_lib STATIC ${SRC_COLORER} ${SRC_COLORER_STRINGS} ${SRC_COLORER_XML} ${SRC_COLORER_ZIP} ${SRC_COLORER_PLATFORM})
 add_library(colorer::colorer ALIAS colorer_lib)
 target_include_directories(colorer_lib PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -264,13 +253,6 @@ if(COLORER_USE_LIBXML)
 else()
   target_link_libraries(colorer_lib
           PUBLIC XercesC::XercesC
-  )
-endif()
-
-
-if(NOT COLORER_USE_DUMMY_LOGGER)
-  target_link_libraries(colorer_lib
-      PUBLIC spdlog::spdlog
   )
 endif()
 

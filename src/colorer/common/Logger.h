@@ -1,40 +1,7 @@
 #ifndef COLORER_LOGGER_H
 #define COLORER_LOGGER_H
 
-#include "colorer/common/Features.h"
 #include "colorer/strings/legacy/UnicodeString.h"
-
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-
-#include <spdlog/spdlog.h>
-
-extern std::shared_ptr<spdlog::logger> logger;
-
-#else   // COLORER_FEATURE_DUMMYLOGGER
-class DummyLogger
-{
- public:
-  template <typename... Args>
-  void debug(Args... /*args*/)
-  {
-  }
-  template <typename... Args>
-  void error(Args... /*args*/)
-  {
-  }
-  template <typename... Args>
-  void warn(Args... /*args*/)
-  {
-  }
-  template <typename... Args>
-  void trace(Args... /*args*/)
-  {
-  }
-};
-extern std::shared_ptr<DummyLogger> logger;
-#endif  // COLORER_FEATURE_DUMMYLOGGER
-
-#include <ostream>
 #include <sstream>
 
 namespace details {
@@ -118,7 +85,7 @@ class Log
   static Logger* logger;
 };
 
-#define COLORER_LOGGER_PRINTF(level, ...) Log::log(level, __FILE__, __LINE__, SPDLOG_FUNCTION, __VA_ARGS__)
+#define COLORER_LOGGER_PRINTF(level, ...) Log::log(level, __FILE__, __LINE__, static_cast<const char *>(__FUNCTION__), __VA_ARGS__)
 #define COLORER_LOG_ERROR(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_ERROR, __VA_ARGS__)
 #define COLORER_LOG_WARN(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_WARN, __VA_ARGS__)
 #define COLORER_LOG_INFO(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_INFO, __VA_ARGS__)

@@ -44,7 +44,6 @@ option(COLORER_BUILD_OLD_COMPILERS "Use own implementation for standard library"
 
 # library features
 option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
-option(COLORER_USE_DUMMY_LOGGER "Use dummy logging" OFF)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 option(COLORER_USE_ICU_STRINGS "Use ICU library for strings" ON)
 option(COLORER_USE_LIBXML "Use LibXml2 library for parse xml, instead XercesC" OFF)
@@ -81,11 +80,6 @@ if(COLORER_USE_LIBXML)
   find_package(LibXml2 REQUIRED)
 else()
   find_package(XercesC REQUIRED)
-endif()
-
-if(NOT COLORER_USE_DUMMY_LOGGER)
-  find_package(spdlog REQUIRED)
-  find_package(fmt REQUIRED)
 endif()
 
 if(COLORER_USE_ZIPINPUTSOURCE)
