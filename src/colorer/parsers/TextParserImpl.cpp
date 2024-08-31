@@ -2,7 +2,7 @@
 
 TextParser::Impl::Impl()
 {
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] constructor"));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] constructor");
   initCache();
 }
 
@@ -42,7 +42,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   breakParsing = false;
   updateCache = (mode == TextParseMode::TPM_CACHE_UPDATE);
 
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] parse from=%, num=%", from, num));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] parse from=%, num=%", from, num);
   /* Check for initial bad conditions */
   if (!regionHandler || !lineSource || !baseScheme) {
     return from;
@@ -61,11 +61,11 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
   if (mode == TextParseMode::TPM_CACHE_READ || mode == TextParseMode::TPM_CACHE_UPDATE) {
     parent = cache->searchLine(from, &forward);
     if (parent != nullptr) {
-      CTRACE(COLORER_LOG_TRACE("[TPCache] searchLine() parent:%,%-%", *parent->scheme->getName(),
-                           parent->sline, parent->eline));
+      COLORER_LOG_DEEPTRACE("[TPCache] searchLine() parent:%,%-%", *parent->scheme->getName(),
+                           parent->sline, parent->eline);
     }
   }
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] parse: cache filled"));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] parse: cache filled");
 
   do {
     if (!forward) {
@@ -86,7 +86,7 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
     baseScheme = parent->scheme;
 
     stackLevel = 0;
-    CTRACE(COLORER_LOG_TRACE("[TextParserImpl] parse: goes into colorize()"));
+    COLORER_LOG_DEEPTRACE("[TextParserImpl] parse: goes into colorize()");
     if (parent != cache) {
       vtlist->restore(parent->vcache);
       parent->clender->end->setBackTrace(parent->backLine, &parent->matchstart);
@@ -245,8 +245,8 @@ int TextParser::Impl::searchKW(const SchemeNodeKeywords* node, int /*no*/, int l
         }
       }
       if (!badbound) {
-        CTRACE(COLORER_LOG_TRACE("[TextParserImpl] KW matched. gx=%, region=%", gx,
-                             node->kwList->kwList[pos].region->getName()));
+        COLORER_LOG_DEEPTRACE("[TextParserImpl] KW matched. gx=%, region=%", gx,
+                             node->kwList->kwList[pos].region->getName());
         addRegion(current_parse_line, gx, gx + kwlen, node->kwList->kwList[pos].region);
         gx += kwlen;
         return MATCH_RE;
@@ -307,7 +307,7 @@ int TextParser::Impl::searchRE(SchemeNodeRegexp* node, int /*no*/, int lowLen, i
   if (!node->start->parse(str, gx, node->lowPriority ? lowLen : hiLen, &match, schemeStart)) {
     return MATCH_NOTHING;
   }
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] RE matched. gx=%", gx));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] RE matched. gx=%", gx);
   for (int i = 0; i < match.cMatch; i++) {
     addRegion(current_parse_line, match.s[i], match.e[i], node->regions[i]);
   }
@@ -340,7 +340,7 @@ int TextParser::Impl::searchBL(SchemeNodeBlock* node, int no, int lowLen, int hi
   }
 
   // есть совпадение
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] Scheme matched. gx=%", gx));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] Scheme matched. gx=%", gx);
   gx = match.e[0];
   // проверяем наличие замены через virtual для данной схемы
   SchemeImpl* ssubst = vtlist->pushvirt(node->scheme);
@@ -453,7 +453,7 @@ int TextParser::Impl::searchBL(SchemeNodeBlock* node, int no, int lowLen, int hi
 
 int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen, int hiLen)
 {
-  CTRACE(COLORER_LOG_TRACE("[TextParserImpl] searchMatch: entered scheme \"%\"", *cscheme->getName()));
+  COLORER_LOG_DEEPTRACE("[TextParserImpl] searchMatch: entered scheme \"%\"", *cscheme->getName());
 
   if (!cscheme) {
     return MATCH_NOTHING;
@@ -462,9 +462,9 @@ int TextParser::Impl::searchMatch(const SchemeImpl* cscheme, int no, int lowLen,
   int idx = 0;
 #endif
   for (auto const& schemeNode : cscheme->nodes) {
-    CTRACE(COLORER_LOG_TRACE("[TextParserImpl] searchMatch: processing node:%/%, type:%", idx + 1,
+    COLORER_LOG_DEEPTRACE("[TextParserImpl] searchMatch: processing node:%/%, type:%", idx + 1,
                          cscheme->nodes.size(),
-                         SchemeNode::schemeNodeTypeNames[static_cast<int>(schemeNode->type)]));
+                         SchemeNode::schemeNodeTypeNames[static_cast<int>(schemeNode->type)]);
     switch (schemeNode->type) {
       case SchemeNode::SchemeNodeType::SNT_INHERIT: {
         auto schemeNodeInherit = static_cast<SchemeNodeInherit*>(schemeNode.get());
@@ -514,7 +514,7 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
   stackLevel++;
 
   for (; current_parse_line < end_line4parse;) {
-    CTRACE(COLORER_LOG_TRACE("[TextParserImpl] colorize: line no %", current_parse_line));
+    COLORER_LOG_DEEPTRACE("[TextParserImpl] colorize: line no %", current_parse_line);
     // clears line at start,
     // prevents multiple requests on each line
     if (clearLine != current_parse_line) {

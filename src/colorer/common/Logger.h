@@ -92,4 +92,11 @@ class Log
 #define COLORER_LOG_DEBUG(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_DEBUG, __VA_ARGS__)
 #define COLORER_LOG_TRACE(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_TRACE, __VA_ARGS__)
 
+#ifdef COLORER_USE_DEEPTRACE
+#define COLORER_LOG_DEEPTRACE(...) COLORER_LOGGER_PRINTF(Logger::LogLevel::LOG_TRACE, __VA_ARGS__)
+#else
+#define COLORER_LOG_DEEPTRACE(...)
+#endif
+
+
 #endif  // COLORER_LOGGER_H
