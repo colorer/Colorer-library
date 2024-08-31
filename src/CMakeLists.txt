@@ -15,6 +15,7 @@ set(SRC_COLORER
     colorer/base/BaseNames.h
     colorer/base/XmlTagDefs.h
     colorer/common/Exception.cpp
+    colorer/common/Logger.cpp
     colorer/common/Logger.h
     colorer/cregexp/cregexp.cpp
     colorer/cregexp/cregexp.h

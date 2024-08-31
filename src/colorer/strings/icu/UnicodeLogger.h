@@ -19,7 +19,7 @@ struct formatter<icu::UnicodeString>
   {
     std::string result8;
     p.toUTF8String(result8);
-    return format_to(ctx.out(), "{0}", result8);
+    return format_to(ctx.out(), "%", result8);
   }
 };
 
@@ -37,7 +37,7 @@ struct formatter<std::unique_ptr<icu::UnicodeString>>
   {
     std::string result8;
     p->toUTF8String(result8);
-    return format_to(ctx.out(), "{0}", result8);
+    return format_to(ctx.out(), "%", result8);
   }
 };
 }  // namespace fmt

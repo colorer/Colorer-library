@@ -19,7 +19,7 @@ struct formatter<UnicodeString>
   auto format(const UnicodeString& p, FormatContext& ctx)
   {
     std::string result8=p.getChars();
-    return format_to(ctx.out(), "{0}", result8);
+    return format_to(ctx.out(), "%", result8);
   }
 };
 
@@ -36,7 +36,7 @@ struct formatter<std::unique_ptr<UnicodeString>>
   auto format(const std::unique_ptr<UnicodeString>& p, FormatContext& ctx)
   {
     std::string result8=p->getChars();
-    return format_to(ctx.out(), "{0}", result8);
+    return format_to(ctx.out(), "%", result8);
   }
 };
 }  // namespace fmt
