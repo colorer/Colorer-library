@@ -876,16 +876,16 @@ void HrcLibrary::Impl::updateLinks()
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
           auto *snode_block = static_cast<SchemeNodeBlock*>(snode.get());
 
-          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 1, scheme);
+          updateSchemeLink(snode_block->schemeName, &snode_block->scheme, 0, scheme);
         }
 
         if (snode->type == SchemeNode::SchemeNodeType::SNT_INHERIT) {
           auto *snode_inherit = static_cast<SchemeNodeInherit*>(snode.get());
 
-          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 2, scheme);
+          updateSchemeLink(snode_inherit->schemeName, &snode_inherit->scheme, 1, scheme);
           for (auto *vt : snode_inherit->virtualEntryVector) {
-            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 3, scheme);
-            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 4, scheme);
+            updateSchemeLink(vt->virtSchemeName, &vt->virtScheme, 2, scheme);
+            updateSchemeLink(vt->substSchemeName, &vt->substScheme, 3, scheme);
           }
         }
       }

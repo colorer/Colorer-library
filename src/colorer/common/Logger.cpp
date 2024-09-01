@@ -2,13 +2,6 @@
 
 Logger* Log::logger = nullptr;
 
-template <>
-void details::ArgumentT<UnicodeString>::print(std::ostream& out) const
-{
-  std::string const result8 = mData.getChars();
-  out << result8;
-}
-
 void details::print_impl_inner(std::ostream& out, const std::string_view format, const size_t arg_count, const Argument** arguments)
 {
   std::size_t a = 0;

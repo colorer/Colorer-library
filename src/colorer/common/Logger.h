@@ -1,7 +1,6 @@
 #ifndef COLORER_LOGGER_H
 #define COLORER_LOGGER_H
 
-#include "colorer/strings/legacy/UnicodeString.h"
 #include <sstream>
 
 namespace details {
@@ -29,9 +28,6 @@ class ArgumentT final : public Argument
   T const& mData;
 };
 
-template <>
-void ArgumentT<UnicodeString>::print(std::ostream& out) const;
-
 template <typename T>
 ArgumentT<T> make_argument(T const& t)
 {
@@ -53,6 +49,31 @@ void format_log_string(std::ostream& out, std::string_view format, Args&&... arg
 {
   details::print_impl_outer(out, format, details::make_argument(std::forward<Args>(args))...);
 }
+
+#include "colorer/common/Features.h"
+#ifdef COLORER_FEATURE_ICU
+
+#include "unicode/unistr.h"
+namespace details {
+template <> inline
+void ArgumentT<icu::UnicodeString>::print(std::ostream& out) const
+{
+  std::string result8;
+  mData.toUTF8String(result8);
+  out << result8;
+}
+}  // namespace details
+#else
+#include "colorer/strings/legacy/strings.h"
+namespace details {
+template <> inline
+void details::ArgumentT<UnicodeString>::print(std::ostream& out) const
+{
+  std::string const result8 = mData.getChars();
+  out << result8;
+}
+}
+#endif
 
 class Logger
 {
