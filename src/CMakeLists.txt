@@ -260,6 +260,11 @@ if(COLORER_USE_ICU_STRINGS)
   target_link_libraries(colorer_lib
       PUBLIC ICU::uc ICU::data
   )
+  if (APPLE)
+    target_include_directories(colorer_lib PUBLIC
+         "$<BUILD_INTERFACE:/opt/homebrew/include>"
+    )
+  endif ()
 endif()
 
 if(COLORER_USE_ZIPINPUTSOURCE)
