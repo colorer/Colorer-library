@@ -1,6 +1,9 @@
 #ifndef SIMPLELOGGER_H
 #define SIMPLELOGGER_H
 
+#include <ctime>
+#include <locale>
+
 class SimpleLogger : public Logger
 {
  public:
