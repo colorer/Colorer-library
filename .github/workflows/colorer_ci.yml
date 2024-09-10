@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependency
-        run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev libspdlog-dev libfmt-dev zlib1g-dev libminizip-dev libxml2-dev
+        run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev zlib1g-dev libminizip-dev libxml2-dev
 
       - name: Create Build folder
         run: mkdir -p _build
@@ -178,7 +178,7 @@ jobs:
 
       - name: Install dependency
         # icu4c is already installed
-        run: brew install xerces-c spdlog minizip ninja libxml2
+        run: brew install xerces-c minizip ninja libxml2
 
       - name: Relink icu, because he is 'keg-only'
         run: brew link icu4c --force
