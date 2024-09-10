@@ -1,13 +1,11 @@
 #====================================================
 # consoletools
 #====================================================
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
-
 set(SRC_CPP
     ConsoleToolsRunner.cpp
     ConsoleTools.cpp
     ConsoleTools.h
+    SimpleLogger.h
     )
 
 if(WIN32)
@@ -30,9 +28,6 @@ set_target_properties(consoletools PROPERTIES
     )
 
 target_compile_definitions(consoletools PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_link_libraries(consoletools
-        PUBLIC spdlog::spdlog
-)
 
 if(WIN32)
   if("${COLORER_BUILD_ARCH}" STREQUAL "x64")

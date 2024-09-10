@@ -78,7 +78,7 @@ void details::ArgumentT<UnicodeString>::print(std::ostream& out) const
 class Logger
 {
  public:
-  enum LogLevel { LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG, LOG_TRACE };
+  enum LogLevel { LOG_OFF, LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG, LOG_TRACE };
 
   virtual ~Logger() = default;
   virtual void log(LogLevel level, const char* filename_in, int line_in, const char* funcname_in,
