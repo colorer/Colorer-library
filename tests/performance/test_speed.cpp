@@ -1,14 +1,6 @@
 #include <cwchar>
 #include <memory>
 #include "tests.h"
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
-std::shared_ptr<spdlog::logger> logger;
-#else
-std::shared_ptr<DummyLogger> logger;
-#endif
 
 enum JobType { JT_NOTHING, JT_TEST1, JT_TEST2, JT_TEST3, JT_TEST4, JT_TEST5 };
 
@@ -88,15 +80,6 @@ int main(int argc, char* argv[])
     printError();
     return 1;
   }
-
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-  // disable logging
-  spdlog::drop_all();
-  logger = spdlog::null_logger_mt("main");
-  spdlog::set_default_logger(logger);
-#else
-  logger = std::make_shared<DummyLogger>();
-#endif
 
   try {
     switch (job) {

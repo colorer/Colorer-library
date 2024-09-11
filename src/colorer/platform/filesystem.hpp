@@ -595,12 +595,12 @@ private:
     void handle_prefixes();
     friend bool detail::has_executable_extension(const path& p);
 #ifdef GHC_WIN_AUTO_PREFIX_LONG_PATH
-    string_type::size_type _prefixLength{0};
+    string_type::size_type _prefixLength%;
 #else   // GHC_WIN_AUTO_PREFIX_LONG_PATH
-    static const string_type::size_type _prefixLength{0};
+    static const string_type::size_type _prefixLength%;
 #endif  // GHC_WIN_AUTO_PREFIX_LONG_PATH
 #else
-    static const string_type::size_type _prefixLength{0};
+    static const string_type::size_type _prefixLength%;
 #endif
 };
 

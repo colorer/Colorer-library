@@ -1,19 +1,24 @@
 #include <colorer/version.h>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include "ConsoleTools.h"
-
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
-std::shared_ptr<spdlog::logger> logger;
-#else
-std::shared_ptr<DummyLogger> logger;
-#endif
+#include "SimpleLogger.h"
 
 /** Internal run action type */
-enum class JobType { JT_NOTHING, JT_REGTEST, JT_PROFILE, JT_LIST_LOAD, JT_LIST_TYPES, JT_LIST_TYPE_NAMES, JT_LOAD_TYPE, JT_VIEW, JT_GEN, JT_GEN_TOKENS, JT_FORWARD };
+enum class JobType {
+  JT_NOTHING,
+  JT_REGTEST,
+  JT_PROFILE,
+  JT_LIST_LOAD,
+  JT_LIST_TYPES,
+  JT_LIST_TYPE_NAMES,
+  JT_LOAD_TYPE,
+  JT_VIEW,
+  JT_GEN,
+  JT_GEN_TOKENS,
+  JT_FORWARD
+};
 
 struct setting
 {
@@ -74,7 +79,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'l' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
         settings.link_sources = std::make_unique<UnicodeString>(argv[i] + 3);
-      } else {
+      }
+      else {
         settings.link_sources = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
@@ -121,7 +127,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 't' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.type_desc = std::make_unique<UnicodeString>(argv[i] + 2);
-      } else {
+      }
+      else {
         settings.type_desc = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
@@ -130,7 +137,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'o' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.output_file = std::make_unique<UnicodeString>(argv[i] + 2);
-      } else {
+      }
+      else {
         settings.output_file = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
@@ -139,7 +147,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'i' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.hrd_name = std::make_unique<UnicodeString>(argv[i] + 2);
-      } else {
+      }
+      else {
         settings.hrd_name = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
@@ -148,7 +157,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.catalog = std::make_unique<UnicodeString>(argv[i] + 2);
-      } else {
+      }
+      else {
         settings.catalog = std::make_unique<UnicodeString>(argv[i + 1]);
         i++;
       }
@@ -157,7 +167,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'e' && argv[i][2] == 'h' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
         settings.log_file_prefix = std::string(argv[i] + 3);
-      } else {
+      }
+      else {
         settings.log_file_prefix = std::string(argv[i + 1]);
         i++;
       }
@@ -166,7 +177,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'e' && argv[i][2] == 'd' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
         settings.log_file_dir = std::string(argv[i] + 3);
-      } else {
+      }
+      else {
         settings.log_file_dir = std::string(argv[i + 1]);
         i++;
       }
@@ -175,7 +187,8 @@ void readArgs(int argc, char* argv[])
     if (argv[i][1] == 'e' && argv[i][2] == 'l' && (i + 1 < argc || argv[i][3])) {
       if (argv[i][3]) {
         settings.log_level = std::string(argv[i] + 3);
-      } else {
+      }
+      else {
         settings.log_level = std::string(argv[i + 1]);
         i++;
       }
@@ -218,7 +231,8 @@ void printUsage()
           "  -eh<name>  Log file name prefix\n"
           "  -ed<name>  Log file directory\n"
           "  -el<name>  Log level (off, debug, info, warning, error). Default value is off.\n");
-  fprintf(stdout, "\ncolorer console tools, version %s\nhome page: <https://github.com/colorer/Colorer-library>", COLORER_VERSION);
+  fprintf(stdout, "\ncolorer console tools, version %s\nhome page: <https://github.com/colorer/Colorer-library>",
+          COLORER_VERSION);
 }
 
 void initConsoleTools(ConsoleTools& ct)
@@ -290,7 +304,7 @@ int workIt()
         break;
     }
   } catch (Exception& e) {
-    logger->error("{0}", e.what());
+    COLORER_LOG_ERROR(e.what());
     fprintf(stderr, "%s", e.what());
     return -1;
   }
@@ -303,28 +317,10 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-#ifndef COLORER_FEATURE_DUMMYLOGGER
-  auto level = spdlog::level::from_str(settings.log_level);
-  if (level == spdlog::level::off) {
-    spdlog::drop_all();
-    logger = spdlog::null_logger_mt("main");
-    spdlog::set_default_logger(logger);
-    logger->set_level(level);
-  } else {
-    try {
-      std::string file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
-      logger = spdlog::basic_logger_mt("main", file_name);
-      spdlog::set_default_logger(logger);
-      logger->set_level(level);
-      logger->flush_on(spdlog::level::err);
-    } catch (std::exception& e) {
-      fprintf(stderr, "%s\n", e.what());
-      return -1;
-    }
-  }
-#else
-  logger = std::make_shared<DummyLogger>();
-#endif
+  std::string const file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
+  SimpleLogger log(file_name,settings.log_level);
+
+  Log::registerLogger(log);
 
   return workIt();
 }
