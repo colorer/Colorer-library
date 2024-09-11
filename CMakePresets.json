@@ -123,13 +123,6 @@
       "hidden": true
     },
     {
-      "name": "NoLog",
-      "cacheVariables": {
-        "COLORER_USE_DUMMY_LOGGER": "ON"
-      },
-      "hidden": true
-    },
-    {
       "name": "NoICU",
       "cacheVariables": {
         "COLORER_USE_ICU_STRINGS": "OFF"
