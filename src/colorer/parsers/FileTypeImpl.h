@@ -33,7 +33,7 @@ class TypeParameter
 class FileType::Impl
 {
  public:
-  Impl(UnicodeString name, UnicodeString group, UnicodeString description);
+  Impl(UnicodeString l_name, UnicodeString l_group, UnicodeString l_description);
 
   [[nodiscard]]
   const UnicodeString& getName() const;

@@ -1,8 +1,8 @@
 #include "colorer/parsers/FileTypeImpl.h"
 #include <memory>
 
-FileType::Impl::Impl(UnicodeString name, UnicodeString group, UnicodeString description)
-    : name(std::move(name)), group(std::move(group)), description(std::move(description))
+FileType::Impl::Impl(UnicodeString l_name, UnicodeString l_group, UnicodeString l_description)
+    : name(std::move(l_name)), group(std::move(l_group)), description(std::move(l_description))
 {
   if (name.isEmpty()) {
     throw FileTypeException("The file type name must not be empty");
