@@ -40,9 +40,6 @@ jobs:
         icu: [ON, OFF]
         zip: [ON, OFF]
         libxml: [ON, OFF]
-        exclude:
-          - libxml: ON
-            zip: ON
 
     name: linux-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
 
@@ -166,9 +163,6 @@ jobs:
         icu: [ON, OFF]
         zip: [ON, OFF]
         libxml: [ON, OFF]
-        exclude:
-          - libxml: ON
-            zip: ON
 
     name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
 
