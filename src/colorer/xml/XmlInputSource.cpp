@@ -14,7 +14,7 @@ XmlInputSource::~XmlInputSource()
 XmlInputSource::XmlInputSource(const UnicodeString& source_path, const UnicodeString* source_base)
 {
 #ifdef COLORER_FEATURE_LIBXML
-  xml_input_source = std::make_unique<LibXmlInputSource>(&source_path, source_base);
+  xml_input_source = std::make_unique<LibXmlInputSource>(source_path, source_base);
 #else
   xercesc::XMLPlatformUtils::Initialize();
   xml_input_source = XercesXmlInputSource::newInstance(&source_path, source_base);

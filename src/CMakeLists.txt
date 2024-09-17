@@ -100,6 +100,7 @@ if(COLORER_USE_LIBXML)
     colorer/xml/libxml2/LibXmlReader.cpp
     colorer/xml/libxml2/LibXmlReader.h
     colorer/xml/libxml2/LibXmlInputSource.h
+    colorer/xml/libxml2/LibXmlInputSource.cpp
   )
 else()
   set(SRC_COLORER_XML
@@ -118,14 +119,23 @@ else()
   )
 endif()
 
-if(COLORER_USE_ZIPINPUTSOURCE AND NOT(COLORER_USE_LIBXML))
+if(COLORER_USE_ZIPINPUTSOURCE)
   set(COLORER_FEATURE_ZIPINPUTSOURCE 1)
-  set(SRC_COLORER_ZIP
-          colorer/xml/xercesc/MemoryFile.cpp
-          colorer/xml/xercesc/MemoryFile.h
-          colorer/xml/xercesc/ZipXmlInputSource.cpp
-          colorer/xml/xercesc/ZipXmlInputSource.h
-  )
+  if(COLORER_USE_LIBXML)
+    set(SRC_COLORER_ZIP
+      colorer/xml/libxml2/SharedXmlInputSource.cpp
+      colorer/xml/libxml2/SharedXmlInputSource.h
+      colorer/zip/MemoryFile.cpp
+      colorer/zip/MemoryFile.h
+    )
+  else ()
+    set(SRC_COLORER_ZIP
+      colorer/xml/xercesc/ZipXmlInputSource.cpp
+      colorer/xml/xercesc/ZipXmlInputSource.h
+      colorer/zip/MemoryFile.cpp
+      colorer/zip/MemoryFile.h
+    )
+  endif ()
 endif()
 
 if(COLORER_USE_ICU_STRINGS)

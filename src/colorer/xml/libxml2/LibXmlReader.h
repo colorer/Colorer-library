@@ -11,7 +11,7 @@ class LibXmlReader
 {
  public:
   explicit LibXmlReader(const UnicodeString& source_file);
-  LibXmlReader(const XmlInputSource& source);
+  explicit LibXmlReader(const XmlInputSource& source);
 
   ~LibXmlReader();
 
@@ -28,10 +28,16 @@ class LibXmlReader
   void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);
   bool populateNode(xmlNode* node, XMLNode& result);
-  UnicodeString getElementText(xmlNode* node);
+  UnicodeString getElementText(const xmlNode* node);
 
   static xmlParserInputPtr xmlMyExternalEntityLoader(const char* URL, const char* ID, xmlParserCtxtPtr ctxt);
   static void xml_error_func(void* ctx, const char* msg, ...);
+
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+  static xmlParserInputPtr xmlZipEntityLoader(const char* URL, xmlParserCtxtPtr ctxt);
+  static uUnicodeString current_jar;
+#endif
+
 };
 
 #endif  // COLORER_LIBXMLREADER_H

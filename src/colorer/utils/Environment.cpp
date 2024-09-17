@@ -142,4 +142,21 @@ bool Environment::isRegularFile(const UnicodeString* basePath, const UnicodeStri
   return fs::is_regular_file(clear_path);
 }
 
+UnicodeString Environment::getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath)
+{
+  auto root_pos = basePath.lastIndexOf('/');
+  const auto root_pos2 = basePath.lastIndexOf('\\');
+  if (root_pos2 > root_pos) {
+    root_pos = root_pos2;
+  }
+  if (root_pos == -1) {
+    root_pos = 0;
+  }
+  else {
+    root_pos++;
+  }
+  UnicodeString newPath(basePath, 0, root_pos);
+  newPath.append(relPath);
+  return newPath;
+}
 }  // namespace colorer
