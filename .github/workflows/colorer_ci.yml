@@ -83,6 +83,7 @@ jobs:
         arch: [ x64, x86 ]
         icu: [ON, OFF]
         zip: [ON, OFF]
+        libxml: [ON, OFF]
         include:
           - arch: x64
             triplet: x64-windows-static-rel
@@ -92,7 +93,7 @@ jobs:
           - arch: x86
             zip: OFF
 
-    name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}
+    name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
 
     steps:
       - name: Checkout source
@@ -145,6 +146,7 @@ jobs:
           -DVCPKG_FEATURE_FLAGS=manifests,versions
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
+          -DCOLORER_USE_LIBXML=${{ matrix.libxml }}
 
       - name: Build
         shell: bash

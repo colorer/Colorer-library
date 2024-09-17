@@ -150,7 +150,7 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
 
 void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
 {
-  static char buf[PATH_MAX];
+  static char buf[4096];
   static int slen = 0;
   va_list args;
 
