@@ -41,7 +41,8 @@ XercesXmlInputSource* XmlInputSource::getInputSource() const
 
 bool XmlInputSource::isFileURI(const UnicodeString& path, const UnicodeString* base)
 {
-  if (path.startsWith(u"jar") || (base && base->startsWith(u"jar"))) {
+  const UnicodeString jar(u"jar:");
+  if (path.startsWith(jar) || (base && base->startsWith(jar))) {
     return false;
   }
   return true;

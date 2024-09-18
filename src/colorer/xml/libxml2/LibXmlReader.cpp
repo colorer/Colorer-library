@@ -136,14 +136,14 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const char* URL, const xmlPar
 xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/,
                                                           const xmlParserCtxtPtr ctxt)
 {
+  // Функция вызывается перед каждым открытием файла в рамках libxml
+  // будь то xmlReadFile, или открытие файла для external entity
+
   xmlParserInputPtr ret = nullptr;
-  // тут обработка имени файла для внешнего entity
-  // при этом если в entity указан нормальный путь файловой системы, без всяких переменных окружения, архивов,
-  // но можно с комбинацией ./ ../
-  //  то в url будет указан полный путь, относительно текущего файла. libxml сама склеит путь.
-  //  Иначе в url будет указан путь из самого entity, и дальше с ним над самому разбираться.
-  //
-  // в ctxt нет информации об обрабатываемом файле.
+
+  // libxml для external entity сам склеивает относительный путь от обрабатываемого файла, считая это путем файловой системы
+  // но для этого требуется заполнять filename у xmlParserInputPtr
+
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   if (current_jar) {
     ret = xmlZipEntityLoader(URL, ctxt);

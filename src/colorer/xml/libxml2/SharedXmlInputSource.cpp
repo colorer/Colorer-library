@@ -1,6 +1,5 @@
 #include "colorer/xml/libxml2/SharedXmlInputSource.h"
 #include <fstream>
-#include "colorer/Common.h"
 #ifdef COLORER_FEATURE_OLD_COMPILERS
 #include "colorer/platform/filesystem.hpp"
 namespace fs = ghc::filesystem;
