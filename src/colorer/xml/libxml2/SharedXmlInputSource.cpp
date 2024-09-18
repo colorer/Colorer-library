@@ -74,7 +74,7 @@ void SharedXmlInputSource::open()
 {
   if (!is_open) {
     std::ifstream f(UStr::to_stdstr(&source_path), std::ios::in | std::ios::binary);
-    mSize = fs::file_size(UStr::to_stdstr(&source_path));
+    mSize = static_cast<int>(fs::file_size(UStr::to_stdstr(&source_path)));
     mSrc.reset(new byte[mSize]);
     f.read(reinterpret_cast<std::istream::char_type*>(mSrc.get()), mSize);
     f.close();
