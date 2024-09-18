@@ -1,9 +1,10 @@
 #ifndef _COLORER_ZIPINPUTSOURCE_H_
 #define _COLORER_ZIPINPUTSOURCE_H_
 
+#include <vector>
+#include <xercesc/util/BinFileInputStream.hpp>
 #include "colorer/xml/xercesc/SharedXmlInputSource.h"
 #include "colorer/xml/xercesc/XercesXmlInputSource.h"
-#include <xercesc/util/BinFileInputStream.hpp>
 
 class ZipXmlInputSource : public XercesXmlInputSource
 {
@@ -13,8 +14,6 @@ class ZipXmlInputSource : public XercesXmlInputSource
   [[nodiscard]] xercesc::BinInputStream* makeStream() const override;
   xercesc::InputSource* getInputSource() const override;
 
-  static uUnicodeString getAbsolutePath(const UnicodeString* basePath, const UnicodeString* relPath);
-
   ZipXmlInputSource(ZipXmlInputSource const&) = delete;
   ZipXmlInputSource& operator=(ZipXmlInputSource const&) = delete;
   ZipXmlInputSource(ZipXmlInputSource&&) = delete;
@@ -22,7 +21,7 @@ class ZipXmlInputSource : public XercesXmlInputSource
 
  private:
   void create(const XMLCh* path, const XMLCh* base);
-  uUnicodeString in_jar_location;
+  UnicodeString in_jar_location;
   SharedXmlInputSource* jar_input_source = nullptr;
 };
 
@@ -43,9 +42,7 @@ class UnZip : public xercesc::BinInputStream
 
  private:
   XMLSize_t mPos;
-  XMLSize_t mBoundary;
-  std::unique_ptr<byte[]> stream;
-  int len;
+  std::unique_ptr<std::vector<byte>> stream;
 };
 
 #endif  //_COLORER_ZIPINPUTSOURCE_H_

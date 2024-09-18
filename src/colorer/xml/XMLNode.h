@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include "colorer/Common.h"
 
-inline const UnicodeString empty_string("");
-
 class XMLNode
 {
 public:
@@ -16,6 +14,8 @@ public:
 
   const UnicodeString& getAttrValue(const UnicodeString& key) const
   {
+    static const UnicodeString empty_string("");
+
     const auto found = attributes.find(key);
     if (found == attributes.end()) {
       return empty_string;

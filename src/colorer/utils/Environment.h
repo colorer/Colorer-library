@@ -25,6 +25,7 @@ class Environment
   static std::vector<UnicodeString> getFilesFromPath(const UnicodeString* basePath, const UnicodeString* relPath,
                                                      const UnicodeString& extension);
   static bool isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath);
+  static UnicodeString getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath);
 };
 
 }  // namespace colorer
