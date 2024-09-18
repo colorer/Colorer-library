@@ -65,7 +65,7 @@ xercesc::BinInputStream* ZipXmlInputSource::makeStream() const
 
 UnZip::UnZip(const XMLByte* src, XMLSize_t size, const UnicodeString* path) : mPos(0), stream(nullptr)
 {
-  stream = unzip(src, size, *path);
+  stream = unzip(src, static_cast<int>(size), *path);
 }
 
 XMLFilePos UnZip::curPos() const
