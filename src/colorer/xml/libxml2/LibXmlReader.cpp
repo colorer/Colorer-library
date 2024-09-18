@@ -125,8 +125,8 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const char* URL, const xmlPar
 
   auto stream = unzip(is->getSrc(), is->getSize(), path_in_jar);
 
-  xmlParserInputBufferPtr buf = xmlParserInputBufferCreateMem(reinterpret_cast<const char*>(stream.data()),
-                                                              static_cast<int>(stream.size()), XML_CHAR_ENCODING_NONE);
+  xmlParserInputBufferPtr buf = xmlParserInputBufferCreateMem(reinterpret_cast<const char*>(stream->data()),
+                                                              static_cast<int>(stream->size()), XML_CHAR_ENCODING_NONE);
   xmlParserInputPtr pInput = xmlNewIOInputStream(ctxt, buf, XML_CHAR_ENCODING_NONE);
   pInput->filename = strdup(UStr::to_stdstr(&path_in_jar).c_str());
   return pInput;

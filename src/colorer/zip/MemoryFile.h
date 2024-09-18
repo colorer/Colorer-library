@@ -13,7 +13,7 @@ typedef struct
   int error;
 } MemoryFile;
 
-std::vector<byte> unzip(const byte* src, int size, const UnicodeString& path_in_zip);
+std::unique_ptr<std::vector<byte>> unzip(const byte* src, int size, const UnicodeString& path_in_zip);
 voidpf ZCALLBACK mem_open_file_func(voidpf opaque, const char* filename, int mode);
 uLong ZCALLBACK mem_read_file_func(voidpf opaque, voidpf stream, void* buf, uLong size);
 uLong ZCALLBACK mem_write_file_func(voidpf opaque, voidpf stream, const void* buf, uLong size);

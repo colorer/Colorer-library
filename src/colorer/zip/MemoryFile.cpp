@@ -2,7 +2,7 @@
 #include <cstring>
 #include "colorer/Exception.h"
 
-std::vector<byte> unzip(const byte* src, int size, const UnicodeString& path_in_zip)
+std::unique_ptr<std::vector<byte>> unzip(const byte* src, int size, const UnicodeString& path_in_zip)
 {
   MemoryFile mf;
   mf.stream = src;
@@ -29,13 +29,13 @@ std::vector<byte> unzip(const byte* src, int size, const UnicodeString& path_in_
   }
 
   const auto len = file_info.uncompressed_size;
-  std::vector<byte> stream(len);
+  auto stream = std::make_unique<std::vector<byte>>(len);
   ret = unzOpenCurrentFile(fid);
   if (ret != UNZ_OK) {
     unzClose(fid);
     throw InputSourceException("Can't open current file in JAR content: '" + path_in_zip + "'");
   }
-  ret = unzReadCurrentFile(fid, stream.data(), len);
+  ret = unzReadCurrentFile(fid, stream->data(), len);
   if (ret <= 0) {
     unzClose(fid);
     throw InputSourceException("Can't read current file in JAR content: '" + path_in_zip + "' (" + ret + ")");
