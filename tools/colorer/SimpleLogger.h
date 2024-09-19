@@ -12,7 +12,7 @@ class SimpleLogger : public Logger
   SimpleLogger(const std::string& filename, const std::string& log_level)
   {
     current_level = getLogLevel(log_level);
-    ofs.open(filename.c_str(), std::ofstream::out);
+    ofs.open(filename.c_str(), std::ofstream::out | std::ofstream::app);
   }
 
   ~SimpleLogger() override { ofs.close(); }
