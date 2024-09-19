@@ -32,7 +32,7 @@ class SharedXmlInputSource
 
   static std::unordered_map<UnicodeString, SharedXmlInputSource*>* isHash;
 
-  int ref_count {0};
+  int ref_count {1};
   bool is_open {false};
   UnicodeString source_path;
   std::unique_ptr<byte[]> mSrc;
