@@ -25,6 +25,8 @@ LibXmlReader::LibXmlReader(const UnicodeString& source_file) : xmldoc(nullptr)
     const auto path_idx = source_file.lastIndexOf('!');
     const UnicodeString path_in_jar(source_file, path_idx + 1);
 
+    // Делим путь на две части. Путь до zip архива оставляем в глобальной переменной,
+    // а до файла внутри архива отдаем на вход libxml, чтобы потом уже в xmlMyExternalEntityLoader их корректно склеить
     current_jar = std::make_unique<UnicodeString>(source_file, jar.length(), path_idx - jar.length());
     xmldoc = xmlReadFile(UStr::to_stdstr(&path_in_jar).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
     return;
@@ -128,6 +130,7 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const char* URL, const xmlPar
   xmlParserInputBufferPtr buf = xmlParserInputBufferCreateMem(reinterpret_cast<const char*>(stream->data()),
                                                               static_cast<int>(stream->size()), XML_CHAR_ENCODING_NONE);
   xmlParserInputPtr pInput = xmlNewIOInputStream(ctxt, buf, XML_CHAR_ENCODING_NONE);
+  // заполняем filename для работы external entity
   pInput->filename = strdup(UStr::to_stdstr(&path_in_jar).c_str());
   return pInput;
 }
@@ -141,8 +144,9 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
 
   xmlParserInputPtr ret = nullptr;
 
-  // libxml для external entity сам склеивает относительный путь от обрабатываемого файла, считая это путем файловой системы
-  // но для этого требуется заполнять filename у xmlParserInputPtr
+  // libxml для external entity сам формирует путь до файла, путем склейки пути до обрабатываемого файла и
+  // указанного в external entity. Если там используются относительные пути (../, ./ ) то libxml сам приводит к нормальному пути.
+
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   if (current_jar) {
