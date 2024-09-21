@@ -7,14 +7,14 @@
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 #include "colorer/zip/MemoryFile.h"
-
-uUnicodeString LibXmlReader::current_file = nullptr;
-bool LibXmlReader::is_full_path = false;
 #endif
 
 #ifdef _MSC_VER
 #define strdup(p) _strdup(p)
 #endif
+
+uUnicodeString LibXmlReader::current_file = nullptr;
+bool LibXmlReader::is_full_path = false;
 
 LibXmlReader::LibXmlReader(const UnicodeString& source_file) : xmldoc(nullptr)
 {
