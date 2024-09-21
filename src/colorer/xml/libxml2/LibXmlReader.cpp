@@ -143,7 +143,11 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
   if (string_url.startsWith(jar) || current_file->startsWith(jar)) {
     auto paths = LibXmlInputSource::getFullPathFromPathJar(string_url, is_full_path ? nullptr : current_file.get());
     is_full_path = false;
-    xmlParserInputPtr ret = xmlZipEntityLoader(paths, ctxt);
+    xmlParserInputPtr ret = nullptr;
+    try {
+      ret = xmlZipEntityLoader(paths, ctxt);
+    } catch (...) {
+    }
     return ret;
   }
 #endif
