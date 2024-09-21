@@ -45,6 +45,14 @@ UnicodeString& LibXmlInputSource::getPath()
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeString* base)
 {
+  auto paths = getFullPathFromPathJar(path, base);
+
+  sourcePath = paths.full_path;
+  zip_source = SharedXmlInputSource::getSharedInputSource(paths.path_to_jar);
+}
+
+PathInJar LibXmlInputSource::getFullPathFromPathJar(const UnicodeString& path, const UnicodeString* base)
+{
   if (path.startsWith(jar)) {
     const auto path_idx = path.lastIndexOf('!');
     if (path_idx == -1) {
@@ -55,8 +63,8 @@ void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeSt
         base ? *base : u"", UnicodeString(path, jar.length(), path_idx - jar.length()));
     const UnicodeString path_in_jar(path, path_idx + 1);
 
-    sourcePath = jar + path_to_jar + u"!" + path_in_jar;
-    zip_source = SharedXmlInputSource::getSharedInputSource(path_to_jar);
+    const UnicodeString full_path = jar + path_to_jar + u"!" + path_in_jar;
+    return {full_path, path_to_jar, path_in_jar};
   }
   else {
     const auto base_idx = base->lastIndexOf('!');
@@ -66,8 +74,8 @@ void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeSt
     const UnicodeString path_to_jar(*base, jar.length(), base_idx - jar.length());
     const UnicodeString path_in_jar = colorer::Environment::getAbsolutePath(UnicodeString(*base, base_idx + 1), path);
 
-    sourcePath = jar + path_to_jar + u"!" + path_in_jar;
-    zip_source = SharedXmlInputSource::getSharedInputSource(path_to_jar);
+    const UnicodeString full_path = jar + path_to_jar + u"!" + path_in_jar;
+    return {full_path, path_to_jar, path_in_jar};
   }
 }
 #endif

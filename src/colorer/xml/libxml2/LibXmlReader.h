@@ -17,13 +17,16 @@ class LibXmlReader
 
   void parse(std::list<XMLNode>& nodes);
 
-  [[nodiscard]] bool isParsed() const
+  [[nodiscard]]
+  bool isParsed() const
   {
     return xmldoc != nullptr;
   }
 
  private:
   xmlDocPtr xmldoc;
+  static uUnicodeString current_file;
+  static bool is_full_path;
 
   void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);
@@ -34,10 +37,8 @@ class LibXmlReader
   static void xml_error_func(void* ctx, const char* msg, ...);
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
-  static xmlParserInputPtr xmlZipEntityLoader(const char* URL, xmlParserCtxtPtr ctxt);
-  static uUnicodeString current_jar;
+  static xmlParserInputPtr xmlZipEntityLoader(const PathInJar& paths, xmlParserCtxtPtr ctxt);
 #endif
-
 };
 
 #endif  // COLORER_LIBXMLREADER_H

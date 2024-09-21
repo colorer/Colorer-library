@@ -8,6 +8,13 @@
 
 static const UnicodeString jar(u"jar:");
 
+struct PathInJar
+{
+  UnicodeString full_path;
+  UnicodeString path_to_jar;
+  UnicodeString path_in_jar;
+};
+
 class LibXmlInputSource
 {
  public:
@@ -25,6 +32,8 @@ class LibXmlInputSource
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
  public:
   void initZipSource(const UnicodeString& path, const UnicodeString* base = nullptr);
+
+  static PathInJar getFullPathFromPathJar(const UnicodeString& path, const UnicodeString* base);
 
  private:
   SharedXmlInputSource* zip_source {nullptr};
