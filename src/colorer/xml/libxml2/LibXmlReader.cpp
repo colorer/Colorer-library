@@ -123,6 +123,10 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, const
                                     static_cast<int>(unzipped_stream->size()), XML_CHAR_ENCODING_NONE);
   xmlParserInputPtr pInput = xmlNewIOInputStream(ctxt, buf, XML_CHAR_ENCODING_NONE);
 
+  // заполняем filename для работы external entity
+  auto root_pos = paths.path_in_jar.lastIndexOf('/') + 1;
+  auto file_name = UnicodeString(paths.path_in_jar, root_pos);
+  pInput->filename = strdup(UStr::to_stdstr(&file_name).c_str());
   return pInput;
 }
 #endif
