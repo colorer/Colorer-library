@@ -26,6 +26,8 @@ class Environment
                                                      const UnicodeString& extension);
   static bool isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath);
   static UnicodeString getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath);
+
+  static UnicodeString expandSpecialEnvironment(const UnicodeString& path);
 };
 
 }  // namespace colorer

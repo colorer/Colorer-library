@@ -141,10 +141,17 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
   //  путем склейки пути от текущего файла и указанного в external entity.
   // При этом в параметрах функции или в контексте нет ни пути до исходного файла, ни до файла в entity
 
-  const UnicodeString string_url(URL);
+  UnicodeString string_url(URL);
 
+  if (!is_full_path && string_url.startsWith(u"env:")) {
+    const auto exp = colorer::Environment::expandSpecialEnvironment(string_url);
+    string_url = UnicodeString(exp, 4);
+  }
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   if (string_url.startsWith(jar) || current_file->startsWith(jar)) {
+    if (!is_full_path) {
+      string_url = colorer::Environment::expandSpecialEnvironment(string_url);
+    }
     auto paths = LibXmlInputSource::getFullPathFromPathJar(string_url, is_full_path ? nullptr : current_file.get());
     is_full_path = false;
     xmlParserInputPtr ret = nullptr;
@@ -156,7 +163,7 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
   }
 #endif
   is_full_path = false;
-  xmlParserInputPtr ret = xmlNewInputFromFile(ctxt, URL);
+  xmlParserInputPtr ret = xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
 
   return ret;
 }

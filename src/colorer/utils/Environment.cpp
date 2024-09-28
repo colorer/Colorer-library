@@ -1,10 +1,10 @@
 #include "colorer/utils/Environment.h"
+#include <regex>
 #ifdef WIN32
 #include <windows.h>
 #include <cwchar>
-#else
-#include <regex>
 #endif
+
 namespace colorer {
 fs::path Environment::to_filepath(const UnicodeString* str)
 {
@@ -158,5 +158,24 @@ UnicodeString Environment::getAbsolutePath(const UnicodeString& basePath, const 
   UnicodeString newPath(basePath, 0, root_pos);
   newPath.append(relPath);
   return newPath;
+}
+
+UnicodeString Environment::expandSpecialEnvironment(const UnicodeString& path)
+{
+  COLORER_LOG_DEBUG("expand system environment for '%'", path);
+  std::smatch matcher;
+  std::string result;
+  auto text = UStr::to_stdstr(&path);
+  static const std::regex env_re {R"--(\$([[:alpha:]]\w*)\b)--"};
+  while (std::regex_search(text, matcher, env_re)) {
+    result += matcher.prefix().str();
+    auto a = getOSVariable(matcher[1].str().c_str());
+    result += UStr::to_stdstr(a);
+    text = matcher.suffix().str();
+  }
+  result += text;
+
+  COLORER_LOG_DEBUG("result of expand '%'", result);
+  return UnicodeString(result.c_str());
 }
 }  // namespace colorer
