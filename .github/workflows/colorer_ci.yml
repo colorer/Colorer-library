@@ -39,16 +39,15 @@ jobs:
         arch: [ x64 ]
         icu: [ON, OFF]
         zip: [ON, OFF]
-        libxml: [ON, OFF]
 
-    name: linux-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
+    name: linux-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Install dependency
-        run: sudo apt-get -y install ninja-build libicu-dev libxerces-c-dev zlib1g-dev libminizip-dev libxml2-dev
+        run: sudo apt-get -y install ninja-build libicu-dev zlib1g-dev libminizip-dev libxml2-dev
 
       - name: Create Build folder
         run: mkdir -p _build
@@ -66,7 +65,6 @@ jobs:
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
-          -DCOLORER_USE_LIBXML=${{ matrix.libxml }}
 
       - name: Build
         run: cmake --build _build --config $BUILD_TYPE -j ${{ steps.cpu-cores.outputs.count }}
@@ -83,7 +81,6 @@ jobs:
         arch: [ x64, x86 ]
         icu: [ON, OFF]
         zip: [ON, OFF]
-        libxml: [ON, OFF]
         include:
           - arch: x64
             triplet: x64-windows-static-rel
@@ -93,7 +90,7 @@ jobs:
           - arch: x86
             zip: OFF
 
-    name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
+    name: windows-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}
 
     steps:
       - name: Checkout source
@@ -146,7 +143,6 @@ jobs:
           -DVCPKG_FEATURE_FLAGS=manifests,versions
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
-          -DCOLORER_USE_LIBXML=${{ matrix.libxml }}
 
       - name: Build
         shell: bash
@@ -164,9 +160,8 @@ jobs:
         arch: [ x64 ]
         icu: [ON, OFF]
         zip: [ON, OFF]
-        libxml: [ON, OFF]
 
-    name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}-libxml_${{ matrix.libxml }}
+    name: macos-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}
 
     steps:
       - name: Checkout source
@@ -174,7 +169,7 @@ jobs:
 
       - name: Install dependency
         # icu4c is already installed
-        run: brew install xerces-c minizip ninja libxml2
+        run: brew install minizip ninja libxml2
 
       - name: Relink icu, because he is 'keg-only'
         run: brew link icu4c --force
@@ -191,30 +186,9 @@ jobs:
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
-          -DCOLORER_USE_LIBXML=${{ matrix.libxml }}
 
       - name: Build
         run: cmake --build _build --config $BUILD_TYPE -j$(getconf _NPROCESSORS_ONLN)
 
       - name: Test
         run: ./_build/tests/unit/unit_tests
-
-  test-xercesc:
-    # check build with xerces-c (unit16_t)
-    runs-on: ubuntu-22.04
-    name: linux-xercesc-uint16t
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: 'Login to GitHub Container Registry'
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.PACKAGES_GITHUB_USER }}
-          password: ${{ secrets.PACKAGES_GITHUB_TOKEN }}
-
-      - name: 'Build in docker'
-        run: |
-          docker build -f ci/Dockerfile-test-xercesc -t tempx:latest .

@@ -46,7 +46,6 @@ option(COLORER_BUILD_OLD_COMPILERS "Use own implementation for standard library"
 option(COLORER_USE_ZIPINPUTSOURCE "Use zip inputsource for schemes" ON)
 option(COLORER_USE_DEEPTRACE "Use trace logging" OFF)
 option(COLORER_USE_ICU_STRINGS "Use ICU library for strings" ON)
-option(COLORER_USE_LIBXML "Use LibXml2 library for parse xml, instead XercesC" OFF)
 
 #====================================================
 # global compilation settings
@@ -76,11 +75,7 @@ if(COLORER_USE_ICU_STRINGS)
   find_package(ICU COMPONENTS uc data REQUIRED)
 endif()
 
-if(COLORER_USE_LIBXML)
-  find_package(LibXml2 REQUIRED)
-else()
-  find_package(XercesC REQUIRED)
-endif()
+find_package(LibXml2 REQUIRED)
 
 if(COLORER_USE_ZIPINPUTSOURCE)
   find_package(ZLIB REQUIRED)

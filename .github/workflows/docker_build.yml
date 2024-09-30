@@ -25,12 +25,3 @@ jobs:
           tags: ghcr.io/colorer/devenv22_base:latest
           cache-from: type=registry,ref=ghcr.io/colorer/devenv22_base:latest
           cache-to: type=inline
-
-      - name: Build and push xercesc image
-        uses: docker/build-push-action@v6
-        with:
-          file: ./ci/Dockerfile-xercesc
-          push: true
-          tags: ghcr.io/colorer/devenv22_xercesc:latest
-          cache-from: type=registry,ref=ghcr.io/colorer/devenv22_base:latest
-          cache-to: type=inline

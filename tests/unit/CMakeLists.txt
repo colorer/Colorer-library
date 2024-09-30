@@ -7,10 +7,6 @@ set(unit_tests_SRC
     test_environment.cpp
     test_hrcparsing.cpp)
 
-if( NOT COLORER_USE_LIBXML)
-    set(unit_tests_SRC ${unit_tests_SRC} test_xerces_xmlinputsource.cpp)
-endif()
-
 add_executable(unit_tests ${unit_tests_SRC})
 
 target_link_libraries(unit_tests PRIVATE colorer_lib)
