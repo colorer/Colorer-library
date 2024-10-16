@@ -44,7 +44,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 {
   try {
     COLORER_LOG_DEBUG("try load '%'", location);
-    if (XmlInputSource::isFileURI(*base_catalog_path, &location)) {
+    if (XmlInputSource::isFsURI(*base_catalog_path, &location)) {
       auto files = colorer::Environment::getFilesFromPath(base_catalog_path.get(), &location, ".hrc");
       for (auto& file : files) {
         loadHrc(file, nullptr);

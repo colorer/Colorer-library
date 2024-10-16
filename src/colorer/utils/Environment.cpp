@@ -1,11 +1,11 @@
 #include "colorer/utils/Environment.h"
-#include <regex>
 #ifdef WIN32
 #include <windows.h>
 #include <cwchar>
 #endif
 
 namespace colorer {
+
 fs::path Environment::to_filepath(const UnicodeString* str)
 {
 #ifdef _WINDOWS
@@ -18,7 +18,7 @@ fs::path Environment::to_filepath(const UnicodeString* str)
 
 uUnicodeString Environment::getOSVariable(const UnicodeString& name)
 {
-#ifdef WIN32
+#ifdef _WINDOWS
   COLORER_LOG_DEBUG("get system environment '%'", name);
   auto str_name = UStr::to_stdwstr(&name);
   size_t sz = 0;
@@ -44,36 +44,9 @@ uUnicodeString Environment::getOSVariable(const UnicodeString& name)
     COLORER_LOG_DEBUG("'%' not set", name);
     return nullptr;
   }
-  else {
-    COLORER_LOG_DEBUG("'%' = '%'", name, value);
-    return std::make_unique<UnicodeString>(value);
-  }
-#endif
-}
 
-uUnicodeString Environment::expandEnvironment(const UnicodeString* path)
-{
-  COLORER_LOG_DEBUG("expand system environment for '%'", *path);
-#ifdef WIN32
-  std::wstring path_ws = UStr::to_stdwstr(path);
-  size_t i = ExpandEnvironmentStringsW(path_ws.c_str(), nullptr, 0);
-  auto temp = std::make_unique<wchar_t[]>(i);
-  ExpandEnvironmentStringsW(path_ws.c_str(), temp.get(), static_cast<DWORD>(i));
-  return std::make_unique<UnicodeString>(temp.get());
-#else
-  std::smatch matcher;
-  std::string result;
-  auto text = UStr::to_stdstr(path);
-  static const std::regex env_re {R"--(\$\{([^}]+)\})--"};
-  while (std::regex_search(text, matcher, env_re)) {
-    result += matcher.prefix().str();
-    result += std::getenv(matcher[1].str().c_str());
-    text = matcher.suffix().str();
-  }
-  result += text;
-
-  COLORER_LOG_DEBUG("result of expand '%'", result);
-  return std::make_unique<UnicodeString>(result.c_str());
+  COLORER_LOG_DEBUG("'%' = '%'", name, value);
+  return std::make_unique<UnicodeString>(value);
 #endif
 }
 
@@ -84,8 +57,8 @@ uUnicodeString Environment::normalizePath(const UnicodeString* path)
 
 fs::path Environment::normalizeFsPath(const UnicodeString* path)
 {
-  auto expanded_string = Environment::expandEnvironment(path);
-  auto fpath = fs::path(Environment::to_filepath(expanded_string.get()));
+  auto expanded_string = expandEnvironment(*path);
+  auto fpath = fs::path(to_filepath(&expanded_string));
   fpath = fpath.lexically_normal();
   if (fs::is_symlink(fpath)) {
     fpath = fs::read_symlink(fpath);
@@ -178,4 +151,52 @@ UnicodeString Environment::expandSpecialEnvironment(const UnicodeString& path)
   COLORER_LOG_DEBUG("result of expand '%'", result);
   return UnicodeString(result.c_str());
 }
+
+UnicodeString Environment::expandEnvironment(const UnicodeString& path)
+{
+  COLORER_LOG_DEBUG("expand system environment for '%'", path);
+  if (path.isEmpty()) {
+    COLORER_LOG_DEBUG("result of expand ''");
+    return {};
+  }
+
+#ifdef _WINDOWS
+  std::wstring path_ws = UStr::to_stdwstr(&path);
+  size_t i = ExpandEnvironmentStringsW(path_ws.c_str(), nullptr, 0);
+  auto temp = std::make_unique<wchar_t[]>(i);
+  ExpandEnvironmentStringsW(path_ws.c_str(), temp.get(), static_cast<DWORD>(i));
+  COLORER_LOG_DEBUG("result of expand '%'", temp.get());
+  return {temp.get()};
+#else
+  const auto text = UStr::to_stdstr(&path);
+  auto res = expandEnvByRegexp(text, std::regex(R"--(\$\{([[:alpha:]]\w*)\})--"));
+  res = expandEnvByRegexp(res, std::regex(R"--(\$([[:alpha:]]\w*)\b)--"));
+  COLORER_LOG_DEBUG("result of expand '%'", res);
+  return {res.c_str()};
+#endif
+}
+
+std::string Environment::expandEnvByRegexp(const std::string& path, const std::regex& regex)
+{
+  std::smatch matcher;
+  std::string result;
+  auto text = path;
+  while (std::regex_search(text, matcher, regex)) {
+    result += matcher.prefix().str();
+    auto env_value = getOSVariable(matcher[1].str().c_str());
+    if (env_value) {
+      // add expanded value
+      result += UStr::to_stdstr(env_value);
+    }
+    else {
+      // add variable name
+      result += matcher[0].str();
+    }
+    text = matcher.suffix().str();
+  }
+  result += text;
+
+  return result;
+}
+
 }  // namespace colorer

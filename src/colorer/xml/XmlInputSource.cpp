@@ -18,7 +18,7 @@ UnicodeString& XmlInputSource::getPath() const
   return xml_input_source->getPath();
 }
 
-bool XmlInputSource::isFileURI(const UnicodeString& path, const UnicodeString* base)
+bool XmlInputSource::isFsURI(const UnicodeString& path, const UnicodeString* base)
 {
   const UnicodeString jar(u"jar:");
   if (path.startsWith(jar) || (base && base->startsWith(jar))) {

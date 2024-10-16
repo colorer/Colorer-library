@@ -152,7 +152,7 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
     if (!is_full_path) {
       string_url = colorer::Environment::expandSpecialEnvironment(string_url);
     }
-    auto paths = LibXmlInputSource::getFullPathFromPathJar(string_url, is_full_path ? nullptr : current_file.get());
+    auto paths = LibXmlInputSource::getFullPathsToZip(string_url, is_full_path ? nullptr : current_file.get());
     is_full_path = false;
     xmlParserInputPtr ret = nullptr;
     try {

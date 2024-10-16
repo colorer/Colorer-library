@@ -52,7 +52,7 @@ SharedXmlInputSource::SharedXmlInputSource(const UnicodeString& path)
 
 SharedXmlInputSource::~SharedXmlInputSource()
 {
-  // не нужно удалять объект, удаляемый из массива. мы и так уже в деструкторе
+  // You don't need to delete an object that has been deleted from the array. We are already in the destructor.
   isHash->erase(source_path);
   if (isHash->empty()) {
     delete isHash;

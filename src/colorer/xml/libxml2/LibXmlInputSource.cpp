@@ -5,7 +5,7 @@
 LibXmlInputSource::LibXmlInputSource(const UnicodeString& path, const UnicodeString* base)
 {
   if (path.isEmpty()) {
-    throw InputSourceException("XmlInputSource::newInstance: path is empty");
+    throw InputSourceException("LibXmlInputSource: path is empty");
   }
   UnicodeString full_path;
   if (path.startsWith(jar) || (base != nullptr && base->startsWith(jar))) {
@@ -43,15 +43,16 @@ UnicodeString& LibXmlInputSource::getPath()
 }
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+
 void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeString* base)
 {
-  auto paths = getFullPathFromPathJar(path, base);
+  const auto paths = getFullPathsToZip(path, base);
 
   sourcePath = paths.full_path;
   zip_source = SharedXmlInputSource::getSharedInputSource(paths.path_to_jar);
 }
 
-PathInJar LibXmlInputSource::getFullPathFromPathJar(const UnicodeString& path, const UnicodeString* base)
+PathInJar LibXmlInputSource::getFullPathsToZip(const UnicodeString& path, const UnicodeString* base)
 {
   if (path.startsWith(jar)) {
     const auto path_idx = path.lastIndexOf('!');
@@ -66,7 +67,7 @@ PathInJar LibXmlInputSource::getFullPathFromPathJar(const UnicodeString& path, c
     const UnicodeString full_path = jar + path_to_jar + u"!" + path_in_jar;
     return {full_path, path_to_jar, path_in_jar};
   }
-  else {
+  if (base != nullptr && base->startsWith(jar)) {
     const auto base_idx = base->lastIndexOf('!');
     if (base_idx == -1) {
       throw InputSourceException("Bad jar uri format: " + path);
@@ -77,5 +78,7 @@ PathInJar LibXmlInputSource::getFullPathFromPathJar(const UnicodeString& path, c
     const UnicodeString full_path = jar + path_to_jar + u"!" + path_in_jar;
     return {full_path, path_to_jar, path_in_jar};
   }
+  throw InputSourceException("The path to the jar was not found");
 }
+
 #endif

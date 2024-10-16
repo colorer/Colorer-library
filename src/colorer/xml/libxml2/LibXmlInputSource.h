@@ -21,6 +21,7 @@ class LibXmlInputSource
   explicit LibXmlInputSource(const UnicodeString& path, const UnicodeString* base = nullptr);
   ~LibXmlInputSource();
 
+  [[nodiscard]]
   LibXmlInputSource createRelative(const UnicodeString& relPath) const;
 
   [[nodiscard]]
@@ -31,12 +32,11 @@ class LibXmlInputSource
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
  public:
-  void initZipSource(const UnicodeString& path, const UnicodeString* base = nullptr);
-
-  static PathInJar getFullPathFromPathJar(const UnicodeString& path, const UnicodeString* base);
+  static PathInJar getFullPathsToZip(const UnicodeString& path, const UnicodeString* base = nullptr);
 
  private:
   SharedXmlInputSource* zip_source {nullptr};
+  void initZipSource(const UnicodeString& path, const UnicodeString* base = nullptr);
 #endif
 };
 
