@@ -28,11 +28,13 @@ class Environment
   static std::vector<UnicodeString> getFilesFromPath(const UnicodeString* basePath, const UnicodeString* relPath,
                                                      const UnicodeString& extension);
   static bool isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath);
+  static bool isRegularFile(const UnicodeString& path);
   static UnicodeString getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath);
 
   static UnicodeString expandSpecialEnvironment(const UnicodeString& path);
   static UnicodeString expandEnvironment(const UnicodeString& path);
 
+  static uintmax_t getFileSize(const UnicodeString& path);
 private:
   static std::string expandEnvByRegexp(const std::string& path, const std::regex& regex);
 };

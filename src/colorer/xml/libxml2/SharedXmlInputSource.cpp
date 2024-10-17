@@ -1,13 +1,7 @@
 #include "colorer/xml/libxml2/SharedXmlInputSource.h"
 #include <fstream>
 #include "colorer/Exception.h"
-#ifdef COLORER_FEATURE_OLD_COMPILERS
-#include "colorer/platform/filesystem.hpp"
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-namespace fs = std::filesystem;
-#endif
+#include "colorer/utils/Environment.h"
 
 std::unordered_map<UnicodeString, SharedXmlInputSource*>* SharedXmlInputSource::isHash = nullptr;
 
@@ -78,7 +72,7 @@ void SharedXmlInputSource::open()
       COLORER_LOG_ERROR("failed to open %", source_path);
       throw InputSourceException("failed to open " + source_path);
     }
-    mSize = static_cast<int>(fs::file_size(UStr::to_stdstr(&source_path)));
+    mSize = static_cast<int>(colorer::Environment::getFileSize(source_path));
     mSrc.reset(new byte[mSize]);
     f.read(reinterpret_cast<std::istream::char_type*>(mSrc.get()), mSize);
     f.close();

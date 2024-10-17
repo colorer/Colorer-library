@@ -115,6 +115,11 @@ bool Environment::isRegularFile(const UnicodeString* basePath, const UnicodeStri
   return fs::is_regular_file(clear_path);
 }
 
+bool Environment::isRegularFile(const UnicodeString& path)
+{
+  return fs::is_regular_file(UStr::to_stdstr(&path));
+}
+
 UnicodeString Environment::getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath)
 {
   auto root_pos = basePath.lastIndexOf('/');
@@ -174,6 +179,11 @@ UnicodeString Environment::expandEnvironment(const UnicodeString& path)
   COLORER_LOG_DEBUG("result of expand '%'", res);
   return {res.c_str()};
 #endif
+}
+
+uintmax_t Environment::getFileSize(const UnicodeString& path)
+{
+  return fs::file_size(UStr::to_stdstr(&path));
 }
 
 std::string Environment::expandEnvByRegexp(const std::string& path, const std::regex& regex)

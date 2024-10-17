@@ -127,9 +127,10 @@ TEST_CASE("Check expand paths to files from jar-URI")
   REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &bad_full_path),
                       Catch::Contains("Bad jar uri format"));
 
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(base_path), Catch::Contains("The path to the jar was not found"));
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &base_path), Catch::Contains("The path to the jar was not found"));
-
+  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(base_path),
+                      Catch::Contains("The path to the jar was not found"));
+  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &base_path),
+                      Catch::Contains("The path to the jar was not found"));
 }
 
 TEST_CASE("Work with path to zip: zip enabled")
@@ -142,14 +143,13 @@ TEST_CASE("Work with path to zip: zip enabled")
   std::ofstream(test_file1.c_str()).close();
 
   UnicodeString path_to_zip = u"jar:" + UnicodeString(test_file1.c_str()) + u"!base/c.hrc";
-  UnicodeString badpath_to_zip = u"jar:" + UnicodeString(temp_path.c_str()) + u"test1.zip!base/c.hrc";
 
   REQUIRE_NOTHROW(XmlInputSource(path_to_zip));
   REQUIRE_NOTHROW(XmlInputSource(u"c-unix.ent.hrc", &path_to_zip));
 
   UnicodeString full_path(u"jar:/home/user/base/hrc/common.zip!base/c.hrc");
-  REQUIRE_NOTHROW(XmlInputSource(full_path));
-  REQUIRE_NOTHROW(XmlInputSource(u"c-unix.ent.hrc", &full_path));
+  REQUIRE_THROWS_WITH(XmlInputSource(full_path), Catch::Contains("isn't regular file"));
+  REQUIRE_THROWS_WITH(XmlInputSource(u"c-unix.ent.hrc", &full_path), Catch::Contains("isn't regular file"));
 
   // clean after tests
   std::error_code ec;

@@ -48,6 +48,10 @@ void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeSt
 {
   const auto paths = getFullPathsToZip(path, base);
 
+  if (!colorer::Environment::isRegularFile(paths.path_to_jar)) {
+    throw InputSourceException(paths.path_to_jar + " isn't regular file.");
+  }
+
   sourcePath = paths.full_path;
   zip_source = SharedXmlInputSource::getSharedInputSource(paths.path_to_jar);
 }
