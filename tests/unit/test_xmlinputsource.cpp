@@ -1,6 +1,5 @@
 #include <catch2/catch.hpp>
 #include <filesystem>
-#include <fstream>
 #include "colorer/Common.h"
 #include "colorer/xml/XmlInputSource.h"
 
@@ -23,13 +22,9 @@ TEST_CASE("Test create XmlInputSource")
     REQUIRE_THROWS_WITH(XmlInputSource(non_exist_file.c_str(), &empty_string), Catch::Contains("isn't regular file"));
   }
 
-  // create files for tests
-  auto temp_path = work_dir / "temporary";
-  fs::create_directories(temp_path);
+  auto temp_path = work_dir / "data";
   auto test_file1 = temp_path / "test1.xml";
   auto test_file2 = temp_path / "test2.xml";
-  std::ofstream(test_file1.c_str()).close();
-  std::ofstream(test_file2.c_str()).close();
 
   SECTION("Create XmlInputSource with exists file")
   {
@@ -69,10 +64,6 @@ TEST_CASE("Test create XmlInputSource")
     REQUIRE_NOTHROW(XmlInputSource("test1.xml", &path1));
 #endif
   }
-
-  // clean after tests
-  std::error_code ec;
-  fs::remove_all(temp_path, ec);
 }
 
 TEST_CASE("Test isFsURI")
@@ -101,46 +92,89 @@ TEST_CASE("Work with path to zip: zip disabled")
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 TEST_CASE("Check expand paths to files from jar-URI")
 {
-  UnicodeString path_to_c(u"jar:common.zip!base/c.hrc");
-  auto paths_cpp = LibXmlInputSource::getFullPathsToZip(path_to_c);
+  SECTION("Simple path")
+  {
+    UnicodeString path_to_file(u"jar:common.zip!base/c.hrc");
+    auto paths_cpp = LibXmlInputSource::getFullPathsToZip(path_to_file);
 
-  REQUIRE(paths_cpp.full_path == path_to_c);
-  REQUIRE(paths_cpp.path_in_jar == u"base/c.hrc");
-  REQUIRE(paths_cpp.path_to_jar == u"common.zip");
+    REQUIRE(paths_cpp.full_path == path_to_file);
+    REQUIRE(paths_cpp.path_in_jar == u"base/c.hrc");
+    REQUIRE(paths_cpp.path_to_jar == u"common.zip");
+  }
 
-  UnicodeString base_path(u"/home/user/base/hrc/proto.hrc");
-  UnicodeString full_path(u"jar:/home/user/base/hrc/common.zip!base/c.hrc");
-  auto paths_cpp2 = LibXmlInputSource::getFullPathsToZip(path_to_c, &base_path);
+  SECTION("jar-path with env")
+  {
+    const char env[]="/home/user2/base/hrc";
+    setenv("CUR_DIR", env, 1);
+    UnicodeString path_to_file(u"jar:$CUR_DIR/common.zip!base/c.hrc");
+    UnicodeString full_path(u"jar:/home/user2/base/hrc/common.zip!base/c.hrc");
 
-  REQUIRE(paths_cpp2.full_path == full_path);
-  REQUIRE(paths_cpp2.path_in_jar == u"base/c.hrc");
-  REQUIRE(paths_cpp2.path_to_jar == u"/home/user/base/hrc/common.zip");
+    auto paths_cpp2 = LibXmlInputSource::getFullPathsToZip(path_to_file);
 
-  auto paths_cpp3 = LibXmlInputSource::getFullPathsToZip(u"c-unix.ent.hrc", &full_path);
-  REQUIRE(paths_cpp3.full_path == u"jar:/home/user/base/hrc/common.zip!base/c-unix.ent.hrc");
-  REQUIRE(paths_cpp3.path_in_jar == u"base/c-unix.ent.hrc");
-  REQUIRE(paths_cpp3.path_to_jar == u"/home/user/base/hrc/common.zip");
+    REQUIRE(paths_cpp2.full_path == full_path);
+    REQUIRE(paths_cpp2.path_in_jar == u"base/c.hrc");
+    REQUIRE(paths_cpp2.path_to_jar == u"/home/user2/base/hrc/common.zip");
+  }
 
-  UnicodeString bad_path_to_cpp(u"jar:common.zip/base/c.hrc");
-  UnicodeString bad_full_path(u"jar:/home/user/base/hrc/common.zip/base/c.hrc");
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(bad_path_to_cpp), Catch::Contains("Bad jar uri format"));
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &bad_full_path),
-                      Catch::Contains("Bad jar uri format"));
+  SECTION("jar-path relative normal path")
+  {
+    UnicodeString path_to_file(u"jar:common.zip!base/c.hrc");
+    UnicodeString base_path(u"/home/user/base/hrc/proto.hrc");
+    UnicodeString full_path(u"jar:/home/user/base/hrc/common.zip!base/c.hrc");
 
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(base_path),
-                      Catch::Contains("The path to the jar was not found"));
-  REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &base_path),
-                      Catch::Contains("The path to the jar was not found"));
+    auto paths_cpp2 = LibXmlInputSource::getFullPathsToZip(path_to_file, &base_path);
+
+    REQUIRE(paths_cpp2.full_path == full_path);
+    REQUIRE(paths_cpp2.path_in_jar == u"base/c.hrc");
+    REQUIRE(paths_cpp2.path_to_jar == u"/home/user/base/hrc/common.zip");
+  }
+
+  SECTION("jar-path with env relative normal path")
+  {
+    constexpr char env[]="/home/user2/base/hrc";
+    setenv("CUR_DIR", env, 1);
+    UnicodeString path_to_file(u"jar:$CUR_DIR/common.zip!base/c.hrc");
+    UnicodeString base_path(u"/home/user/base/hrc/proto.hrc");
+    UnicodeString full_path(u"jar:/home/user2/base/hrc/common.zip!base/c.hrc");
+
+    auto paths_cpp2 = LibXmlInputSource::getFullPathsToZip(path_to_file, &base_path);
+
+    REQUIRE(paths_cpp2.full_path == full_path);
+    REQUIRE(paths_cpp2.path_in_jar == u"base/c.hrc");
+    REQUIRE(paths_cpp2.path_to_jar == u"/home/user2/base/hrc/common.zip");
+  }
+
+  SECTION("normal path relative jar-path")
+  {
+    UnicodeString full_path(u"jar:/home/user/base/hrc/common.zip!base/c.hrc");
+    auto paths_cpp3 = LibXmlInputSource::getFullPathsToZip(u"c-unix.ent.hrc", &full_path);
+    REQUIRE(paths_cpp3.full_path == u"jar:/home/user/base/hrc/common.zip!base/c-unix.ent.hrc");
+    REQUIRE(paths_cpp3.path_in_jar == u"base/c-unix.ent.hrc");
+    REQUIRE(paths_cpp3.path_to_jar == u"/home/user/base/hrc/common.zip");
+  }
+
+  SECTION("bad jar-path format")
+  {
+    UnicodeString bad_path_to_cpp(u"jar:common.zip/base/c.hrc");
+    UnicodeString bad_full_path(u"jar:/home/user/base/hrc/common.zip/base/c.hrc");
+    REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(bad_path_to_cpp), Catch::Contains("Bad jar uri format"));
+    REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &bad_full_path),
+                        Catch::Contains("Bad jar uri format"));
+
+    UnicodeString base_path(u"/home/user/base/hrc/proto.hrc");
+    REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip(base_path),
+                        Catch::Contains("The path to the jar was not found"));
+    REQUIRE_THROWS_WITH(LibXmlInputSource::getFullPathsToZip("c-unix.ent.hrc", &base_path),
+                        Catch::Contains("The path to the jar was not found"));
+  }
 }
 
-TEST_CASE("Work with path to zip: zip enabled")
+TEST_CASE("Create XmlInputSource to zip: zip enabled")
 {
   // create files for tests
   auto work_dir = fs::current_path();
-  auto temp_path = work_dir / "temporary";
-  fs::create_directories(temp_path);
+  auto temp_path = work_dir / "data";
   auto test_file1 = temp_path / "test1.zip";
-  std::ofstream(test_file1.c_str()).close();
 
   UnicodeString path_to_zip = u"jar:" + UnicodeString(test_file1.c_str()) + u"!base/c.hrc";
 
@@ -150,9 +184,5 @@ TEST_CASE("Work with path to zip: zip enabled")
   UnicodeString full_path(u"jar:/home/user/base/hrc/common.zip!base/c.hrc");
   REQUIRE_THROWS_WITH(XmlInputSource(full_path), Catch::Contains("isn't regular file"));
   REQUIRE_THROWS_WITH(XmlInputSource(u"c-unix.ent.hrc", &full_path), Catch::Contains("isn't regular file"));
-
-  // clean after tests
-  std::error_code ec;
-  fs::remove_all(temp_path, ec);
 }
 #endif

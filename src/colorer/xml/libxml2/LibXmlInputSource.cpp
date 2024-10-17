@@ -59,14 +59,22 @@ void LibXmlInputSource::initZipSource(const UnicodeString& path, const UnicodeSt
 PathInJar LibXmlInputSource::getFullPathsToZip(const UnicodeString& path, const UnicodeString* base)
 {
   if (path.startsWith(jar)) {
-    const auto path_idx = path.lastIndexOf('!');
+    auto local_path = colorer::Environment::expandSpecialEnvironment(path);
+    const auto path_idx = local_path.lastIndexOf('!');
     if (path_idx == -1) {
-      throw InputSourceException("Bad jar uri format: " + path);
+      throw InputSourceException("Bad jar uri format: " + local_path);
     }
 
-    const UnicodeString path_to_jar = colorer::Environment::getAbsolutePath(
-        base ? *base : u"", UnicodeString(path, jar.length(), path_idx - jar.length()));
-    const UnicodeString path_in_jar(path, path_idx + 1);
+    UnicodeString path_to_jar;
+    if (local_path.compare(path) == 0 ) {
+      path_to_jar = colorer::Environment::getAbsolutePath(
+              base ? *base : u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
+    }else {
+      path_to_jar = colorer::Environment::getAbsolutePath(
+        u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
+    }
+
+    const UnicodeString path_in_jar(local_path, path_idx + 1);
 
     const UnicodeString full_path = jar + path_to_jar + u"!" + path_in_jar;
     return {full_path, path_to_jar, path_in_jar};

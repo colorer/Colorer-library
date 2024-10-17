@@ -7,6 +7,9 @@ set(unit_tests_SRC
     test_environment.cpp
     test_hrcparsing.cpp
     test_xmlinputsource.cpp
+    test_xmlreader.cpp
+    test_common.h
+    TestLogger.h
 )
 
 add_executable(unit_tests ${unit_tests_SRC})

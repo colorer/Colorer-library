@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc>
+  <prototype name="cue" group="other" description="Cue sheet">
+    <filename>/\.cue$/</filename>
+	<parameters>
+      <param value='1' description="lines for 'firstline'"/>
+      <param name='firstlinebytes' value='5' description="bytes for 'firstline'"/>
+    </parameters>
+  </prototype>
+	<type name="cue">
+	</type>
+</hrc>

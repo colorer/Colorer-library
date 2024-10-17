@@ -10,7 +10,6 @@
 class LibXmlReader
 {
  public:
-  explicit LibXmlReader(const UnicodeString& source_file);
   explicit LibXmlReader(const XmlInputSource& source);
 
   ~LibXmlReader();
@@ -24,9 +23,10 @@ class LibXmlReader
   }
 
  private:
+
   xmlDocPtr xmldoc {nullptr};
 
-
+  explicit LibXmlReader(const UnicodeString& source_file);
   static void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);
   bool populateNode(xmlNode* node, XMLNode& result);
