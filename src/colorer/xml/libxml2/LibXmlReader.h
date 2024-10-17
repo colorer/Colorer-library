@@ -24,15 +24,18 @@ class LibXmlReader
   }
 
  private:
-  xmlDocPtr xmldoc;
-  static uUnicodeString current_file;
-  static bool is_full_path;
+  xmlDocPtr xmldoc {nullptr};
 
-  void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
+
+  static void getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data);
   void getChildren(xmlNode* node, XMLNode& result);
   bool populateNode(xmlNode* node, XMLNode& result);
-  UnicodeString getElementText(const xmlNode* node);
+  static UnicodeString getElementText(const xmlNode* node);
 
+  /* the name of the file that is being processed */
+  static uUnicodeString current_file;
+  /* is this the first xmlMyExternalEntityLoader call for current file*/
+  static bool is_first_call;
   static xmlParserInputPtr xmlMyExternalEntityLoader(const char* URL, const char* ID, xmlParserCtxtPtr ctxt);
   static void xml_error_func(void* ctx, const char* msg, ...);
 

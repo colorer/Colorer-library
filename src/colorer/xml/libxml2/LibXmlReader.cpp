@@ -14,16 +14,17 @@
 #endif
 
 uUnicodeString LibXmlReader::current_file = nullptr;
-bool LibXmlReader::is_full_path = false;
+bool LibXmlReader::is_first_call = false;
 
-LibXmlReader::LibXmlReader(const UnicodeString& source_file) : xmldoc(nullptr)
+LibXmlReader::LibXmlReader(const UnicodeString& source_file)
 {
   xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
   xmlSetGenericErrorFunc(nullptr, xml_error_func);
 
   current_file = std::make_unique<UnicodeString>(source_file);
-  is_full_path = true;
+  is_first_call = true;
 
+  // you can pass any string for the file name, it can be processed/converted into xml by MyExternalEntityLoader
   xmldoc = xmlReadFile(UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
 }
 
@@ -69,7 +70,7 @@ UnicodeString LibXmlReader::getElementText(const xmlNode* node)
 {
   for (const xmlNode* child = node->children; child != nullptr; child = child->next) {
     if (child->type == XML_CDATA_SECTION_NODE) {
-      return UnicodeString(reinterpret_cast<const char*>(child->content));
+      return {reinterpret_cast<const char*>(child->content)};
     }
     if (child->type == XML_TEXT_NODE) {
       auto temp_string = UnicodeString(reinterpret_cast<const char*>(child->content));
@@ -80,7 +81,7 @@ UnicodeString LibXmlReader::getElementText(const xmlNode* node)
       return temp_string;
     }
   }
-  return UnicodeString("");
+  return {u""};
 }
 
 void LibXmlReader::getChildren(xmlNode* node, XMLNode& result)
@@ -104,14 +105,14 @@ void LibXmlReader::getChildren(xmlNode* node, XMLNode& result)
 void LibXmlReader::getAttributes(const xmlNode* node, std::unordered_map<UnicodeString, UnicodeString>& data)
 {
   for (xmlAttrPtr attr = node->properties; attr != nullptr; attr = attr->next) {
-    auto content = xmlNodeGetContent(attr->children);
+    const auto content = xmlNodeGetContent(attr->children);
     data.emplace(std::pair(reinterpret_cast<const char*>(attr->name), reinterpret_cast<const char*>(content)));
     xmlFree(content);
   }
 }
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
-xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, const xmlParserCtxtPtr ctxt)
+xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, xmlParserCtxtPtr ctxt)
 {
   const auto is = SharedXmlInputSource::getSharedInputSource(paths.path_to_jar);
   is->open();
@@ -123,37 +124,37 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, const
                                     static_cast<int>(unzipped_stream->size()), XML_CHAR_ENCODING_NONE);
   xmlParserInputPtr pInput = xmlNewIOInputStream(ctxt, buf, XML_CHAR_ENCODING_NONE);
 
-  // заполняем filename для работы external entity
-  auto root_pos = paths.path_in_jar.lastIndexOf('/') + 1;
-  auto file_name = UnicodeString(paths.path_in_jar, root_pos);
+  // filling in the filename for the external entity to work
+  const auto root_pos = paths.path_in_jar.lastIndexOf('/') + 1;
+  const auto file_name = UnicodeString(paths.path_in_jar, root_pos);
   pInput->filename = strdup(UStr::to_stdstr(&file_name).c_str());
   return pInput;
 }
 #endif
 
-xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/,
-                                                          const xmlParserCtxtPtr ctxt)
+xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/, xmlParserCtxtPtr ctxt)
 {
-  // Функция вызывается перед каждым открытием файла в рамках libxml
-  //  будь то xmlReadFile, или открытие файла для external entity.
-  // Т.е. путь к файлу можно проверять или модифицировать тут.
-  // Если в external entity указан путь похожий на файловый, то libxml сам формирует путь до entity файла,
-  //  путем склейки пути от текущего файла и указанного в external entity.
-  // При этом в параметрах функции или в контексте нет ни пути до исходного файла, ни до файла в entity
+  /*
+   * The function is called before each opening of a file within libxml, whether it is an xmlReadFile,
+   * or opening a file for an external entity.
+   * I.e., the path to the file can be checked or modified here.  If the external entity specifies a path similar
+   * to the file path, then libxml itself forms the full path to the entity file by gluing the path from the current
+   * file and the one specified in the external entity.
+   * At the same time, there is no path to the source file or to the file in the entity in the function parameters.
+   */
 
   UnicodeString string_url(URL);
 
-  if (!is_full_path && string_url.startsWith(u"env:")) {
+  // read entity string like "env:$FAR_HOME/hrd/catalog-console.xml"
+  static const UnicodeString env(u"env:");
+  if (!is_first_call && string_url.startsWith(env)) {
     const auto exp = colorer::Environment::expandSpecialEnvironment(string_url);
-    string_url = UnicodeString(exp, 4);
+    string_url = UnicodeString(exp, env.length());
   }
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   if (string_url.startsWith(jar) || current_file->startsWith(jar)) {
-    if (!is_full_path) {
-      string_url = colorer::Environment::expandSpecialEnvironment(string_url);
-    }
-    auto paths = LibXmlInputSource::getFullPathsToZip(string_url, is_full_path ? nullptr : current_file.get());
-    is_full_path = false;
+    const auto paths = LibXmlInputSource::getFullPathsToZip(string_url, is_first_call ? nullptr : current_file.get());
+    is_first_call = false;
     xmlParserInputPtr ret = nullptr;
     try {
       ret = xmlZipEntityLoader(paths, ctxt);
@@ -162,7 +163,8 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
     return ret;
   }
 #endif
-  is_full_path = false;
+  is_first_call = false;
+  // read it as a regular file
   xmlParserInputPtr ret = xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
 
   return ret;

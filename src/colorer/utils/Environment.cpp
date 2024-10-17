@@ -141,20 +141,13 @@ UnicodeString Environment::getAbsolutePath(const UnicodeString& basePath, const 
 UnicodeString Environment::expandSpecialEnvironment(const UnicodeString& path)
 {
   COLORER_LOG_DEBUG("expand system environment for '%'", path);
+
   std::smatch matcher;
-  std::string result;
-  auto text = UStr::to_stdstr(&path);
-  static const std::regex env_re {R"--(\$([[:alpha:]]\w*)\b)--"};
-  while (std::regex_search(text, matcher, env_re)) {
-    result += matcher.prefix().str();
-    auto a = getOSVariable(matcher[1].str().c_str());
-    result += UStr::to_stdstr(a);
-    text = matcher.suffix().str();
-  }
-  result += text;
+  const auto text = UStr::to_stdstr(&path);
+  auto result = expandEnvByRegexp(text, std::regex(R"--(\$([[:alpha:]]\w*)\b)--"));
 
   COLORER_LOG_DEBUG("result of expand '%'", result);
-  return UnicodeString(result.c_str());
+  return {result.c_str()};
 }
 
 UnicodeString Environment::expandEnvironment(const UnicodeString& path)
