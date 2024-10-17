@@ -71,7 +71,7 @@ jobs:
 
       - name: Test
         working-directory: ./tests/unit
-        run: ./_build/tests/unit/unit_tests
+        run: ../../_build/tests/unit/unit_tests
 
   windows-vc:
     runs-on: windows-2022
@@ -152,7 +152,7 @@ jobs:
       - name: Test
         shell: bash
         working-directory: ./tests/unit
-        run: ./_build/tests/unit/unit_tests.exe
+        run: ../../_build/tests/unit/unit_tests.exe
 
   macos-clang:
     runs-on: macos-latest
@@ -194,4 +194,4 @@ jobs:
 
       - name: Test
         working-directory: ./tests/unit
-        run: ./_build/tests/unit/unit_tests
+        run: ../../_build/tests/unit/unit_tests
