@@ -6,6 +6,7 @@
 ### Fixed
 - Build on old Linux platform. A minimum of gcc 7 is required.
 - Build on Linux ARM64, *BSD, macOS
+- Fixed a bug/freeze when resizing the window in which a paired object is selected
  
 ### Changed
 - The library for logging spdlog has been replaced by own implementation.
