@@ -1,4 +1,5 @@
 #include "colorer/xml/XmlInputSource.h"
+#include "colorer/base/BaseNames.h"
 
 XmlInputSource::XmlInputSource(const UnicodeString& source_path) : XmlInputSource(source_path, nullptr) {}
 
@@ -20,7 +21,6 @@ UnicodeString& XmlInputSource::getPath() const
 
 bool XmlInputSource::isFsURI(const UnicodeString& path, const UnicodeString* base)
 {
-  const UnicodeString jar(u"jar:");
   if (path.startsWith(jar) || (base && base->startsWith(jar))) {
     return false;
   }

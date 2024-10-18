@@ -38,9 +38,9 @@ SharedXmlInputSource* SharedXmlInputSource::getSharedInputSource(const UnicodeSt
   return sis;
 }
 
-SharedXmlInputSource::SharedXmlInputSource(const UnicodeString& path)
+SharedXmlInputSource::SharedXmlInputSource(const UnicodeString& path): source_path(path)
 {
-  source_path = path;
+
   is_open = false;
 }
 

@@ -87,6 +87,7 @@ set(SRC_COLORER
     colorer/viewer/TextConsoleViewer.h
     colorer/viewer/TextLinesStore.cpp
     colorer/viewer/TextLinesStore.h
+    colorer/xml/XMLNode.cpp
     colorer/xml/XMLNode.h
     colorer/xml/XmlInputSource.cpp
     colorer/xml/XmlInputSource.h

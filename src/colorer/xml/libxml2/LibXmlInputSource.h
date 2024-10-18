@@ -6,8 +6,6 @@
 #include "colorer/xml/libxml2/SharedXmlInputSource.h"
 #endif
 
-static const UnicodeString jar(u"jar:");
-
 struct PathInJar
 {
   UnicodeString full_path;

@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include "colorer/Exception.h"
+#include "colorer/base/BaseNames.h"
 #include "colorer/utils/Environment.h"
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE

@@ -1,5 +1,6 @@
 #include "colorer/xml/libxml2/LibXmlInputSource.h"
 #include "colorer/Exception.h"
+#include "colorer/base/BaseNames.h"
 #include "colorer/utils/Environment.h"
 
 LibXmlInputSource::LibXmlInputSource(const UnicodeString& path, const UnicodeString* base)
@@ -66,12 +67,13 @@ PathInJar LibXmlInputSource::getFullPathsToZip(const UnicodeString& path, const 
     }
 
     UnicodeString path_to_jar;
-    if (local_path.compare(path) == 0 ) {
+    if (local_path.compare(path) == 0) {
       path_to_jar = colorer::Environment::getAbsolutePath(
-              base ? *base : u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
-    }else {
-      path_to_jar = colorer::Environment::getAbsolutePath(
-        u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
+          base ? *base : u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
+    }
+    else {
+      path_to_jar =
+          colorer::Environment::getAbsolutePath(u"", UnicodeString(local_path, jar.length(), path_idx - jar.length()));
     }
 
     const UnicodeString path_in_jar(local_path, path_idx + 1);

@@ -152,7 +152,6 @@ UnicodeString Environment::expandSpecialEnvironment(const UnicodeString& path)
 {
   COLORER_LOG_DEBUG("expand system environment for '%'", path);
 
-  std::smatch matcher;
   const auto text = UStr::to_stdstr(&path);
   auto result = expandEnvByRegexp(text, std::regex(R"--(\$([[:alpha:]]\w*)\b)--"));
 
