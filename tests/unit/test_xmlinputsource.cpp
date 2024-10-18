@@ -56,12 +56,20 @@ TEST_CASE("Test create XmlInputSource")
   SECTION("Create XmlInputSource with environment variable in path")
   {
 #ifndef WIN32
-    setenv("COLORER_TEST_XML1", temp_path.c_str(), 1);
-    UnicodeString path1(R"($COLORER_TEST_XML1/test1.xml)");
-    UnicodeString path2(R"($COLORER_TEST_XML2/test2.xml)");
+    colorer::Environment::setOSEnv("COLORER_TEST_XML1", temp_path.c_str());
+    UnicodeString path1("$COLORER_TEST_XML1/test1.xml");
+    UnicodeString path2("$COLORER_TEST_XML2/test2.xml");
 
     REQUIRE_NOTHROW(XmlInputSource(path1));
     REQUIRE_THROWS_WITH(XmlInputSource(path2), Catch::Contains("$COLORER_TEST_XML2/test2.xml isn't regular file"));
+    REQUIRE_NOTHROW(XmlInputSource("test1.xml", &path1));
+#else
+    colorer::Environment::setOSEnv("COLORER_TEST_XML1", temp_path.c_str());
+    UnicodeString path1("%COLORER_TEST_XML1%/test1.xml");
+    UnicodeString path2("%COLORER_TEST_XML2%/test2.xml");
+
+    REQUIRE_NOTHROW(XmlInputSource(path1));
+    REQUIRE_THROWS_WITH(XmlInputSource(path2), Catch::Contains("%COLORER_TEST_XML2%\\test2.xml isn't regular file"));
     REQUIRE_NOTHROW(XmlInputSource("test1.xml", &path1));
 #endif
   }
@@ -72,9 +80,12 @@ TEST_CASE("Test isFsURI")
   const UnicodeString empty_string(u"");
   UnicodeString path1(u"/home/user/testfolder");
   UnicodeString path2(u"/home/user/testfolder2");
+  UnicodeString win_path2(u"c:\\testdir\\testfolder2");
   UnicodeString jar_path1(u"jar:common.jar!hrc/1.hrc");
+
   REQUIRE(XmlInputSource::isFsURI(path1, nullptr) == true);
   REQUIRE(XmlInputSource::isFsURI(path1, &path2) == true);
+  REQUIRE(XmlInputSource::isFsURI(win_path2, nullptr) == true);
   REQUIRE(XmlInputSource::isFsURI(jar_path1, nullptr) == false);
   REQUIRE(XmlInputSource::isFsURI(jar_path1, &path2) == false);
 }
