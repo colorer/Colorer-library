@@ -1,3 +1,18 @@
+## [1.4.0] - 2024-10-18
+
+### Added
+- Two options for working with strings are ICU and the old implementation of colorer
+
+### Fixed
+- Build on old Linux platform. A minimum of gcc 7 is required.
+- Build on Linux ARM64, *BSD, macOS
+ 
+### Changed
+- The library for logging spdlog has been replaced by own implementation.
+- The library for working with xml Xerces-c has been replaced by LibXml2.
+- The environment variables in the path for the external entity in xml should be set in the format $ENV, 
+   and the path should be preceded by 'env:' for files or 'jar:' for archives.
+
 ## [1.3.3] - 2024-03-16
 
 ### Fixed
