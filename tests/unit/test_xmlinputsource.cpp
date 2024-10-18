@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 #include <filesystem>
 #include "colorer/Common.h"
+#include "colorer/utils/Environment.h"
 #include "colorer/xml/XmlInputSource.h"
 
 namespace fs = std::filesystem;
@@ -105,7 +106,7 @@ TEST_CASE("Check expand paths to files from jar-URI")
   SECTION("jar-path with env")
   {
     const char env[]="/home/user2/base/hrc";
-    setenv("CUR_DIR", env, 1);
+    colorer::Environment::setOSEnv("CUR_DIR", env);
     UnicodeString path_to_file(u"jar:$CUR_DIR/common.zip!base/c.hrc");
     UnicodeString full_path(u"jar:/home/user2/base/hrc/common.zip!base/c.hrc");
 
@@ -132,7 +133,7 @@ TEST_CASE("Check expand paths to files from jar-URI")
   SECTION("jar-path with env relative normal path")
   {
     constexpr char env[]="/home/user2/base/hrc";
-    setenv("CUR_DIR", env, 1);
+    colorer::Environment::setOSEnv("CUR_DIR", env);
     UnicodeString path_to_file(u"jar:$CUR_DIR/common.zip!base/c.hrc");
     UnicodeString base_path(u"/home/user/base/hrc/proto.hrc");
     UnicodeString full_path(u"jar:/home/user2/base/hrc/common.zip!base/c.hrc");

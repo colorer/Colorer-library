@@ -2,6 +2,7 @@
 #ifdef WIN32
 #include <windows.h>
 #include <cwchar>
+#include <cstdlib>
 #endif
 
 namespace colorer {
@@ -16,7 +17,7 @@ fs::path Environment::to_filepath(const UnicodeString* str)
   return result;
 }
 
-uUnicodeString Environment::getOSVariable(const UnicodeString& name)
+uUnicodeString Environment::getOSEnv(const UnicodeString& name)
 {
 #ifdef _WINDOWS
   COLORER_LOG_DEBUG("get system environment '%'", name);
@@ -47,6 +48,15 @@ uUnicodeString Environment::getOSVariable(const UnicodeString& name)
 
   COLORER_LOG_DEBUG("'%' = '%'", name, value);
   return std::make_unique<UnicodeString>(value);
+#endif
+}
+
+void Environment::setOSEnv(const UnicodeString& name, const UnicodeString& value)
+{
+#ifdef _WINDOWS
+  _putenv_s(UStr::to_stdstr(&name).c_str(), UStr::to_stdstr(&value).c_str());
+#else
+  setenv( UStr::to_stdstr(&name).c_str(), UStr::to_stdstr(&value).c_str(), 1);
 #endif
 }
 
@@ -186,7 +196,7 @@ std::string Environment::expandEnvByRegexp(const std::string& path, const std::r
   auto text = path;
   while (std::regex_search(text, matcher, regex)) {
     result += matcher.prefix().str();
-    auto env_value = getOSVariable(matcher[1].str().c_str());
+    auto env_value = getOSEnv(matcher[1].str().c_str());
     if (env_value) {
       // add expanded value
       result += UStr::to_stdstr(env_value);

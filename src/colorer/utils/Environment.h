@@ -19,7 +19,8 @@ namespace colorer {
 class Environment
 {
  public:
-  static uUnicodeString getOSVariable(const UnicodeString& name);
+  static uUnicodeString getOSEnv(const UnicodeString& name);
+  static void setOSEnv(const UnicodeString& name, const UnicodeString& value);
   static uUnicodeString normalizePath(const UnicodeString* path);
   static fs::path normalizeFsPath(const UnicodeString* path);
   static fs::path getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);

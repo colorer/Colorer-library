@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <filesystem>
+#include "colorer/utils/Environment.h"
 #include "colorer/xml/XmlReader.h"
 #include "test_common.h"
 
@@ -37,7 +38,7 @@ TEST_CASE("Test read entity with env")
 
   UnicodeString path1(u"data/catalog-env.xml");
   auto work_dir = fs::current_path();
-  setenv("CUR_DIR", work_dir.c_str(), 1);
+  colorer::Environment::setOSEnv("CUR_DIR", work_dir.c_str());
   XmlInputSource is(path1);
   std::unique_ptr<XmlReader> test_reader;
   REQUIRE_NOTHROW(test_reader = std::make_unique<XmlReader>(is));
@@ -66,7 +67,7 @@ TEST_CASE("Test read jar entity with env")
 
   UnicodeString path1(u"data/catalog-allpacked-env.xml");
   auto work_dir = fs::current_path();
-  setenv("CUR_DIR", work_dir.c_str(), 1);
+  colorer::Environment::setOSEnv("CUR_DIR", work_dir.c_str());
   XmlInputSource is(path1);
   std::unique_ptr<XmlReader> test_reader;
   REQUIRE_NOTHROW(test_reader = std::make_unique<XmlReader>(is));
