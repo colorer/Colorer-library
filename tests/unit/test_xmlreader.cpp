@@ -31,11 +31,13 @@ TEST_CASE("Test read catalog.xml")
   REQUIRE(logger->message_print() == false);
 }
 
-TEST_CASE("Test read allpacked catalog.xml")
+TEST_CASE("Test read entity with env")
 {
   logger->clean_messages();
 
-  UnicodeString path1(u"data/catalog-allpacked.xml");
+  UnicodeString path1(u"data/catalog-env.xml");
+  auto work_dir = fs::current_path();
+  setenv("CUR_DIR", work_dir.c_str(), 1);
   XmlInputSource is(path1);
   std::unique_ptr<XmlReader> test_reader;
   REQUIRE_NOTHROW(test_reader = std::make_unique<XmlReader>(is));
@@ -44,13 +46,12 @@ TEST_CASE("Test read allpacked catalog.xml")
   REQUIRE(logger->message_print() == false);
 }
 
-TEST_CASE("Test read entity with env")
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+TEST_CASE("Test read allpacked catalog.xml")
 {
   logger->clean_messages();
 
-  UnicodeString path1(u"data/catalog-env.xml");
-  auto work_dir = fs::current_path();
-  setenv("CUR_DIR", work_dir.c_str(), 1);
+  UnicodeString path1(u"data/catalog-allpacked.xml");
   XmlInputSource is(path1);
   std::unique_ptr<XmlReader> test_reader;
   REQUIRE_NOTHROW(test_reader = std::make_unique<XmlReader>(is));
@@ -73,3 +74,6 @@ TEST_CASE("Test read jar entity with env")
 
   REQUIRE(logger->message_print() == false);
 }
+
+#endif
+
