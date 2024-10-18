@@ -171,7 +171,7 @@ jobs:
 
       - name: Install dependency
         # icu4c is already installed
-        run: brew install minizip ninja libxml2
+        run: brew install minizip ninja libxml2 icu4c
 
       - name: Relink icu, because he is 'keg-only'
         run: brew link icu4c --force
