@@ -2,7 +2,9 @@
 #define SIMPLELOGGER_H
 
 #include <ctime>
+#include <fstream>
 #include <locale>
+#include "colorer/common/Logger.h"
 
 class SimpleLogger : public Logger
 {
@@ -15,7 +17,16 @@ class SimpleLogger : public Logger
     ofs.open(filename.c_str(), std::ofstream::out | std::ofstream::app);
   }
 
-  ~SimpleLogger() override { ofs.close(); }
+  SimpleLogger(const std::string& filename, const Logger::LogLevel log_level)
+  {
+    current_level = log_level;
+    ofs.open(filename.c_str(), std::ofstream::out | std::ofstream::app);
+  }
+
+  ~SimpleLogger() override
+  {
+    ofs.close();
+  }
 
   void log(Logger::LogLevel level, const char* /*filename_in*/, int /*line_in*/, const char* /*funcname_in*/, const char* message)
   {
@@ -30,7 +41,7 @@ class SimpleLogger : public Logger
     ofs << message << '\n';
   }
 
-  Logger::LogLevel getLogLevel(const std::string& log_level)
+  static Logger::LogLevel getLogLevel(const std::string& log_level)
   {
     int i = 0;
     for (auto it : LogLevelStr) {
@@ -40,9 +51,20 @@ class SimpleLogger : public Logger
       i++;
     }
     if (log_level == "warn") {
-      current_level = Logger::LOG_WARN;
+      return Logger::LOG_WARN;
     }
     return Logger::LOG_OFF;
+  }
+
+  void setLogLevel(Logger::LogLevel level)
+  {
+    ofs.flush();
+    current_level = level;
+  }
+
+  void flush()
+  {
+    ofs.flush();
   }
 
  private:
