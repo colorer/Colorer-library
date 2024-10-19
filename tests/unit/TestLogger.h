@@ -23,6 +23,11 @@ class TestLogger : public Logger
     //std::cerr << message << '\n';
   }
 
+  void flush() override
+  {
+    
+  }
+
   bool message_exists() const { return !log_messages.empty(); }
   bool message_print(bool waiting_exist = false) const
   {
