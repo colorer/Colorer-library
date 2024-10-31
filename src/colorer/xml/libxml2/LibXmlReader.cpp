@@ -144,7 +144,8 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
    * At the same time, there is no path to the source file or to the file in the entity in the function parameters.
    */
 
-  UnicodeString string_url(URL);
+  auto filename = Encodings::toUnicodeString((char*)URL, (int32_t) strlen(URL));
+  UnicodeString string_url(*filename.get());
 
   // read entity string like "env:$FAR_HOME/hrd/catalog-console.xml"
   static const UnicodeString env(u"env:");

@@ -168,7 +168,7 @@ wchar Encodings::toWChar(int eidx, char c)
 
 uUnicodeString Encodings::toUnicodeString(char* data, int32_t len)
 {
-  return std::make_unique<UnicodeString>(data , len , -2);
+  return std::make_unique<UnicodeString>(data , len , Encodings::ENC_UTF8);
 }
 
 
