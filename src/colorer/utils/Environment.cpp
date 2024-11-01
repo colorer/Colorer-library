@@ -180,7 +180,7 @@ UnicodeString Environment::expandEnvironment(const UnicodeString& path)
   auto res = expandEnvByRegexp(text, std::regex(R"--(\$\{([[:alpha:]]\w*)\})--"));
   res = expandEnvByRegexp(res, std::regex(R"--(\$([[:alpha:]]\w*)\b)--"));
   COLORER_LOG_DEBUG("result of expand '%'", res);
-  return {res.c_str()};
+  return UStr::to_unistr(res);
 #endif
 }
 

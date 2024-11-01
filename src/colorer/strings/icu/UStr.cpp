@@ -8,7 +8,7 @@ UnicodeString UStr::to_unistr(const int number)
 
 UnicodeString UStr::to_unistr(const std::string& str)
 {
-  return UnicodeString(str.c_str(), str.length(), "UTF-8");
+  return {str.c_str(), static_cast<int32_t>(str.length()), Encodings::ENC_UTF8};
 }
 
 std::string UStr::to_stdstr(const UnicodeString* str)

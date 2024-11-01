@@ -40,7 +40,7 @@ UnicodeString UStr::to_unistr(int number)
 
 UnicodeString UStr::to_unistr(const std::string& str)
 {
-  return UnicodeString(str.c_str(), str.length(), Encodings::ENC_UTF8);
+  return {str.c_str(), static_cast<int32_t>(str.length()), Encodings::ENC_UTF8};
 }
 
 bool UStr::HexToUInt(const UnicodeString& str_hex, unsigned int* result)
