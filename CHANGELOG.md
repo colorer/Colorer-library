@@ -1,3 +1,11 @@
+## [1.4.1] - 2024-11-02
+
+### Fixed
+- Creation of log files when logging is disabled
+- Reading a schema from files whose path contains non-Latin letters :
+  - incorrect conversion between char and char16 on Windows
+  - error reading external entities in xml files on Linux, feature or bug libxml2
+
 ## [1.4.0] - 2024-10-18
 
 ### Added
