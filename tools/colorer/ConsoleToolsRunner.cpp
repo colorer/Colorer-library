@@ -40,6 +40,8 @@ struct setting
   bool html_wrap = true;
 } settings;
 
+std::unique_ptr<SimpleLogger> logger;
+
 /** Reads and parse command line */
 void readArgs(int argc, char* argv[])
 {
@@ -317,10 +319,14 @@ int main(int argc, char* argv[])
 {
   readArgs(argc, argv);
 
-  std::string const file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
-  SimpleLogger log(file_name,settings.log_level);
+  auto u_loglevel = UnicodeString(settings.log_level.c_str());
+  auto level = SimpleLogger::getLogLevel(UStr::to_stdstr(&u_loglevel));
+  if (level != Logger::LOG_OFF) {
+    std::string const file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
 
-  Log::registerLogger(log);
+    logger = std::make_unique<SimpleLogger>(file_name,level);
+    Log::registerLogger(*logger);
+  }
 
   return workIt();
 }
