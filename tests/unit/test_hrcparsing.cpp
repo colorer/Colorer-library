@@ -1,10 +1,6 @@
 #include <catch2/catch.hpp>
-#include <fstream>
-#include <filesystem>
 #include "colorer/parsers/HrcLibraryImpl.h"
-
-namespace fs = std::filesystem;
-
+#include "colorer/utils/FileSystems.h"
 
 TEST_CASE("Load hrc")
 {

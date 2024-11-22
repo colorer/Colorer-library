@@ -80,6 +80,7 @@ set(SRC_COLORER
     colorer/parsers/VirtualEntry.h
     colorer/utils/Environment.cpp
     colorer/utils/Environment.h
+    colorer/utils/FileSystems.h
     colorer/version.h
     colorer/viewer/ParsedLineWriter.cpp
     colorer/viewer/ParsedLineWriter.h
