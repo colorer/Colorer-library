@@ -31,6 +31,54 @@ env:
   VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
 jobs:
+
+  ubuntu-old-gcc:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x64 ]
+        icu: [OFF]
+        zip: [OFF]
+
+    name: linux-gcc7-${{ matrix.arch }}-icu_${{ matrix.icu }}-zip_${{ matrix.zip }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install dependency
+        run: sudo apt-get -y install ninja-build libicu-dev zlib1g-dev libminizip-dev libxml2-dev
+
+      - name: Install compiler
+        run: sudo apt-get -y install g++-7
+
+      - name: Create Build folder
+        run: mkdir -p _build
+
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
+
+      - name: Configure CMake
+        run: >
+          cmake -S . -B _build -G "Ninja"
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          -DCOLORER_BUILD_TEST=ON
+          -DCOLORER_USE_VCPKG=OFF
+          -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
+          -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
+          -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
+          -DCOLORER_BUILD_OLD_COMPILERS=ON
+          -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
+
+      - name: Build
+        run: cmake --build _build --config $BUILD_TYPE -j ${{ steps.cpu-cores.outputs.count }}
+
+      - name: Test
+        working-directory: ./tests/unit
+        run: ../../_build/tests/unit/unit_tests
+
   ubuntu-gcc:
     runs-on: ubuntu-22.04
     strategy:

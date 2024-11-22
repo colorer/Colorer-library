@@ -1,10 +1,7 @@
 #include <catch2/catch.hpp>
-#include <filesystem>
 #include "colorer/utils/Environment.h"
 #include "colorer/xml/XmlReader.h"
 #include "test_common.h"
-
-namespace fs = std::filesystem;
 
 TEST_CASE("Test read simple xml")
 {
@@ -77,4 +74,3 @@ TEST_CASE("Test read jar entity with env")
 }
 
 #endif
-

@@ -1,10 +1,7 @@
 #include <catch2/catch.hpp>
-#include <filesystem>
 #include "colorer/Common.h"
 #include "colorer/utils/Environment.h"
 #include "colorer/xml/XmlInputSource.h"
-
-namespace fs = std::filesystem;
 
 TEST_CASE("Test create XmlInputSource")
 {
