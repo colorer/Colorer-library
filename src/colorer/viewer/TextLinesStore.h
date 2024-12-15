@@ -1,5 +1,5 @@
-#ifndef _COLORER_TEXTLINESSTORE_H_
-#define _COLORER_TEXTLINESSTORE_H_
+#ifndef COLORER_TEXTLINESSTORE_H
+#define COLORER_TEXTLINESSTORE_H
 
 #include <vector>
 #include "colorer/LineSource.h"
@@ -42,6 +42,4 @@ private:
 
 };
 
-#endif
-
-
+#endif // COLORER_TEXTLINESSTORE_H

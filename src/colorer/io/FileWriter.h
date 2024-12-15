@@ -1,5 +1,5 @@
-#ifndef _COLORER_FILEWRITER_H_
-#define _COLORER_FILEWRITER_H_
+#ifndef COLORER_FILEWRITER_H
+#define COLORER_FILEWRITER_H
 
 #include<colorer/io/StreamWriter.h>
 
@@ -18,5 +18,4 @@ public:
   ~FileWriter() override;
 };
 
-#endif
-
+#endif // COLORER_FILEWRITER_H

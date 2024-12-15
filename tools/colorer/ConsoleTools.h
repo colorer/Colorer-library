@@ -1,5 +1,5 @@
-#ifndef _COLORER_CONSOLETOOLS_H_
-#define _COLORER_CONSOLETOOLS_H_
+#ifndef COLORER_CONSOLETOOLS_H
+#define COLORER_CONSOLETOOLS_H
 
 #include <colorer/ParserFactory.h>
 

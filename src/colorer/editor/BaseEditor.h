@@ -1,5 +1,5 @@
-#ifndef _COLORER_BASEEDITOR_H_
-#define _COLORER_BASEEDITOR_H_
+#ifndef COLORER_BASEEDITOR_H
+#define COLORER_BASEEDITOR_H
 
 #include "colorer/LineSource.h"
 #include "colorer/ParserFactory.h"
@@ -285,4 +285,4 @@ class BaseEditor : public RegionHandler
   PairMatch* getPairMatch(int lineNo, int pos, LineRegion** line_region);
 };
 
-#endif
+#endif  // COLORER_BASEEDITOR_H

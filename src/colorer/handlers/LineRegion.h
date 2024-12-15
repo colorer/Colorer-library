@@ -1,5 +1,5 @@
-#ifndef _COLORER_LINEREGION_H_
-#define _COLORER_LINEREGION_H_
+#ifndef COLORER_LINEREGION_H
+#define COLORER_LINEREGION_H
 
 #include "colorer/Scheme.h"
 #include "colorer/handlers/RegionDefine.h"
@@ -73,4 +73,4 @@ class LineRegion
   void assigment(const LineRegion& lr);
 };
 
-#endif
+#endif // COLORER_LINEREGION_H

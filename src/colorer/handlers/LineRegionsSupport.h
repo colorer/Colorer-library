@@ -1,5 +1,5 @@
-#ifndef _COLORER_LINEREGIONSSUPPORT_H_
-#define _COLORER_LINEREGIONSSUPPORT_H_
+#ifndef COLORER_LINEREGIONSSUPPORT_H
+#define COLORER_LINEREGIONSSUPPORT_H
 
 #include "colorer/RegionHandler.h"
 #include "colorer/handlers/LineRegion.h"
@@ -98,4 +98,4 @@ class LineRegionsSupport : public RegionHandler
   size_t lineCount;
 };
 
-#endif
+#endif // COLORER_LINEREGIONSSUPPORT_H
