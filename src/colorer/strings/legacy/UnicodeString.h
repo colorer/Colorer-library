@@ -2,6 +2,7 @@
 #define COLORER_UNICODESTRING_H
 
 #include <colorer/strings/legacy/CommonString.h>
+#include <cstdint>
 #include <memory>
 
 class CString;
