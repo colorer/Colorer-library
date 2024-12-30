@@ -50,7 +50,7 @@ void StyledHRDMapper::loadRegionMappings(XmlInputSource& is)
       }
 
       auto rdef = std::make_unique<StyledRegion>(bfore, bback, fore, back, style);
-      regionDefines.emplace(name, std::move(rdef));
+      regionDefines.try_emplace(name, std::move(rdef));
     }
   }
 }
@@ -93,7 +93,7 @@ void StyledHRDMapper::setRegionDefine(const UnicodeString& region_name, const Re
 
   const auto rd_old_it = regionDefines.find(region_name);
   if (rd_old_it == regionDefines.end()) {
-    regionDefines.emplace(region_name, std::move(rd_new));
+    regionDefines.try_emplace(region_name, std::move(rd_new));
   }
   else {
     rd_old_it->second = std::move(rd_new);

@@ -252,7 +252,7 @@ void HrcLibrary::Impl::addPrototype(const XMLNode& elem)
 
   parsePrototypeBlock(elem, type);
 
-  fileTypeHash.emplace(typeName, type);
+  fileTypeHash.try_emplace(typeName, type);
   if (!ptype->isPackage) {
     fileTypeVector.push_back(type);
   }
@@ -439,7 +439,7 @@ void HrcLibrary::Impl::addTypeRegion(const XMLNode& elem)
 
   const Region* region = new Region(*qname1, &regionDescr, getRegion(qname2.get()), regionNamesVector.size());
   regionNamesVector.push_back(region);
-  regionNamesHash.emplace(*qname1, region);
+  regionNamesHash.try_emplace(*qname1, region);
 }
 
 void HrcLibrary::Impl::addTypeEntity(const XMLNode& elem)
@@ -454,7 +454,7 @@ void HrcLibrary::Impl::addTypeEntity(const XMLNode& elem)
   const auto qname1 = qualifyOwnName(entityName);
   uUnicodeString qname2 = useEntities(&entityValue);
   if (qname1 != nullptr && qname2 != nullptr) {
-    schemeEntitiesHash.emplace(*qname1, qname2.release());
+    schemeEntitiesHash.try_emplace(*qname1, qname2.release());
   }
 }
 
@@ -486,7 +486,7 @@ void HrcLibrary::Impl::addScheme(const XMLNode& elem)
   auto* scheme = new SchemeImpl(qSchemeName.get());
   scheme->fileType = current_parse_type;
 
-  schemeHash.emplace(*scheme->getName(), scheme);
+  schemeHash.try_emplace(*scheme->getName(), scheme);
   const auto& condIf = elem.getAttrValue(hrcSchemeAttrIf);
   const auto& condUnless = elem.getAttrValue(hrcSchemeAttrUnless);
   const UnicodeString* p1 = current_parse_type->getParamValue(condIf);

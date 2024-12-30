@@ -115,8 +115,7 @@ void ConsoleTools::setLinkSource(const UnicodeString& str)
           if (!ref->isEmpty()) {
             hkey.append("--").append(*ref);
           }
-          std::pair<UnicodeString, UnicodeString*> pair_url(hkey, new UnicodeString(fullURL));
-          docLinkHash.emplace(pair_url);
+          docLinkHash.try_emplace(hkey, new UnicodeString(fullURL));
         }
       }
     }

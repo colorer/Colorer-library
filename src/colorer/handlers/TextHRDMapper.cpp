@@ -35,7 +35,7 @@ void TextHRDMapper::loadRegionMappings(XmlInputSource& is)
       const auto& eback = node.getAttrValue(hrdAssignAttrEBack);
 
       auto rdef = std::make_unique<TextRegion>(stext, etext, sback, eback);
-      regionDefines.emplace(name, std::move(rdef));
+      regionDefines.try_emplace(name, std::move(rdef));
     }
   }
 }
@@ -75,7 +75,7 @@ void TextHRDMapper::setRegionDefine(const UnicodeString& region_name, const Regi
 
   const auto rd_old_it = regionDefines.find(region_name);
   if (rd_old_it == regionDefines.end()) {
-    regionDefines.emplace(region_name, std::move(new_region));
+    regionDefines.try_emplace(region_name, std::move(new_region));
   }
   else {
     rd_old_it->second = std::move(new_region);

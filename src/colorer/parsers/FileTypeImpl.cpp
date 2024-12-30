@@ -113,7 +113,7 @@ const UnicodeString* FileType::Impl::getParamUserValue(const UnicodeString& para
 
 TypeParameter& FileType::Impl::addParam(const UnicodeString& param_name, const UnicodeString& value)
 {
-  auto it = paramsHash.emplace(param_name, TypeParameter(param_name, value));
+  auto it = paramsHash.try_emplace(param_name, TypeParameter(param_name, value));
   return it.first->second;
 }
 

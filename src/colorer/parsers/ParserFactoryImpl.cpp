@@ -194,7 +194,7 @@ void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const Unicode
 void ParserFactory::Impl::addHrd(std::unique_ptr<HrdNode> hrd)
 {
   if (hrd_nodes.find(hrd->hrd_class) == hrd_nodes.end()) {
-    hrd_nodes.emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HrdNode>>>());
+    hrd_nodes.try_emplace(hrd->hrd_class, std::make_unique<std::vector<std::unique_ptr<HrdNode>>>());
   }
   hrd_nodes.at(hrd->hrd_class)->emplace_back(std::move(hrd));
 }
