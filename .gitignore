@@ -7,7 +7,7 @@
 
 # build
 /bin
-/build
+/build*
 /out
 
 /.vs

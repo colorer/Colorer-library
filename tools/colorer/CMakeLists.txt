@@ -6,7 +6,8 @@ set(SRC_CPP
     ConsoleTools.cpp
     ConsoleTools.h
     SimpleLogger.h
-    )
+    SimpleLogger.cpp
+)
 
 if(WIN32)
   set(SRC_CPP ${SRC_CPP} ConsoleToolsRunner.rc)
