@@ -50,12 +50,12 @@ class LineRegion
   /** Transforms this region's reference into styled region define
       and returns new pointer.
   */
-  const StyledRegion* styled();
+  const StyledRegion* styled() const;
 
   /** Transforms this region's reference into text region define
       and returns new pointer.
   */
-  const TextRegion* texted();
+  const TextRegion* texted() const;
 
   /** Copy operator */
   LineRegion& operator=(const LineRegion& lr);

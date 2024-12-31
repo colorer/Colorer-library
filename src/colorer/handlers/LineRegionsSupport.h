@@ -24,7 +24,7 @@ class LineRegionsSupport : public RegionHandler
   /**
    * Return current size of this line regions structure
    */
-  size_t size();
+  size_t size() const;
 
   /**
    * Drops all internal structures
@@ -41,7 +41,7 @@ class LineRegionsSupport : public RegionHandler
   /**
    * Returns first line position, installed in this line structures.
    */
-  size_t getFirstLine();
+  size_t getFirstLine() const;
 
   /**
    * Background region define, which is used to

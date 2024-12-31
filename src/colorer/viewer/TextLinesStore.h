@@ -26,9 +26,9 @@ public:
   void loadFile(const UnicodeString* inFileName, bool tab2spaces);
   /** Returns loaded file name.
   */
-  const UnicodeString* getFileName();
+  const UnicodeString* getFileName() const;
   /** Returns total lines count in text. */
-  size_t getLineCount();
+  size_t getLineCount() const;
 
   UnicodeString* getLine(size_t lno) override;
 protected:

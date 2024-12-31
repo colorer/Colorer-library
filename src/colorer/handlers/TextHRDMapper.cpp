@@ -44,9 +44,9 @@ void TextHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write(u"<?xml version=\"1.0\"?>\n");
 
-  for (const auto& regionDefine : regionDefines) {
-    const TextRegion* rdef = TextRegion::cast(regionDefine.second.get());
-    writer->write(u"\t<define name='" + regionDefine.first + u"'");
+  for (const auto& [key, value] : regionDefines) {
+    const TextRegion* rdef = TextRegion::cast(value.get());
+    writer->write(u"\t<define name='" + key + u"'");
     if (rdef->start_text != nullptr) {
       writer->write(u" start_text='" + *rdef->start_text + u"'");
     }

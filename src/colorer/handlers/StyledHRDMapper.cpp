@@ -59,11 +59,11 @@ void StyledHRDMapper::saveRegionMappings(Writer* writer) const
 {
   writer->write(u"<?xml version=\"1.0\"?>\n");
 
-  for (const auto& regionDefine : regionDefines) {
-    const StyledRegion* rdef = StyledRegion::cast(regionDefine.second.get());
+  for (const auto& [key, value] : regionDefines) {
+    const StyledRegion* rdef = StyledRegion::cast(value.get());
     constexpr auto size_temporary = 256;
     char temporary[size_temporary];
-    writer->write(u"\t<define name='" + regionDefine.first + u"'");
+    writer->write(u"\t<define name='" + key + u"'");
     if (rdef->isForeSet) {
       snprintf(temporary, size_temporary, " fore=\"#%06x\"", rdef->fore);
       writer->write(temporary);

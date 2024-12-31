@@ -16,7 +16,6 @@ public:
   */
   FileWriter(const UnicodeString* fileName, bool useBOM);
   ~FileWriter() override;
-protected:
 };
 
 #endif

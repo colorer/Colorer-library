@@ -45,12 +45,12 @@ LineRegion::LineRegion()
   special = false;
 }
 
-const StyledRegion* LineRegion::styled()
+const StyledRegion* LineRegion::styled() const
 {
   return StyledRegion::cast(rdef);
 }
 
-const TextRegion* LineRegion::texted()
+const TextRegion* LineRegion::texted() const
 {
   return TextRegion::cast(rdef);
 }

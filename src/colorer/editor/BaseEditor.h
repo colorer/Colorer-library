@@ -242,7 +242,7 @@ class BaseEditor : public RegionHandler
   void leaveScheme(size_t lno, UnicodeString* line, int sx, int ex, const Region* region,
                    const Scheme* scheme) override;
 
-  bool haveInvalidLine();
+  bool haveInvalidLine() const;
   void setMaxBlockSize(int max_block_size);
 
  private:
@@ -276,7 +276,7 @@ class BaseEditor : public RegionHandler
   bool internalRM;
   bool regionCompact;
 
-  inline int getLastVisibleLine();
+  inline int getLastVisibleLine() const;
   void remapLRS(bool recreate);
   /**
    * Searches for the paired token and creates PairMatch

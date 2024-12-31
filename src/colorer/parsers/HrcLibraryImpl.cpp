@@ -867,8 +867,7 @@ void HrcLibrary::Impl::updateLinks()
 {
   while (structureChanged) {
     structureChanged = false;
-    for (auto& scheme_it : schemeHash) {
-      const SchemeImpl* scheme = scheme_it.second;
+    for (auto const& [key, scheme] : schemeHash) {
       if (!scheme->fileType->pimpl->loadDone) {
         continue;
       }
@@ -1061,7 +1060,7 @@ const Region* HrcLibrary::Impl::getNCRegion(const UnicodeString* name, const boo
       Regions with this name are always transparent
   */
   if (reg != nullptr) {
-    const auto s_name = reg->getName();
+    const auto& s_name = reg->getName();
     const auto idx = s_name.indexOf(":default");
     if (idx != -1 && idx + 8 == s_name.length()) {
       return nullptr;
