@@ -70,6 +70,7 @@ jobs:
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
           -DCOLORER_BUILD_OLD_COMPILERS=ON
+          -DCOLORER_BUILD_HARD_WARNINGS=OFF
           -DCMAKE_CXX_COMPILER=/usr/bin/g++-7
 
       - name: Build
