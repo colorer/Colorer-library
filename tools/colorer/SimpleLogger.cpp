@@ -67,8 +67,9 @@ void SimpleLogger::setLogLevel(Logger::LogLevel level)
   if (current_level == Logger::LOG_OFF) {
     current_level = level;
     open_logfile();
+  }else {
+    current_level = level;
   }
-  current_level = level;
 }
 
 void SimpleLogger::flush()

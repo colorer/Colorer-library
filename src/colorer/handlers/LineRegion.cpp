@@ -27,9 +27,9 @@ void LineRegion::assigment(const LineRegion& lr)
 
 LineRegion& LineRegion::operator=(const LineRegion& lr)
 {
-  if (this == &lr)
-    return *this;
-  assigment(lr);
+  if (this != &lr) {
+    assigment(lr);
+  }
   return *this;
 }
 
