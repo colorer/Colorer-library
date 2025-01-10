@@ -2318,7 +2318,8 @@ GHC_INLINE file_status status_from_INFO(const path& p, const INFO* info, std::er
 GHC_INLINE bool is_not_found_error(std::error_code& ec)
 {
 #ifdef GHC_OS_WINDOWS
-    return ec.value() == ERROR_FILE_NOT_FOUND || ec.value() == ERROR_PATH_NOT_FOUND || ec.value() == ERROR_INVALID_NAME;
+    return ec.value() == ERROR_FILE_NOT_FOUND || ec.value() == ERROR_PATH_NOT_FOUND || ec.value() == ERROR_INVALID_NAME ||
+        ec.value() == ERROR_BAD_PATHNAME;
 #else
     return ec.value() == ENOENT || ec.value() == ENOTDIR;
 #endif
