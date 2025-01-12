@@ -32,13 +32,13 @@
       "hidden": true
     },
     {
-      "name": "ARM64",
+      "name": "arm64",
       "architecture": {
         "value": "arm64",
         "strategy": "external"
       },
       "cacheVariables": {
-        "COLORER_BUILD_ARCH": "ARM64"
+        "COLORER_BUILD_ARCH": "arm64"
       },
       "hidden": true
     },
@@ -75,12 +75,7 @@
       "name": "vcpkg",
       "cacheVariables": {
         "COLORER_USE_VCPKG": "ON",
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_PORTS": "${sourceDir}/external/vcpkg-ports",
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/external/vcpkg-triplets"
-      },
-      "environment": {
-        "VCPKG_FEATURE_FLAGS": "manifests,versions"
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       },
       "hidden": true
     },
@@ -111,7 +106,7 @@
       "name": "vcpkg_win_arm64",
       "inherits": "vcpkg",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "arm64-windows-static-rel"
+        "VCPKG_TARGET_TRIPLET": "arm64-windows-static"
       },
       "hidden": true
     },
@@ -173,10 +168,10 @@
     { "name": "msvc-x86-Release", "description": "MSVC for x86 (Release, ICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg_win_x86" ] },
     { "name": "msvc-x86-Debug-noICU", "description": "MSVC for x86 (Debug, noICU)", "inherits": [ "base", "x86", "Debug", "MSVC", "vcpkg_win_x86", "NoICU", "Tests" ] },
     { "name": "msvc-x86-Release-noICU", "description": "MSVC for x86 (Release, noICU)", "inherits": [ "base", "x86", "Release", "MSVC", "vcpkg_win_x86", "NoICU" ] },
-    { "name": "msvc-arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg_win_arm64", "Tests" ] },
-    { "name": "msvc-arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64" ] },
-    { "name": "msvc-arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "ARM64", "Debug", "MSVC", "vcpkg_win_arm64", "NoICU", "Tests" ] },
-    { "name": "msvc-arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "ARM64", "Release", "MSVC", "vcpkg_win_arm64", "NoICU" ] },
+    { "name": "msvc-arm64-Debug", "description": "MSVC for ARM64 (Debug, ICU)", "inherits": [ "base", "arm64", "Debug", "MSVC", "vcpkg_win_arm64", "Tests" ] },
+    { "name": "msvc-arm64-Release", "description": "MSVC for ARM64 (Release, ICU)", "inherits": [ "base", "arm64", "Release", "MSVC", "vcpkg_win_arm64" ] },
+    { "name": "msvc-arm64-Debug-noICU", "description": "MSVC for ARM64 (Debug, noICU)", "inherits": [ "base", "arm64", "Debug", "MSVC", "vcpkg_win_arm64", "NoICU", "Tests" ] },
+    { "name": "msvc-arm64-Release-noICU", "description": "MSVC for ARM64 (Release, noICU)", "inherits": [ "base", "arm64", "Release", "MSVC", "vcpkg_win_arm64", "NoICU" ] },
     { "name": "linux-x64-Debug-noICU", "description": "Linux for x64 (Debug, noICU, LibXml)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "NoICU", "Tests" ] },
     { "name": "linux-x64-Release-noICU", "description": "Linux for x64 (Release, noICU, LibXml)", "inherits": [ "base", "x64", "Release", "NoVcpkg", "NoICU" ] },
     { "name": "linux-x64-Debug", "description": "Linux for x64 (Debug, ICU, LibXml)", "inherits": [ "base", "x64", "Debug", "NoVcpkg", "Tests" ] },

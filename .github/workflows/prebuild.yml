@@ -23,9 +23,9 @@ jobs:
         zip: [ON]
         include:
           - arch: x64
-            triplet: x64-windows-static-rel
+            triplet: x64-windows-static
           - arch: x86
-            triplet: x86-windows-static-rel
+            triplet: x86-windows-static
 
     name: windows-${{ matrix.arch }}
 
@@ -37,20 +37,19 @@ jobs:
           # fetch all for vcpkg versions functionality
           fetch-depth: 0
 
-      - name: Install vcpkg
+      - name: Setup vcpkg
         run: |
-          cd external\vcpkg
-          .\bootstrap-vcpkg.bat
+          bootstrap-vcpkg.bat
 
       - name: Add C++ build tools to PATH
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
 
-      - name: Setup NuGet Credentials for vpckg cache
+      - name: Setup NuGet Credentials for vcpkg cache
         shell: bash
         run: >
-          `$GITHUB_WORKSPACE/external/vcpkg/vcpkg fetch nuget | tail -n 1`
+          `vcpkg fetch nuget | tail -n 1`
           sources add
           -source "https://nuget.pkg.github.com/colorer/index.json"
           -storepasswordincleartext
@@ -69,11 +68,9 @@ jobs:
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           -DCOLORER_BUILD_TEST=OFF
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
-          -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/external/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
-          -DVCPKG_OVERLAY_TRIPLETS=$GITHUB_WORKSPACE/external/vcpkg-triplets
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
-          -DVCPKG_FEATURE_FLAGS=manifests,versions
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}
 

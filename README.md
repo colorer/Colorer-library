@@ -12,32 +12,49 @@ To build library and other utils from source, you will need:
 * Visual Studio 2019 / gcc 7 / clang 7 or higher
 * git
 * cmake 3.10 or higher
+* vcpkg - required for Windows, optional for linux
 
 ### Windows
 
-Download the source of Colorer, for example, in colorer-library:
+Download the source of Colorer:
 
 ```bash
-git clone https://github.com/colorer/Colorer-library.git --recursive colorer-library 
+git clone https://github.com/colorer/Colorer-library.git
 ```
 
-Setup vcpkg
+Setup vcpkg, or use the preset (set env VCPKG_ROOT)
 
 ```bash
-cd colorer-library
-./external/vcpkg/bootstrap-vcpkg.bat
+git clone https://github.com/microsoft/vcpkg.git
+set VCPKG_ROOT=<path_to_vcpkg>
+%VCPKG_ROOT%\bootstrap-vcpkg.bat -disableMetrics
+```
+
+#### IDE
+
+Open folder with Colorer-library from IDE like as Clion, VSCode, VisualStudio.
+In the CMakePresets file.json configurations have been created for standard builds.
+
+#### Console
+
+Setup Visual Studio environment (x64 or x86/arm64 for platforms)
+
+```bash
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 ```
 
 Build colorer and dependency, if they are not in the local cache:
 
 ```bash
+
 mkdir build
 cd build
-cmake -S .. -G "Visual Studio 16 2019" -DCMAKE_TOOLCHAIN_FILE=../external/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DVCPKG_OVERLAY_PORTS=../external/vcpkg-ports -DVCPKG_FEATURE_FLAGS=manifests,versions
-colorer.sln
+cmake -S .. -G "NMake Makefiles" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+cmake --build .
 ```
 
-For x86 platform use `--triplet=x86-windows-static`. Once built, the dependencies will be cached in the local cache.
+For x86 platform use `-DVCPKG_TARGET_TRIPLET=x86-windows-static`, arm64 - `-DVCPKG_TARGET_TRIPLET=arm64-windows-static`.
+Once built, the dependencies will be cached in the local cache.
 
 ### Linux
 
