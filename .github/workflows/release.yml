@@ -77,9 +77,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
 
       - name: Add C++ build tools to PATH
         uses: ilammy/msvc-dev-cmd@v1
