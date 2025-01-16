@@ -31,7 +31,7 @@ uUnicodeString Encodings::fromUTF8(char* data, int32_t len)
 uUnicodeString Encodings::fromUTF8(unsigned char* data)
 {
   const auto c = reinterpret_cast<char*>(data);
-  return fromUTF8(c,strlen(c));
+  return fromUTF8(c,(int32_t)strlen(c));
 }
 
 int Encodings::toUTF8Bytes(UChar wc, byte* dest)
