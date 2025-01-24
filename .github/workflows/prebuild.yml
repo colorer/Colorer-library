@@ -23,9 +23,9 @@ jobs:
         zip: [ON]
         include:
           - arch: x64
-            triplet: x64-windows-static
+            triplet: x64-win-static-rel
           - arch: x86
-            triplet: x86-windows-static
+            triplet: x86-win-static-rel
 
     name: windows-${{ matrix.arch }}
 
@@ -65,7 +65,6 @@ jobs:
           -DCOLORER_BUILD_TEST=OFF
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-          -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           -DCOLORER_USE_ICU_STRINGS=${{ matrix.icu }}
           -DCOLORER_USE_ZIPINPUTSOURCE=${{ matrix.zip }}

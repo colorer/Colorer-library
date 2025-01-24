@@ -64,9 +64,9 @@ jobs:
         arch: [ x64, x86 ]
         include:
           - arch: x64
-            triplet: x64-windows-static
+            triplet: x64-win-static-rel
           - arch: x86
-            triplet: x86-windows-static
+            triplet: x86-win-static-rel
 
     env:
       BUILD_TYPE: Release
@@ -110,7 +110,6 @@ jobs:
           -DCOLORER_BUILD_TEST=OFF
           -DCOLORER_BUILD_ARCH=${{ matrix.arch }}
           -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
-          -DVCPKG_OVERLAY_PORTS=$GITHUB_WORKSPACE/external/vcpkg-ports
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           -DVCPKG_FEATURE_FLAGS=manifests,versions
           -DCMAKE_INSTALL_PREFIX=./install/colorer

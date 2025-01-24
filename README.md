@@ -49,11 +49,11 @@ Build colorer and dependency, if they are not in the local cache:
 
 mkdir build
 cd build
-cmake -S .. -G "NMake Makefiles" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCOLORER_BUILD_ARCH=x64
+cmake -S .. -G "NMake Makefiles" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-win-static -DCOLORER_BUILD_ARCH=x64
 cmake --build .
 ```
 
-For x86 platform use `-DVCPKG_TARGET_TRIPLET=x86-windows-static -DCOLORER_BUILD_ARCH=x86`, arm64 - `-DVCPKG_TARGET_TRIPLET=arm64-windows-static -DCOLORER_BUILD_ARCH=arm64`.
+For x86 platform use `-DVCPKG_TARGET_TRIPLET=x86-win-static -DCOLORER_BUILD_ARCH=x86`, arm64 - `-DVCPKG_TARGET_TRIPLET=arm64-win-static -DCOLORER_BUILD_ARCH=arm64`.
 
 Once built, the dependencies will be cached in the local cache.
 
