@@ -16,6 +16,13 @@ include(cmake/colorer_extract_version.cmake)
 colorer_extract_version()
 
 #====================================================
+# vcpkg settings
+#====================================================
+# set before declare project(...)
+set(VCPKG_MANIFEST_DIR "${CMAKE_HOME_DIRECTORY}/vcpkg/manifest" CACHE STRING "Set the path to the manifest folder")
+message(STATUS "Using vcpkg manifest: ${VCPKG_MANIFEST_DIR}/vcpkg.json")
+
+#====================================================
 # main project
 #====================================================
 project(colorer VERSION ${COLORER_VERSION} LANGUAGES CXX)

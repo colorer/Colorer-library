@@ -90,7 +90,7 @@
       "name": "vcpkg_win_x64",
       "inherits": "vcpkg",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+        "VCPKG_TARGET_TRIPLET": "x64-win-static"
       },
       "hidden": true
     },
@@ -98,7 +98,7 @@
       "name": "vcpkg_win_x86",
       "inherits": "vcpkg",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x86-windows-static"
+        "VCPKG_TARGET_TRIPLET": "x86-win-static"
       },
       "hidden": true
     },
@@ -106,7 +106,7 @@
       "name": "vcpkg_win_arm64",
       "inherits": "vcpkg",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "arm64-windows-static"
+        "VCPKG_TARGET_TRIPLET": "arm64-win-static"
       },
       "hidden": true
     },
