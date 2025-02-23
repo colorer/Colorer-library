@@ -14,5 +14,6 @@ RUN --mount=type=bind,source=.,target=/code/colorer \
      -DCOLORER_BUILD_ARCH=x64 -DCOLORER_USE_ICU_STRINGS=OFF -DCOLORER_USE_ZIPINPUTSOURCE=OFF \
      -DCOLORER_BUILD_OLD_COMPILERS=ON -DCOLORER_BUILD_HARD_WARNINGS=OFF
     cmake --build build
-    ./build/tests/unit/unit_tests
+    cd ./build/tests/unit
+    ./unit_tests
 EOT
