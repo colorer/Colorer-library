@@ -18,8 +18,7 @@ class Environment
   static fs::path getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);
   static fs::path to_filepath(const UnicodeString* str);
 
-  static std::vector<UnicodeString> getFilesFromPath(const UnicodeString* basePath, const UnicodeString* relPath,
-                                                     const UnicodeString& extension);
+  static std::vector<UnicodeString> getFilesFromPath(const UnicodeString& path);
   static bool isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath);
   static bool isRegularFile(const UnicodeString& path);
   static UnicodeString getAbsolutePath(const UnicodeString& basePath, const UnicodeString& relPath);

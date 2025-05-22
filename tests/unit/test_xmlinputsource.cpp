@@ -80,11 +80,11 @@ TEST_CASE("Test isFsURI")
   UnicodeString win_path2(u"c:\\testdir\\testfolder2");
   UnicodeString jar_path1(u"jar:common.jar!hrc/1.hrc");
 
-  REQUIRE(XmlInputSource::isFsURI(path1, nullptr) == true);
-  REQUIRE(XmlInputSource::isFsURI(path1, &path2) == true);
-  REQUIRE(XmlInputSource::isFsURI(win_path2, nullptr) == true);
-  REQUIRE(XmlInputSource::isFsURI(jar_path1, nullptr) == false);
-  REQUIRE(XmlInputSource::isFsURI(jar_path1, &path2) == false);
+  REQUIRE(XmlInputSource::isFileSystemURI(path1, nullptr) == true);
+  REQUIRE(XmlInputSource::isFileSystemURI(path1, &path2) == true);
+  REQUIRE(XmlInputSource::isFileSystemURI(win_path2, nullptr) == true);
+  REQUIRE(XmlInputSource::isFileSystemURI(jar_path1, nullptr) == false);
+  REQUIRE(XmlInputSource::isFileSystemURI(jar_path1, &path2) == false);
 }
 
 #ifndef COLORER_FEATURE_ZIPINPUTSOURCE

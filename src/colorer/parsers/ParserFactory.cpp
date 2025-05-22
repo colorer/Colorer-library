@@ -46,5 +46,5 @@ const HrdNode& ParserFactory::getHrdNode(const UnicodeString& classID, const Uni
 
 void ParserFactory::loadHrcPath(const UnicodeString& location)
 {
-  pimpl->loadHrcPath(location);
+  pimpl->loadHrcPath(location, nullptr);
 }

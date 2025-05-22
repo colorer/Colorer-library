@@ -33,25 +33,40 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 
   readCatalog(*base_catalog_path);
   COLORER_LOG_DEBUG("start load hrc files");
+  // загружаем hrc файлы, прописанные в hrc-sets
+  // это могут быть: относительные пути, полные пути, пути до папки с файлами
   for (const auto& location : hrc_locations) {
-    loadHrcPath(location);
+    loadHrcPath(location, base_catalog_path.get());
   }
 
   COLORER_LOG_DEBUG("end load hrc files");
 }
 
-void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
+void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const UnicodeString* base_path)const
 {
   try {
     COLORER_LOG_DEBUG("try load '%'", location);
-    if (XmlInputSource::isFsURI(*base_catalog_path, &location)) {
-      auto files = colorer::Environment::getFilesFromPath(base_catalog_path.get(), &location, ".hrc");
-      for (const auto& file : files) {
-        loadHrc(file, nullptr);
+    if (XmlInputSource::isFileSystemURI(location, base_path)) {
+      // путь к обычному файлу/папке
+      UnicodeString full_path;
+      if (colorer::Environment::isRegularFile(base_path, &location, full_path)) {
+        // файл
+        loadHrc(full_path, nullptr);
+      }
+      else {
+        // папка с файлами
+        auto files = colorer::Environment::getFilesFromPath(full_path);
+        for (auto const& file : files) {
+          // загружаем файлы только с расширением hrc, кроме ent.hrc
+          if (file.endsWith(u".hrc") && !file.endsWith(u".ent.hrc")) {
+            loadHrc(file, nullptr);
+          }
+        }
       }
     }
     else {
-      loadHrc(location, base_catalog_path.get());
+      // путь до специального файла, например архив
+      loadHrc(location, base_path);
     }
   } catch (const Exception& e) {
     COLORER_LOG_ERROR("%", e.what());
@@ -60,12 +75,12 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location)
 
 void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
 {
-  XmlInputSource dfis(hrc_path, base_path);
+  XmlInputSource file_input_source(hrc_path, base_path);
   try {
     // Загружаем только описания прототипов
-    hrc_library->loadProtoTypes(&dfis);
+    hrc_library->loadProtoTypes(&file_input_source);
   } catch (Exception& e) {
-    COLORER_LOG_ERROR("Can't load hrc: %", dfis.getPath());
+    COLORER_LOG_ERROR("Can't load hrc: %", file_input_source.getPath());
     COLORER_LOG_ERROR("%", e.what());
   }
 }
@@ -85,7 +100,6 @@ void ParserFactory::Impl::readCatalog(const UnicodeString& catalog_path)
   }
 }
 
-[[maybe_unused]]
 std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses() const
 {
   std::vector<UnicodeString> result;

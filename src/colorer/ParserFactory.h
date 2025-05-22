@@ -16,32 +16,28 @@
  * and creates HrcLibrary, StyledHRDMapper, TextHRDMapper and TextParser instances
  * with information, loaded from specified sources.
  *
- * If no path were passed to it's constructor,
- * it search 'catalog.xml' in %COLORER_CATALOG%:
- *
- * @note
- *   - \%NAME%, \$NAME - Environment variable of the current process.
- *   - image_start_dir - Directory, where current image was started.
- *
- * @ingroup colorer
  */
 class ParserFactory
 {
  public:
   /**
    * ParserFactory Constructor.
-   * Searches for catalog.xml in the set of predefined locations
-   * @throw ParserFactoryException If can't find catalog at any of standard locations.
    */
   ParserFactory();
 
   /**
-   * @param catalog_path Path to catalog.xml file. If null,
-   *        standard search method is used.
+   * Load catalog.xml.
+   * @param catalog_path Path to catalog.xml file. If null, searches for catalog.xml in the set of predefined locations
    * @throw ParserFactoryException If can't load specified catalog.
    */
   void loadCatalog(const UnicodeString* catalog_path);
+
+  /**
+   * Load prototypes from the specified source.
+   * @param location Path to hrc file or folder with hrc files
+   */
   void loadHrcPath(const UnicodeString& location);
+
   /**
    * Creates and loads HrcLibrary instance from catalog.xml file.
    * This method can detect directory entries, and sequentially load their
@@ -50,7 +46,8 @@ class ParserFactory
    * create input data stream.
    * Only one HrcLibrary instance is created for each ParserFactory instance.
    */
-  [[nodiscard]] HrcLibrary& getHrcLibrary() const;
+  [[nodiscard]]
+  HrcLibrary& getHrcLibrary() const;
 
   /**
    * Creates TextParser instance
@@ -63,8 +60,7 @@ class ParserFactory
    * @throw ParserFactoryException If method can't find specified pair of
    *         class and name IDs in catalog.xml file
    */
-  std::unique_ptr<StyledHRDMapper> createStyledMapper(const UnicodeString* classID,
-                                                      const UnicodeString* nameID);
+  std::unique_ptr<StyledHRDMapper> createStyledMapper(const UnicodeString* classID, const UnicodeString* nameID);
 
   /**
    * Creates RegionMapper instance and loads specified hrd files into it.
@@ -93,10 +89,7 @@ class ParserFactory
 class ParserFactoryException : public Exception
 {
  public:
-  explicit ParserFactoryException(const UnicodeString& msg) noexcept
-      : Exception("[ParserFactoryException] " + msg)
-  {
-  }
+  explicit ParserFactoryException(const UnicodeString& msg) noexcept : Exception("[ParserFactoryException] " + msg) {}
 };
 
 #endif  // COLORER_PARSERFACTORY_H

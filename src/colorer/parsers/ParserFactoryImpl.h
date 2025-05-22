@@ -20,7 +20,7 @@ class ParserFactory::Impl
   Impl& operator=(Impl&&) = delete;
 
   void loadCatalog(const UnicodeString* catalog_path);
-  void loadHrcPath(const UnicodeString& location);
+  void loadHrcPath(const UnicodeString& location, const UnicodeString* base_path) const;
 
   [[nodiscard]]
   HrcLibrary& getHrcLibrary() const;
