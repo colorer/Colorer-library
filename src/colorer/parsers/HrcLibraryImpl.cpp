@@ -823,7 +823,7 @@ void HrcLibrary::Impl::UpdatePrototypeParams(const XMLNode& elem)
       else {
         type->setParamDefaultValue(name, &value);
       }
-      if (descr != nullptr) {
+      if (!descr.isEmpty()) {
         type->setParamDescription(name, &descr);
       }
     }
