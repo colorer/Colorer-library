@@ -42,7 +42,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
   COLORER_LOG_DEBUG("end load hrc files");
 }
 
-void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const UnicodeString* base_path)const
+void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const UnicodeString* base_path) const
 {
   try {
     COLORER_LOG_DEBUG("try load '%'", location);
@@ -71,6 +71,27 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const Unico
   } catch (const Exception& e) {
     COLORER_LOG_ERROR("%", e.what());
   }
+}
+
+void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location) const
+{
+  uUnicodeString path;
+  if (!location || location->isEmpty()) {
+    COLORER_LOG_DEBUG("loadHrcSettings for empty path");
+
+    const auto env = colorer::Environment::getOSEnv("COLORER_HRC_SETTINGS");
+    if (!env || env->isEmpty()) {
+      throw ParserFactoryException("Can't find suitable hrcsettings.xml for parse.");
+    }
+    path = colorer::Environment::normalizePath(env.get());
+  }
+  else {
+    COLORER_LOG_DEBUG("loadHrcSettings for %", *location);
+    path = colorer::Environment::normalizePath(location);
+  }
+
+  XmlInputSource config(*path.get());
+  hrc_library->loadHrcSettings(config);
 }
 
 void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const

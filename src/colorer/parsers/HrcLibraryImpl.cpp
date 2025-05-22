@@ -116,6 +116,25 @@ void HrcLibrary::Impl::loadFileType(FileType* filetype)
   thisType->pimpl->input_source_loading = false;
 }
 
+void HrcLibrary::Impl::loadHrcSettings(const XmlInputSource& is)
+{
+  XmlReader xml_parser(is);
+  if (!xml_parser.parse()) {
+    throw HrcLibraryException("Error reading " + is.getPath());
+  }
+  std::list<XMLNode> nodes;
+  xml_parser.getNodes(nodes);
+
+  if (nodes.begin()->name != u"hrc-settings") {
+    throw HrcLibraryException("main '<hrc-settings>' block not found");
+  }
+  for (const auto& node : nodes.begin()->children) {
+    if (node.name == hrcTagPrototype) {
+      UpdatePrototypeParams(node);
+    }
+  }
+}
+
 FileType* HrcLibrary::Impl::chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo)
 {
   FileType* best = nullptr;
@@ -770,6 +789,43 @@ void HrcLibrary::Impl::loopSchemeKeywords(const XMLNode& elem, const SchemeImpl*
     }
     else if (node.name == hrcTagSymb) {
       addSchemeKeyword(node, scheme, scheme_node.get(), region, KeywordInfo::KeywordType::KT_SYMB);
+    }
+  }
+}
+
+void HrcLibrary::Impl::UpdatePrototypeParams(const XMLNode& elem)
+{
+  const auto& typeName = elem.getAttrValue(hrcPrototypeAttrName);
+  if (typeName.isEmpty()) {
+    return;
+  }
+
+  const auto ft = fileTypeHash.find(typeName);
+  if (ft == fileTypeHash.end()) {
+    COLORER_LOG_WARN("Prototype '%' not found.", typeName);
+  }
+  auto* type = ft->second;
+
+  for (const auto& node : elem.children) {
+    if (node.name == hrcTagParam) {
+      const auto& name = node.getAttrValue(hrcParamAttrName);
+
+      if (name.isEmpty()) {
+        continue;
+      }
+
+      const auto& value = node.getAttrValue(hrcParamAttrValue);
+      const auto& descr = node.getAttrValue(hrcParamAttrDescription);
+
+      if (type->getParamValue(name) == nullptr) {
+        type->addParam(name, value);
+      }
+      else {
+        type->setParamDefaultValue(name, &value);
+      }
+      if (descr != nullptr) {
+        type->setParamDescription(name, &descr);
+      }
     }
   }
 }

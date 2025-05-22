@@ -25,6 +25,7 @@ class HrcLibrary::Impl
 
   void loadSource(XmlInputSource* input_source, LoadType load_type);
   void loadFileType(FileType* filetype);
+  void loadHrcSettings(const XmlInputSource& is);
   FileType* getFileType(const UnicodeString* name);
   FileType* enumerateFileTypes(unsigned int index) const;
   FileType* chooseFileType(const UnicodeString* fileName, const UnicodeString* firstLine, int typeNo = 0);
@@ -95,6 +96,8 @@ class HrcLibrary::Impl
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
   void loopSchemeKeywords(const XMLNode& elem, const SchemeImpl* scheme,
                           const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region);
+
+  void UpdatePrototypeParams(const XMLNode& elem);
 };
 
 #endif  // COLORER_HRCLIBRARYIMPL_H

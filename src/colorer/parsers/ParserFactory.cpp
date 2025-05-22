@@ -48,3 +48,8 @@ void ParserFactory::loadHrcPath(const UnicodeString& location)
 {
   pimpl->loadHrcPath(location, nullptr);
 }
+
+void ParserFactory::loadHrcSettings(const UnicodeString* location)
+{
+  pimpl->loadHrcSettings(location);
+}

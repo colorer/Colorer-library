@@ -38,6 +38,8 @@ class ParserFactory
    */
   void loadHrcPath(const UnicodeString& location);
 
+  void loadHrcSettings(const UnicodeString* location);
+
   /**
    * Creates and loads HrcLibrary instance from catalog.xml file.
    * This method can detect directory entries, and sequentially load their

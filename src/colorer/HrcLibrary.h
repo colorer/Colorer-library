@@ -41,6 +41,8 @@ class HrcLibrary
 
   void loadFileType(FileType* filetype);
 
+  void loadHrcSettings(XmlInputSource& is);
+
   /** Enumerates sequentially all prototypes
       @param index index of type.
       @return Requested type, or null, if #index is too big
