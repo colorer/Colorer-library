@@ -224,20 +224,13 @@ void HrcLibrary::Impl::parseHrcBlock(const XMLNode& elem)
 {
   for (const auto& node : elem.children) {
     if (node.name == hrcTagPrototype) {
-      if (current_load_type != LoadType::TYPE) {
-        // прототип загружаем на всех стадиях, кроме стадии загрузки типа
-        addPrototype(node);
-      }
+      addPrototype(node);
     }
     else if (node.name == hrcTagPackage) {
-      // пакеты загружаем на всех стадиях
       addPrototype(node);
     }
     else if (node.name == hrcTagType) {
-      if (current_load_type != LoadType::PROTOTYPE) {
-        // тип загружаем на всех стадиях, кроме стадии загрузки прототипа
-        addType(node);
-      }
+      addType(node);
     }
     else if (node.name == hrcTagAnnotation) {
       // do not read annotation
@@ -250,6 +243,23 @@ void HrcLibrary::Impl::parseHrcBlock(const XMLNode& elem)
 
 void HrcLibrary::Impl::addPrototype(const XMLNode& elem)
 {
+  const auto& global_package = elem.getAttrValue(hrcPackageAttrGlobal);
+  const bool is_global_package = global_package.isEmpty() || global_package.compare(value_yes) == 0;
+
+  if (elem.name == hrcTagPrototype && current_load_type == LoadType::TYPE) {
+    // прототип не загружаем на стадии загрузки типов
+    return;
+  }
+  if (elem.name == hrcTagPackage &&
+      (
+          // глобальный пакет не загружаем на стадии загрузки типов
+          (is_global_package && current_load_type == LoadType::TYPE) ||
+          // внутренний пакет не загружаем на стадии загрузки прототипов
+          (!is_global_package && current_load_type == LoadType::PROTOTYPE)))
+  {
+    return;
+  }
+
   auto typeName = elem.getAttrValue(hrcPrototypeAttrName);
 
   if (typeName.isEmpty()) {
@@ -386,6 +396,10 @@ void HrcLibrary::Impl::addPrototypeParameters(const XMLNode& elem, FileType* cur
 
 void HrcLibrary::Impl::addType(const XMLNode& elem)
 {
+  if (current_load_type == LoadType::PROTOTYPE) {
+    // тип загружаем на всех стадиях, кроме стадии загрузки прототипа
+    return;
+  }
   const auto& typeName = elem.getAttrValue(hrcTypeAttrName);
 
   if (typeName.isEmpty()) {
