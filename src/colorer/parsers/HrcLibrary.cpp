@@ -5,7 +5,12 @@ HrcLibrary::HrcLibrary() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
 void HrcLibrary::loadSource(XmlInputSource* is)
 {
-  pimpl->loadSource(is);
+  pimpl->loadSource(is, Impl::LoadType::FULL);
+}
+
+void HrcLibrary::loadProtoTypes(XmlInputSource* is)
+{
+  pimpl->loadSource(is, Impl::LoadType::PROTOTYPE);
 }
 
 FileType* HrcLibrary::enumerateFileTypes(unsigned int index)

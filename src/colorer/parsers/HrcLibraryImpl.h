@@ -11,10 +11,8 @@
 class FileType;
 
 /** Implementation of HrcLibrary.
-    Reads and mantains HRC database of syntax rules,
-    used by TextParser implementations to make
+    Reads and maintains HRC database of syntax rules, used by TextParser implementations to make
     realtime text syntax parsing.
-    @ingroup colorer_parsers
 */
 class HrcLibrary::Impl
 {
@@ -22,7 +20,10 @@ class HrcLibrary::Impl
   Impl();
   ~Impl();
 
-  void loadSource(XmlInputSource* is);
+  // типы загрузки hrc файла: полная, только прототипы и внешние пакеты, только типы
+  enum class LoadType { FULL, PROTOTYPE, TYPE };
+
+  void loadSource(XmlInputSource* input_source, LoadType load_type);
   void loadFileType(FileType* filetype);
   FileType* getFileType(const UnicodeString* name);
   FileType* enumerateFileTypes(unsigned int index) const;
@@ -50,6 +51,7 @@ class HrcLibrary::Impl
 
   FileType* current_parse_type = nullptr;
   XmlInputSource* current_input_source = nullptr;
+  LoadType current_load_type = LoadType::FULL;
   bool structureChanged = false;
   bool updateStarted = false;
 
@@ -95,4 +97,4 @@ class HrcLibrary::Impl
                           const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region);
 };
 
-#endif // COLORER_HRCLIBRARYIMPL_H
+#endif  // COLORER_HRCLIBRARYIMPL_H

@@ -32,21 +32,30 @@ HrcLibrary::Impl::~Impl()
   }
 }
 
-void HrcLibrary::Impl::loadSource(XmlInputSource* is)
+void HrcLibrary::Impl::loadSource(XmlInputSource* input_source, const LoadType load_type)
 {
-  if (!is) {
+  if (!input_source) {
     throw HrcLibraryException("Can't open stream - 'null' is bad stream.");
   }
 
-  XmlInputSource* istemp = current_input_source;
-  current_input_source = is;
+  // Сохраняем текущий контекст парсинга файла, т.к. у нас рекурсивное использование
+  XmlInputSource* temp_is = current_input_source;
+  LoadType temp_lt = current_load_type;
+  current_input_source = input_source;
+  current_load_type = load_type;
+
   try {
-    parseHRC(*is);
+    parseHRC(*input_source);
   } catch (Exception&) {
-    current_input_source = istemp;
+    // восстанавливаем контекст
+    current_input_source = temp_is;
+    current_load_type = temp_lt;
     throw;
   }
-  current_input_source = istemp;
+
+  // восстанавливаем контекст
+  current_input_source = temp_is;
+  current_load_type = temp_lt;
 }
 
 void HrcLibrary::Impl::unloadFileType(const FileType* filetype)
@@ -75,9 +84,12 @@ void HrcLibrary::Impl::unloadFileType(const FileType* filetype)
 void HrcLibrary::Impl::loadFileType(FileType* filetype)
 {
   auto* thisType = filetype;
+  // проверяем статус загрузки указанного типа
   if (thisType == nullptr || filetype->pimpl->type_loading || thisType->pimpl->input_source_loading ||
       thisType->pimpl->load_broken)
   {
+    // если он уже в процессе загрузки, то выходим
+    // ошибку не возвращаем, почему ? TODO проверить
     return;
   }
 
@@ -85,7 +97,8 @@ void HrcLibrary::Impl::loadFileType(FileType* filetype)
 
   const auto& input_source = thisType->pimpl->inputSource;
   try {
-    loadSource(input_source.get());
+    // загружаем только сам тип, все остальное уже у нас есть
+    loadSource(input_source.get(), LoadType::TYPE);
   } catch (InputSourceException& e) {
     COLORER_LOG_ERROR("Can't open source stream: %", e.what());
     thisType->pimpl->load_broken = true;
@@ -210,14 +223,24 @@ void HrcLibrary::Impl::parseHRC(const XmlInputSource& is)
 void HrcLibrary::Impl::parseHrcBlock(const XMLNode& elem)
 {
   for (const auto& node : elem.children) {
-    if (node.name == hrcTagPrototype || node.name == hrcTagPackage) {
+    if (node.name == hrcTagPrototype) {
+      if (current_load_type != LoadType::TYPE) {
+        // прототип загружаем на всех стадиях, кроме стадии загрузки типа
+        addPrototype(node);
+      }
+    }
+    else if (node.name == hrcTagPackage) {
+      // пакеты загружаем на всех стадиях
       addPrototype(node);
     }
     else if (node.name == hrcTagType) {
-      addType(node);
+      if (current_load_type != LoadType::PROTOTYPE) {
+        // тип загружаем на всех стадиях, кроме стадии загрузки прототипа
+        addType(node);
+      }
     }
     else if (node.name == hrcTagAnnotation) {
-      // not read annotation
+      // do not read annotation
     }
     else {
       COLORER_LOG_WARN("Unused element '%'. Current file %.", node.name, current_input_source->getPath());
@@ -279,6 +302,12 @@ void HrcLibrary::Impl::parsePrototypeBlock(const XMLNode& elem, FileType* curren
       COLORER_LOG_WARN("Unused element '%' in prototype '%'. Current file %.", node.name,
                        current_parse_prototype->pimpl->name, current_input_source->getPath());
     }
+  }
+  // Если после загрузки блока prototype у нас не заполнена ссылка на файл с определением типа
+  // значит он должен быть описан в текущем файле. Но если это не так на самом деле, то это не критичная проблема.
+  // Это позволяет в одном hrc файле хранить и prototype и type.
+  if (current_parse_prototype->pimpl->inputSource == nullptr) {
+    current_parse_prototype->pimpl->inputSource = std::make_unique<XmlInputSource>(current_input_source->getPath());
   }
 }
 

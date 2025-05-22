@@ -62,7 +62,8 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeSt
 {
   XmlInputSource dfis(hrc_path, base_path);
   try {
-    hrc_library->loadSource(&dfis);
+    // Загружаем только описания прототипов
+    hrc_library->loadProtoTypes(&dfis);
   } catch (Exception& e) {
     COLORER_LOG_ERROR("Can't load hrc: %", dfis.getPath());
     COLORER_LOG_ERROR("%", e.what());
