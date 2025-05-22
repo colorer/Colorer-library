@@ -31,7 +31,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
     base_catalog_path = colorer::Environment::normalizePath(catalog_path);
   }
 
-  parseCatalog(*base_catalog_path);
+  readCatalog(*base_catalog_path);
   COLORER_LOG_DEBUG("start load hrc files");
   for (const auto& location : hrc_locations) {
     loadHrcPath(location);
@@ -69,7 +69,7 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeSt
   }
 }
 
-void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
+void ParserFactory::Impl::readCatalog(const UnicodeString& catalog_path)
 {
   CatalogParser catalog_parser;
   catalog_parser.parse(&catalog_path);
@@ -85,7 +85,7 @@ void ParserFactory::Impl::parseCatalog(const UnicodeString& catalog_path)
 }
 
 [[maybe_unused]]
-std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses()
+std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses() const
 {
   std::vector<UnicodeString> result;
   result.reserve(hrd_nodes.size());
@@ -95,7 +95,7 @@ std::vector<UnicodeString> ParserFactory::Impl::enumHrdClasses()
   return result;
 }
 
-std::vector<const HrdNode*> ParserFactory::Impl::enumHrdInstances(const UnicodeString& classID)
+std::vector<const HrdNode*> ParserFactory::Impl::enumHrdInstances(const UnicodeString& classID) const
 {
   auto hash = hrd_nodes.find(classID);
   std::vector<const HrdNode*> result;
