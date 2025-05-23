@@ -186,7 +186,7 @@ std::unique_ptr<StyledHRDMapper> ParserFactory::Impl::createStyledMapper(const U
 
 std::unique_ptr<TextHRDMapper> ParserFactory::Impl::createTextMapper(const UnicodeString* nameID)
 {
-  UnicodeString class_id = UnicodeString(HrdClassText);
+  auto class_id = UnicodeString(HrdClassText);
 
   auto mapper = std::make_unique<TextHRDMapper>();
   fillMapper(class_id, nameID, *mapper);
@@ -214,7 +214,7 @@ void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const Unicode
   auto hrd_node = getHrdNode(classID, *name_id);
 
   for (const auto& idx : hrd_node.hrd_location) {
-    if (idx.length() != 0) {
+    if (!idx.isEmpty()) {
       try {
         XmlInputSource dfis(idx, base_catalog_path.get());
         mapper.loadRegionMappings(dfis);

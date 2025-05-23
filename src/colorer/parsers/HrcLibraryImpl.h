@@ -61,10 +61,10 @@ class HrcLibrary::Impl
   void parseHRC(const XmlInputSource& is);
   void parseHrcBlock(const XMLNode& elem);
   void addPrototype(const XMLNode& elem);
-  void parsePrototypeBlock(const XMLNode& elem, FileType* current_parse_prototype);
-  void addPrototypeLocation(const XMLNode& elem, FileType* current_parse_prototype);
-  void addPrototypeDetectParam(const XMLNode& elem, FileType* current_parse_prototype);
-  void addPrototypeParameters(const XMLNode& elem, FileType* current_parse_prototype);
+  void parsePrototypeBlock(const XMLNode& elem, FileType* current_parse_prototype) const;
+  void addPrototypeLocation(const XMLNode& elem, FileType* current_parse_prototype) const;
+  void addPrototypeDetectParam(const XMLNode& elem, FileType* current_parse_prototype) const;
+  void addPrototypeParameters(const XMLNode& elem, FileType* current_parse_prototype) const;
   void addType(const XMLNode& elem);
   void parseTypeBlock(const XMLNode& elem);
   void addTypeRegion(const XMLNode& elem);
@@ -94,8 +94,8 @@ class HrcLibrary::Impl
   uUnicodeString useEntities(const UnicodeString* name);
   const Region* getNCRegion(const XMLNode* elem, const UnicodeString& tag);
   const Region* getNCRegion(const UnicodeString* name, bool logErrors);
-  void loopSchemeKeywords(const XMLNode& elem, const SchemeImpl* scheme,
-                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region);
+  void loopSchemeKeywords(const XMLNode& elem, const SchemeImpl* scheme, const SchemeNodeKeywords* scheme_node,
+                          const Region* region);
 
   void UpdatePrototypeParams(const XMLNode& elem);
 };

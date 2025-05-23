@@ -310,7 +310,7 @@ void HrcLibrary::Impl::addPrototype(const XMLNode& elem)
   }
 }
 
-void HrcLibrary::Impl::parsePrototypeBlock(const XMLNode& elem, FileType* current_parse_prototype)
+void HrcLibrary::Impl::parsePrototypeBlock(const XMLNode& elem, FileType* current_parse_prototype) const
 {
   for (const auto& node : elem.children) {
     if (node.name == hrcTagLocation) {
@@ -340,7 +340,7 @@ void HrcLibrary::Impl::parsePrototypeBlock(const XMLNode& elem, FileType* curren
   }
 }
 
-void HrcLibrary::Impl::addPrototypeLocation(const XMLNode& elem, FileType* current_parse_prototype)
+void HrcLibrary::Impl::addPrototypeLocation(const XMLNode& elem, FileType* current_parse_prototype) const
 {
   const auto& locationLink = elem.getAttrValue(hrcLocationAttrLink);
   if (locationLink.isEmpty()) {
@@ -350,7 +350,7 @@ void HrcLibrary::Impl::addPrototypeLocation(const XMLNode& elem, FileType* curre
   current_parse_prototype->pimpl->inputSource = current_input_source->createRelative(locationLink);
 }
 
-void HrcLibrary::Impl::addPrototypeDetectParam(const XMLNode& elem, FileType* current_parse_prototype)
+void HrcLibrary::Impl::addPrototypeDetectParam(const XMLNode& elem, FileType* current_parse_prototype) const
 {
   if (elem.text.isEmpty()) {
     COLORER_LOG_WARN("Bad '%' element in prototype '%'", elem.name, current_parse_prototype->pimpl->name);
@@ -390,7 +390,7 @@ void HrcLibrary::Impl::addPrototypeDetectParam(const XMLNode& elem, FileType* cu
   current_parse_prototype->pimpl->chooserVector.emplace_back(ctype, prior, matchRE.release());
 }
 
-void HrcLibrary::Impl::addPrototypeParameters(const XMLNode& elem, FileType* current_parse_prototype)
+void HrcLibrary::Impl::addPrototypeParameters(const XMLNode& elem, FileType* current_parse_prototype) const
 {
   for (const auto& node : elem.children) {
     if (node.name == hrcTagParam) {
@@ -771,7 +771,7 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const XMLNode& el
   scheme_node->kwList = std::make_unique<KeywordList>(count);
   scheme_node->kwList->matchCase = UnicodeString(value_yes).compare(ignorecase_string) != 0;
 
-  loopSchemeKeywords(elem, scheme, scheme_node, region);
+  loopSchemeKeywords(elem, scheme, scheme_node.get(), region);
   scheme_node->kwList->firstChar->freeze();
 
   // TODO unique keywords in list
@@ -781,14 +781,14 @@ void HrcLibrary::Impl::parseSchemeKeywords(SchemeImpl* scheme, const XMLNode& el
 }
 
 void HrcLibrary::Impl::loopSchemeKeywords(const XMLNode& elem, const SchemeImpl* scheme,
-                                          const std::unique_ptr<SchemeNodeKeywords>& scheme_node, const Region* region)
+                                          const SchemeNodeKeywords* scheme_node, const Region* region)
 {
   for (const auto& node : elem.children) {
     if (node.name == hrcTagWord) {
-      addSchemeKeyword(node, scheme, scheme_node.get(), region, KeywordInfo::KeywordType::KT_WORD);
+      addSchemeKeyword(node, scheme, scheme_node, region, KeywordInfo::KeywordType::KT_WORD);
     }
     else if (node.name == hrcTagSymb) {
-      addSchemeKeyword(node, scheme, scheme_node.get(), region, KeywordInfo::KeywordType::KT_SYMB);
+      addSchemeKeyword(node, scheme, scheme_node, region, KeywordInfo::KeywordType::KT_SYMB);
     }
   }
 }
@@ -972,7 +972,7 @@ void HrcLibrary::Impl::updateLinks()
       }
       FileType* old_parseType = current_parse_type;
       current_parse_type = scheme->fileType;
-      for (auto& snode : scheme->nodes) {
+      for (const auto& snode : scheme->nodes) {
         if (snode->type == SchemeNode::SchemeNodeType::SNT_BLOCK) {
           auto* snode_block = static_cast<SchemeNodeBlock*>(snode.get());
 
