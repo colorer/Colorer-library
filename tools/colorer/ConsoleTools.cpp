@@ -131,7 +131,6 @@ void ConsoleTools::RETest()
 {
   SMatches match {};
   CRegExp re;
-  bool res;
   char text[255];
 
   do {
@@ -150,7 +149,7 @@ void ConsoleTools::RETest()
     }
     strtok(text, "\r\n");
     dtext = UnicodeString(text);
-    res = re.parse(&dtext, &match);
+    bool res = re.parse(&dtext, &match);
     printf("%s\nmatch:  ", res ? "ok" : "error");
     for (int i = 0; i < match.cMatch; i++) {
       printf("%d:(%d,%d), ", i, match.s[i], match.e[i]);
@@ -158,7 +157,7 @@ void ConsoleTools::RETest()
   } while (text[0]);
 }
 
-void ConsoleTools::listTypes(bool load, bool useNames)
+void ConsoleTools::listTypes(bool load, bool useNames) const
 {
   Writer* writer = nullptr;
   try {
@@ -193,7 +192,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
   }
 }
 
-void ConsoleTools::loadType()
+void ConsoleTools::loadType() const
 {
   try {
     ParserFactory pf;
@@ -222,7 +221,7 @@ void ConsoleTools::loadType()
   }
 }
 
-FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSource)
+FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSource) const
 {
   FileType* type = nullptr;
   if (typeDescription) {
@@ -281,10 +280,8 @@ FileType* ConsoleTools::selectType(HrcLibrary* hrcLibrary, LineSource* lineSourc
   return type;
 }
 
-void ConsoleTools::profile(int loopCount)
+void ConsoleTools::profile(int loopCount) const
 {
-  clock_t msecs;
-
   // parsers factory
   ParserFactory pf;
   pf.loadCatalog(catalogPath.get());
@@ -301,7 +298,7 @@ void ConsoleTools::profile(int loopCount)
   type->getBaseScheme();
   baseEditor.setFileType(type);
 
-  msecs = clock();
+  clock_t msecs = clock();
   while (loopCount--) {
     baseEditor.modifyLineEvent(0);
     baseEditor.lineCountEvent((int) textLinesStore.getLineCount());
@@ -312,7 +309,7 @@ void ConsoleTools::profile(int loopCount)
   printf("%ld\n", (msecs * 1000) / CLOCKS_PER_SEC);
 }
 
-void ConsoleTools::viewFile()
+void ConsoleTools::viewFile() const
 {
   try {
     // Source file text lines store.

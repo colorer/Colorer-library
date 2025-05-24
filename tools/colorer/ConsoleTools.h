@@ -82,19 +82,19 @@ class ConsoleTools
 
       @param loopCount Number of times to repeat file's parsing.
   */
-  void profile(int loopCount);
+  void profile(int loopCount) const;
 
   /** Lists all available HRC types and
       optionally tries to load them.
   */
-  void listTypes(bool load, bool useNames);
-  void loadType();
+  void listTypes(bool load, bool useNames) const;
+  void loadType() const;
 
-  FileType* selectType(HrcLibrary* hrcLibrary, LineSource* lineSource);
+  FileType* selectType(HrcLibrary* hrcLibrary, LineSource* lineSource) const;
 
   /** Views file in console window, using TextConsoleViewer class
    */
-  void viewFile();
+  void viewFile() const;
 
   /** Generates HTML-ized output of file.
       Uses @c 'rgb' HRD class to dynamically create
