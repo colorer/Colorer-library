@@ -23,6 +23,7 @@ struct setting
 {
   JobType job = JobType::JT_NOTHING;
   std::unique_ptr<UnicodeString> catalog;
+  std::unique_ptr<UnicodeString> hrcsettings;
   std::unique_ptr<UnicodeString> input_file;
   std::unique_ptr<UnicodeString> output_file;
   std::unique_ptr<UnicodeString> link_sources;
@@ -151,6 +152,16 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
+    if (argv[i][1] == 'c' && argv[i][2] == 's' && (i + 1 < argc || argv[i][3])) {
+      if (argv[i][3]) {
+        settings.hrcsettings = std::make_unique<UnicodeString>(argv[i] + 3);
+      }
+      else {
+        settings.hrcsettings = std::make_unique<UnicodeString>(argv[i + 1]);
+        i++;
+      }
+      continue;
+    }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.catalog = std::make_unique<UnicodeString>(argv[i] + 2);
@@ -214,6 +225,7 @@ void printUsage()
           "  -p<n>      Runs parser in profile mode (if <n> specified, makes <n> loops)\n"
           " Parameters:\n"
           "  -c<path>   Uses specified 'catalog.xml' file\n"
+          "  -cs<path>  Uses specified 'hrcsettings.xml' file\n"
           "  -i<name>   Loads specified hrd rules from catalog\n"
           "  -t<type>   Tries to use type <type> instead of type autodetection\n"
           "  -ls<name>  Use file <name> as input linking data source for href generation\n"
@@ -238,6 +250,9 @@ void initConsoleTools(ConsoleTools& ct)
   }
   if (settings.catalog) {
     ct.setCatalogPath(*settings.catalog);
+  }
+  if (settings.hrcsettings) {
+    ct.setHrcSettingsPath(*settings.hrcsettings);
   }
   if (settings.link_sources) {
     ct.setLinkSource(*settings.link_sources);

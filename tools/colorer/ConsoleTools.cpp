@@ -56,6 +56,11 @@ void ConsoleTools::setCatalogPath(const UnicodeString& str)
   catalogPath = std::make_unique<UnicodeString>(str);
 }
 
+void ConsoleTools::setHrcSettingsPath(const UnicodeString& str)
+{
+  hrcSettings = std::make_unique<UnicodeString>(str);
+}
+
 void ConsoleTools::setHRDName(const UnicodeString& str)
 {
   hrdName = std::make_unique<UnicodeString>(str);
@@ -160,7 +165,7 @@ void ConsoleTools::listTypes(bool load, bool useNames)
     writer = new StreamWriter(stdout, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    pf.loadHrcSettings(nullptr);
+    pf.loadHrcSettings(hrcSettings.get());
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "loading file types...\n");
     for (int idx = 0;; idx++) {
@@ -193,7 +198,7 @@ void ConsoleTools::loadType()
   try {
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    pf.loadHrcSettings(nullptr);
+    pf.loadHrcSettings(hrcSettings.get());
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "searching file type %s ...\n", UStr::to_stdstr(typeDescription).c_str());
     bool result = false;
@@ -283,7 +288,7 @@ void ConsoleTools::profile(int loopCount)
   // parsers factory
   ParserFactory pf;
   pf.loadCatalog(catalogPath.get());
-  pf.loadHrcSettings(nullptr);
+  pf.loadHrcSettings(hrcSettings.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
   textLinesStore.loadFile(inputFileName.get(), true);
@@ -316,7 +321,7 @@ void ConsoleTools::viewFile()
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    pf.loadHrcSettings(nullptr);
+    pf.loadHrcSettings(hrcSettings.get());
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
@@ -354,7 +359,7 @@ void ConsoleTools::genOutput(bool useTokens)
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
-    pf.loadHrcSettings(nullptr);
+    pf.loadHrcSettings(hrcSettings.get());
     // HRC loading
     auto& hrcLibrary = pf.getHrcLibrary();
     // HRD RegionMapper creation

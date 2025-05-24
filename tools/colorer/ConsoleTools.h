@@ -60,6 +60,8 @@ class ConsoleTools
   void setOutputFileName(const UnicodeString& str);
   /// Optional path to base catalog.xml
   void setCatalogPath(const UnicodeString& str);
+  /// Optional path to base hrcsettings.xml
+  void setHrcSettingsPath(const UnicodeString& str);
   /// Optional HRD instance name, used to perform parsing
   void setHRDName(const UnicodeString& str);
   /// Sets linking datasource into this filename
@@ -115,6 +117,7 @@ class ConsoleTools
 
   std::unique_ptr<UnicodeString> typeDescription;
   std::unique_ptr<UnicodeString> catalogPath;
+  std::unique_ptr<UnicodeString> hrcSettings;
   std::unique_ptr<UnicodeString> hrdName;
   std::unique_ptr<UnicodeString> outputFileName;
   std::unique_ptr<UnicodeString> inputFileName;
