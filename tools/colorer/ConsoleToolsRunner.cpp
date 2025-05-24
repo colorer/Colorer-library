@@ -16,8 +16,7 @@ enum class JobType {
   JT_LOAD_TYPE,
   JT_VIEW,
   JT_GEN,
-  JT_GEN_TOKENS,
-  JT_FORWARD
+  JT_GEN_TOKENS
 };
 
 struct setting
@@ -60,10 +59,6 @@ void readArgs(int argc, char* argv[])
     }
     if (argv[i][1] == 'r') {
       settings.job = JobType::JT_REGTEST;
-      continue;
-    }
-    if (argv[i][1] == 'f') {
-      settings.job = JobType::JT_FORWARD;
       continue;
     }
     if (argv[i][1] == 'v') {
@@ -217,7 +212,6 @@ void printUsage()
           "  -ht        Generates plain coloring from <filename> using tokens output\n"
           "  -v         Runs viewer on file <fname> (uses 'console' hrd class)\n"
           "  -p<n>      Runs parser in profile mode (if <n> specified, makes <n> loops)\n"
-          "  -f         Forwards input file into output with specified encodings\n"
           " Parameters:\n"
           "  -c<path>   Uses specified 'catalog.xml' file\n"
           "  -i<name>   Loads specified hrd rules from catalog\n"
@@ -297,9 +291,6 @@ int workIt()
         break;
       case JobType::JT_GEN_TOKENS:
         ct.genTokenOutput();
-        break;
-      case JobType::JT_FORWARD:
-        ct.forward();
         break;
       default:
         printUsage();

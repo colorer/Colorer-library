@@ -345,32 +345,6 @@ void ConsoleTools::viewFile()
   }
 }
 
-void ConsoleTools::forward()
-{
-  colorer::InputSource* fis = colorer::InputSource::newInstance(inputFileName.get());
-  const byte* stream = fis->openStream();
-  auto eStream = Encodings::toUnicodeString((char*) stream, fis->length());
-
-  Writer* outputFile;
-  try {
-    if (outputFileName != nullptr) {
-      outputFile = new FileWriter(outputFileName.get(), bomOutput);
-    }
-    else {
-      outputFile = new StreamWriter(stdout, bomOutput);
-    }
-  } catch (Exception& e) {
-    fprintf(stderr, "can't open file '%s' for writing:", UStr::to_stdstr(outputFileName.get()).c_str());
-    fprintf(stderr, "%s", e.what());
-    return;
-  }
-
-  outputFile->write(*eStream);
-
-  delete outputFile;
-  delete fis;
-}
-
 void ConsoleTools::genOutput(bool useTokens)
 {
   try {

@@ -94,10 +94,6 @@ class ConsoleTools
    */
   void viewFile();
 
-  /** Simply forwards input text to output, using passed encoding information.
-   */
-  void forward();
-
   /** Generates HTML-ized output of file.
       Uses @c 'rgb' HRD class to dynamically create
       HTML tags, or @c 'text' HRD class to use specified in
