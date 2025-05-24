@@ -1,3 +1,11 @@
+## [1.4.2] - 2025-05-24
+
+### Fixed
+- Fix reading non-latin string from hrc file
+- Crash when open file on net symlinked folder
+- In 'keywords', for the case ignorecase="yes", similar words specified in different case were incorrectly processed.
+- if a substring of a word is also present in the 'keywords' list, then the substring word might not be highlighted. For example, for couples "!=" and "!".
+
 ## [1.4.1] - 2024-11-02
 
 ### Fixed
