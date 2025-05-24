@@ -56,6 +56,11 @@ void ConsoleTools::setCatalogPath(const UnicodeString& str)
   catalogPath = std::make_unique<UnicodeString>(str);
 }
 
+void ConsoleTools::setUserHrcPath(const UnicodeString& str)
+{
+  userHrcPath = std::make_unique<UnicodeString>(str);
+}
+
 void ConsoleTools::setHrcSettingsPath(const UnicodeString& str)
 {
   hrcSettings = std::make_unique<UnicodeString>(str);
@@ -164,6 +169,7 @@ void ConsoleTools::listTypes(bool load, bool useNames) const
     writer = new StreamWriter(stdout, false);
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
+    pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get());
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "loading file types...\n");
@@ -197,6 +203,7 @@ void ConsoleTools::loadType() const
   try {
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
+    pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get());
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "searching file type %s ...\n", UStr::to_stdstr(typeDescription).c_str());
@@ -285,6 +292,7 @@ void ConsoleTools::profile(int loopCount) const
   // parsers factory
   ParserFactory pf;
   pf.loadCatalog(catalogPath.get());
+  pf.loadHrcPath(userHrcPath.get());
   pf.loadHrcSettings(hrcSettings.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
@@ -292,7 +300,7 @@ void ConsoleTools::profile(int loopCount) const
   // Base editor to make primary parse
   BaseEditor baseEditor(&pf, &textLinesStore);
   // HRD RegionMapper linking
-  UnicodeString dcons = UnicodeString("console");
+  auto dcons = UnicodeString("console");
   baseEditor.setRegionMapper(&dcons, hrdName.get());
   FileType* type = selectType(&pf.getHrcLibrary(), &textLinesStore);
   type->getBaseScheme();
@@ -318,6 +326,7 @@ void ConsoleTools::viewFile() const
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
+    pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get());
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
@@ -356,6 +365,7 @@ void ConsoleTools::genOutput(bool useTokens)
     // parsers factory
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
+    pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get());
     // HRC loading
     auto& hrcLibrary = pf.getHrcLibrary();

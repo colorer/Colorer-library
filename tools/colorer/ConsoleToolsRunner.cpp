@@ -24,6 +24,7 @@ struct setting
   JobType job = JobType::JT_NOTHING;
   std::unique_ptr<UnicodeString> catalog;
   std::unique_ptr<UnicodeString> hrcsettings;
+  std::unique_ptr<UnicodeString> user_hrc_path;
   std::unique_ptr<UnicodeString> input_file;
   std::unique_ptr<UnicodeString> output_file;
   std::unique_ptr<UnicodeString> link_sources;
@@ -162,6 +163,16 @@ void readArgs(int argc, char* argv[])
       }
       continue;
     }
+    if (argv[i][1] == 'c' && argv[i][2] == 'u' && (i + 1 < argc || argv[i][3])) {
+      if (argv[i][3]) {
+        settings.user_hrc_path = std::make_unique<UnicodeString>(argv[i] + 3);
+      }
+      else {
+        settings.user_hrc_path = std::make_unique<UnicodeString>(argv[i + 1]);
+        i++;
+      }
+      continue;
+    }
     if (argv[i][1] == 'c' && (i + 1 < argc || argv[i][2])) {
       if (argv[i][2]) {
         settings.catalog = std::make_unique<UnicodeString>(argv[i] + 2);
@@ -226,6 +237,7 @@ void printUsage()
           " Parameters:\n"
           "  -c<path>   Uses specified 'catalog.xml' file\n"
           "  -cs<path>  Uses specified 'hrcsettings.xml' file\n"
+          "  -cu<path>  Load user hrc-files from path\n"
           "  -i<name>   Loads specified hrd rules from catalog\n"
           "  -t<type>   Tries to use type <type> instead of type autodetection\n"
           "  -ls<name>  Use file <name> as input linking data source for href generation\n"
@@ -253,6 +265,9 @@ void initConsoleTools(ConsoleTools& ct)
   }
   if (settings.hrcsettings) {
     ct.setHrcSettingsPath(*settings.hrcsettings);
+  }
+  if (settings.user_hrc_path) {
+    ct.setUserHrcPath(*settings.user_hrc_path);
   }
   if (settings.link_sources) {
     ct.setLinkSource(*settings.link_sources);
@@ -330,7 +345,7 @@ int main(int argc, char* argv[])
   if (level != Logger::LOG_OFF) {
     std::string const file_name = settings.log_file_dir + "/" + settings.log_file_prefix + ".log";
 
-    logger = std::make_unique<SimpleLogger>(file_name,level);
+    logger = std::make_unique<SimpleLogger>(file_name, level);
     Log::registerLogger(*logger);
   }
 

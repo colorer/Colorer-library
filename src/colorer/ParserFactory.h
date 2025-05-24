@@ -36,7 +36,7 @@ class ParserFactory
    * Load prototypes from the specified source.
    * @param location Path to hrc file or folder with hrc files
    */
-  void loadHrcPath(const UnicodeString& location);
+  void loadHrcPath(const UnicodeString* location);
 
   void loadHrcSettings(const UnicodeString* location);
 

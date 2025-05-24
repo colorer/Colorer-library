@@ -3,6 +3,7 @@
 ### Added
 - Working with hrcsettings.xml added to the core. If the path to hrcsettings.xml omitted, the environment variable COLORER_HRC_SETTINGS is used.
 - A parameter for hrcsettings has been added to consoletools
+- A parameter for folder with user hrc-files has been added to consoletools
 
 ### Changed
 - The new package attribute is "global". The default value is "yes".

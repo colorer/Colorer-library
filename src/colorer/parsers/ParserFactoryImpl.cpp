@@ -36,20 +36,24 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
   // загружаем hrc файлы, прописанные в hrc-sets
   // это могут быть: относительные пути, полные пути, пути до папки с файлами
   for (const auto& location : hrc_locations) {
-    loadHrcPath(location, base_catalog_path.get());
+    loadHrcPath(&location, base_catalog_path.get());
   }
 
   COLORER_LOG_DEBUG("end load hrc files");
 }
 
-void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const UnicodeString* base_path) const
+void ParserFactory::Impl::loadHrcPath(const UnicodeString* location, const UnicodeString* base_path) const
 {
+  if (!location) {
+    return;
+  }
+
   try {
-    COLORER_LOG_DEBUG("try load '%'", location);
-    if (XmlInputSource::isFileSystemURI(location, base_path)) {
+    COLORER_LOG_DEBUG("try load '%'", *location);
+    if (XmlInputSource::isFileSystemURI(*location, base_path)) {
       // путь к обычному файлу/папке
       UnicodeString full_path;
-      if (colorer::Environment::isRegularFile(base_path, &location, full_path)) {
+      if (colorer::Environment::isRegularFile(base_path, location, full_path)) {
         // файл
         loadHrc(full_path, nullptr);
       }
@@ -66,7 +70,7 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString& location, const Unico
     }
     else {
       // путь до специального файла, например архив
-      loadHrc(location, base_path);
+      loadHrc(*location, base_path);
     }
   } catch (const Exception& e) {
     COLORER_LOG_ERROR("%", e.what());
