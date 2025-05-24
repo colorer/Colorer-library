@@ -81,7 +81,8 @@ void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location) const
 
     const auto env = colorer::Environment::getOSEnv("COLORER_HRC_SETTINGS");
     if (!env || env->isEmpty()) {
-      throw ParserFactoryException("Can't find suitable hrcsettings.xml for parse.");
+      COLORER_LOG_DEBUG("The path to hrcsettings config not specified, skipped.");
+      return;
     }
     path = colorer::Environment::normalizePath(env.get());
   }
