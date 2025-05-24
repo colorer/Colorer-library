@@ -1,3 +1,16 @@
+## [1.5.0] - xxxx-xx-xx
+
+### Added
+- Working with htcsettings.xml added to the core. If the path is to hrcsettings.xml omitted, the environment variable COLORER_HRC_SETTINGS is used.
+
+### Changed
+- The new package attribute is "global". The default value is "yes".
+- Separate loading of different hrc parts:
+  - at the prototype loading stage, only prototypes and global packages are loaded.
+  - at the type loading stage, only types and local packages are loaded.
+- Exclude *.ent.hrc files from the prototype loading stage
+
+
 ## [1.4.2] - 2025-05-24
 
 ### Fixed
