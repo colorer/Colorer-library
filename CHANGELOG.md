@@ -1,7 +1,7 @@
 ## [1.5.0] - xxxx-xx-xx
 
 ### Added
-- Working with htcsettings.xml added to the core. If the path is to hrcsettings.xml omitted, the environment variable COLORER_HRC_SETTINGS is used.
+- Working with hrcsettings.xml added to the core. If the path is to hrcsettings.xml omitted, the environment variable COLORER_HRC_SETTINGS is used.
 
 ### Changed
 - The new package attribute is "global". The default value is "yes".
