@@ -97,7 +97,8 @@ class HrcLibrary::Impl
   void loopSchemeKeywords(const XMLNode& elem, const SchemeImpl* scheme, const SchemeNodeKeywords* scheme_node,
                           const Region* region);
 
-  void UpdatePrototypeParams(const XMLNode& elem);
+  void updatePrototype(const XMLNode& elem);
+  void updatePrototypeParams(const XMLNode& node, FileType* current_parse_prototype);
 };
 
 #endif  // COLORER_HRCLIBRARYIMPL_H

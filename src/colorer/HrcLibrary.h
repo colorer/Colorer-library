@@ -41,7 +41,7 @@ class HrcLibrary
 
   void loadFileType(FileType* filetype);
 
-  void loadHrcSettings(XmlInputSource& is);
+  void loadHrcSettings(const XmlInputSource& is);
 
   /** Enumerates sequentially all prototypes
       @param index index of type.

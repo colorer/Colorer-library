@@ -170,7 +170,7 @@ void ConsoleTools::listTypes(bool load, bool useNames) const
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
-    pf.loadHrcSettings(hrcSettings.get());
+    pf.loadHrcSettings(hrcSettings.get(), true);
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "loading file types...\n");
     for (int idx = 0;; idx++) {
@@ -204,7 +204,7 @@ void ConsoleTools::loadType() const
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
-    pf.loadHrcSettings(hrcSettings.get());
+    pf.loadHrcSettings(hrcSettings.get(), true);
     auto& hrcLibrary = pf.getHrcLibrary();
     fprintf(stdout, "searching file type %s ...\n", UStr::to_stdstr(typeDescription).c_str());
     bool result = false;
@@ -293,7 +293,7 @@ void ConsoleTools::profile(int loopCount) const
   ParserFactory pf;
   pf.loadCatalog(catalogPath.get());
   pf.loadHrcPath(userHrcPath.get());
-  pf.loadHrcSettings(hrcSettings.get());
+  pf.loadHrcSettings(hrcSettings.get(), true);
   // Source file text lines store.
   TextLinesStore textLinesStore;
   textLinesStore.loadFile(inputFileName.get(), true);
@@ -327,7 +327,7 @@ void ConsoleTools::viewFile() const
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
-    pf.loadHrcSettings(hrcSettings.get());
+    pf.loadHrcSettings(hrcSettings.get(), true);
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
@@ -366,7 +366,7 @@ void ConsoleTools::genOutput(bool useTokens)
     ParserFactory pf;
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
-    pf.loadHrcSettings(hrcSettings.get());
+    pf.loadHrcSettings(hrcSettings.get(), true);
     // HRC loading
     auto& hrcLibrary = pf.getHrcLibrary();
     // HRD RegionMapper creation

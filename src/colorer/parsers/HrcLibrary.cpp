@@ -58,7 +58,7 @@ void HrcLibrary::loadFileType(FileType* filetype)
   pimpl->loadFileType(filetype);
 }
 
-void HrcLibrary::loadHrcSettings(XmlInputSource& is)
+void HrcLibrary::loadHrcSettings(const XmlInputSource& is)
 {
   pimpl->loadHrcSettings(is);
 }

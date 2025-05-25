@@ -77,9 +77,13 @@ void ParserFactory::Impl::loadHrcPath(const UnicodeString* location, const Unico
   }
 }
 
-void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location) const
+void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location, const bool user_defined) const
 {
   uUnicodeString path;
+  if (!user_defined && (!location || location->isEmpty())) {
+    // hrcsetting уровня приложения загружается по фиксированному пути
+    return;
+  }
   if (!location || location->isEmpty()) {
     COLORER_LOG_DEBUG("loadHrcSettings for empty path");
 
@@ -95,7 +99,7 @@ void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location) const
     path = colorer::Environment::normalizePath(location);
   }
 
-  XmlInputSource config(*path.get());
+  const XmlInputSource config(*path.get());
   hrc_library->loadHrcSettings(config);
 }
 

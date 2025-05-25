@@ -130,7 +130,7 @@ void HrcLibrary::Impl::loadHrcSettings(const XmlInputSource& is)
   }
   for (const auto& node : nodes.begin()->children) {
     if (node.name == hrcTagPrototype) {
-      UpdatePrototypeParams(node);
+      updatePrototype(node);
     }
   }
 }
@@ -793,39 +793,67 @@ void HrcLibrary::Impl::loopSchemeKeywords(const XMLNode& elem, const SchemeImpl*
   }
 }
 
-void HrcLibrary::Impl::UpdatePrototypeParams(const XMLNode& elem)
+void HrcLibrary::Impl::updatePrototype(const XMLNode& elem)
 {
   const auto& typeName = elem.getAttrValue(hrcPrototypeAttrName);
   if (typeName.isEmpty()) {
     return;
   }
 
-  const auto ft = fileTypeHash.find(typeName);
-  if (ft == fileTypeHash.end()) {
-    COLORER_LOG_WARN("Prototype '%' not found.", typeName);
+  const auto current_parse_prototype = getFileType(&typeName);
+  if (!current_parse_prototype) {
+    COLORER_LOG_WARN("Prototype '%' not found. Skipped.", typeName);
+    return;
   }
-  auto* type = ft->second;
 
+  bool cleaned_detect_param = false;
   for (const auto& node : elem.children) {
-    if (node.name == hrcTagParam) {
-      const auto& name = node.getAttrValue(hrcParamAttrName);
+    if (node.name == hrcTagParametrs) {
+      for (const auto& node2 : node.children) {
+        updatePrototypeParams(node2, current_parse_prototype);
+      }
+    }
+    else if (node.name == hrcTagParam) {
+      // for backward compatibility
+      updatePrototypeParams(node, current_parse_prototype);
+    }
+    else if (node.name == hrcTagFilename || node.name == hrcTagFirstline) {
+      if (!cleaned_detect_param) {
+        // rewrite all detect params
+        current_parse_prototype->pimpl->chooserVector.clear();
+        cleaned_detect_param = true;
+      }
+      addPrototypeDetectParam(node, current_parse_prototype);
+    }
+  }
+}
 
-      if (name.isEmpty()) {
-        continue;
-      }
+void HrcLibrary::Impl::updatePrototypeParams(const XMLNode& node, FileType* current_parse_prototype)
+{
+  if (node.name == hrcTagParam) {
+    const auto& name = node.getAttrValue(hrcParamAttrName);
 
-      const auto& value = node.getAttrValue(hrcParamAttrValue);
-      const auto& descr = node.getAttrValue(hrcParamAttrDescription);
+    if (name.isEmpty()) {
+      return;
+    }
 
-      if (type->getParamValue(name) == nullptr) {
-        type->addParam(name, value);
-      }
-      else {
-        type->setParamDefaultValue(name, &value);
-      }
-      if (!descr.isEmpty()) {
-        type->setParamDescription(name, &descr);
-      }
+    const auto& value = node.getAttrValue(hrcParamAttrValue);
+    const auto& descr = node.getAttrValue(hrcParamAttrDescription);
+
+    if (current_parse_prototype->getParamValue(name) == nullptr) {
+      // параметр еще не задан для прототипа
+      // загружаем параметры приложения, добавляем атрибут и значение
+      current_parse_prototype->addParam(name, value);
+    }
+    else {
+      // параметр уже задан для прототипа
+      // сохраняем как значение по умолчанию
+      current_parse_prototype->setParamDefaultValue(name, &value);
+    }
+
+    if (!descr.isEmpty()) {
+      // обновляем описание параметра, если задано
+      current_parse_prototype->setParamDescription(name, &descr);
     }
   }
 }

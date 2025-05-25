@@ -21,7 +21,7 @@ class ParserFactory::Impl
 
   void loadCatalog(const UnicodeString* catalog_path);
   void loadHrcPath(const UnicodeString* location, const UnicodeString* base_path) const;
-  void loadHrcSettings(const UnicodeString* location) const;
+  void loadHrcSettings(const UnicodeString* location, bool user_defined) const;
 
   [[nodiscard]]
   HrcLibrary& getHrcLibrary() const;
