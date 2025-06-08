@@ -195,7 +195,7 @@ uintmax_t Environment::getFileSize(const UnicodeString& path)
 UnicodeString Environment::getCurrentDir()
 {
   auto path = fs::current_path();
-  return UStr::to_unistr(path);
+  return {path.c_str()};
 }
 
 std::string Environment::expandEnvByRegexp(const std::string& path, const std::regex& regex)
