@@ -1,8 +1,10 @@
 #include "colorer/parsers/ParserFactoryImpl.h"
 #include "colorer/base/BaseNames.h"
+#include "colorer/base/XmlTagDefs.h"
 #include "colorer/parsers/CatalogParser.h"
 #include "colorer/parsers/HrcLibraryImpl.h"
 #include "colorer/utils/Environment.h"
+#include "colorer/xml/XmlReader.h"
 
 ParserFactory::Impl::Impl()
 {
@@ -103,6 +105,39 @@ void ParserFactory::Impl::loadHrcSettings(const UnicodeString* location, const b
   hrc_library->loadHrcSettings(config);
 }
 
+void ParserFactory::Impl::loadHrdPath(const UnicodeString* location)
+{
+  if (!location) {
+    return;
+  }
+
+  COLORER_LOG_DEBUG("start load hrd files");
+  try {
+    COLORER_LOG_DEBUG("try load '%'", *location);
+    if (XmlInputSource::isFileSystemURI(*location, nullptr)) {
+      // путь к обычному файлу/папке
+      UnicodeString full_path;
+      if (colorer::Environment::isRegularFile(nullptr, location, full_path)) {
+        // файл, обрабатываем как hrd-sets
+        loadHrdSets(full_path);
+      }
+      else {
+        // папка с файлами
+        auto files = colorer::Environment::getFilesFromPath(*location);
+        for (auto const& file : files) {
+          // загружаем файлы только с расширением hrd
+          if (file.endsWith(u".hrd")) {
+            loadHrd(file);
+          }
+        }
+      }
+    }
+  } catch (const Exception& e) {
+    COLORER_LOG_ERROR("%", e.what());
+  }
+  COLORER_LOG_DEBUG("end load hrc files");
+}
+
 void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const
 {
   XmlInputSource file_input_source(hrc_path, base_path);
@@ -112,6 +147,60 @@ void ParserFactory::Impl::loadHrc(const UnicodeString& hrc_path, const UnicodeSt
   } catch (Exception& e) {
     COLORER_LOG_ERROR("Can't load hrc: %", file_input_source.getPath());
     COLORER_LOG_ERROR("%", e.what());
+  }
+}
+
+void ParserFactory::Impl::loadHrd(const UnicodeString& hrd_path)
+{
+  const XmlInputSource config(hrd_path);
+  XmlReader xml_parser(config);
+  if (!xml_parser.parse()) {
+    throw ParserFactoryException(UnicodeString("Error reading ").append(hrd_path));
+  }
+
+  std::list<XMLNode> nodes;
+  xml_parser.getNodes(nodes);
+
+  auto elem = nodes.begin();
+  if (elem->name != catTagHrd) {
+    throw Exception("main '<hrd>' block not found");
+  }
+  const auto& hrd_class = elem->getAttrValue(catHrdAttrClass);
+  const auto& hrd_name = elem->getAttrValue(catHrdAttrName);
+  if (hrd_class.isEmpty() || hrd_name.isEmpty()) {
+    COLORER_LOG_WARN("found HRD with empty class/name in '%'. skip this record.", hrd_path);
+    return;
+  }
+  const auto& xhrd_desc = elem->getAttrValue(catHrdAttrDescription);
+
+  auto hrd_node = std::make_unique<HrdNode>();
+  hrd_node->hrd_class = UnicodeString(hrd_class);
+  hrd_node->hrd_name = UnicodeString(hrd_name);
+  hrd_node->hrd_description = UnicodeString(xhrd_desc);
+  hrd_node->hrd_location.push_back(hrd_path);
+  addHrd(std::move(hrd_node));
+}
+
+void ParserFactory::Impl::loadHrdSets(const UnicodeString& hrd_path)
+{
+  const XmlInputSource config(hrd_path);
+  XmlReader xml_parser(config);
+  if (!xml_parser.parse()) {
+    throw ParserFactoryException(UnicodeString("Error reading ").append(hrd_path));
+  }
+
+  std::list<XMLNode> nodes;
+  xml_parser.getNodes(nodes);
+
+  if (nodes.begin()->name != catTagHrdSets) {
+    throw Exception("main '<hrd-sets>' block not found");
+  }
+  for (const auto& node : nodes.begin()->children) {
+    if (node.name == catTagHrd) {
+      auto hrd = CatalogParser::parseHRDSetsChild(node);
+      if (hrd)
+        addHrd(std::move(hrd));
+    }
   }
 }
 

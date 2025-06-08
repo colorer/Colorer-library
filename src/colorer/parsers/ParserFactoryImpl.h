@@ -22,6 +22,7 @@ class ParserFactory::Impl
   void loadCatalog(const UnicodeString* catalog_path);
   void loadHrcPath(const UnicodeString* location, const UnicodeString* base_path) const;
   void loadHrcSettings(const UnicodeString* location, bool user_defined) const;
+  void loadHrdPath(const UnicodeString* location);
 
   [[nodiscard]]
   HrcLibrary& getHrcLibrary() const;
@@ -48,6 +49,8 @@ class ParserFactory::Impl
  private:
   void readCatalog(const UnicodeString& catalog_path);
   void loadHrc(const UnicodeString& hrc_path, const UnicodeString* base_path) const;
+  void loadHrd(const UnicodeString& hrd_path);
+  void loadHrdSets(const UnicodeString& hrd_path);
   void fillMapper(const UnicodeString& classID, const UnicodeString* nameID, RegionMapper& mapper);
 
   uUnicodeString base_catalog_path;
