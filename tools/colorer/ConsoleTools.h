@@ -62,6 +62,8 @@ class ConsoleTools
   void setCatalogPath(const UnicodeString& str);
   /// Optional path to user hrc files
   void setUserHrcPath(const UnicodeString& str);
+  /// Optional path to user hrd files
+  void setUserHrdPath(const UnicodeString& str);
   /// Optional path to base hrcsettings.xml
   void setHrcSettingsPath(const UnicodeString& str);
   /// Optional HRD instance name, used to perform parsing
@@ -120,6 +122,7 @@ class ConsoleTools
   std::unique_ptr<UnicodeString> typeDescription;
   std::unique_ptr<UnicodeString> catalogPath;
   std::unique_ptr<UnicodeString> userHrcPath;
+  std::unique_ptr<UnicodeString> userHrdPath;
   std::unique_ptr<UnicodeString> hrcSettings;
   std::unique_ptr<UnicodeString> hrdName;
   std::unique_ptr<UnicodeString> outputFileName;

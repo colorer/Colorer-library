@@ -61,6 +61,11 @@ void ConsoleTools::setUserHrcPath(const UnicodeString& str)
   userHrcPath = std::make_unique<UnicodeString>(str);
 }
 
+void ConsoleTools::setUserHrdPath(const UnicodeString& str)
+{
+  userHrdPath = std::make_unique<UnicodeString>(str);
+}
+
 void ConsoleTools::setHrcSettingsPath(const UnicodeString& str)
 {
   hrcSettings = std::make_unique<UnicodeString>(str);
@@ -294,6 +299,7 @@ void ConsoleTools::profile(int loopCount) const
   pf.loadCatalog(catalogPath.get());
   pf.loadHrcPath(userHrcPath.get());
   pf.loadHrcSettings(hrcSettings.get(), true);
+  pf.loadHrdPath(userHrdPath.get());
   // Source file text lines store.
   TextLinesStore textLinesStore;
   textLinesStore.loadFile(inputFileName.get(), true);
@@ -328,6 +334,7 @@ void ConsoleTools::viewFile() const
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get(), true);
+    pf.loadHrdPath(userHrdPath.get());
     // Base editor to make primary parse
     BaseEditor baseEditor(&pf, &textLinesStore);
     // HRD RegionMapper linking
@@ -367,6 +374,7 @@ void ConsoleTools::genOutput(bool useTokens)
     pf.loadCatalog(catalogPath.get());
     pf.loadHrcPath(userHrcPath.get());
     pf.loadHrcSettings(hrcSettings.get(), true);
+    pf.loadHrdPath(userHrdPath.get());
     // HRC loading
     auto& hrcLibrary = pf.getHrcLibrary();
     // HRD RegionMapper creation
