@@ -3,6 +3,11 @@
 Colorer is a syntax highlighting library.
 [![build](https://github.com/colorer/Colorer-library/actions/workflows/colorer_ci.yml/badge.svg)](https://github.com/colorer/Colorer-library/actions/workflows/colorer_ci.yml)
 
+## Documentation
+
+https://colorer.github.io
+https://github.com/colorer/colorer.github.io
+
 ## How to build from source
 
 ### Main
