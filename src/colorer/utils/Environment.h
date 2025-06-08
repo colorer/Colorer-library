@@ -27,6 +27,7 @@ class Environment
   static UnicodeString expandEnvironment(const UnicodeString& path);
 
   static uintmax_t getFileSize(const UnicodeString& path);
+  static UnicodeString getCurrentDir();
 private:
   static std::string expandEnvByRegexp(const std::string& path, const std::regex& regex);
 };

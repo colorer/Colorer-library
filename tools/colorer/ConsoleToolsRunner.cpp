@@ -4,6 +4,7 @@
 #include <fstream>
 #include "ConsoleTools.h"
 #include "SimpleLogger.h"
+#include "colorer/utils/Environment.h"
 
 /** Internal run action type */
 enum class JobType {
@@ -269,26 +270,35 @@ void printUsage()
 
 void initConsoleTools(ConsoleTools& ct)
 {
+  auto cur_dir = colorer::Environment::getCurrentDir();
+
   if (settings.input_file) {
-    ct.setInputFileName(*settings.input_file);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.input_file.get()));
+    ct.setInputFileName(full_path);
   }
   if (settings.catalog) {
-    ct.setCatalogPath(*settings.catalog);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.catalog.get()));
+    ct.setCatalogPath(full_path);
   }
   if (settings.hrcsettings) {
-    ct.setHrcSettingsPath(*settings.hrcsettings);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.hrcsettings.get()));
+    ct.setHrcSettingsPath(full_path);
   }
   if (settings.user_hrc_path) {
-    ct.setUserHrcPath(*settings.user_hrc_path);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.user_hrc_path.get()));
+    ct.setUserHrcPath(full_path);
   }
   if (settings.user_hrd_path) {
-    ct.setUserHrdPath(*settings.user_hrd_path);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.user_hrd_path.get()));
+    ct.setUserHrdPath(full_path);
   }
   if (settings.link_sources) {
-    ct.setLinkSource(*settings.link_sources);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.link_sources.get()));
+    ct.setLinkSource(full_path);
   }
   if (settings.output_file) {
-    ct.setOutputFileName(*settings.output_file);
+    auto full_path = UStr::to_unistr(colorer::Environment::getClearFilePath(&cur_dir, settings.output_file.get()));
+    ct.setOutputFileName(full_path);
   }
   if (settings.type_desc) {
     ct.setTypeDescription(*settings.type_desc);

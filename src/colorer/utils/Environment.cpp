@@ -81,7 +81,11 @@ fs::path Environment::getClearFilePath(const UnicodeString* basePath, const Unic
   fs::path fs_basepath;
   if (basePath && !basePath->isEmpty()) {
     auto clear_basepath = normalizeFsPath(basePath);
-    fs_basepath = fs::path(clear_basepath).parent_path();
+    if (fs::is_regular_file(clear_basepath)) {
+      fs_basepath = clear_basepath.parent_path();
+    }else {
+      fs_basepath = clear_basepath;
+    }
   }
   auto clear_relpath = normalizeFsPath(relPath);
 
@@ -186,6 +190,12 @@ UnicodeString Environment::expandEnvironment(const UnicodeString& path)
 uintmax_t Environment::getFileSize(const UnicodeString& path)
 {
   return fs::file_size(to_filepath(&path));
+}
+
+UnicodeString Environment::getCurrentDir()
+{
+  auto path = fs::current_path();
+  return UStr::to_unistr(path);
 }
 
 std::string Environment::expandEnvByRegexp(const std::string& path, const std::regex& regex)
