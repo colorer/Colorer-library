@@ -521,8 +521,13 @@ bool TextParser::Impl::colorize(CRegExp* root_end_re, bool lowContentPriority)
       clearLine = current_parse_line;
       str = lineSource->getLine(current_parse_line);
       if (str == nullptr) {
-        throw Exception("null String passed into the parser: " +
-                        UStr::to_unistr(current_parse_line));
+        // LineSource can return null if the line is not available (e.g. editor shutdown).
+        // Stop parsing gracefully instead of throwing across threads.
+        str = nullptr;
+        clearLine = -1;
+        endLine = current_parse_line;
+        stackLevel--;
+        return true;
       }
       regionHandler->clearLine(current_parse_line, str);
     }
