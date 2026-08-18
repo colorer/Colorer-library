@@ -92,6 +92,7 @@ set(SRC_COLORER
     colorer/xml/XMLNode.h
     colorer/xml/XmlInputSource.cpp
     colorer/xml/XmlInputSource.h
+    colorer/xml/XmlLoadSession.h
     colorer/xml/XmlReader.cpp
     colorer/xml/XmlReader.h
 )

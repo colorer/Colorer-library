@@ -32,10 +32,8 @@ class LibXmlReader
   bool populateNode(xmlNode* node, XMLNode& result);
   static uUnicodeString getElementText(const xmlNode* node);
 
-  /* the name of the file that is being processed */
-  static uUnicodeString current_file;
-  /* is this the first xmlMyExternalEntityLoader call for current file*/
-  static bool is_first_call;
+  /* per-parse path/entity state lives on xmlParserCtxt::_private */
+  static void installLibXmlHooks();
   static xmlParserInputPtr xmlMyExternalEntityLoader(const char* URL, const char* ID, xmlParserCtxtPtr ctxt);
   static void xml_error_func(void* ctx, const char* msg, ...);
 

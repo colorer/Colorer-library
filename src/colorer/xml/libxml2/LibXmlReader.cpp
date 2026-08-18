@@ -1,12 +1,16 @@
 #include "colorer/xml/libxml2/LibXmlReader.h"
 #include <libxml/parserInternals.h>
+#include <cstdarg>
 #include <cstring>
-#include <fstream>
+#include <memory>
+#include <unordered_map>
 #include "colorer/Exception.h"
 #include "colorer/base/BaseNames.h"
 #include "colorer/utils/Environment.h"
+#include "colorer/xml/XmlLoadSession.h"
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+#include "colorer/xml/libxml2/SharedXmlInputSource.h"
 #include "colorer/zip/MemoryFile.h"
 #endif
 
@@ -14,19 +18,71 @@
 #define strdup(p) _strdup(p)
 #endif
 
-uUnicodeString LibXmlReader::current_file = nullptr;
-bool LibXmlReader::is_first_call = false;
+namespace {
+
+struct XmlLoadContext
+{
+  UnicodeString current_file;
+  bool is_first_call = true;
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+  std::unordered_map<UnicodeString, std::unique_ptr<SharedXmlInputSource>> jars;
+#endif
+};
+
+XmlLoadContext* loadContext(xmlParserCtxtPtr ctxt)
+{
+  if (ctxt == nullptr) {
+    return nullptr;
+  }
+  return static_cast<XmlLoadContext*>(ctxt->_private);
+}
+
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+thread_local XmlJarCache* g_active_jars = nullptr;
+#endif
+
+}  // namespace
+
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+XmlJarCache* XmlLoadSession::active()
+{
+  return g_active_jars;
+}
+#endif
+
+XmlLoadSession::XmlLoadSession(XmlJarCache& cache)
+{
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+  prev = g_active_jars;
+  g_active_jars = &cache;
+#else
+  (void) cache;
+#endif
+}
+
+XmlLoadSession::~XmlLoadSession()
+{
+#ifdef COLORER_FEATURE_ZIPINPUTSOURCE
+  g_active_jars = prev;
+#endif
+}
 
 LibXmlReader::LibXmlReader(const UnicodeString& source_file)
 {
-  xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
-  xmlSetGenericErrorFunc(nullptr, xml_error_func);
+  installLibXmlHooks();
 
-  current_file = std::make_unique<UnicodeString>(source_file);
-  is_first_call = true;
+  XmlLoadContext load_ctx;
+  load_ctx.current_file = source_file;
 
-  // you can pass any string for the file name, it can be processed/converted into xml by MyExternalEntityLoader
-  xmldoc = xmlReadFile(UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
+  xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
+  if (ctxt == nullptr) {
+    return;
+  }
+  ctxt->_private = &load_ctx;
+  xmldoc = xmlCtxtReadFile(ctxt, UStr::to_stdstr(&source_file).c_str(), nullptr,
+                           XML_PARSE_NOENT | XML_PARSE_NONET);
+  ctxt->_private = nullptr;
+  xmlFreeParserCtxt(ctxt);
 }
 
 LibXmlReader::LibXmlReader(const XmlInputSource& source) : LibXmlReader(source.getPath()) {}
@@ -36,7 +92,12 @@ LibXmlReader::~LibXmlReader()
   if (xmldoc != nullptr) {
     xmlFreeDoc(xmldoc);
   }
-  current_file.reset();
+}
+
+void LibXmlReader::installLibXmlHooks()
+{
+  xmlSetExternalEntityLoader(xmlMyExternalEntityLoader);
+  xmlSetGenericErrorFunc(nullptr, xml_error_func);
 }
 
 void LibXmlReader::parse(std::list<XMLNode>& nodes)
@@ -116,8 +177,33 @@ void LibXmlReader::getAttributes(const xmlNode* node, std::unordered_map<Unicode
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
 xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, xmlParserCtxtPtr ctxt)
 {
-  const auto is = SharedXmlInputSource::getSharedInputSource(paths.path_to_jar);
-  is->open();
+  SharedXmlInputSource* is = nullptr;
+  std::unique_ptr<SharedXmlInputSource> owned;
+  auto* session_jars = XmlLoadSession::active();
+  if (session_jars != nullptr) {
+    auto& slot = session_jars->jars[paths.path_to_jar];
+    if (!slot) {
+      slot.reset(SharedXmlInputSource::getSharedInputSource(paths.path_to_jar));
+      slot->open();
+    }
+    is = slot.get();
+  }
+  else {
+    auto* ctx = loadContext(ctxt);
+    if (ctx != nullptr) {
+      auto& slot = ctx->jars[paths.path_to_jar];
+      if (!slot) {
+        slot.reset(SharedXmlInputSource::getSharedInputSource(paths.path_to_jar));
+        slot->open();
+      }
+      is = slot.get();
+    }
+    else {
+      owned.reset(SharedXmlInputSource::getSharedInputSource(paths.path_to_jar));
+      owned->open();
+      is = owned.get();
+    }
+  }
 
   const auto unzipped_stream = unzip(is->getSrc(), is->getSize(), paths.path_in_jar);
 
@@ -126,7 +212,6 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, xmlPa
                                     static_cast<int>(unzipped_stream->size()), XML_CHAR_ENCODING_NONE);
   xmlParserInputPtr pInput = xmlNewIOInputStream(ctxt, buf, XML_CHAR_ENCODING_NONE);
 
-  // filling in the filename for the external entity to work
   const auto root_pos = paths.path_in_jar.lastIndexOf('/') + 1;
   const auto file_name = UnicodeString(paths.path_in_jar, root_pos);
   pInput->filename = strdup(UStr::to_stdstr(&file_name).c_str());
@@ -137,29 +222,32 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, xmlPa
 xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/, xmlParserCtxtPtr ctxt)
 {
   /*
-   * The function is called before each opening of a file within libxml, whether it is an xmlReadFile,
-   * or opening a file for an external entity.
-   * I.e., the path to the file can be checked or modified here. If the external entity specifies a path similar
-   * to the file path, then libxml itself forms the full path to the entity file by gluing the path from the current
-   * file and the one specified in the external entity. But sometimes it fails, for example, on non-Latin letters in
-   * the path to the main file.
-   * At the same time, there is no path to the source file or to the file in the entity in the function parameters.
+   * Called before each file open inside libxml (the main xmlCtxtReadFile
+   * and every external entity). Relative entity paths are resolved against
+   * the document being parsed — that path is stored on ctxt->_private so a
+   * second ParserFactory can load XML without clobbering another in-flight
+   * parse's current file.
    */
+  auto* ctx = loadContext(ctxt);
 
   auto filename = Encodings::fromUTF8(const_cast<char*>(URL), static_cast<int32_t>(strlen(URL)));
   UnicodeString string_url(*filename.get());
 
-  // read entity string like "env:$FAR_HOME/hrd/catalog-console.xml"
+  const bool first_call = ctx == nullptr || ctx->is_first_call;
+  const UnicodeString* current_file = ctx != nullptr ? &ctx->current_file : nullptr;
+
   static const UnicodeString env(u"env:");
-  if (!is_first_call && string_url.startsWith(env)) {
+  if (!first_call && string_url.startsWith(env)) {
     const auto exp = colorer::Environment::expandSpecialEnvironment(string_url);
     string_url = UnicodeString(exp, env.length());
   }
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
-  if (string_url.startsWith(jar) || current_file->startsWith(jar)) {
-    const auto paths = LibXmlInputSource::getFullPathsToZip(string_url, is_first_call ? nullptr : current_file.get());
-    is_first_call = false;
+  if (string_url.startsWith(jar) || (current_file != nullptr && current_file->startsWith(jar))) {
+    const auto paths = LibXmlInputSource::getFullPathsToZip(string_url, first_call ? nullptr : current_file);
+    if (ctx != nullptr) {
+      ctx->is_first_call = false;
+    }
     xmlParserInputPtr ret = nullptr;
     try {
       ret = xmlZipEntityLoader(paths, ctxt);
@@ -168,17 +256,16 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
     return ret;
   }
 #endif
-  // We check if the file exists after all the conversions. If not, then we check the file relative to the one being processed.
-  // This is relevant for the case of non-Latin letters in the path to the main file and entity on linux. There is no such problem on windows.
-  if (!is_first_call && !colorer::Environment::isRegularFile(string_url)) {
-    auto new_string_url = colorer::Environment::getAbsolutePath(*current_file.get(), string_url);
+  if (!first_call && current_file != nullptr && !colorer::Environment::isRegularFile(string_url)) {
+    auto new_string_url = colorer::Environment::getAbsolutePath(*current_file, string_url);
     if (colorer::Environment::isRegularFile(new_string_url)) {
       string_url = std::move(new_string_url);
     }
   }
 
-  is_first_call = false;
-  // read it as a regular file
+  if (ctx != nullptr) {
+    ctx->is_first_call = false;
+  }
   xmlParserInputPtr ret = xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
 
   return ret;
@@ -186,8 +273,8 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
 
 void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
 {
-  static char buf[4096];
-  static int slen = 0;
+  thread_local char buf[4096];
+  thread_local int slen = 0;
   va_list args;
 
   /* libxml2 prints IO errors from bad includes paths by
@@ -199,7 +286,6 @@ void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
   const int rc = vsnprintf(&buf[slen], sizeof(buf) - slen, msg, args);
   va_end(args);
 
-  /* This shouldn't really happen */
   if (rc < 0) {
     COLORER_LOG_ERROR("+++ out of cheese error. redo from start +++\n");
     slen = 0;
@@ -209,12 +295,10 @@ void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
 
   slen += rc;
   if (slen >= static_cast<int>(sizeof(buf))) {
-    /* truncated, let's flush this */
     buf[sizeof(buf) - 1] = '\n';
     slen = sizeof(buf);
   }
 
-  /* We're assuming here that the last character is \n. */
   if (buf[slen - 1] == '\n') {
     buf[slen - 1] = '\0';
     COLORER_LOG_ERROR("%", buf);

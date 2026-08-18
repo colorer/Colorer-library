@@ -1,4 +1,5 @@
 #include <catch2/catch_amalgamated.hpp>
+#include <list>
 #include "colorer/utils/Environment.h"
 #include "colorer/xml/XmlReader.h"
 #include "test_common.h"
@@ -74,3 +75,28 @@ TEST_CASE("Test read jar entity with env")
 }
 
 #endif
+
+TEST_CASE("Two XmlReaders can parse a catalog with entities one after another")
+{
+  logger->clean_messages();
+
+  UnicodeString path1(u"data/catalog.xml");
+  {
+    XmlInputSource is(path1);
+    XmlReader first(is);
+    REQUIRE(first.parse());
+    std::list<XMLNode> nodes;
+    first.getNodes(nodes);
+    REQUIRE_FALSE(nodes.empty());
+  }
+  {
+    XmlInputSource is(path1);
+    XmlReader second(is);
+    REQUIRE(second.parse());
+    std::list<XMLNode> nodes;
+    second.getNodes(nodes);
+    REQUIRE_FALSE(nodes.empty());
+  }
+
+  REQUIRE(logger->message_print() == false);
+}

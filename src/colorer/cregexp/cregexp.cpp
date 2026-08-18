@@ -1,6 +1,6 @@
 #include "colorer/cregexp/cregexp.h"
 
-std::vector<StackElem> CRegExp::RegExpStack;
+thread_local std::vector<StackElem> CRegExp::RegExpStack;
 
 
 /////////////////////////////////////////////////////////////////////////////

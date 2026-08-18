@@ -7,6 +7,8 @@
 #include "colorer/common/spimpl.h"
 #include "colorer/xml/XmlInputSource.h"
 
+class XmlJarCache;
+
 /** Informs application about internal HRC parsing problems.
  */
 class HrcLibraryException : public Exception
@@ -77,6 +79,11 @@ class HrcLibrary
       @note Also loads referred type, if it is not yet loaded.
   */
   const Region* getRegion(const UnicodeString* name);
+
+  /** Zip bytes loaded by this library. ParserFactory binds it around catalog/HRD
+   * so a second factory reloads from disk instead of sharing a process-wide cache.
+   */
+  XmlJarCache& xmlJarCache();
 
  private:
   class Impl;

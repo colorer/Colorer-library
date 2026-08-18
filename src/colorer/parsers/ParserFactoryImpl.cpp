@@ -4,6 +4,7 @@
 #include "colorer/parsers/CatalogParser.h"
 #include "colorer/parsers/HrcLibraryImpl.h"
 #include "colorer/utils/Environment.h"
+#include "colorer/xml/XmlLoadSession.h"
 #include "colorer/xml/XmlReader.h"
 
 ParserFactory::Impl::Impl()
@@ -14,11 +15,11 @@ ParserFactory::Impl::Impl()
 ParserFactory::Impl::~Impl()
 {
   delete hrc_library;
-  CRegExp::clearRegExpStack();
 }
 
 void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 {
+  XmlLoadSession xml_session(hrc_library->xmlJarCache());
   if (!catalog_path || catalog_path->isEmpty()) {
     COLORER_LOG_DEBUG("loadCatalog for empty path");
 
@@ -46,6 +47,7 @@ void ParserFactory::Impl::loadCatalog(const UnicodeString* catalog_path)
 
 void ParserFactory::Impl::loadHrcPath(const UnicodeString* location, const UnicodeString* base_path) const
 {
+  XmlLoadSession xml_session(hrc_library->xmlJarCache());
   if (!location) {
     return;
   }
@@ -110,6 +112,8 @@ void ParserFactory::Impl::loadHrdPath(const UnicodeString* location)
   if (!location) {
     return;
   }
+
+  XmlLoadSession xml_session(hrc_library->xmlJarCache());
 
   COLORER_LOG_DEBUG("start load hrd files");
   try {
@@ -294,6 +298,7 @@ std::unique_ptr<TextHRDMapper> ParserFactory::Impl::createTextMapper(const Unico
 
 void ParserFactory::Impl::fillMapper(const UnicodeString& classID, const UnicodeString* nameID, RegionMapper& mapper)
 {
+  XmlLoadSession xml_session(hrc_library->xmlJarCache());
   const UnicodeString* name_id;
   const UnicodeString name_default(HrdNameDefault);
   uUnicodeString hrd;

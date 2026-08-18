@@ -3,6 +3,11 @@
 
 HrcLibrary::HrcLibrary() : pimpl(spimpl::make_unique_impl<Impl>()) {}
 
+XmlJarCache& HrcLibrary::xmlJarCache()
+{
+  return pimpl->xml_jars;
+}
+
 void HrcLibrary::loadSource(XmlInputSource* is)
 {
   pimpl->loadSource(is, Impl::LoadType::FULL);

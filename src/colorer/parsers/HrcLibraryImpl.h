@@ -7,6 +7,7 @@
 #include "colorer/parsers/SchemeImpl.h"
 #include "colorer/xml/XMLNode.h"
 #include "colorer/xml/XmlInputSource.h"
+#include "colorer/xml/XmlLoadSession.h"
 
 class FileType;
 
@@ -34,6 +35,8 @@ class HrcLibrary::Impl
   size_t getRegionCount() const;
   const Region* getRegion(unsigned int id) const;
   const Region* getRegion(const UnicodeString* name);
+
+  XmlJarCache xml_jars;
 
  protected:
   enum class QualifyNameType { QNT_DEFINE, QNT_SCHEME, QNT_ENTITY };

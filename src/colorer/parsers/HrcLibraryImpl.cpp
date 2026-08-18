@@ -37,6 +37,8 @@ HrcLibrary::Impl::~Impl()
 
 void HrcLibrary::Impl::loadSource(XmlInputSource* input_source, const LoadType load_type)
 {
+  XmlLoadSession xml_session(xml_jars);
+
   if (!input_source) {
     throw HrcLibraryException("Can't open stream - 'null' is bad stream.");
   }
@@ -121,6 +123,7 @@ void HrcLibrary::Impl::loadFileType(FileType* filetype)
 
 void HrcLibrary::Impl::loadHrcSettings(const XmlInputSource& is)
 {
+  XmlLoadSession xml_session(xml_jars);
   XmlReader xml_parser(is);
   if (!xml_parser.parse()) {
     throw HrcLibraryException("Error reading " + is.getPath());
