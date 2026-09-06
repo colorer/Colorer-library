@@ -383,6 +383,67 @@ TEST_CASE("tryParseLine accepts content edits and rejects block-boundary edits",
   }
 }
 
+TEST_CASE("Chunked cache updates keep searchLine covering the right block", "[textparser]")
+{
+  auto hrc_path = fs::path(__FILE__).parent_path() / "data" / "type_tryline.hrc";
+  XmlInputSource input(UnicodeString(hrc_path.c_str()));
+  HrcLibrary lib;
+  lib.loadSource(&input);
+  auto* file_type = lib.getFileType(UnicodeString("try_line"));
+  REQUIRE(file_type != nullptr);
+  REQUIRE(file_type->getBaseScheme() != nullptr);
+
+  constexpr int kBlocks = 40;
+  std::vector<UnicodeString> lines;
+  lines.reserve(static_cast<size_t>(kBlocks) * 4);
+  for (int i = 0; i < kBlocks; i++) {
+    lines.emplace_back(u"int x");
+    lines.emplace_back(u"/*");
+    lines.emplace_back(u" cmt");
+    lines.emplace_back(u"*/");
+  }
+  const int n = static_cast<int>(lines.size());
+  const int last_cmt = (kBlocks - 1) * 4 + 2;
+
+  InvalidatingLineSource source(std::move(lines));
+  CollectHandler handler;
+  TextParser parser;
+  parser.setFileType(file_type);
+  parser.setLineSource(&source);
+  parser.setRegionHandler(&handler);
+
+  int pos = 0;
+  while (pos < n) {
+    const int chunk = n - pos < 3 ? n - pos : 3;
+    pos = parser.parse(pos, chunk, TextParser::TextParseMode::TPM_CACHE_UPDATE) + 1;
+  }
+
+  SECTION("tryParseLine still matches the stack in an early and a late comment")
+  {
+    REQUIRE(parser.tryParseLine(2));
+    REQUIRE(parser.tryParseLine(last_cmt));
+    REQUIRE(parser.tryParseLine(0));
+  }
+
+  SECTION("CACHE_READ after warming to EOF still colors the first line")
+  {
+    handler.hits.clear();
+    parser.parse(0, 1, TextParser::TextParseMode::TPM_CACHE_READ);
+    REQUIRE_FALSE(handler.hits.empty());
+    REQUIRE(handler.hits.front().name.compare(UnicodeString("try_line:Kw")) == 0);
+  }
+
+  SECTION("CACHE_READ of a late comment after a jump to line 0 stays in that block")
+  {
+    handler.hits.clear();
+    parser.parse(0, 1, TextParser::TextParseMode::TPM_CACHE_READ);
+    handler.hits.clear();
+    parser.parse(last_cmt, 1, TextParser::TextParseMode::TPM_CACHE_READ);
+    REQUIRE_FALSE(handler.hits.empty());
+    REQUIRE(handler.hits.front().name.compare(UnicodeString("try_line:Cmt")) == 0);
+  }
+}
+
 TEST_CASE("Long lines keep coloring past the maxBlockSize window", "[textparser]")
 {
   auto hrc_path = fs::path(__FILE__).parent_path() / "data" / "type_longline.hrc";

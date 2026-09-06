@@ -89,14 +89,12 @@ int TextParser::Impl::parse(int from, int num, TextParseMode mode)
         return from;
       }
       if (updateCache) {
-        delete parent->children;
-        parent->children = nullptr;
+        parent->dropChildren();
       }
     }
     else {
       if (updateCache) {
-        delete forward->next;
-        forward->next = nullptr;
+        forward->dropNext();
       }
     }
     baseScheme = parent->scheme;
@@ -476,12 +474,14 @@ int TextParser::Impl::searchBL(SchemeNodeBlock* node, int no, int lowLen, int hi
 
   if (updateCache) {
     if (old_gy == current_parse_line) {
-      delete OldCacheF;
       if (ResF) {
-        ResF->next = nullptr;
+        ResF->dropNext();
       }
       else if (ResP) {
-        ResP->children = nullptr;
+        ResP->dropChildren();
+      }
+      else {
+        delete OldCacheF;
       }
       forward = ResF;
       parent = ResP;

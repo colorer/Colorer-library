@@ -76,7 +76,7 @@ Pick the candidate slice, then first match wins (HRC order inside the slice):
 
 ### ParseCache
 
-Multi-line blocks are a tree (`sline`/`eline`, scheme, start-RE `SMatches`, optional `backLine`, virtual table snapshot). Single-line matches are not cached.
+Multi-line blocks are a tree (`sline`/`eline`, scheme, start-RE `SMatches`, optional `backLine`, virtual table snapshot). Single-line matches are not cached. Siblings are ordered by `sline` and do not overlap. `searchLine` keeps a per-parent cursor (`search_child`) so forward `idleJob` chunks do not rescan the whole list; a long jump toward the start restarts from the head.
 
 `parse(from, num, mode)`:
 

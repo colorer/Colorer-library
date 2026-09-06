@@ -12,8 +12,9 @@
  * works with parsed internal HRC structure and colorisez
  * text in a target editor system.
  *
- * Hot path: parse() walks ParseCache to the scheme covering `from`,
- * then colorize() on each line. One scheme is active; gx is the column.
+ * Hot path: parse() walks ParseCache to the scheme covering `from`
+ * (searchLine resumes from a per-parent sibling cursor), then
+ * colorize() on each line. One scheme is active; gx is the column.
  * Per line the ASCII occupancy mask (str_chars) is computed once and
  * passed into every CRegExp::mayMatch/parse. searchMatch() uses the
  * scheme's searchDispatch (first-character candidate list) then tries
