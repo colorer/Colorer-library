@@ -25,18 +25,18 @@ struct XmlLoadContext
   bool is_first_call = true;
 };
 
-thread_local XmlLoadContext* tls_load = nullptr;
+XmlLoadContext* current_load = nullptr;
 
 class XmlLoadCurrent
 {
  public:
-  explicit XmlLoadCurrent(XmlLoadContext* load) : previous(tls_load)
+  explicit XmlLoadCurrent(XmlLoadContext* load) : previous(current_load)
   {
-    tls_load = load;
+    current_load = load;
   }
   ~XmlLoadCurrent()
   {
-    tls_load = previous;
+    current_load = previous;
   }
   XmlLoadCurrent(const XmlLoadCurrent&) = delete;
   XmlLoadCurrent& operator=(const XmlLoadCurrent&) = delete;
@@ -47,8 +47,8 @@ class XmlLoadCurrent
 
 XmlLoadContext* loadContext(xmlParserCtxtPtr ctxt)
 {
-  if (tls_load != nullptr) {
-    return tls_load;
+  if (current_load != nullptr) {
+    return current_load;
   }
   if (ctxt != nullptr && ctxt->_private != nullptr) {
     return static_cast<XmlLoadContext*>(ctxt->_private);
@@ -56,8 +56,8 @@ XmlLoadContext* loadContext(xmlParserCtxtPtr ctxt)
   return nullptr;
 }
 
-thread_local char xml_err_buf[4096];
-thread_local int xml_err_slen = 0;
+char xml_err_buf[4096];
+int xml_err_slen = 0;
 
 }  // namespace
 

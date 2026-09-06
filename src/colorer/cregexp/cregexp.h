@@ -253,10 +253,10 @@ struct StackElem
 
    parse() pins parseBuf to UnicodeString::getBuffer() so the NFA does
    not index the string per step. Each offset resets \\m/\\M and captures.
-   The backtracking stack is thread_local and shared by every CRegExp on
-   that thread; count_elem is reset per parseRE. Do not clear it from
-   ParserFactory teardown. parseStepLimit (default 1e6) counts NFA steps
-   in one parse(); exceeding it fails the match.
+   The backtracking stack is process-wide and reused by every CRegExp;
+   count_elem is reset per parseRE. Do not parse concurrently. Do not
+   clear the stack from ParserFactory teardown. parseStepLimit (default
+   1e6) counts NFA steps in one parse(); exceeding it fails the match.
 
    TextParser calls mayMatch() with the same pos/eol/schemeStart/line
    mask before parse() to avoid entering the NFA.
@@ -456,7 +456,7 @@ class CRegExp
   void insert_stack(SRegInfo*& re, SRegInfo*& prev, int& toParse, bool& leftenter, ReAction ifTrueReturn,
                     ReAction ifFalseReturn, SRegInfo* re2, SRegInfo* prev2, int toParse2);
 
-  static thread_local std::vector<StackElem> RegExpStack;
+  static std::vector<StackElem> RegExpStack;
 
   static bool isLineBreak(wchar c)
   {

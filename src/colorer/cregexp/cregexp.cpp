@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <climits>
 
-thread_local std::vector<StackElem> CRegExp::RegExpStack;
+std::vector<StackElem> CRegExp::RegExpStack;
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,7 @@
 #include "colorer/Exception.h"
 #include "colorer/utils/Environment.h"
 
-thread_local XmlJarCache* XmlJarCache::current_ = nullptr;
+XmlJarCache* XmlJarCache::current_ = nullptr;
 
 XmlJarCache::Current::Current(XmlJarCache& cache) : previous(current_)
 {
@@ -17,8 +17,8 @@ XmlJarCache::Current::~Current()
 
 XmlJarCache& XmlJarCache::fallback()
 {
-  static thread_local XmlJarCache tls_fallback;
-  return tls_fallback;
+  static XmlJarCache process_fallback;
+  return process_fallback;
 }
 
 XmlJarCache& XmlJarCache::active()

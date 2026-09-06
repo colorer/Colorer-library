@@ -130,7 +130,7 @@ Each attempt resets `\m`/`\M` and all capture slots so a failed offset cannot le
 
 ### lowParse
 
-Explicit backtracking stack (`insert_stack` / `check_stack`), not C++ recursion. `RegExpStack` is `thread_local` and **reused** across all `CRegExp` on that thread; `count_elem` is reset each `parseRE`. Do not clear it from `ParserFactory` teardown — a short-lived probe factory used to wipe a live editor parse on another object.
+Explicit backtracking stack (`insert_stack` / `check_stack`), not C++ recursion. `RegExpStack` is process-wide and **reused** across all `CRegExp`; `count_elem` is reset each `parseRE`. Do not parse concurrently. Do not clear it from `ParserFactory` teardown — a short-lived probe factory used to wipe a live editor parse on another object.
 
 `parseStepLimit` (default 1e6) counts NFA steps in one `parse()`. Exceeded → match fails (not a wall-clock quantum). Pathological HRC (`FuncOutline`-style lazy overlap × `[^;]*`) hits this; the right fix is usually the scheme, not raising the limit.
 

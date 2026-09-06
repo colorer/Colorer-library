@@ -1,5 +1,3 @@
-#include <atomic>
-#include <thread>
 #include <colorer/cregexp/cregexp.h>
 #include <catch2/catch_amalgamated.hpp>
 #include "colorer/ParserFactory.h"
@@ -1044,73 +1042,6 @@ TEST_CASE("ParserFactory on the same thread does not clear the matcher stack", "
   REQUIRE(re.parse(&str, &match));
   REQUIRE(match.s[0] == 0);
   REQUIRE(match.e[0] == 6);
-}
-
-TEST_CASE("ParserFactory destructor does not wipe a live matcher", "[cregexp]")
-{
-  const auto pre = ustr(u"/(a|b)+c/");
-  const auto str = ustr(u"aaabbc");
-  std::atomic<bool> stop{false};
-  std::atomic<int> matches{0};
-  std::atomic<int> failures{0};
-
-  std::thread matcher([&] {
-    CRegExp re(&pre);
-    if (!re.isOk()) {
-      failures++;
-      return;
-    }
-    SMatches match;
-    while (!stop.load(std::memory_order_relaxed)) {
-      if (!re.parse(&str, &match) || match.s[0] != 0 || match.e[0] != 6) {
-        failures++;
-        return;
-      }
-      matches.fetch_add(1, std::memory_order_relaxed);
-    }
-  });
-
-  while (matches.load(std::memory_order_relaxed) == 0 && failures.load(std::memory_order_relaxed) == 0) {
-    std::this_thread::yield();
-  }
-  for (int i = 0; i < 50; i++) {
-    ParserFactory probe;
-  }
-  stop.store(true, std::memory_order_relaxed);
-  matcher.join();
-  REQUIRE(failures.load() == 0);
-  REQUIRE(matches.load() > 0);
-}
-
-TEST_CASE("CRegExp matching is independent per thread", "[cregexp]")
-{
-  const auto pre = ustr(u"/(a|b)+c/");
-  const auto str = ustr(u"aaabbc");
-  std::atomic<int> ok{0};
-  std::atomic<int> failures{0};
-
-  auto worker = [&] {
-    CRegExp re(&pre);
-    if (!re.isOk()) {
-      failures++;
-      return;
-    }
-    SMatches match;
-    for (int i = 0; i < 1000; i++) {
-      if (!re.parse(&str, &match) || match.s[0] != 0 || match.e[0] != 6) {
-        failures++;
-        return;
-      }
-    }
-    ok++;
-  };
-
-  std::thread t1(worker);
-  std::thread t2(worker);
-  t1.join();
-  t2.join();
-  REQUIRE(failures.load() == 0);
-  REQUIRE(ok.load() == 2);
 }
 
 TEST_CASE("CRegExp \\Y{name} copies named group case-insensitively", "[cregexp]")

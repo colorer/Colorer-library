@@ -29,7 +29,7 @@ class XmlJarCache
 
  private:
   std::unordered_map<UnicodeString, std::unique_ptr<SharedXmlInputSource>> entries;
-  static thread_local XmlJarCache* current_;
+  static XmlJarCache* current_;
   static XmlJarCache& fallback();
 };
 
