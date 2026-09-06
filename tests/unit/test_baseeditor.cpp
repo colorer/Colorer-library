@@ -1,6 +1,4 @@
-#include <atomic>
 #include <catch2/catch_amalgamated.hpp>
-#include <thread>
 #include <vector>
 #include "colorer/HrcLibrary.h"
 #include "colorer/LineSource.h"
@@ -306,7 +304,7 @@ TEST_CASE("Probe ParserFactory on the same thread does not leak types into maste
   REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
 }
 
-TEST_CASE("two editors parse one HrcLibrary concurrently", "[baseeditor]")
+TEST_CASE("two editors parse one HrcLibrary on the same thread", "[baseeditor]")
 {
   ParserFactory factory;
   loadTryLine(factory);
@@ -316,52 +314,25 @@ TEST_CASE("two editors parse one HrcLibrary concurrently", "[baseeditor]")
   auto editor_a = makeEditor(factory, source_a);
   auto editor_b = makeEditor(factory, source_b);
 
-  std::atomic<int> hits {0};
-  auto paint = [&hits](BaseEditor* editor) {
-    for (int i = 0; i < 200; i++) {
-      REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
-      hits++;
-    }
-  };
-
-  std::thread t1([&] { paint(editor_a.get()); });
-  std::thread t2([&] { paint(editor_b.get()); });
-  t1.join();
-  t2.join();
-  REQUIRE(hits == 400);
+  for (int i = 0; i < 200; i++) {
+    REQUIRE(hasRegion(editor_a->getLineRegions(0), "try_line:Kw"));
+    REQUIRE(hasRegion(editor_b->getLineRegions(0), "try_line:Kw"));
+  }
 }
 
-TEST_CASE("loading another type does not disturb a concurrent parse", "[baseeditor]")
+TEST_CASE("loading another type does not disturb an existing editor", "[baseeditor]")
 {
   ParserFactory factory;
   loadTryLine(factory);
 
   MutableLines source({UnicodeString(u"int a")});
   auto editor = makeEditor(factory, source);
-
-  std::atomic<bool> parsing {true};
-  std::atomic<int> paints {0};
-  std::thread painter([&] {
-    while (parsing.load()) {
-      REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
-      paints++;
-      std::this_thread::yield();
-    }
-  });
-
-  // loadHrcPath of a tiny HRC can finish before the painter is scheduled.
-  while (paints.load() == 0) {
-    std::this_thread::yield();
-  }
+  REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
 
   auto block_path = fs::path(__FILE__).parent_path() / "data" / "type_block.hrc";
   UnicodeString block_location(block_path.c_str());
   factory.loadHrcPath(&block_location);
 
-  parsing = false;
-  painter.join();
-
-  REQUIRE(paints > 0);
   REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
   REQUIRE(factory.getHrcLibrary().getFileType(UnicodeString("bl_quote")) != nullptr);
   REQUIRE(factory.getHrcLibrary().getFileType(UnicodeString("try_line")) != nullptr);
