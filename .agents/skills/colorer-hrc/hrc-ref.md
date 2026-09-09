@@ -63,7 +63,7 @@ Regions: CapitalCase (`StringQuote`). Types/packages: lowercase. Schemes: lowerc
 
 Each matching filename/firstline adds its weight. Highest total wins; ties → first.
 
-Later HRC with the same `name` **replaces** the whole prototype (unload). `hrcsettings.xml` only adds/updates params and, if any chooser is present, **replaces** the chooser list — [overrides.md](overrides.md).
+Later HRC with the same `name` **replaces** the whole prototype (unload of the `FileType` shell only). Allowed only before any type body is loaded; otherwise `HrcLibraryException`. `hrcsettings.xml` only adds/updates params and, if any chooser is present, **replaces** the chooser list — same stage restriction — [overrides.md](overrides.md).
 
 ## Package
 
@@ -213,7 +213,7 @@ Loaded by `ParserFactory`. Current schemes: `xmlns="http://colorer.github.io/sch
 
 `link` relative to the catalog file, or `jar:common.zip!hrc/proto.hrc`. Directory `link`: first-level `*.hrc` only, skip `*.ent.hrc`. XML entities in catalog often alias `hrd` paths (including `jar:`). DTD `SYSTEM` with env vars: `env:$VAR/…` (not `jar:`) or `jar:$VAR/archive.zip!…` — [overrides.md](overrides.md).
 
-Duplicate `prototype/@name` in a later HRC file **unloads** the first definition. `hrcsettings.xml` merges params / replaces choosers only; it cannot add types. Do not edit the base catalog to customize.
+Duplicate `prototype/@name` in a later HRC file **unloads** the first definition (prototype stage only; error if that type body is already loaded). `hrcsettings.xml` merges params / replaces choosers only; it cannot add types. Both overlays throw after any type is loaded. Do not edit the base catalog to customize.
 
 Colorer-schemes (separate repo; example sibling path `../Colorer-schemes`): `build.sh base` → `_build/base/` loose files; `build.sh base.packed` → `_build/base-packed/` zip + `jar:` links. XML/zip loader changes must test packed.
 

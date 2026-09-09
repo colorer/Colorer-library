@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc>
+  <prototype name="ov" group="test" description="overlay base">
+    <filename>/\.base$/</filename>
+    <parameters>
+      <param name="flag" value="base"/>
+    </parameters>
+  </prototype>
+  <type name="ov">
+    <region name="Kw"/>
+    <scheme name="ov">
+      <keywords region="Kw" ignorecase="no">
+        <word name="foo"/>
+      </keywords>
+    </scheme>
+  </type>
+</hrc>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc>
+  <prototype name="ov" group="test" description="overlay replace">
+    <filename>/\.repl$/</filename>
+    <parameters>
+      <param name="flag" value="replace"/>
+    </parameters>
+  </prototype>
+  <type name="ov">
+    <region name="Kw"/>
+    <scheme name="ov">
+      <keywords region="Kw" ignorecase="no">
+        <word name="bar"/>
+      </keywords>
+    </scheme>
+  </type>
+</hrc>

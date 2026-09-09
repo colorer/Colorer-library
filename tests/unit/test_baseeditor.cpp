@@ -324,17 +324,19 @@ TEST_CASE("loading another type does not disturb an existing editor", "[baseedit
 {
   ParserFactory factory;
   loadTryLine(factory);
+  auto block_path = fs::path(__FILE__).parent_path() / "data" / "type_block.hrc";
+  UnicodeString block_location(block_path.c_str());
+  factory.loadHrcPath(&block_location);
 
   MutableLines source({UnicodeString(u"int a")});
   auto editor = makeEditor(factory, source);
   REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
 
-  auto block_path = fs::path(__FILE__).parent_path() / "data" / "type_block.hrc";
-  UnicodeString block_location(block_path.c_str());
-  factory.loadHrcPath(&block_location);
+  auto* other = factory.getHrcLibrary().getFileType(UnicodeString("bl_quote"));
+  REQUIRE(other != nullptr);
+  factory.getHrcLibrary().loadFileType(other);
 
   REQUIRE(hasRegion(editor->getLineRegions(0), "try_line:Kw"));
-  REQUIRE(factory.getHrcLibrary().getFileType(UnicodeString("bl_quote")) != nullptr);
   REQUIRE(factory.getHrcLibrary().getFileType(UnicodeString("try_line")) != nullptr);
 }
 

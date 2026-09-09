@@ -19,7 +19,9 @@ class HrcLibraryException : public Exception
     Defines basic operations of loading and accessing HRC information.
 
     Loading (#loadSource, #loadProtoTypes, #loadFileType, #loadHrcSettings) is exclusive
-    for one library. After a type is loaded, TextParser::parse may run concurrently
+    for one library. HRC overlays (#loadProtoTypes, #loadHrcSettings, duplicate
+    prototype replace) are allowed only while no type body has been loaded.
+    After a type is loaded, TextParser::parse may run concurrently
     as a shared read. Do not destroy the library while parse is running.
     #getRegion(const UnicodeString*) may load a type and is exclusive with parse.
     RegionHandler callbacks must not call HrcLibrary.
@@ -41,12 +43,19 @@ class HrcLibrary
    * Only the prototype and common/external packages are loaded.
    * If the file does not contain a type definition, then before further use of this type,
    * it must be loaded using the #loadFileType() method.
+   * A later file with the same prototype name replaces the previous prototype
+   * (unload of the FileType shell only). Allowed only before any type body is loaded.
    * @param is XmlInputSource stream of HRC file
+   * @throw HrcLibraryException if any type content is already loaded
    */
   void loadProtoTypes(XmlInputSource* is);
 
   void loadFileType(FileType* filetype);
 
+  /** Merge params / choosers into existing prototypes from hrcsettings.xml.
+   * Allowed only before any type body is loaded.
+   * @throw HrcLibraryException if any type content is already loaded
+   */
   void loadHrcSettings(const XmlInputSource& is);
 
   /** Enumerates sequentially all prototypes

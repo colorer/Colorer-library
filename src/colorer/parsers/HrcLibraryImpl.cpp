@@ -45,6 +45,9 @@ void HrcLibrary::Impl::loadSource(XmlInputSource* input_source, const LoadType l
   if (!input_source) {
     throw HrcLibraryException("Can't open stream - 'null' is bad stream.");
   }
+  if (load_type == LoadType::PROTOTYPE && typeContentLoaded) {
+    throw HrcLibraryException("HRC prototype overlay is only allowed before type content is loaded");
+  }
 
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   XmlJarCache::Current jar_scope(*zip_cache_ptr);
@@ -70,19 +73,24 @@ void HrcLibrary::Impl::loadSource(XmlInputSource* input_source, const LoadType l
   current_load_type = temp_lt;
 }
 
+bool HrcLibrary::Impl::isFileTypeContentLoaded(const FileType* filetype) const
+{
+  if (filetype == nullptr) {
+    return false;
+  }
+  const auto& ptype = filetype->pimpl;
+  return ptype->loadDone || ptype->type_loading || ptype->input_source_loading || ptype->load_broken;
+}
+
 void HrcLibrary::Impl::unloadFileType(const FileType* filetype)
 {
-  bool loop = true;
-  while (loop) {
-    loop = false;
-    for (auto scheme = schemeHash.begin(); scheme != schemeHash.end(); ++scheme) {
-      if (scheme->second->fileType == filetype) {
-        schemeHash.erase(scheme);
-        loop = true;
-        break;
-      }
-    }
+  if (filetype == nullptr) {
+    return;
   }
+  if (isFileTypeContentLoaded(filetype)) {
+    throw HrcLibraryException("Cannot unload type '" + filetype->getName() + "': type content is already loaded");
+  }
+
   for (auto ft = fileTypeVector.begin(); ft != fileTypeVector.end(); ++ft) {
     if (*ft == filetype) {
       fileTypeVector.erase(ft);
@@ -126,10 +134,16 @@ void HrcLibrary::Impl::loadFileType(FileType* filetype)
   }
 
   thisType->pimpl->input_source_loading = false;
+  if (thisType->pimpl->load_broken) {
+    typeContentLoaded = true;
+  }
 }
 
 void HrcLibrary::Impl::loadHrcSettings(const XmlInputSource& is)
 {
+  if (typeContentLoaded) {
+    throw HrcLibraryException("hrcsettings overlay is only allowed before type content is loaded");
+  }
 #ifdef COLORER_FEATURE_ZIPINPUTSOURCE
   XmlJarCache::Current jar_scope(*zip_cache_ptr);
 #endif
@@ -454,6 +468,7 @@ void HrcLibrary::Impl::addType(const XMLNode& elem)
   }
 
   type->pimpl->type_loading = true;
+  typeContentLoaded = true;
 
   FileType* o_parseType = current_parse_type;
   current_parse_type = type;

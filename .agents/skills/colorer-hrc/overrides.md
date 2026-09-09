@@ -19,6 +19,8 @@ Canonical sequence (`ParserFactory`; CLI `tools/colorer/ConsoleTools.cpp` does t
 
 `loadCatalog` / `loadHrcPath` / `loadHrcSettings` / `loadFileType` are exclusive per library. After a type is loaded, parsers may run concurrently.
 
+HRC overlays (`loadHrcPath` / `loadProtoTypes`, `loadHrcSettings`, duplicate prototype replace) run **only while every type is still a prototype/package shell**. After any type body is loaded (`loadFileType` / `loadSource` FULL), those calls throw `HrcLibraryException`. `unloadFileType` removes only the `FileType` prototype; it does not touch schemes/regions, and it throws if that type’s content is already loaded. `FileType::setParamValue` and `loadHrdPath` are not HRC type overlays and stay allowed after load.
+
 Empty `loadCatalog(nullptr)` uses **`COLORER_CATALOG`**. If that is unset → `ParserFactoryException`. There is no built-in filesystem search for `catalog.xml`.
 
 ---
@@ -27,8 +29,8 @@ Empty `loadCatalog(nullptr)` uses **`COLORER_CATALOG`**. If that is unset → `P
 
 | Goal | Use | Effect |
 |------|-----|--------|
-| New language / replace whole prototype (`name`, `group`, `description`, `location`, choosers, params) | Later HRC via `loadHrcPath` (or catalog `auto/`) with the **same** `prototype/@name` | First prototype is **unloaded**; the new one is loaded. Log: `Duplicate prototype`. |
-| Change **params** and/or **filename/firstline** of an already loaded type | `hrcsettings.xml` via `loadHrcSettings` | Params add/update. Choosers **replace the whole list** if any `<filename>`/`<firstline>` is present. |
+| New language / replace whole prototype (`name`, `group`, `description`, `location`, choosers, params) | Later HRC via `loadHrcPath` (or catalog `auto/`) with the **same** `prototype/@name`, **before** any type body is loaded | First prototype is **unloaded**; the new one is loaded. Log: `Duplicate prototype`. After a type is loaded → `HrcLibraryException`. |
+| Change **params** and/or **filename/firstline** of a registered prototype | `hrcsettings.xml` via `loadHrcSettings`, **before** any type body is loaded | Params add/update. Choosers **replace the whole list** if any `<filename>`/`<firstline>` is present. After a type is loaded → `HrcLibraryException`. |
 | New or extra HRD style | `loadHrdPath` | New `HrdNode` appended. Lookup is **first** `class`+`name` match (`getHrdNode`). |
 | Runtime param for this session only | `FileType::setParamValue` | Writes `user_value`; not persisted. `getParamValue` prefers `user_value` over default. |
 
@@ -77,7 +79,7 @@ Weights: same as HRC (`filename` default **2**, `firstline` default **1**).
 | `user_defined == true` | Use **`COLORER_HRC_SETTINGS`**. If unset, skip (not an error). |
 | `user_defined == false` | No-op (reserved for a fixed app-level path; none is compiled in). |
 
-Non-empty `location` always loads that file (normalized path).
+Non-empty `location` always loads that file (normalized path). Throws `HrcLibraryException` if any type body is already loaded.
 
 CLI: `-cs<path>` (`user_defined=true`). Env `COLORER_HRC_SETTINGS` if `-cs` omitted.
 
@@ -89,7 +91,7 @@ File → `loadProtoTypes`. Directory → non-recursive `*.hrc`, skip `*.ent.hrc`
 
 Prototype may live in its own HRC (no `<location>` → type body is this file) or in a `proto.hrc`-style index with `<location link="…"/>`.
 
-Same-name prototype after catalog: unload + replace (see above). New names: extra file types.
+Same-name prototype after catalog: unload + replace (see above). New names: extra file types. Both only before any type body is loaded.
 
 Less preferred (still in base catalog): directory `hrc/auto` listed last in `catalog.xml`. Do not edit distro `empty.hrc`. Prefer an app user path over writing into the catalog tree.
 

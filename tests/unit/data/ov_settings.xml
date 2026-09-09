@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hrc-settings>
+  <prototype name="ov">
+    <filename weight="100">/\.set$/</filename>
+    <parameters>
+      <param name="flag" value="settings"/>
+    </parameters>
+  </prototype>
+</hrc-settings>

@@ -18,8 +18,10 @@
  *
  * Several instances may exist in one process. Each owns an HrcLibrary.
  * loadCatalog / loadHrcPath / loadHrcSettings / loadFileType are exclusive
- * per library. After a type is loaded, createTextParser() instances may parse
- * that library concurrently. Destroy the factory only after those parsers stop.
+ * per library. loadHrcPath / loadHrcSettings overlay prototypes only; they
+ * throw if any type body is already loaded. After a type is loaded,
+ * createTextParser() instances may parse that library concurrently.
+ * Destroy the factory only after those parsers stop.
  */
 class ParserFactory
 {

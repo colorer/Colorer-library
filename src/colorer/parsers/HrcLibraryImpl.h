@@ -63,8 +63,10 @@ class HrcLibrary::Impl
   LoadType current_load_type = LoadType::FULL;
   bool structureChanged = false;
   bool updateStarted = false;
+  bool typeContentLoaded = false;
 
   void unloadFileType(const FileType* filetype);
+  bool isFileTypeContentLoaded(const FileType* filetype) const;
 
   void parseHRC(const XmlInputSource& is);
   void parseHrcBlock(const XMLNode& elem);
