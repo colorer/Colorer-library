@@ -1,6 +1,6 @@
 # Colorer library
 
-C++ syntax-highlighting library. Languages are described in **HRC** (XML): prototypes, schemes, keywords, regexps, blocks, inherit/virtual. HRD maps regions to colors. Spec: `.agents/skills/colorer-hrc/hrc-ref.md`. Site: https://colorer.github.io
+C++ syntax-highlighting library. Languages are described in **HRC** (XML): prototypes, schemes, keywords, regexps, blocks, inherit/virtual. HRD maps regions to colors. Spec: `.agents/skills/colorer-hrc/hrc-ref.md`. Catalog overlays / `hrcsettings.xml`: `.agents/skills/colorer-hrc/overrides.md`. Site: https://colorer.github.io (sources often `../colorer.github.io`).
 
 ## Layout
 
@@ -10,11 +10,11 @@ C++ syntax-highlighting library. Languages are described in **HRC** (XML): proto
 - `tools/colorer/` — CLI (`tools/colorer/ConsoleTools.cpp`).
 - `tests/unit/` — Catch2 v3. Fixtures in `tests/unit/data/`.
 - `tests/performance/` — `perftest` harness. Large input files in `tests/performance/samples/`.
-- `.agents/skills/` — portable Agent Skills (`SKILL.md`); same layout as Colorer-schemes. HRC/CRegExp: `colorer-hrc`.
+- `.agents/skills/` — portable Agent Skills (`SKILL.md`); same layout as Colorer-schemes. HRC/CRegExp: `colorer-hrc` (`hrc-ref.md`, `overrides.md`, `core-parse.md`).
 
 ## Pipeline
 
-`ParserFactory` loads `catalog.xml` → `HrcLibrary` (HRC) + HRD nodes. `TextParser` colors a `LineSource` into a `RegionHandler`. `BaseEditor` is the editor-facing API (`modifyLineEvent`, `idleJob`, `breakParse`). `CRegExp` (`src/colorer/cregexp/`) is Colorer’s regexp engine, not `std::regex`. XML goes through libxml2 (`src/colorer/xml/libxml2/`, `XmlReader`, `XmlInputSource`). `jar:` URIs require `COLORER_USE_ZIPINPUTSOURCE`.
+`ParserFactory` loads `catalog.xml` → `HrcLibrary` (HRC) + HRD nodes. After that an app may overlay user HRC (`loadHrcPath`), `hrcsettings.xml` (`loadHrcSettings`), and user HRD (`loadHrdPath`). Do not edit the base catalog to customize types or params. Empty catalog path uses `COLORER_CATALOG`; empty user settings path with `user_defined=true` uses `COLORER_HRC_SETTINGS`. `TextParser` colors a `LineSource` into a `RegionHandler`. `BaseEditor` is the editor-facing API (`modifyLineEvent`, `idleJob`, `breakParse`). `CRegExp` (`src/colorer/cregexp/`) is Colorer’s regexp engine, not `std::regex`. XML goes through libxml2 (`src/colorer/xml/libxml2/`, `XmlReader`, `XmlInputSource`). `jar:` URIs require `COLORER_USE_ZIPINPUTSOURCE`.
 
 HRC type load is **recursive**: `qualifyForeignName` and `<import>` call `loadFileType` while the parent’s `XMLNode` tree is still live. Do not collect imports, drop the parent tree, and reparse. Do not switch `LibXmlReader` to SAX: HRC splices other files through DTD `SYSTEM` entities; SAX dropped those children. Parse with a libxml DOM, copy into `XMLNode`, free the `xmlDoc` immediately. Do not preload types by scanning regexp/keyword text for `prefix:` QNames.
 

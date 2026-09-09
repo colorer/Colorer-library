@@ -4,7 +4,7 @@ Agent spec for this library. Engine is `CRegExp` (`src/colorer/cregexp/`), not `
 
 ## Runtime
 
-`ParserFactory` loads `catalog.xml` → HRC (`HrcLibrary`) + HRD. File type: sum `<filename>` / `<firstline>` weights; first max wins. Type XML loads lazily when selected. Parse starts at the scheme whose `name` equals the type name (packages need no base scheme). One scheme is active at a time. `TextParser` emits regions + enter/leave scheme to `RegionHandler`.
+`ParserFactory` loads `catalog.xml` → HRC (`HrcLibrary`) + HRD. After catalog, apps overlay user HRC (`loadHrcPath`), `hrcsettings.xml` (`loadHrcSettings`), user HRD (`loadHrdPath`) — [overrides.md](overrides.md). File type: sum `<filename>` / `<firstline>` weights; first max wins. Type XML loads lazily when selected. Parse starts at the scheme whose `name` equals the type name (packages need no base scheme). One scheme is active at a time. `TextParser` emits regions + enter/leave scheme to `RegionHandler`.
 
 Coloring hot path (scheme first-char lists, CRegExp skip filters, ParseCache, BaseEditor window/invalidation): [core-parse.md](core-parse.md).
 
@@ -62,6 +62,8 @@ Regions: CapitalCase (`StringQuote`). Types/packages: lowercase. Schemes: lowerc
 | `parameters/param` | `name`, `value`, `description?` | Runtime profile; scheme `@if` / `@unless` |
 
 Each matching filename/firstline adds its weight. Highest total wins; ties → first.
+
+Later HRC with the same `name` **replaces** the whole prototype (unload). `hrcsettings.xml` only adds/updates params and, if any chooser is present, **replaces** the chooser list — [overrides.md](overrides.md).
 
 ## Package
 
@@ -209,7 +211,9 @@ Loaded by `ParserFactory`. Current schemes: `xmlns="http://colorer.github.io/sch
 </catalog>
 ```
 
-`link` relative to the catalog file, or `jar:common.zip!hrc/proto.hrc`. XML entities in catalog often alias `hrd` paths (including `jar:`).
+`link` relative to the catalog file, or `jar:common.zip!hrc/proto.hrc`. Directory `link`: first-level `*.hrc` only, skip `*.ent.hrc`. XML entities in catalog often alias `hrd` paths (including `jar:`). DTD `SYSTEM` with env vars: `env:$VAR/…` (not `jar:`) or `jar:$VAR/archive.zip!…` — [overrides.md](overrides.md).
+
+Duplicate `prototype/@name` in a later HRC file **unloads** the first definition. `hrcsettings.xml` merges params / replaces choosers only; it cannot add types. Do not edit the base catalog to customize.
 
 Colorer-schemes (separate repo; example sibling path `../Colorer-schemes`): `build.sh base` → `_build/base/` loose files; `build.sh base.packed` → `_build/base-packed/` zip + `jar:` links. XML/zip loader changes must test packed.
 

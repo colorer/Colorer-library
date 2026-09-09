@@ -23,7 +23,7 @@ editor events  →  BaseEditor  →  TextParser::parse / tryParseLine
                                RegionHandler  (BaseEditor forwards into a LineRegion ring)
 ```
 
-`ParserFactory` loads `catalog.xml` → `HrcLibrary` (HRC schemes) + HRD. Several factories may exist in one process; there is no process-global parse/XML/zip cache. `TextParser::parse` / `tryParseLine` take a **shared** lock on that library so a concurrent `loadFileType` cannot mutate schemes under a live parse.
+`ParserFactory` loads `catalog.xml` → `HrcLibrary` (HRC schemes) + HRD, then optional user HRC / `hrcsettings.xml` / user HRD ([overrides.md](overrides.md)). Several factories may exist in one process; there is no process-global parse/XML/zip cache. `TextParser::parse` / `tryParseLine` take a **shared** lock on that library so a concurrent `loadFileType` cannot mutate schemes under a live parse.
 
 The matcher itself (`CRegExp::lowParse`) is **not** internally synchronized. `idleJob` / `breakParse` are documented as usable from a background thread; the editor must not run two parses of the same `TextParser` at once.
 
