@@ -7,6 +7,7 @@ on:
     branches:
       - master
     paths-ignore:
+      - '.agents/**'
       - '.github/workflows/clean_workflow.yml'
       - '.github/workflows/codeql-analysis.yml'
       - '.github/workflows/docker_build.yml'
@@ -16,6 +17,7 @@ on:
       - 'docs/**'
       - '.clang-format'
       - '.gitignore'
+      - 'AGENTS.md'
       - 'CHANGELOG.md'
       - 'CMakePresets.json'
       - 'CONTRIBUTORS'
