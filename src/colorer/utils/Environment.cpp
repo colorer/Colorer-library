@@ -1,4 +1,5 @@
 #include "colorer/utils/Environment.h"
+#include <system_error>
 #ifdef WIN32
 #include <windows.h>
 #include <cstdlib>
@@ -31,6 +32,15 @@ fs::path Environment::to_filepath(const UnicodeString* str)
   fs::path result = UStr::to_stdstr(str);
 #endif
   return result;
+}
+
+UnicodeString Environment::from_filepath(const fs::path& path)
+{
+#ifdef _WINDOWS
+  return {path.c_str()};
+#else
+  return UStr::to_unistr(path.native());
+#endif
 }
 
 uUnicodeString Environment::getOSEnv(const UnicodeString& name)
@@ -78,7 +88,7 @@ void Environment::setOSEnv(const UnicodeString& name, const UnicodeString& value
 
 uUnicodeString Environment::normalizePath(const UnicodeString* path)
 {
-  return std::make_unique<UnicodeString>(normalizeFsPath(path).c_str());
+  return std::make_unique<UnicodeString>(from_filepath(normalizeFsPath(path)));
 }
 
 fs::path Environment::normalizeFsPath(const UnicodeString* path)
@@ -125,7 +135,7 @@ std::vector<UnicodeString> Environment::getFilesFromPath(const UnicodeString& pa
   if (fs::is_directory(clear_path)) {
     for (auto& p : fs::directory_iterator(clear_path)) {
       if (fs::is_regular_file(p)) {
-        result.emplace_back(p.path().c_str());
+        result.emplace_back(from_filepath(p.path()));
       }
     }
   }
@@ -135,7 +145,7 @@ std::vector<UnicodeString> Environment::getFilesFromPath(const UnicodeString& pa
 bool Environment::isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath)
 {
   auto clear_path = Environment::getClearFilePath(basePath, relPath);
-  fullPath = clear_path.u16string().c_str();
+  fullPath = from_filepath(clear_path);
   return isRegularFile(fullPath);
 }
 
@@ -143,7 +153,7 @@ bool Environment::isRegularFile(const UnicodeString& path)
 {
   std::error_code ec;
   auto result = fs::is_regular_file(to_filepath(&path), ec);
-  if (ec) {
+  if (ec && ec != std::errc::no_such_file_or_directory) {
     COLORER_LOG_ERROR("Error on checking file status. File: % , Error: %.", path, ec.message());
   }
   return result;
@@ -220,8 +230,7 @@ uintmax_t Environment::getFileSize(const UnicodeString& path)
 
 UnicodeString Environment::getCurrentDir()
 {
-  auto path = fs::current_path();
-  return {path.c_str()};
+  return from_filepath(fs::current_path());
 }
 
 std::string Environment::expandEnvByRegexp(const std::string& path, const std::regex& regex)

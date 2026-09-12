@@ -2,6 +2,8 @@
 #include <colorer/utils/Environment.h>
 #include <catch2/catch_amalgamated.hpp>
 #include <cstdlib>
+#include <fstream>
+#include <system_error>
 
 TEST_CASE("Test normalize base path", "[environment]")
 {
@@ -54,4 +56,30 @@ TEST_CASE("expandEnvironment substitutes $VAR and ${VAR}", "[environment]")
   REQUIRE_THAT("/opt/colorer/hrc", Catch::Matchers::Equals(UStr::to_stdstr(&special_dollar)));
 }
 #endif
+
+TEST_CASE("normalizePath and isRegularFile keep Cyrillic and spaces", "[environment]")
+{
+  const auto root = fs::temp_directory_path() / fs::u8path("colorer_env_русс еще с");
+  fs::create_directories(root);
+  struct RemoveAll {
+    fs::path p;
+    ~RemoveAll()
+    {
+      std::error_code ec;
+      fs::remove_all(p, ec);
+    }
+  } cleanup {root};
+
+  const auto file = root / "catalog.xml";
+  {
+    std::ofstream out(file);
+    out << "<catalog/>\n";
+  }
+
+  const auto as_unicode = colorer::Environment::from_filepath(file);
+  REQUIRE(colorer::Environment::isRegularFile(as_unicode));
+  const auto normalized = colorer::Environment::normalizePath(&as_unicode);
+  REQUIRE(colorer::Environment::isRegularFile(*normalized));
+  REQUIRE(colorer::Environment::to_filepath(normalized.get()) == fs::path(file).lexically_normal());
+}
 

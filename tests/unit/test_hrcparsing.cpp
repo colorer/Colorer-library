@@ -1,7 +1,9 @@
 #include <catch2/catch_amalgamated.hpp>
+#include <system_error>
 #include "colorer/FileType.h"
 #include "colorer/HrcLibrary.h"
 #include "colorer/Scheme.h"
+#include "colorer/utils/Environment.h"
 #include "colorer/utils/FileSystems.h"
 #include "colorer/xml/XmlInputSource.h"
 
@@ -128,4 +130,31 @@ TEST_CASE("Full load then duplicate prototype is an error", "[hrc]")
   REQUIRE(type != nullptr);
   REQUIRE(type->getDescription() == UnicodeString("overlay base"));
   REQUIRE(type->getBaseScheme() != nullptr);
+}
+
+TEST_CASE("HRC SYSTEM entity loads from a path with spaces and Cyrillic", "[hrc]")
+{
+  const auto root = fs::temp_directory_path() / fs::u8path("colorer_hrc_русс еще с");
+  fs::remove_all(root);
+  fs::create_directories(root);
+  struct RemoveAll {
+    fs::path p;
+    ~RemoveAll()
+    {
+      std::error_code ec;
+      fs::remove_all(p, ec);
+    }
+  } cleanup {root};
+
+  const auto data = fs::path(__FILE__).parent_path() / "data";
+  fs::copy_file(data / "type_entity_incl.hrc", root / "type_entity_incl.hrc");
+  fs::copy_file(data / "type_entity_frag.hrc", root / "type_entity_frag.hrc");
+
+  XmlInputSource file(colorer::Environment::from_filepath(root / "type_entity_incl.hrc"), nullptr);
+  HrcLibrary lib;
+  REQUIRE_NOTHROW(lib.loadSource(&file));
+  auto* type = lib.getFileType(UnicodeString("entinc"));
+  REQUIRE(type != nullptr);
+  REQUIRE(type->getBaseScheme() != nullptr);
+  REQUIRE(*type->getBaseScheme()->getName() == UnicodeString("entinc:entinc"));
 }

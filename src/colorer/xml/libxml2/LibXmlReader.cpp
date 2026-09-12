@@ -1,5 +1,6 @@
 #include "colorer/xml/libxml2/LibXmlReader.h"
 #include <libxml/parserInternals.h>
+#include <libxml/uri.h>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -54,6 +55,45 @@ XmlLoadContext* loadContext(xmlParserCtxtPtr ctxt)
     return static_cast<XmlLoadContext*>(ctxt->_private);
   }
   return nullptr;
+}
+
+UnicodeString decodeFilesystemXmlUrl(const UnicodeString& url)
+{
+  const auto utf8 = UStr::to_stdstr(&url);
+  char* const unescaped = xmlURIUnescapeString(utf8.c_str(), -1, nullptr);
+  UnicodeString decoded;
+  if (unescaped != nullptr) {
+    decoded = *Encodings::fromUTF8(unescaped, static_cast<int32_t>(strlen(unescaped)));
+    xmlFree(unescaped);
+  }
+  else {
+    decoded = url;
+  }
+
+  static const UnicodeString file_localhost(u"file://localhost");
+  static const UnicodeString file_slashes(u"file://");
+  static const UnicodeString file_scheme(u"file:");
+  if (decoded.startsWith(file_localhost)) {
+    decoded = UnicodeString(decoded, file_localhost.length());
+  }
+  else if (decoded.startsWith(file_slashes)) {
+    decoded = UnicodeString(decoded, file_slashes.length());
+  }
+  else if (decoded.startsWith(file_scheme)) {
+    decoded = UnicodeString(decoded, file_scheme.length());
+  }
+
+#ifdef WIN32
+  if (decoded.startsWith("/") && decoded.length() > 2 && decoded[2] == ':') {
+    decoded = UnicodeString(decoded, 1);
+  }
+#endif
+  return decoded;
+}
+
+bool isRemoteHttpUrl(const UnicodeString& url)
+{
+  return url.startsWith(u"http://") || url.startsWith(u"https://");
 }
 
 char xml_err_buf[4096];
@@ -208,18 +248,19 @@ xmlParserInputPtr LibXmlReader::xmlZipEntityLoader(const PathInJar& paths, xmlPa
 xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const char* /*ID*/, xmlParserCtxtPtr ctxt)
 {
   /*
-   * The function is called before each opening of a file within libxml, whether it is an xmlReadFile,
-   * or opening a file for an external entity.
-   * I.e., the path to the file can be checked or modified here. If the external entity specifies a path similar
-   * to the file path, then libxml itself forms the full path to the entity file by gluing the path from the current
-   * file and the one specified in the external entity. But sometimes it fails, for example, on non-Latin letters in
-   * the path to the main file.
-   * At the same time, there is no path to the source file or to the file in the entity in the function parameters.
+   * Called for the main xmlCtxtReadFile document and for every external entity.
+   * libxml2 joins a SYSTEM path to the current document URI, but that fails when the
+   * base path has a space (xmlBuildURI) or, on Linux, non-Latin letters. The URL then
+   * stays relative (hrd/foo.xml). Resolve it against current_file instead of probing
+   * the process cwd, which can pick up a different catalog.
    */
 
   XmlLoadContext* load = loadContext(ctxt);
   if (load == nullptr) {
     return xmlNewInputFromFile(ctxt, URL);
+  }
+  if (URL == nullptr) {
+    return nullptr;
   }
 
   auto filename = Encodings::fromUTF8(const_cast<char*>(URL), static_cast<int32_t>(strlen(URL)));
@@ -249,20 +290,26 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
     return ret;
   }
 #endif
-  // We check if the file exists after all the conversions. If not, then we check the file relative to the one being processed.
-  // This is relevant for the case of non-Latin letters in the path to the main file and entity on linux. There is no such problem on windows.
-  if (!load->is_first_call && !colorer::Environment::isRegularFile(string_url)) {
-    auto new_string_url = colorer::Environment::getAbsolutePath(load->current_file, string_url);
-    if (colorer::Environment::isRegularFile(new_string_url)) {
-      string_url = std::move(new_string_url);
+
+  if (isRemoteHttpUrl(string_url)) {
+    load->is_first_call = false;
+    return nullptr;
+  }
+
+  string_url = decodeFilesystemXmlUrl(string_url);
+
+  if (!load->is_first_call) {
+    const auto as_path = colorer::Environment::to_filepath(&string_url);
+    if (!as_path.is_absolute() || !colorer::Environment::isRegularFile(string_url)) {
+      auto resolved = colorer::Environment::getAbsolutePath(load->current_file, string_url);
+      if (colorer::Environment::isRegularFile(resolved)) {
+        string_url = std::move(resolved);
+      }
     }
   }
 
   load->is_first_call = false;
-  // read it as a regular file
-  xmlParserInputPtr ret = xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
-
-  return ret;
+  return xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
 }
 
 void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)
