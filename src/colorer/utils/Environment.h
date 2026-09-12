@@ -2,6 +2,7 @@
 #define COLORER_ENVIRONMENT_H
 
 #include <regex>
+#include <string>
 #include <vector>
 #include "colorer/Common.h"
 #include "colorer/utils/FileSystems.h"
@@ -18,6 +19,7 @@ class Environment
   static fs::path getClearFilePath(const UnicodeString* basePath, const UnicodeString* relPath);
   static fs::path to_filepath(const UnicodeString* str);
   static UnicodeString from_filepath(const fs::path& path);
+  static std::string to_utf8_path(const UnicodeString& str);
 
   static std::vector<UnicodeString> getFilesFromPath(const UnicodeString& path);
   static bool isRegularFile(const UnicodeString* basePath, const UnicodeString* relPath, UnicodeString& fullPath);

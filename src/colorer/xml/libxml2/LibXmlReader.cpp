@@ -59,7 +59,7 @@ XmlLoadContext* loadContext(xmlParserCtxtPtr ctxt)
 
 UnicodeString decodeFilesystemXmlUrl(const UnicodeString& url)
 {
-  const auto utf8 = UStr::to_stdstr(&url);
+  const auto utf8 = colorer::Environment::to_utf8_path(url);
   char* const unescaped = xmlURIUnescapeString(utf8.c_str(), -1, nullptr);
   UnicodeString decoded;
   if (unescaped != nullptr) {
@@ -117,7 +117,7 @@ LibXmlReader::LibXmlReader(const UnicodeString& source_file)
   const XmlLoadCurrent current(&load);
 
   xmlDocPtr xmldoc =
-      xmlCtxtReadFile(ctxt, UStr::to_stdstr(&source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
+      xmlCtxtReadFile(ctxt, colorer::Environment::to_utf8_path(source_file).c_str(), nullptr, XML_PARSE_NOENT | XML_PARSE_NONET);
   parsed = xmldoc != nullptr;
   if (xmldoc != nullptr) {
     xmlNode* current_node = xmlDocGetRootElement(xmldoc);
@@ -309,7 +309,7 @@ xmlParserInputPtr LibXmlReader::xmlMyExternalEntityLoader(const char* URL, const
   }
 
   load->is_first_call = false;
-  return xmlNewInputFromFile(ctxt, UStr::to_stdstr(&string_url).c_str());
+  return xmlNewInputFromFile(ctxt, colorer::Environment::to_utf8_path(string_url).c_str());
 }
 
 void LibXmlReader::xml_error_func(void* /*ctx*/, const char* msg, ...)

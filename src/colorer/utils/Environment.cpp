@@ -29,7 +29,7 @@ fs::path Environment::to_filepath(const UnicodeString* str)
 #ifdef _WINDOWS
   fs::path result = UStr::to_stdwstr(str);
 #else
-  fs::path result = UStr::to_stdstr(str);
+  fs::path result = to_utf8_path(*str);
 #endif
   return result;
 }
@@ -40,6 +40,15 @@ UnicodeString Environment::from_filepath(const fs::path& path)
   return {path.c_str()};
 #else
   return UStr::to_unistr(path.native());
+#endif
+}
+
+std::string Environment::to_utf8_path(const UnicodeString& str)
+{
+#ifdef COLORER_FEATURE_ICU
+  return UStr::to_stdstr(&str);
+#else
+  return {str.getChars(Encodings::ENC_UTF8)};
 #endif
 }
 

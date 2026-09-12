@@ -81,5 +81,6 @@ TEST_CASE("normalizePath and isRegularFile keep Cyrillic and spaces", "[environm
   const auto normalized = colorer::Environment::normalizePath(&as_unicode);
   REQUIRE(colorer::Environment::isRegularFile(*normalized));
   REQUIRE(colorer::Environment::to_filepath(normalized.get()) == fs::path(file).lexically_normal());
+  REQUIRE(colorer::Environment::to_utf8_path(as_unicode) == file.u8string());
 }
 
