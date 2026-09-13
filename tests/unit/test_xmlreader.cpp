@@ -48,6 +48,18 @@ const XMLNode* childNamed(const XMLNode& parent, const char16_t* name)
   return nullptr;
 }
 
+struct CwdGuard {
+  fs::path previous {fs::current_path()};
+  explicit CwdGuard(const fs::path& next) { fs::current_path(next); }
+  ~CwdGuard()
+  {
+    std::error_code ec;
+    fs::current_path(previous, ec);
+  }
+  CwdGuard(const CwdGuard&) = delete;
+  CwdGuard& operator=(const CwdGuard&) = delete;
+};
+
 }  // namespace
 
 TEST_CASE("Test read simple xml", "[xmlreader]")
@@ -222,35 +234,19 @@ TEST_CASE("Catalog SYSTEM entities ignore a same-name file in the process cwd", 
   const auto catalog_file = copyCatalogWithEntities(tree.root / "base");
   const auto catalog_path = colorer::Environment::from_filepath(catalog_file);
 
-  const auto decoy_dir = fs::current_path() / "hrd";
-  const auto decoy_file = decoy_dir / "catalog-console.xml";
-  const bool created_dir = !fs::exists(decoy_dir);
-  REQUIRE_FALSE(fs::exists(decoy_file));
-  fs::create_directories(decoy_dir);
+  TempTree cwd_tree(fs::temp_directory_path() / "colorer_cwd_decoy");
+  fs::create_directories(cwd_tree.root / "hrd");
   {
-    std::ofstream decoy(decoy_file);
+    std::ofstream decoy(cwd_tree.root / "hrd" / "catalog-console.xml");
     decoy << "<not-hrd/>\n";
   }
 
+  const CwdGuard cwd(cwd_tree.root);
+  XmlInputSource is(catalog_path);
+  XmlReader reader(is);
+  REQUIRE(reader.parse());
   XMLNodeList nodes;
-  try {
-    XmlInputSource is(catalog_path);
-    XmlReader reader(is);
-    REQUIRE(reader.parse());
-    reader.getNodes(nodes);
-  } catch (...) {
-    std::error_code ec;
-    fs::remove(decoy_file, ec);
-    if (created_dir) {
-      fs::remove(decoy_dir, ec);
-    }
-    throw;
-  }
-  std::error_code ec;
-  fs::remove(decoy_file, ec);
-  if (created_dir) {
-    fs::remove(decoy_dir, ec);
-  }
+  reader.getNodes(nodes);
 
   REQUIRE_FALSE(nodes.empty());
   const XMLNode* hrd_sets = childNamed(nodes.front(), u"hrd-sets");
